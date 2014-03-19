@@ -1,15 +1,6 @@
-<<<<<<< HEAD
-.exe
-.dll
-.a
-.o
+*.exe
+*.dll
+*.a
+*.o
 .objs
-.dia
-
-=======
-.o
-.exe
-.dll
-obj
 dia
->>>>>>> 54225a8423dacc3b5fd1c52c361885c88b9791bf
