@@ -1,0 +1,3 @@
+EXPORTS
+    dia_plugin_init @1
+    g_module_check_init @2

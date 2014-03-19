@@ -1,0 +1,13 @@
+EXPORTS
+    app_init @1
+    app_is_interactive @2
+    app_splash_done @3
+    cnp_exist_stored_objects @4
+    cnp_get_stored_objects @5
+    cnp_store_objects @6
+    create_magnify_tool @7
+    dia_import_filter @8 DATA
+    free_magnify_tool @9
+    set_zoom_in @10
+    set_zoom_out @11
+    toolbox_show @12
