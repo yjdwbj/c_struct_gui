@@ -461,7 +461,7 @@ create_layer_dialog(void)
                              G_CALLBACK(gtk_widget_hide),
                              GTK_OBJECT(dialog));
 
-    gtk_widget_show (button);
+   gtk_widget_show (button);
 
     persistence_register_window(GTK_WINDOW(dialog));
 

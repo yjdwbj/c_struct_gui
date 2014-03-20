@@ -42,6 +42,7 @@
 #include "pixmaps/structclass.xpm"
 
 #include "debug.h"
+#include "sheet.h"
 
 #define STRUCTCLASS_BORDER 0.1
 #define STRUCTCLASS_UNDERLINEWIDTH 0.05
@@ -96,6 +97,8 @@ static ObjectTypeOps structclass_type_ops =
  * change the name and any other fields that are variances from the base
  * type.
 */
+
+FactorStructItemAll structList = {NULL,NULL};
 DiaObjectType structclass_type =
 {
   "STRUCT - Class",   /* name */
@@ -1791,138 +1794,117 @@ fill_in_fontdata(STRUCTClass *structclass)
  *      handling global STRUCT functionallity at some point.
  */
 
-void factoryReadDataFromFile(STRUCTClass *structclass)
-{
-#define MAX_LINE 1024
-#define MAX_SECTION 6
+//void factoryReadDataFromFile(STRUCTClass *structclass)
+//{
+//#define MAX_LINE 1024
+//#define MAX_SECTION 6
+//
+//    gchar *datafilepath;
+//    const gchar* cfname = "test.data";
+//    struct stat statbuf;
+//    datafilepath = dia_get_lib_directory("config"); /// append /test.data
+//    if ( stat(datafilepath, &statbuf) < 0)
+//   {
+//       message_error(_("Couldn't find config path "
+//		  "object-libs; exiting...\n"));
+//    }
+//
+//    char* filename = g_strconcat(datafilepath, G_DIR_SEPARATOR_S ,
+//		     cfname, NULL);
+//    FILE *fd;
+//    if((fd =  fopen(filename,"r")) == NULL)
+//    {
+//         message_error(_("Couldn't open filename "
+//		  "object-libs; exiting...\n"));
+//    }
+//
+//    if(stat(filename,&statbuf) <0 )
+//    {
+//        message_error(_("Couldn't read  filename stats"
+//		  "object-libs; exiting...\n"));
+//    }
+//
+//
+//
+//    char filetxt[MAX_LINE]={'\0'};
+//    gchar* aline = NULL;
+//    GList *datalist = NULL;
+//    GList *enumlist = NULL;
+//
+////     gchar *sbuf[MAX_SECTION];   // 2014-3-19 lcy 这里分几个段
+//    gboolean isEmnu = FALSE;
+//
+//    FactorStructEnumList *fsel = NULL;
+//    while(fgets(filetxt,MAX_LINE,fd)!=NULL)
+//    {
+//        aline = g_strstrip(filetxt);
+//        if(aline[0]==':')
+//        {
+//            fsel = g_new0(FactorStructEnumList,1);
+//            fsel->name = g_locale_to_utf8(&aline[1],-1,NULL,NULL,NULL);
+//            fsel->list = NULL;
+//            //continue
+//        }
+//        else if(aline[0] == '{')
+//        {
+//            isEmnu = TRUE;
+//            //continue;
+//        }
+//        else if(aline[0] == '}')
+//        {
+//            isEmnu = FALSE;
+//            enumlist = g_list_append(enumlist,fsel);
+//            //continue;
+//        }
+//        else if(isEmnu) // 2014-3-19 lcy 读取一个枚举.
+//        {
+//               FactorStructEnum *kvmap  = g_new0(FactorStructEnum,1);
+//               gchar ** sbuf=NULL;
+//               sbuf=  g_strsplit_set (aline,":",-1);
+//                if( g_strv_length(sbuf) <2)
+//                {
+//                    kvmap->key = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
+//                    kvmap->value = g_locale_to_utf8("0",-1,NULL,NULL,NULL);
+//                }
+//                else
+//                {
+//                    kvmap->key = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
+//                    kvmap->value = g_locale_to_utf8(sbuf[1],-1,NULL,NULL,NULL);
+//                }
+//              fsel->list  =  g_list_append(fsel->list ,kvmap);
+//
+//              g_strfreev(sbuf);
+//        }
+//        else{
+//
+//         gchar ** sbuf=NULL;
+//        if(aline[0] == '/' || aline[0] == '#' || !strlen(aline))
+//           continue;
+//         FactoryStructItem *item = g_new0(FactoryStructItem,1);
+//      //  sscanf(&aline,"%[^:]:%[^:]:%[^:]:%[^:]:%[^:]:%[^:]",sbuf[0],sbuf[1],sbuf[2],sbuf[3],sbuf[4],sbuf[5]);
+//       sbuf=  g_strsplit_set (filetxt,":",-1);
+//
+//       if( g_strv_length(sbuf) <MAX_SECTION)
+//        continue;
+//
+//        item->itemName = g_locale_to_utf8(sbuf[1],-1,NULL,NULL,NULL);
+//        item->itemType = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
+//        item->itemValue = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
+//        item->itemMin = g_locale_to_utf8(sbuf[3],-1,NULL,NULL,NULL);
+//        item->itemMax = g_locale_to_utf8(sbuf[4],-1,NULL,NULL,NULL);
+//        item->itemComment = g_locale_to_utf8(sbuf[5],-1,NULL,NULL,NULL);
+//        datalist = g_list_append(datalist,item);
+//        g_strfreev(sbuf);
+//        }
+//
+//    }
+//    fclose(fd);
+//    structclass->properties_dialog->itemsData = datalist;
+//
+//    structclass->properties_dialog->enumList = enumlist;
+//}
 
-    gchar *datafilepath;
-    const gchar* cfname = "test.data";
-    struct stat statbuf;
-    datafilepath = dia_get_lib_directory("config"); /// append /test.data
-    if ( stat(datafilepath, &statbuf) < 0)
-   {
-       message_error(_("Couldn't find config path "
-		  "object-libs; exiting...\n"));
-    }
 
-    int plen = strlen(datafilepath);
-    int flen = strlen(cfname);
-    FILE *fd;
-    char* filename = g_strconcat(datafilepath, G_DIR_SEPARATOR_S ,
-		     cfname, NULL);
-
-    if((fd =  fopen(filename,"r")) == NULL)
-    {
-         message_error(_("Couldn't open filename "
-		  "object-libs; exiting...\n"));
-    }
-
-    if(stat(filename,&statbuf) <0 )
-    {
-        message_error(_("Couldn't read  filename stats"
-		  "object-libs; exiting...\n"));
-    }
-
-    int filelen = statbuf.st_size;
-
-    char filetxt[MAX_LINE]={'\0'};
-    gchar* aline = NULL;
-    GList *datalist = NULL;
-    GList *enumlist = NULL;
-
-//     gchar *sbuf[MAX_SECTION];   // 2014-3-19 lcy 这里分几个段
-    int i = 0;
-    gchar *multline=NULL;
-    gboolean isEmnu = FALSE;
-
-    FactorStructEnumList *fsel = NULL;
-    while(fgets(filetxt,MAX_LINE,fd)!=NULL)
-    {
-        aline = g_strstrip(filetxt);
-        if(aline[0]==':')
-        {
-            fsel = g_new0(FactorStructEnumList,1);
-            fsel->name = g_locale_to_utf8(&aline[1],-1,NULL,NULL,NULL);
-            fsel->list = NULL;
-            //continue
-        }
-        else if(aline[0] == '{')
-        {
-            isEmnu = TRUE;
-            //continue;
-        }
-        else if(aline[0] == '}')
-        {
-            isEmnu = FALSE;
-            enumlist = g_list_append(enumlist,fsel);
-            //continue;
-        }
-        else if(isEmnu) // 2014-3-19 lcy 读取一个枚举.
-        {
-               FactorStructEnum *kvmap  = g_new0(FactorStructEnum,1);
-               gchar ** sbuf=NULL;
-               sbuf=  g_strsplit_set (aline,":",-1);
-                if( g_strv_length(sbuf) <2)
-                {
-                    kvmap->key = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
-                    kvmap->value = g_locale_to_utf8("0",-1,NULL,NULL,NULL);
-                }
-                else
-                {
-                    kvmap->key = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
-                    kvmap->value = g_locale_to_utf8(sbuf[1],-1,NULL,NULL,NULL);
-                }
-              fsel->list  =  g_list_append(fsel->list ,kvmap);
-
-              g_strfreev(sbuf);
-        }
-        else{
-
-         gchar ** sbuf=NULL;
-        if(aline[0] == '/' || aline[0] == '#' || !strlen(aline))
-           continue;
-         FactoryStructItem *item = g_new0(FactoryStructItem,1);
-      //  sscanf(&aline,"%[^:]:%[^:]:%[^:]:%[^:]:%[^:]:%[^:]",sbuf[0],sbuf[1],sbuf[2],sbuf[3],sbuf[4],sbuf[5]);
-       sbuf=  g_strsplit_set (filetxt,":",-1);
-       int n =0;
-       if( g_strv_length(sbuf) <MAX_SECTION)
-        continue;
-        GString *tmp =g_string_new("");
-        item->itemName = g_locale_to_utf8(sbuf[1],-1,NULL,NULL,NULL);
-        item->itemType = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
-        item->itemValue = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
-        item->itemMin = g_locale_to_utf8(sbuf[3],-1,NULL,NULL,NULL);
-        item->itemMax = g_locale_to_utf8(sbuf[4],-1,NULL,NULL,NULL);
-        item->itemComment = g_locale_to_utf8(sbuf[5],-1,NULL,NULL,NULL);
-        datalist = g_list_append(datalist,item);
-        g_strfreev(sbuf);
-        }
-
-    }
-    fclose(fd);
-    structclass->properties_dialog->itemsData = datalist;
-    int n = g_list_length(enumlist);
-    structclass->properties_dialog->enumList = enumlist;
-}
-
-static void filterTextData(FactoryStructItem *item,const char*data, int len)
-{
-    int i =0 ;
-
-    while(i < len)
-    {
-        char buf[512];
-        if(data[i]!=':')
-        {
-            buf[i]=data[i];
-        }
-        else
-        {
-
-        }
-    }
-}
 
 static DiaObject *  // 2014-3-19 lcy 这里初始化结构
 structclass_create(Point *startpoint,

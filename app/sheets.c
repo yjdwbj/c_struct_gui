@@ -267,8 +267,7 @@ sheets_dialog_create(void)
     {
        PluginInfo *info = plugin_list->data;
 
-       custom_type_symbol = (gpointer)dia_plugin_get_symbol (info,
-                                                             "custom_type");
+       custom_type_symbol = (gpointer)dia_plugin_get_symbol (info,"custom_type");
        if (custom_type_symbol)
          break;
     }

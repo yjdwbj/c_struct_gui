@@ -193,4 +193,12 @@ typedef struct _DiaArrowSelectorClass  DiaArrowSelectorClass;
 typedef struct _DiaFileSelector       DiaFileSelector;
 typedef struct _DiaFileSelectorClass  DiaFileSelectorClass;
 
+
+typedef struct _FactoryStructItem FactoryStructItem;
+typedef struct _FactorStructEnum FactorStructEnum;
+typedef struct _FactorStructEnumList FactorStructEnumList;
+typedef struct _FactorStructItemList  FactorStructItemList;
+typedef struct _FactorStructItemAll  FactorStructItemAll; // 2014-3-20 lcy 存放整个文件的结果,第一个为枚举,第二个存结构体
+
+
 #endif

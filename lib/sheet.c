@@ -295,6 +295,9 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
 
   /* Notify the user when we load a sheet that appears to be an updated
      version of a sheet loaded previously (i.e. from ~/.dia/sheets). */
+#ifdef DEBUG
+    int n = g_list_length(sheets);
+#endif
 
   sheetp = get_sheets_list();
   while (sheetp)
@@ -348,7 +351,7 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
     xmlFree(name);
   xmlFree(description);
 
-  for (node = contents->xmlChildrenNode ; node != NULL; node = node->next) {
+  for (node = contents->xmlChildrenNode ; node != NULL; node = node->next) {  // 2014-3-20 lcy 超长的for循环.
     SheetObject *sheet_obj;
     DiaObjectType *otype;
     gchar *iconname = NULL;
@@ -431,6 +434,7 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
 
     tmp = xmlGetProp(node, (xmlChar *)"name");
 
+
     sheet_obj = g_new(SheetObject,1);
     sheet_obj->object_type = g_strdup((char *) tmp);
     sheet_obj->description = g_strdup(objdesc);
@@ -459,7 +463,7 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
     /* set defaults */
     if (sheet_obj->pixmap_file == NULL) {
       g_assert(otype->pixmap || otype->pixmap_file);
-      sheet_obj->pixmap = otype->pixmap;
+      sheet_obj->pixmap = otype->pixmap; // 2014-3-20 lcy 这里是加xpm 的图片.
       sheet_obj->pixmap_file = otype->pixmap_file;
       sheet_obj->has_icon_on_sheet = has_icon_on_sheet;
     }
@@ -475,7 +479,7 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
        since they don't have their own description, and their icon is
        already automatically handled. */
     sheet_append_sheet_obj(sheet,sheet_obj);
-  }
+  }    // 2014-3-20 lcy 超长的for循环.
 
   if (!shadowing_sheet)
     register_sheet(sheet);

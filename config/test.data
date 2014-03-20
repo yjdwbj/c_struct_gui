@@ -1,5 +1,16 @@
-    //[1]类型:[2]变量名:[3]默认值:[4]最小值:[5]最大值:[6]中文及备注
-:Weekday
+:Enum:escapes
+{
+BELL:'\a'
+BACKSPACE:'\b'
+HTAB:'\t'
+RETURN:'\r'
+NEWLINE:'\n'
+VTAB:'\v'
+SPACE:' '
+ESC:'\8'
+}
+
+:Enum:Weekday
 {
 Monday:0
 Tuesday:1
@@ -13,34 +24,149 @@ ee:102
 ff:103
 }
 
-:DAY
+:Enum:DAY
 {
 MON:1
 TUE:2
 WED:3
-THU:4
-FRI:5
-SUN:6
+THU:'swa'
+FRI:4
+SUN:5
 }
 
 
-Struct:AEC // 结构体名.
+:Struct:AEC_Agc_A_Var
 {
-u32:dest_dac:8:3:3112: 标注错误，没有变量说明;%2%#min:1,max=30#///%(log((x^4)*32767))/log2 * 65535% 
-Weekday:workday_year_month:Monday:Monday:ff:这是一个枚举.  
-DAY:test_DAY:MON:::这是一个枚举. 
+u32:dest_dac::8:3:3112:标注错误，没有变量说明;%2%#min:1,max=30#///%(log((x^4)*32767))/log2 * 65535% 
+Weekday:workday_year_month::::: 
+u81:dest_dac_percent:标注正确:::3112:增益1 %2%#min:1,max=30#///%(log((x^4)*32767))/log2 * 65535% 
+u3:dest_adc:增益2:6:3:6500:标注正确;%2%///%(log((x^4)*32767))/log2 * 65535% 
+u82:dest_adc_percent:增益3:6:3:6500:标注正确;%2%///%(log((x^4)*32767))/log2 * 65535% 
+AA1.u1:dac_analog_gain:FarEnd_Threshold 中文说明:100:10:300:5项齐全增益;备注,取值范围 
+AA1.escapes:escape_control:星期日期该枚举变量中文说明:'\b':::掌诟妹毒俦淞恐形乃得?beizhubei备注 
+AA1.Weekday:workday_year_month:星期日期该枚举变量中文说明:WED:::日期该枚举变量中文说明;提示默认值不对beizhubei备注 
+AA1.u2:mic_analog_gain:FarEnd_Threshold 中文说明::10:300:没有默认值，4项增益;备注,取值范围 
+AA1.u3:mic_digital_gain:FarEnd_Threshold 中文说明:2:1::没有 max 增益;备注,取值范围 
+AA1.u4:aec_st_leakage_decay:FarEnd_Threshold 中文说明:2200::3000:no min 增益;备注,取值范围 
+AA1.u5:aec_st_leakage_decay:FarEnd_Threshold 中文说明::::no 默认值 no min,no max 增益;备注,取值范围 
+AA1.u62:aec_st_leakage_decay::::: 
+AA1.u72:aec_st_leakage_decay::2200:100:3000:no name 应该报错！ 增益;备注,取值范围 
+DAY:days_days:星期日期该枚举变量中文说明DAY:Thursday:::妹毒俦淞恐形乃得鱀AY;beizhubei备注 
+}
 
-u8:dest_dac_percent:8:3:3112:标注正确 增益1 %2%#min1,max=30#///%(log((x^4)*32767))/log2 * 65535% 
-u3:dest_adc:6:3:6500:增益2 标注正确;%2%///%(log((x^4)*32767))/log2 * 65535% 
-u82:dest_adc_percent:6:3:6500:增益3 标注正确;%2%///%(log((x^4)*32767))/log2 * 65535% 
-AA1.u1:dac_analog_gain:100:10:300:FarEnd_Threshold 中文说明 5项齐全增益;备注,取值范围 
-AA1.escapes:escape_control:'\b':::星期日期该枚举变量中文说明 掌诟妹毒俦淞恐形乃得?beizhubei备注 
-AA1.Weekday:workday_year_month:WED:::星期日期该枚举变量中文说明 日期该枚举变量中文说明;提示默认值不对beizhubei备注 
-#AA1.u2:mic_analog_gain::10:300:FarEnd_Threshold 中文说明 没有默认值，4项增益;备注,取值范围 
-#AA1.u3:mic_digital_gain:2:1::FarEnd_Threshold 中文说明 没有 max 增益;备注,取值范围 
-#AA1.u4:aec_st_leakage_decay:2200::3000:FarEnd_Threshold 中文说明 no min 增益;备注,取值范围 
-#AA1.u5:aec_st_leakage_decay::::FarEnd_Threshold 中文说明 no 默认值 no min,no max 增益;备注,取值范围 
-#AA1.u62:aec_st_leakage_decay::::  
-#AA1.u72:aec_st_leakage_decay:2200:100:3000: no name 应该报错！ 增益;备注,取值范围 
-#DAY:days_days:Thursday:::星期日期该枚举变量中文说明DAY 妹毒俦淞恐形乃得鱀AY;beizhubei备注 
+:Struct:AAA_GNU_PACKED_AEC_CFG
+{
+u1:dac_analog_gain:FarEnd_Threshold 中文说明:100:10:300:5项齐全增益;备注,取值范围 
+escapes:escape_control:星期日期该枚举变量中文说明:'\b':::掌诟妹毒俦淞恐形乃得?beizhubei备注 
+Weekday:workday_year_month:星期日期该枚举变量中文说明:WED:::日期该枚举变量中文说明;提示默认值不对beizhubei备注 
+u2:mic_analog_gain:FarEnd_Threshold 中文说明::10:300:没有默认值，4项增益;备注,取值范围 
+u3:mic_digital_gain:FarEnd_Threshold 中文说明:2:1::没有 max 增益;备注,取值范围 
+u4:aec_st_leakage_decay:FarEnd_Threshold 中文说明:2200::3000:no min 增益;备注,取值范围 
+u5:aec_st_leakage_decay:FarEnd_Threshold 中文说明::::no 默认值 no min,no max 增益;备注,取值范围 
+u62:aec_st_leakage_decay::::: 
+u72:aec_st_leakage_decay::2200:100:3000:no name 应该报错！ 增益;备注,取值范围 
+}
+
+:Struct:BBBAEC_First_Amplifier_A_Var
+{
+u116:gain::::: 
+u126:FarEnd_Threshold:a FarEnd_中文说明a::10:300:增益;备注,取值范围 
+A1.u1:dac_analog_gain:FarEnd_Threshold 中文说明:100:10:300:5项齐全增益;备注,取值范围 
+A1.escapes:escape_control:星期日期该枚举变量中文说明:'\b':::掌诟妹毒俦淞恐形乃得?beizhubei备注 
+A1.Weekday:workday_year_month:星期日期该枚举变量中文说明:WED:::日期该枚举变量中文说明;提示默认值不对beizhubei备注 
+A1.u2:mic_analog_gain:FarEnd_Threshold 中文说明::10:300:没有默认值，4项增益;备注,取值范围 
+A1.u3:mic_digital_gain:FarEnd_Threshold 中文说明:2:1::没有 max 增益;备注,取值范围 
+A1.u4:aec_st_leakage_decay:FarEnd_Threshold 中文说明:2200::3000:no min 增益;备注,取值范围 
+A1.u5:aec_st_leakage_decay:FarEnd_Threshold 中文说明::::no 默认值 no min,no max 增益;备注,取值范围 
+A1.u62:aec_st_leakage_decay::::: 
+A1.u72:aec_st_leakage_decay::2200:100:3000:no name 应该报错！ 增益;备注,取值范围 
+u136:NearEnd_Threshold2:b FarEnd_Threshold 中文说明:100::300:5项齐全增益;备注,取值范围 
+u146:DT_max_gain:c FarEnd_Threshold 中文说明:100:10::5项齐全增益;备注,取值范围 
+DAY:yesterday:d FarEnd_Threshold 中文说明:2:10:300:FarEnd_Threshold 中文说明;5项齐全增益;备注,取值范围 
+DAYq:tomorrow:10-300:100:1::00;e FarEnd_Threshold 中文说明; 
+}
+
+:Struct:CCCAEC_Second_Amplifier_A_Var
+{
+u18:FadeIn_Time:FarEnd_Threshold 中文说明1:10:0:100:5项齐全增益;备注,取值范围 
+u16:FadeIn_Threshold:FarEnd_Threshold 中文说明2:20:1:200:5项齐全增益;备注,取值范围 
+A2.u1:dac_analog_gain:FarEnd_Threshold 中文说明:100:10:300:5项齐全增益;备注,取值范围 
+A2.escapes:escape_control:星期日期该枚举变量中文说明:'\b':::掌诟妹毒俦淞恐形乃得?beizhubei备注 
+A2.Weekday:workday_year_month:星期日期该枚举变量中文说明:WED:::日期该枚举变量中文说明;提示默认值不对beizhubei备注 
+A2.u2:mic_analog_gain:FarEnd_Threshold 中文说明::10:300:没有默认值，4项增益;备注,取值范围 
+A2.u3:mic_digital_gain:FarEnd_Threshold 中文说明:2:1::没有 max 增益;备注,取值范围 
+A2.u4:aec_st_leakage_decay:FarEnd_Threshold 中文说明:2200::3000:no min 增益;备注,取值范围 
+A2.u5:aec_st_leakage_decay:FarEnd_Threshold 中文说明::::no 默认值 no min,no max 增益;备注,取值范围 
+A2.u62:aec_st_leakage_decay::::: 
+A2.u72:aec_st_leakage_decay::2200:100:3000:no name 应该报错！ 增益;备注,取值范围 
+B1.u116:gain::::: 
+B1.u126:FarEnd_Threshold:a FarEnd_中文说明a::10:300:增益;备注,取值范围 
+B1.A1.u1:dac_analog_gain:FarEnd_Threshold 中文说明:100:10:300:5项齐全增益;备注,取值范围 
+B1.A1.escapes:escape_control:星期日期该枚举变量中文说明:'\b':::掌诟妹毒俦淞恐形乃得?beizhubei备注 
+B1.A1.Weekday:workday_year_month:星期日期该枚举变量中文说明:WED:::日期该枚举变量中文说明;提示默认值不对beizhubei备注 
+B1.A1.u2:mic_analog_gain:FarEnd_Threshold 中文说明::10:300:没有默认值，4项增益;备注,取值范围 
+B1.A1.u3:mic_digital_gain:FarEnd_Threshold 中文说明:2:1::没有 max 增益;备注,取值范围 
+B1.A1.u4:aec_st_leakage_decay:FarEnd_Threshold 中文说明:2200::3000:no min 增益;备注,取值范围 
+B1.A1.u5:aec_st_leakage_decay:FarEnd_Threshold 中文说明::::no 默认值 no min,no max 增益;备注,取值范围 
+B1.A1.u62:aec_st_leakage_decay::::: 
+B1.A1.u72:aec_st_leakage_decay::2200:100:3000:no name 应该报错！ 增益;备注,取值范围 
+B1.u136:NearEnd_Threshold2:b FarEnd_Threshold 中文说明:100::300:5项齐全增益;备注,取值范围 
+B1.u146:DT_max_gain:c FarEnd_Threshold 中文说明:100:10::5项齐全增益;备注,取值范围 
+B1.DAY:yesterday:d FarEnd_Threshold 中文说明:2:10:300:FarEnd_Threshold 中文说明;5项齐全增益;备注,取值范围 
+B1.DAYq:tomorrow:10-300:100:1::00;e FarEnd_Threshold 中文说明; 
+D1.u16:gain:增益0::4:31:标注正确; 
+D1.u36:FarEnd_Threshold:增益0::4:31:标注正确; 
+D1.u46:max_gain:增益0::4:31:标注正确; 
+D1.My_3.u1:dac_analog_gain:FarEnd_Threshold 中文说明:100:10:300:5项齐全增益;备注,取值范围 
+D1.My_3.escapes:escape_control:星期日期该枚举变量中文说明:'\b':::掌诟妹毒俦淞恐形乃得?beizhubei备注 
+D1.My_3.Weekday:workday_year_month:星期日期该枚举变量中文说明:WED:::日期该枚举变量中文说明;提示默认值不对beizhubei备注 
+D1.My_3.u2:mic_analog_gain:FarEnd_Threshold 中文说明::10:300:没有默认值，4项增益;备注,取值范围 
+D1.My_3.u3:mic_digital_gain:FarEnd_Threshold 中文说明:2:1::没有 max 增益;备注,取值范围 
+D1.My_3.u4:aec_st_leakage_decay:FarEnd_Threshold 中文说明:2200::3000:no min 增益;备注,取值范围 
+D1.My_3.u5:aec_st_leakage_decay:FarEnd_Threshold 中文说明::::no 默认值 no min,no max 增益;备注,取值范围 
+D1.My_3.u62:aec_st_leakage_decay::::: 
+D1.My_3.u72:aec_st_leakage_decay::2200:100:3000:no name 应该报错！ 增益;备注,取值范围 
+D1.u56:min_gain:增益0::4:31:标注正确; 
+u26:max_gain:FarEnd_Threshold 中文说明3:11:3:300:5项齐全增益;备注,取值范围 
+u36:amplifer_sw:FarEnd_Threshold 中文说明4:120:5:400:5项齐全增益;备注,取值范围 
+}
+
+:Struct:DDDAEC_Third_Amplifier_A_Var
+{
+u16:gain:增益0::4:31:标注正确; 
+u36:FarEnd_Threshold:增益0::4:31:标注正确; 
+u46:max_gain:增益0::4:31:标注正确; 
+My_3.u1:dac_analog_gain:FarEnd_Threshold 中文说明:100:10:300:5项齐全增益;备注,取值范围 
+My_3.escapes:escape_control:星期日期该枚举变量中文说明:'\b':::掌诟妹毒俦淞恐形乃得?beizhubei备注 
+My_3.Weekday:workday_year_month:星期日期该枚举变量中文说明:WED:::日期该枚举变量中文说明;提示默认值不对beizhubei备注 
+My_3.u2:mic_analog_gain:FarEnd_Threshold 中文说明::10:300:没有默认值，4项增益;备注,取值范围 
+My_3.u3:mic_digital_gain:FarEnd_Threshold 中文说明:2:1::没有 max 增益;备注,取值范围 
+My_3.u4:aec_st_leakage_decay:FarEnd_Threshold 中文说明:2200::3000:no min 增益;备注,取值范围 
+My_3.u5:aec_st_leakage_decay:FarEnd_Threshold 中文说明::::no 默认值 no min,no max 增益;备注,取值范围 
+My_3.u62:aec_st_leakage_decay::::: 
+My_3.u72:aec_st_leakage_decay::2200:100:3000:no name 应该报错！ 增益;备注,取值范围 
+u56:min_gain:增益0::4:31:标注正确; 
+}
+
+:Struct:AEC_Fourth_Amplifier_A_Var
+{
+u16:FarEnd_Threshold:增益0::4:31:标注正确; 
+u1:NearEnd_Threshold:增益0:8::311:标注正确 %2%#min:1,max=30#///%(log((x^4)*32767))/log2 * 65535%=:400; 
+u116:max_gain:增益0:6:2::标注正确 %2%#min:1,max=30#///%(log((x^4)*32767))/log2 * 65535% 
+u6:min_gain:增益a::::标注正确%2%#min:1,max=30#///%(log((x^4)*32767))/log2 * 65535% 
+DAY:today::::: 
+My_2.u16:gain:增益0::4:31:标注正确; 
+My_2.u36:FarEnd_Threshold:增益0::4:31:标注正确; 
+My_2.u46:max_gain:增益0::4:31:标注正确; 
+My_2.My_3.u1:dac_analog_gain:FarEnd_Threshold 中文说明:100:10:300:5项齐全增益;备注,取值范围 
+My_2.My_3.escapes:escape_control:星期日期该枚举变量中文说明:'\b':::掌诟妹毒俦淞恐形乃得?beizhubei备注 
+My_2.My_3.Weekday:workday_year_month:星期日期该枚举变量中文说明:WED:::日期该枚举变量中文说明;提示默认值不对beizhubei备注 
+My_2.My_3.u2:mic_analog_gain:FarEnd_Threshold 中文说明::10:300:没有默认值，4项增益;备注,取值范围 
+My_2.My_3.u3:mic_digital_gain:FarEnd_Threshold 中文说明:2:1::没有 max 增益;备注,取值范围 
+My_2.My_3.u4:aec_st_leakage_decay:FarEnd_Threshold 中文说明:2200::3000:no min 增益;备注,取值范围 
+My_2.My_3.u5:aec_st_leakage_decay:FarEnd_Threshold 中文说明::::no 默认值 no min,no max 增益;备注,取值范围 
+My_2.My_3.u62:aec_st_leakage_decay::::: 
+My_2.My_3.u72:aec_st_leakage_decay::2200:100:3000:no name 应该报错！ 增益;备注,取值范围 
+My_2.u56:min_gain:增益0::4:31:标注正确; 
+DAY:tomorrow:::4:31: 
 }

@@ -159,57 +159,5 @@
       <description xml:lang="zh_HK">類別</description>
       <description xml:lang="zh_TW">類別</description>
     </object>
-    <object name="STRUCT - Class" intdata="1">
-      <description>Template class</description>
-      <description xml:lang="ast">Plantía de clase</description>
-      <description xml:lang="az">Nümunə sinifi</description>
-      <description xml:lang="be">Шаблён клясы</description>
-      <description xml:lang="bg">Шаблон за клас</description>
-      <description xml:lang="ca">Classe plantilla</description>
-      <description xml:lang="ca@valencia">Classe plantilla</description>
-      <description xml:lang="cs">Třída šablony</description>
-      <description xml:lang="da">Skabelonklasse</description>
-      <description xml:lang="de">Vorlageklasse</description>
-      <description xml:lang="dz">ཊེམ་པེལེཊི་དབྱེ་རིགས་</description>
-      <description xml:lang="el">Οντότητα προτύπου</description>
-      <description xml:lang="en_CA">Template class</description>
-      <description xml:lang="en_GB">Template class</description>
-      <description xml:lang="es">Plantilla de clase</description>
-      <description xml:lang="eu">Txantiloi-klasea</description>
-      <description xml:lang="fi">Malliluokka</description>
-      <description xml:lang="fr">Classe modèle</description>
-      <description xml:lang="gl">Clase de modelos</description>
-      <description xml:lang="gu">ટેમ્પલેટ વર્ગ</description>
-      <description xml:lang="hr">Šablonska klasa</description>
-      <description xml:lang="hu">Sablonosztály</description>
-      <description xml:lang="id">Kelas templat</description>
-      <description xml:lang="it">Classe di modello</description>
-      <description xml:lang="ja">テンプレート・クラス</description>
-      <description xml:lang="ko">서식 클래스</description>
-      <description xml:lang="lt">Šablonų klasė</description>
-      <description xml:lang="mr">साचा वर्ग</description>
-      <description xml:lang="ms">Kelas templat</description>
-      <description xml:lang="nb">Malklasse</description>
-      <description xml:lang="ne">टेम्प्लेट वर्ग</description>
-      <description xml:lang="nl">Sjabloon klasse</description>
-      <description xml:lang="nn">Malklasse</description>
-      <description xml:lang="pl">Wzorzec klasy</description>
-      <description xml:lang="pt">Classe do modelo</description>
-      <description xml:lang="pt_BR">Classe modelo</description>
-      <description xml:lang="ro">Clasă de șablon</description>
-      <description xml:lang="ru">Класс-шаблон</description>
-      <description xml:lang="sk">Trieda šablóny</description>
-      <description xml:lang="sl">Razred predlog</description>
-      <description xml:lang="sr">Шаблонска класа</description>
-      <description xml:lang="sr@Latn">Šablonska klasa</description>
-      <description xml:lang="sv">Mallklass</description>
-      <description xml:lang="tr">Şablon sınıfı</description>
-      <description xml:lang="uk">Клас-шаблон</description>
-      <description xml:lang="vi">Hạng biểu mẫu</description>
-      <description xml:lang="zh_CN">模板类</description>
-      <description xml:lang="zh_HK">樣板類別</description>
-      <description xml:lang="zh_TW">樣板類別</description>
-      <icon>STRUCT/structclass_template.png</icon>
-    </object>
   </contents>
 </sheet>

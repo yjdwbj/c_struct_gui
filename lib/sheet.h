@@ -60,6 +60,38 @@ struct _Sheet {
   GSList *objects; /* list of SheetObject */
 };
 
+
+struct _FactorStructEnum
+{
+    gchar *key;
+    gchar *value;
+};
+
+struct _FactoryStructItem{  // 这里定义一个结构的每一项需要显示的东西, 这就相当于一个模子,通读取文件上的条目来生成多少个这种表项.
+    gchar  *itemType;  // 类型
+    gchar  *itemName;   // 英文名
+    gchar  *itemCname; // 中文注释名
+    gchar  *itemValue;  // 默认值
+    gchar  *itemMin;
+    gchar  *itemMax;
+    gchar *itemComment;   // 浮动注释
+};
+struct _FactorStructEnumList{
+    gchar *name;
+    GList *list;
+};
+
+struct _FactorStructItemList{
+    gchar *name;
+    GList *list;
+    int number;
+};
+
+struct _FactorStructItemAll{
+    GList *enumList;
+    GList *structList;
+};
+
 Sheet *new_sheet(char *name, char *description, char *filename,
                  SheetScope scope, Sheet *shadowing);
 void sheet_prepend_sheet_obj(Sheet *sheet, SheetObject *type);

@@ -154,32 +154,7 @@ struct _STRUCTClassDialog {
   GtkEntry *templ_type;
 };
 
-typedef struct _FactoryStructItem FactoryStructItem;
 
-
-struct _FactoryStructItem{  // 这里定义一个结构的每一项需要显示的东西, 这就相当于一个模子,通读取文件上的条目来生成多少个这种表项.
-    gchar *itemName;
-    gchar *itemValue;
-    gchar  *itemType;
-    gchar  *itemSize;
-    gchar  *itemMin;
-    gchar  *itemMax;
-    gchar *itemComment;
-};
-
-typedef struct _FactorStructEnum FactorStructEnum;
-struct _FactorStructEnum
-{
-    gchar *key;
-    gchar *value;
-};
-
-
-typedef struct _FactorStructEnumList FactorStructEnumList;
-struct _FactorStructEnumList{
-    gchar *name;
-    GList *list;
-};
 
 
 /**
@@ -289,7 +264,7 @@ extern void structclass_sanity_check(STRUCTClass *c, gchar *msg);
 GtkWidget *
 factory_get_properties(STRUCTClass *structclass);
 
-void factoryReadDataFromFile(STRUCTClass *structclass);
+//void factoryReadDataFromFile(STRUCTClass *structclass);
 
 
 #endif /* CLASS_H */

@@ -1,54 +1,444 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <BrowseTracker_layout_file>
 	<ActiveTarget name="All" />
-	<File name="lib\dia_xml_libxml.h" open="0" top="0" tabpos="0">
-		<Cursor position="1162" topLine="10" />
+	<File name="lib\beziershape.h" open="0" top="0" tabpos="0">
+		<Cursor position="3122" topLine="58" />
 	</File>
-	<File name="lib\group.c" open="0" top="0" tabpos="4">
-		<Cursor position="2710" topLine="64" />
+	<File name="app\diagram.c" open="0" top="0" tabpos="11">
+		<Cursor position="6187" topLine="213" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="lib\prefs.h" open="0" top="0" tabpos="0">
+		<Cursor position="1001" topLine="10" />
+	</File>
+	<File name="lib\neworth_conn.h" open="0" top="0" tabpos="0">
+		<Cursor position="2247" topLine="53" />
+	</File>
+	<File name="lib\dynamic_obj.c" open="0" top="0" tabpos="0">
+		<Cursor position="1223" topLine="17" />
+	</File>
+	<File name="app\cut_n_paste.c" open="0" top="0" tabpos="0">
+		<Cursor position="1127" topLine="18" />
+	</File>
+	<File name="lib\dia_image.h" open="0" top="0" tabpos="0">
+		<Cursor position="2097" topLine="35" />
+	</File>
+	<File name="lib\boundingbox.h" open="0" top="0" tabpos="0">
+		<Cursor position="1464" topLine="36" />
+	</File>
+	<File name="app\diagram_tree.c" open="0" top="0" tabpos="0">
+		<Cursor position="6273" topLine="208" />
+	</File>
+	<File name="lib\objchange.h" open="0" top="0" tabpos="0">
+		<Cursor position="2611" topLine="51" />
+	</File>
+	<File name="app\defaults.c" open="0" top="0" tabpos="0">
+		<Cursor position="2864" topLine="79" />
+	</File>
+	<File name="lib\dia_svg.h" open="0" top="0" tabpos="0">
+		<Cursor position="1816" topLine="37" />
+	</File>
+	<File name="lib\widgets.c" open="0" top="0" tabpos="0">
+		<Cursor position="2301" topLine="73" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="lib\color.h" open="0" top="0" tabpos="2">
+		<Cursor position="1247" topLine="30" />
+	</File>
+	<File name="app\diagram_tree_menu.c" open="0" top="0" tabpos="0">
+		<Cursor position="5715" topLine="137" />
+	</File>
+	<File name="lib\prop_basic.h" open="0" top="0" tabpos="0">
+		<Cursor position="4682" topLine="79" />
+	</File>
+	<File name="lib\object.h" open="0" top="0" tabpos="6">
+		<Cursor position="22240" topLine="535" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="lib\dia_xml.h" open="0" top="0" tabpos="0">
+		<Cursor position="2672" topLine="68" />
+	</File>
+	<File name="objects\Struct\struct.c" open="1" top="0" tabpos="2">
+		<Cursor position="1002" topLine="18" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="lib\connection.h" open="0" top="0" tabpos="0">
+		<Cursor position="1629" topLine="17" />
+	</File>
+	<File name="lib\prop_dict.h" open="0" top="0" tabpos="0">
+		<Cursor position="1172" topLine="11" />
+	</File>
+	<File name="lib\orth_conn.c" open="0" top="0" tabpos="0">
+		<Cursor position="6836" topLine="260" />
+	</File>
+	<File name="lib\diaarrowchooser.c" open="0" top="0" tabpos="0">
+		<Cursor position="6375" topLine="202" />
+	</File>
+	<File name="objects\Struct\struct_class.c" open="1" top="0" tabpos="1">
+		<Cursor position="71218" topLine="1881" />
+		<BrowseMarks positions="69073,69257,69503,71345,71507" />
+		<Book_Marks positions="0,0,0,70398,69220,4359" />
+	</File>
+	<File name="lib\connectionpoint.h" open="0" top="0" tabpos="0">
+		<Cursor position="3507" topLine="0" />
+	</File>
+	<File name="app\diagram_tree_window.c" open="0" top="0" tabpos="14">
+		<Cursor position="3625" topLine="108" />
 		<BrowseMarks positions="" />
 		<Book_Marks positions="" />
 	</File>
 	<File name="lib\prop_geomtypes.h" open="0" top="0" tabpos="0">
 		<Cursor position="1998" topLine="56" />
 	</File>
-	<File name="lib\textattr.h" open="0" top="0" tabpos="0">
-		<Cursor position="912" topLine="8" />
+	<File name="lib\diacellrendererproperty.c" open="0" top="0" tabpos="0">
+		<Cursor position="11266" topLine="293" />
 	</File>
-	<File name="lib\diaarrowchooser.h" open="0" top="0" tabpos="0">
-		<Cursor position="3131" topLine="78" />
+	<File name="objects\Struct\struct_dialog.c" open="1" top="0" tabpos="5">
+		<Cursor position="13064" topLine="317" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="43562,43573,114724,16302,112546,1840,1840" />
 	</File>
-	<File name="lib\handle.h" open="0" top="0" tabpos="0">
-		<Cursor position="0" topLine="3" />
+	<File name="lib\connpoint_line.h" open="0" top="0" tabpos="0">
+		<Cursor position="1275" topLine="7" />
 	</File>
 	<File name="lib\prop_inttypes.h" open="0" top="0" tabpos="0">
 		<Cursor position="1533" topLine="37" />
 	</File>
-	<File name="app\sheets.c" open="0" top="0" tabpos="0">
-		<Cursor position="5984" topLine="329" />
+	<File name="lib\parent.c" open="0" top="0" tabpos="16">
+		<Cursor position="1050" topLine="21" />
 	</File>
-	<File name="lib\textline.h" open="0" top="0" tabpos="0">
-		<Cursor position="2073" topLine="57" />
+	<File name="objects\Struct\structformalparameter.c" open="0" top="0" tabpos="0">
+		<Cursor position="1944" topLine="84" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
 	</File>
-	<File name="app\app_procs.c" open="1" top="0" tabpos="4">
-		<Cursor position="26525" topLine="904" />
-		<BrowseMarks positions="9362" />
-		<Book_Marks positions="0,0,0,0,0,0,0,14744,0,25955,25954" />
-	</File>
-	<File name="lib\diacellrendererproperty.h" open="0" top="0" tabpos="0">
-		<Cursor position="2346" topLine="41" />
-	</File>
-	<File name="lib\intl.h" open="0" top="0" tabpos="0">
-		<Cursor position="556" topLine="2" />
+	<File name="lib\create.h" open="0" top="0" tabpos="0">
+		<Cursor position="1952" topLine="21" />
 	</File>
 	<File name="lib\prop_sdarray.h" open="0" top="0" tabpos="0">
 		<Cursor position="1441" topLine="13" />
 	</File>
+	<File name="lib\persistence.c" open="0" top="0" tabpos="18">
+		<Cursor position="20453" topLine="631" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="objects\Struct\structparameter.c" open="0" top="0" tabpos="0">
+		<Cursor position="1109" topLine="54" />
+	</File>
+	<File name="lib\debug.h" open="0" top="0" tabpos="0">
+		<Cursor position="1023" topLine="5" />
+	</File>
+	<File name="lib\prop_text.h" open="0" top="0" tabpos="0">
+		<Cursor position="1355" topLine="25" />
+	</File>
+	<File name="lib\plug-ins.c" open="0" top="0" tabpos="7">
+		<Cursor position="4919" topLine="196" />
+		<BrowseMarks positions="9454,9498" />
+		<Book_Marks positions="0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" />
+	</File>
+	<File name="app\sheets.h" open="0" top="0" tabpos="9">
+		<Cursor position="985" topLine="21" />
+	</File>
+	<File name="lib\element.c" open="0" top="0" tabpos="0">
+		<Cursor position="11859" topLine="390" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="lib\diagramdata.c" open="0" top="0" tabpos="0">
+		<Cursor position="4422" topLine="155" />
+	</File>
+	<File name="app\interface.h" open="0" top="0" tabpos="21">
+		<Cursor position="1929" topLine="47" />
+	</File>
+	<File name="objects\UML\stereotype.h" open="0" top="0" tabpos="0">
+		<Cursor position="833" topLine="5" />
+	</File>
+	<File name="app\display.h" open="0" top="0" tabpos="3">
+		<Cursor position="953" topLine="9" />
+	</File>
+	<File name="app\textedit.c" open="0" top="0" tabpos="1">
+		<Cursor position="11700" topLine="368" />
+	</File>
+	<File name="lib\prop_widgets.h" open="0" top="0" tabpos="0">
+		<Cursor position="1633" topLine="37" />
+	</File>
+	<File name="lib\filter.c" open="0" top="0" tabpos="0">
+		<Cursor position="1912" topLine="55" />
+	</File>
 	<File name="lib\diainteractiverenderer.c" open="0" top="0" tabpos="0">
 		<Cursor position="2053" topLine="43" />
 	</File>
-	<File name="lib\newgroup.h" open="0" top="0" tabpos="0">
-		<Cursor position="921" topLine="0" />
+	<File name="objects\standard\arc.c" open="0" top="0" tabpos="1">
+		<Cursor position="4555" topLine="145" />
+	</File>
+	<File name="app\textedit_tool.c" open="0" top="0" tabpos="7">
+		<Cursor position="4014" topLine="115" />
+	</File>
+	<File name="lib\propdialogs.c" open="0" top="0" tabpos="0">
+		<Cursor position="9697" topLine="312" />
+	</File>
+	<File name="lib\dialib.h" open="0" top="0" tabpos="0">
+		<Cursor position="272" topLine="0" />
+	</File>
+	<File name="app\app_procs.c" open="1" top="0" tabpos="7">
+		<Cursor position="26546" topLine="907" />
+		<BrowseMarks positions="9362" />
+		<Book_Marks positions="0,0,0,0,0,0,0,14744,0,25955,25954" />
+	</File>
+	<File name="objects\standard\beziergon.c" open="0" top="0" tabpos="0">
+		<Cursor position="3305" topLine="88" />
+	</File>
+	<File name="app\tool.c" open="0" top="0" tabpos="8">
+		<Cursor position="1028" topLine="15" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="lib\properties.h" open="0" top="0" tabpos="5">
+		<Cursor position="18951" topLine="462" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="lib\font.c" open="0" top="0" tabpos="0">
+		<Cursor position="10439" topLine="320" />
+	</File>
+	<File name="app\authors.h" open="0" top="0" tabpos="0">
+		<Cursor position="3748" topLine="87" />
+	</File>
+	<File name="lib\dialinechooser.h" open="0" top="0" tabpos="0">
+		<Cursor position="1971" topLine="42" />
+	</File>
+	<File name="objects\standard\ellipse.c" open="0" top="0" tabpos="0">
+		<Cursor position="8283" topLine="255" />
+	</File>
+	<File name="app\undo.c" open="0" top="0" tabpos="0">
+		<Cursor position="16383" topLine="655" />
+	</File>
+	<File name="lib\proplist.c" open="0" top="0" tabpos="4">
+		<Cursor position="2955" topLine="62" />
+	</File>
+	<File name="lib\geometry.c" open="0" top="0" tabpos="13">
+		<Cursor position="1146" topLine="18" />
+	</File>
+	<File name="lib\dialogs.h" open="0" top="0" tabpos="0">
+		<Cursor position="1110" topLine="0" />
+	</File>
+	<File name="app\magnify.h" open="0" top="0" tabpos="0">
+		<Cursor position="1175" topLine="16" />
+	</File>
+	<File name="objects\standard\line.c" open="0" top="0" tabpos="5">
+		<Cursor position="847" topLine="29" />
+	</File>
+	<File name="app\winmain.c" open="0" top="0" tabpos="26">
+		<Cursor position="635" topLine="22" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="lib\propoffsets.c" open="0" top="0" tabpos="0">
+		<Cursor position="2996" topLine="63" />
+	</File>
+	<File name="lib\group.c" open="0" top="0" tabpos="4">
+		<Cursor position="2710" topLine="64" />
+	</File>
+	<File name="lib\diamarshal.h" open="0" top="0" tabpos="0">
+		<Cursor position="601" topLine="10" />
+	</File>
+	<File name="app\menus.c" open="0" top="0" tabpos="24">
+		<Cursor position="36946" topLine="940" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="objects\standard\polygon.c" open="0" top="0" tabpos="22">
+		<Cursor position="5517" topLine="166" />
+	</File>
+	<File name="app\grid.h" open="0" top="0" tabpos="0">
+		<Cursor position="987" topLine="10" />
+	</File>
+	<File name="lib\arrows.c" open="0" top="0" tabpos="2">
+		<Cursor position="74937" topLine="2169" />
+	</File>
+	<File name="lib\render_pixmap.c" open="0" top="0" tabpos="0">
+		<Cursor position="2912" topLine="72" />
+	</File>
+	<File name="lib\handle.h" open="0" top="0" tabpos="0">
+		<Cursor position="0" topLine="3" />
+	</File>
+	<File name="lib\diarenderer.c" open="0" top="0" tabpos="0">
+		<Cursor position="1576" topLine="41" />
+	</File>
+	<File name="app\modify_tool.c" open="0" top="0" tabpos="5">
+		<Cursor position="2272" topLine="61" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="objects\standard\standard.c" open="0" top="0" tabpos="23">
+		<Cursor position="1733" topLine="40" />
+	</File>
+	<File name="lib\attributes.c" open="0" top="0" tabpos="0">
+		<Cursor position="711" topLine="12" />
+	</File>
+	<File name="lib\sheet.c" open="1" top="1" tabpos="9">
+		<Cursor position="4566" topLine="157" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="lib\intl.h" open="0" top="0" tabpos="0">
+		<Cursor position="556" topLine="2" />
+	</File>
+	<File name="lib\diasvgrenderer.c" open="0" top="0" tabpos="0">
+		<Cursor position="6843" topLine="237" />
+	</File>
+	<File name="app\navigation.c" open="0" top="0" tabpos="0">
+		<Cursor position="9002" topLine="259" />
+	</File>
+	<File name="objects\standard\tool-icons.h" open="0" top="0" tabpos="0">
+		<Cursor position="4755" topLine="75" />
+	</File>
+	<File name="app\gtkvwrapbox.h" open="0" top="0" tabpos="0">
+		<Cursor position="1723" topLine="36" />
+	</File>
+	<File name="lib\autoroute.c" open="0" top="0" tabpos="0">
+		<Cursor position="2832" topLine="58" />
+	</File>
+	<File name="lib\message.c" open="0" top="0" tabpos="14">
+		<Cursor position="8522" topLine="274" />
+	</File>
+	<File name="lib\diatransform.c" open="0" top="0" tabpos="0">
+		<Cursor position="1436" topLine="34" />
+	</File>
+	<File name="app\object_ops.c" open="0" top="0" tabpos="0">
+		<Cursor position="5945" topLine="225" />
+	</File>
+	<File name="plug-ins\shape\shape-export.c" open="0" top="0" tabpos="4">
+		<Cursor position="11225" topLine="349" />
+	</File>
+	<File name="lib\bezier_conn.c" open="0" top="0" tabpos="9">
+		<Cursor position="8472" topLine="289" />
+	</File>
+	<File name="lib\textattr.h" open="0" top="0" tabpos="0">
+		<Cursor position="912" topLine="8" />
+	</File>
+	<File name="lib\newgroup.c" open="0" top="0" tabpos="0">
+		<Cursor position="3349" topLine="93" />
+	</File>
+	<File name="lib\diatypes.h" open="1" top="0" tabpos="5">
+		<Cursor position="3771" topLine="118" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="6353" />
+	</File>
+	<File name="lib\dia_dirs.c" open="0" top="0" tabpos="5">
+		<Cursor position="5536" topLine="181" />
+	</File>
+	<File name="lib\beziershape.c" open="0" top="0" tabpos="0">
+		<Cursor position="18325" topLine="621" />
+	</File>
+	<File name="lib\textline.h" open="0" top="0" tabpos="0">
+		<Cursor position="2073" topLine="57" />
+	</File>
+	<File name="lib\neworth_conn.c" open="0" top="0" tabpos="0">
+		<Cursor position="10413" topLine="378" />
+	</File>
+	<File name="lib\dummy_dep.h" open="0" top="0" tabpos="0">
+		<Cursor position="747" topLine="38" />
+	</File>
+	<File name="app\plugin-manager.c" open="0" top="0" tabpos="18">
+		<Cursor position="9278" topLine="275" />
+	</File>
+	<File name="lib\dia_image.c" open="0" top="0" tabpos="0">
+		<Cursor position="7745" topLine="269" />
+	</File>
+	<File name="lib\boundingbox.c" open="0" top="0" tabpos="0">
+		<Cursor position="4370" topLine="136" />
+	</File>
+	<File name="lib\units.h" open="0" top="0" tabpos="20">
+		<Cursor position="1189" topLine="18" />
+	</File>
+	<File name="app\diagram.h" open="0" top="0" tabpos="7">
+		<Cursor position="905" topLine="9" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="lib\prop_attr.c" open="0" top="0" tabpos="0">
+		<Cursor position="2187" topLine="56" />
+	</File>
+	<File name="app\cut_n_paste.h" open="0" top="0" tabpos="0">
+		<Cursor position="895" topLine="4" />
+	</File>
+	<File name="app\preferences.c" open="0" top="0" tabpos="20">
+		<Cursor position="3178" topLine="148" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="lib\utils.h" open="0" top="0" tabpos="1">
+		<Cursor position="885" topLine="9" />
+	</File>
+	<File name="lib\color.c" open="0" top="0" tabpos="0">
+		<Cursor position="964" topLine="22" />
+	</File>
+	<File name="lib\prop_basic.c" open="0" top="0" tabpos="0">
+		<Cursor position="13010" topLine="464" />
+	</File>
+	<File name="lib\object.c" open="0" top="0" tabpos="6">
+		<Cursor position="22579" topLine="750" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="app\properties-dialog.c" open="0" top="0" tabpos="0">
+		<Cursor position="7866" topLine="247" />
+	</File>
+	<File name="lib\dia_xml.c" open="0" top="0" tabpos="0">
+		<Cursor position="10707" topLine="354" />
+	</File>
+	<File name="lib\widgets.h" open="0" top="0" tabpos="0">
+		<Cursor position="869" topLine="12" />
+	</File>
+	<File name="lib\object_defaults.c" open="0" top="0" tabpos="8">
+		<Cursor position="2580" topLine="115" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="app\recent_files.c" open="0" top="0" tabpos="0">
+		<Cursor position="3688" topLine="121" />
+	</File>
+	<File name="lib\dia_xml_libxml.h" open="0" top="0" tabpos="0">
+		<Cursor position="1162" topLine="10" />
+	</File>
+	<File name="objects\Struct\struct.h" open="0" top="0" tabpos="3">
+		<Cursor position="1396" topLine="116" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="lib\orth_conn.h" open="0" top="0" tabpos="0">
+		<Cursor position="4091" topLine="78" />
+	</File>
+	<File name="app\render_gdk.c" open="0" top="0" tabpos="0">
+		<Cursor position="2475" topLine="56" />
+	</File>
+	<File name="lib\diaarrowchooser.h" open="0" top="0" tabpos="0">
+		<Cursor position="3131" topLine="78" />
+	</File>
+	<File name="objects\Struct\struct_class.h" open="1" top="0" tabpos="2">
+		<Cursor position="8379" topLine="265" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="5471" />
+	</File>
+	<File name="lib\connpoint_line.c" open="0" top="0" tabpos="4">
+		<Cursor position="9636" topLine="342" />
+	</File>
+	<File name="lib\paper.h" open="0" top="0" tabpos="0">
+		<Cursor position="2055" topLine="27" />
+	</File>
+	<File name="lib\diacellrendererproperty.h" open="0" top="0" tabpos="0">
+		<Cursor position="2346" topLine="41" />
+	</File>
+	<File name="objects\Struct\structattribute.c" open="0" top="0" tabpos="4">
+		<Cursor position="1137" topLine="19" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
 	</File>
 	<File name="app\diapagelayout.c" open="0" top="0" tabpos="15">
 		<Cursor position="5746" topLine="179" />
@@ -56,671 +446,293 @@
 	<File name="app\sheets_dialog.c" open="0" top="0" tabpos="17">
 		<Cursor position="4109" topLine="101" />
 	</File>
-	<File name="lib\units.h" open="0" top="0" tabpos="20">
-		<Cursor position="1189" topLine="18" />
+	<File name="lib\prop_sdarray.c" open="0" top="0" tabpos="0">
+		<Cursor position="3248" topLine="91" />
 	</File>
-	<File name="app\authors.h" open="0" top="0" tabpos="0">
-		<Cursor position="3748" topLine="87" />
+	<File name="lib\parent.h" open="0" top="0" tabpos="17">
+		<Cursor position="846" topLine="8" />
 	</File>
 	<File name="lib\diaerror.h" open="0" top="0" tabpos="0">
 		<Cursor position="1036" topLine="13" />
 	</File>
-	<File name="lib\message.c" open="0" top="0" tabpos="14">
-		<Cursor position="8522" topLine="274" />
-	</File>
-	<File name="lib\autoroute.h" open="0" top="0" tabpos="0">
-		<Cursor position="922" topLine="4" />
-	</File>
-	<File name="lib\prop_text.h" open="0" top="0" tabpos="0">
-		<Cursor position="1355" topLine="25" />
-	</File>
-	<File name="lib\dialib.h" open="0" top="0" tabpos="0">
-		<Cursor position="272" topLine="0" />
-	</File>
-	<File name="lib\neworth_conn.h" open="0" top="0" tabpos="0">
-		<Cursor position="2247" topLine="53" />
-	</File>
-	<File name="app\interface.h" open="0" top="0" tabpos="21">
-		<Cursor position="1929" topLine="47" />
-	</File>
-	<File name="app\disp_callbacks.c" open="0" top="0" tabpos="8">
-		<Cursor position="30671" topLine="1025" />
-		<BrowseMarks positions="" />
-		<Book_Marks positions="" />
-	</File>
-	<File name="app\sheets_dialog_callbacks.c" open="0" top="0" tabpos="19">
-		<Cursor position="25467" topLine="769" />
-	</File>
-	<File name="lib\utils.h" open="0" top="0" tabpos="1">
-		<Cursor position="885" topLine="9" />
-	</File>
-	<File name="lib\diagdkrenderer.h" open="0" top="0" tabpos="0">
-		<Cursor position="907" topLine="26" />
-	</File>
-	<File name="lib\newgroup.c" open="0" top="0" tabpos="0">
-		<Cursor position="3349" topLine="93" />
-		<BrowseMarks positions="" />
-		<Book_Marks positions="" />
-	</File>
-	<File name="lib\bezier_conn.h" open="0" top="0" tabpos="0">
-		<Cursor position="1573" topLine="40" />
-	</File>
-	<File name="lib\prop_widgets.h" open="0" top="0" tabpos="0">
-		<Cursor position="1633" topLine="37" />
-	</File>
-	<File name="lib\dialinechooser.h" open="0" top="0" tabpos="0">
-		<Cursor position="1971" topLine="42" />
-	</File>
-	<File name="lib\objchange.h" open="0" top="0" tabpos="0">
-		<Cursor position="2611" topLine="51" />
-	</File>
-	<File name="app\splash.c" open="0" top="0" tabpos="16">
-		<Cursor position="352" topLine="6" />
-	</File>
-	<File name="lib\widgets.h" open="0" top="0" tabpos="0">
-		<Cursor position="869" topLine="12" />
-	</File>
-	<File name="lib\diagramdata.h" open="0" top="0" tabpos="0">
-		<Cursor position="4760" topLine="115" />
-	</File>
-	<File name="lib\beziershape.h" open="0" top="0" tabpos="0">
-		<Cursor position="3122" topLine="58" />
-	</File>
-	<File name="lib\dialogs.h" open="0" top="0" tabpos="0">
-		<Cursor position="1110" topLine="0" />
-	</File>
-	<File name="lib\object.h" open="0" top="0" tabpos="6">
-		<Cursor position="10555" topLine="246" />
-		<BrowseMarks positions="" />
-		<Book_Marks positions="" />
-	</File>
-	<File name="objects\Struct\struct.h" open="1" top="0" tabpos="0">
-		<Cursor position="1354" topLine="122" />
-		<BrowseMarks positions="" />
-		<Book_Marks positions="" />
-	</File>
-	<File name="lib\boundingbox.h" open="0" top="0" tabpos="0">
-		<Cursor position="1464" topLine="36" />
-	</File>
-	<File name="lib\diamarshal.h" open="0" top="0" tabpos="0">
-		<Cursor position="601" topLine="10" />
-	</File>
-	<File name="lib\orth_conn.c" open="0" top="0" tabpos="0">
-		<Cursor position="6836" topLine="260" />
-	</File>
-	<File name="objects\Struct\struct_class.h" open="0" top="0" tabpos="2">
-		<Cursor position="8559" topLine="161" />
-		<BrowseMarks positions="" />
-		<Book_Marks positions="5471" />
-	</File>
-	<File name="lib\color.h" open="0" top="0" tabpos="2">
-		<Cursor position="1247" topLine="30" />
-	</File>
-	<File name="lib\diarenderer.c" open="0" top="0" tabpos="0">
-		<Cursor position="1576" topLine="41" />
-	</File>
-	<File name="app\magnify.h" open="0" top="0" tabpos="0">
-		<Cursor position="1175" topLine="16" />
-	</File>
-	<File name="app\tool.h" open="0" top="0" tabpos="6">
-		<Cursor position="1403" topLine="30" />
-	</File>
-	<File name="objects\Struct\structattribute.c" open="1" top="0" tabpos="3">
-		<Cursor position="1951" topLine="147" />
-		<BrowseMarks positions="" />
-		<Book_Marks positions="" />
-	</File>
-	<File name="lib\connection.h" open="0" top="0" tabpos="0">
-		<Cursor position="1629" topLine="17" />
-	</File>
-	<File name="lib\diasvgrenderer.c" open="0" top="0" tabpos="0">
-		<Cursor position="6843" topLine="237" />
-	</File>
-	<File name="lib\parent.c" open="0" top="0" tabpos="16">
-		<Cursor position="1050" topLine="21" />
-	</File>
-	<File name="app\menus.c" open="0" top="0" tabpos="24">
-		<Cursor position="40495" topLine="1039" />
-	</File>
-	<File name="objects\Struct\structoperation.c" open="0" top="0" tabpos="0">
-		<Cursor position="7259" topLine="135" />
-		<BrowseMarks positions="" />
-		<Book_Marks positions="" />
-	</File>
-	<File name="lib\connectionpoint.h" open="0" top="0" tabpos="0">
-		<Cursor position="3507" topLine="0" />
-	</File>
-	<File name="lib\diatransform.c" open="0" top="0" tabpos="0">
-		<Cursor position="1436" topLine="34" />
-	</File>
-	<File name="lib\persistence.c" open="0" top="0" tabpos="18">
-		<Cursor position="6663" topLine="243" />
-	</File>
-	<File name="app\modify_tool.c" open="0" top="0" tabpos="5">
-		<Cursor position="30168" topLine="997" />
-	</File>
-	<File name="config.h" open="0" top="0" tabpos="0">
-		<Cursor position="220" topLine="1" />
-	</File>
-	<File name="app\display.c" open="0" top="0" tabpos="10">
-		<Cursor position="5997" topLine="188" />
-	</File>
-	<File name="objects\UML\class.h" open="0" top="0" tabpos="0">
-		<Cursor position="4404" topLine="128" />
-	</File>
-	<File name="objects\standard\ellipse.c" open="0" top="0" tabpos="0">
-		<Cursor position="8283" topLine="255" />
-	</File>
-	<File name="lib\connpoint_line.h" open="0" top="0" tabpos="0">
-		<Cursor position="1275" topLine="7" />
-	</File>
-	<File name="lib\diatypes.h" open="0" top="0" tabpos="5">
-		<Cursor position="3816" topLine="119" />
-	</File>
-	<File name="lib\plug-ins.c" open="0" top="0" tabpos="7">
-		<Cursor position="2096" topLine="69" />
-		<BrowseMarks positions="9454,9498" />
-		<Book_Marks positions="0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" />
-	</File>
-	<File name="app\navigation.c" open="0" top="0" tabpos="0">
-		<Cursor position="9002" topLine="259" />
-	</File>
-	<File name="lib\arrows.h" open="0" top="0" tabpos="0">
-		<Cursor position="1077" topLine="61" />
-	</File>
-	<File name="app\dynamic_refresh.c" open="0" top="0" tabpos="0">
-		<Cursor position="2380" topLine="70" />
-	</File>
-	<File name="objects\UML\uml.h" open="0" top="0" tabpos="0">
-		<Cursor position="1058" topLine="1" />
-	</File>
-	<File name="app\cut_n_paste.h" open="0" top="0" tabpos="0">
-		<Cursor position="895" topLine="4" />
-	</File>
-	<File name="app\object_ops.h" open="0" top="0" tabpos="0">
-		<Cursor position="633" topLine="33" />
-	</File>
-	<File name="objects\standard\line.c" open="0" top="0" tabpos="5">
-		<Cursor position="847" topLine="29" />
-	</File>
-	<File name="lib\create.h" open="0" top="0" tabpos="0">
-		<Cursor position="1952" topLine="21" />
-	</File>
-	<File name="lib\dummy_dep.h" open="0" top="0" tabpos="0">
-		<Cursor position="747" topLine="38" />
-	</File>
-	<File name="app\exit_dialog.c" open="0" top="0" tabpos="0">
-		<Cursor position="3237" topLine="80" />
-	</File>
-	<File name="lib\attributes.h" open="0" top="0" tabpos="0">
-		<Cursor position="1846" topLine="21" />
-	</File>
-	<File name="objects\standard\bezier.c" open="0" top="0" tabpos="0">
-		<Cursor position="4080" topLine="106" />
-		<BrowseMarks positions="" />
-		<Book_Marks positions="" />
-	</File>
-	<File name="lib\properties.c" open="0" top="0" tabpos="19">
-		<Cursor position="1324" topLine="19" />
-	</File>
-	<File name="objects\standard\polygon.c" open="0" top="0" tabpos="22">
-		<Cursor position="5517" topLine="166" />
-	</File>
-	<File name="lib\debug.h" open="0" top="0" tabpos="0">
-		<Cursor position="1023" topLine="5" />
-	</File>
-	<File name="lib\dynamic_obj.h" open="0" top="0" tabpos="0">
-		<Cursor position="1849" topLine="31" />
-	</File>
-	<File name="app\filedlg.c" open="0" top="0" tabpos="0">
-		<Cursor position="18299" topLine="557" />
-	</File>
-	<File name="objects\standard\box.c" open="0" top="0" tabpos="1">
-		<Cursor position="11995" topLine="503" />
-	</File>
-	<File name="app\dia-props.c" open="0" top="0" tabpos="0">
-		<Cursor position="8527" topLine="223" />
-	</File>
-	<File name="lib\propinternals.h" open="0" top="0" tabpos="0">
-		<Cursor position="3580" topLine="64" />
-	</File>
-	<File name="objects\standard\standard.c" open="0" top="0" tabpos="23">
-		<Cursor position="1733" topLine="40" />
-		<BrowseMarks positions="" />
-		<Book_Marks positions="" />
-	</File>
-	<File name="lib\dia-lib-icons.h" open="0" top="0" tabpos="0">
-		<Cursor position="485" topLine="435" />
-	</File>
-	<File name="lib\element.h" open="0" top="0" tabpos="0">
-		<Cursor position="2008" topLine="48" />
-	</File>
-	<File name="app\find-and-replace.c" open="0" top="0" tabpos="0">
-		<Cursor position="8917" topLine="343" />
-	</File>
-	<File name="app\diacanvas.c" open="0" top="0" tabpos="0">
-		<Cursor position="3391" topLine="82" />
-		<BrowseMarks positions="" />
-		<Book_Marks positions="" />
-	</File>
-	<File name="lib\propobject.c" open="0" top="0" tabpos="10">
-		<Cursor position="7892" topLine="283" />
-		<BrowseMarks positions="" />
-		<Book_Marks positions="" />
-	</File>
-	<File name="objects\standard\tool-icons.h" open="0" top="0" tabpos="0">
-		<Cursor position="4755" topLine="75" />
-	</File>
-	<File name="lib\dia_dirs.h" open="0" top="0" tabpos="6">
-		<Cursor position="1099" topLine="11" />
-	</File>
-	<File name="lib\filter.h" open="0" top="0" tabpos="0">
-		<Cursor position="4552" topLine="97" />
-	</File>
-	<File name="lib\prop_attr.c" open="0" top="0" tabpos="0">
-		<Cursor position="2187" topLine="56" />
-	</File>
-	<File name="app\grid.c" open="0" top="0" tabpos="25">
-		<Cursor position="1938" topLine="113" />
-	</File>
-	<File name="app\diagram.c" open="0" top="0" tabpos="11">
-		<Cursor position="1406" topLine="33" />
-	</File>
-	<File name="lib\propregistry.c" open="0" top="0" tabpos="0">
-		<Cursor position="1506" topLine="27" />
-	</File>
-	<File name="plug-ins\shape\shape-export.c" open="0" top="0" tabpos="4">
-		<Cursor position="11225" topLine="349" />
-	</File>
-	<File name="lib\dia_image.h" open="0" top="0" tabpos="0">
-		<Cursor position="2097" topLine="35" />
-	</File>
-	<File name="lib\focus.h" open="0" top="0" tabpos="0">
-		<Cursor position="1136" topLine="23" />
-	</File>
-	<File name="lib\prop_basic.c" open="0" top="0" tabpos="0">
-		<Cursor position="13010" topLine="464" />
-	</File>
-	<File name="app\diagram_tree.c" open="0" top="0" tabpos="0">
-		<Cursor position="6273" topLine="208" />
-	</File>
-	<File name="lib\render_pixmap.h" open="0" top="0" tabpos="0">
-		<Cursor position="835" topLine="3" />
-	</File>
-	<File name="lib\dia_svg.h" open="0" top="0" tabpos="0">
-		<Cursor position="1816" topLine="37" />
-	</File>
-	<File name="lib\font.h" open="0" top="0" tabpos="0">
-		<Cursor position="5690" topLine="145" />
-		<BrowseMarks positions="4552" />
-	</File>
-	<File name="app\gtkvwrapbox.c" open="0" top="0" tabpos="0">
-		<Cursor position="2772" topLine="65" />
-		<BrowseMarks positions="" />
-		<Book_Marks positions="" />
-	</File>
-	<File name="app\diagram_tree_menu.c" open="0" top="0" tabpos="0">
-		<Cursor position="5715" topLine="137" />
-	</File>
-	<File name="lib\sheet.h" open="0" top="0" tabpos="0">
-		<Cursor position="1623" topLine="46" />
-	</File>
-	<File name="lib\dia_xml.h" open="0" top="0" tabpos="0">
-		<Cursor position="2672" topLine="68" />
-	</File>
-	<File name="lib\geometry.h" open="0" top="0" tabpos="12">
-		<Cursor position="8528" topLine="310" />
-	</File>
-	<File name="lib\text.h" open="0" top="0" tabpos="0">
-		<Cursor position="2669" topLine="72" />
-	</File>
-	<File name="lib\diaarrowchooser.c" open="0" top="0" tabpos="0">
-		<Cursor position="6375" topLine="202" />
-	</File>
-	<File name="lib\group.h" open="0" top="0" tabpos="8">
-		<Cursor position="893" topLine="9" />
-	</File>
-	<File name="app\handle_ops.c" open="0" top="0" tabpos="0">
-		<Cursor position="1985" topLine="41" />
-	</File>
-	<File name="app\diagram_tree_window.c" open="0" top="0" tabpos="14">
-		<Cursor position="3710" topLine="116" />
-	</File>
-	<File name="lib\textline.c" open="0" top="0" tabpos="0">
-		<Cursor position="7708" topLine="269" />
-	</File>
-	<File name="lib\diacellrendererproperty.c" open="0" top="0" tabpos="0">
-		<Cursor position="11266" topLine="293" />
-	</File>
-	<File name="lib\intl.c" open="0" top="0" tabpos="0">
-		<Cursor position="6840" topLine="256" />
-	</File>
-	<File name="lib\prop_sdarray.c" open="0" top="0" tabpos="0">
-		<Cursor position="3248" topLine="91" />
-	</File>
 	<File name="app\highlight.c" open="0" top="0" tabpos="0">
 		<Cursor position="2382" topLine="47" />
 	</File>
-	<File name="app\sheets.h" open="0" top="0" tabpos="9">
-		<Cursor position="985" topLine="21" />
+	<File name="objects\Struct\structoperation.c" open="0" top="0" tabpos="0">
+		<Cursor position="7259" topLine="135" />
 	</File>
-	<File name="app\app_procs.h" open="0" top="0" tabpos="0">
-		<Cursor position="905" topLine="9" />
+	<File name="app\disp_callbacks.c" open="0" top="0" tabpos="8">
+		<Cursor position="30671" topLine="1025" />
 	</File>
-	<File name="lib\layer.c" open="0" top="0" tabpos="0">
-		<Cursor position="11785" topLine="372" />
+	<File name="app\sheets_dialog_callbacks.c" open="0" top="0" tabpos="19">
+		<Cursor position="57547" topLine="1852" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
 	</File>
 	<File name="lib\prop_text.c" open="0" top="0" tabpos="0">
 		<Cursor position="3622" topLine="109" />
 	</File>
-	<File name="lib\dialib.c" open="0" top="0" tabpos="0">
-		<Cursor position="2127" topLine="86" />
+	<File name="lib\persistence.h" open="0" top="0" tabpos="15">
+		<Cursor position="2678" topLine="59" />
 	</File>
-	<File name="lib\neworth_conn.c" open="0" top="0" tabpos="0">
-		<Cursor position="10413" topLine="378" />
-	</File>
-	<File name="app\interface.c" open="0" top="0" tabpos="9">
-		<Cursor position="44118" topLine="1348" />
+	<File name="app\sheets.c" open="0" top="0" tabpos="0">
+		<Cursor position="8000" topLine="257" />
 		<BrowseMarks positions="" />
 		<Book_Marks positions="" />
 	</File>
-	<File name="app\autosave.c" open="0" top="0" tabpos="5">
-		<Cursor position="3536" topLine="104" />
+	<File name="lib\dynamic_obj.h" open="0" top="0" tabpos="0">
+		<Cursor position="1849" topLine="31" />
 	</File>
-	<File name="lib\message.h" open="0" top="0" tabpos="0">
-		<Cursor position="1159" topLine="24" />
+	<File name="lib\diagdkrenderer.h" open="0" top="0" tabpos="0">
+		<Cursor position="907" topLine="26" />
 	</File>
-	<File name="lib\bezier_conn.c" open="0" top="0" tabpos="9">
-		<Cursor position="8472" topLine="289" />
+	<File name="app\interface.c" open="0" top="0" tabpos="9">
+		<Cursor position="6432" topLine="254" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="objects\UML\class.h" open="0" top="0" tabpos="0">
+		<Cursor position="4404" topLine="128" />
+	</File>
+	<File name="lib\dia-enums.h" open="0" top="0" tabpos="0">
+		<Cursor position="387" topLine="7" />
+	</File>
+	<File name="app\display.c" open="0" top="0" tabpos="10">
+		<Cursor position="8263" topLine="265" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="app\splash.c" open="0" top="0" tabpos="16">
+		<Cursor position="352" topLine="6" />
 	</File>
 	<File name="lib\prop_widgets.c" open="0" top="0" tabpos="0">
 		<Cursor position="4861" topLine="140" />
 	</File>
-	<File name="lib\dialinechooser.c" open="0" top="0" tabpos="0">
-		<Cursor position="2571" topLine="77" />
+	<File name="lib\plug-ins.h" open="0" top="0" tabpos="0">
+		<Cursor position="2407" topLine="53" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="lib\element.h" open="0" top="0" tabpos="0">
+		<Cursor position="2008" topLine="48" />
+	</File>
+	<File name="lib\diagramdata.h" open="0" top="0" tabpos="0">
+		<Cursor position="2097" topLine="66" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
 	</File>
 	<File name="app\layer_dialog.c" open="0" top="0" tabpos="22">
-		<Cursor position="4184" topLine="152" />
-	</File>
-	<File name="lib\widgets.c" open="0" top="0" tabpos="0">
-		<Cursor position="31292" topLine="1085" />
-	</File>
-	<File name="app\color_area.c" open="0" top="0" tabpos="13">
-		<Cursor position="12745" topLine="445" />
-	</File>
-	<File name="lib\diagramdata.c" open="0" top="0" tabpos="0">
-		<Cursor position="4422" topLine="155" />
-	</File>
-	<File name="lib\beziershape.c" open="0" top="0" tabpos="0">
-		<Cursor position="18325" topLine="621" />
-	</File>
-	<File name="lib\object.c" open="1" top="0" tabpos="2">
-		<Cursor position="18232" topLine="600" />
+		<Cursor position="24113" topLine="823" />
 		<BrowseMarks positions="" />
 		<Book_Marks positions="" />
 	</File>
-	<File name="app\textedit.c" open="0" top="0" tabpos="1">
-		<Cursor position="11700" topLine="368" />
+	<File name="objects\UML\uml.h" open="0" top="0" tabpos="0">
+		<Cursor position="1058" topLine="1" />
 	</File>
-	<File name="objects\Struct\struct.c" open="1" top="0" tabpos="1">
-		<Cursor position="1359" topLine="30" />
+	<File name="app\dynamic_refresh.c" open="0" top="0" tabpos="0">
+		<Cursor position="3026" topLine="90" />
 		<BrowseMarks positions="" />
 		<Book_Marks positions="" />
 	</File>
-	<File name="app\commands.c" open="0" top="0" tabpos="6">
-		<Cursor position="28903" topLine="1187" />
+	<File name="lib\poly_conn.h" open="0" top="0" tabpos="0">
+		<Cursor position="1722" topLine="30" />
 	</File>
-	<File name="lib\boundingbox.c" open="0" top="0" tabpos="0">
-		<Cursor position="4370" topLine="136" />
+	<File name="lib\filter.h" open="0" top="0" tabpos="0">
+		<Cursor position="4552" topLine="97" />
 	</File>
-	<File name="lib\object_defaults.c" open="1" top="0" tabpos="4">
-		<Cursor position="5652" topLine="182" />
+	<File name="lib\dialib.c" open="0" top="0" tabpos="0">
+		<Cursor position="2127" topLine="86" />
+	</File>
+	<File name="objects\standard\bezier.c" open="0" top="0" tabpos="0">
+		<Cursor position="4080" topLine="106" />
+	</File>
+	<File name="app\exit_dialog.c" open="0" top="0" tabpos="0">
+		<Cursor position="3237" topLine="80" />
+	</File>
+	<File name="lib\properties.c" open="0" top="0" tabpos="19">
+		<Cursor position="1324" topLine="19" />
+	</File>
+	<File name="lib\focus.h" open="0" top="0" tabpos="0">
+		<Cursor position="1136" topLine="23" />
+	</File>
+	<File name="app\app_procs.h" open="0" top="0" tabpos="0">
+		<Cursor position="893" topLine="9" />
 		<BrowseMarks positions="" />
 		<Book_Marks positions="" />
 	</File>
 	<File name="app\load_save.c" open="0" top="0" tabpos="0">
 		<Cursor position="5426" topLine="149" />
 	</File>
-	<File name="app\textedit_tool.c" open="0" top="0" tabpos="7">
-		<Cursor position="4014" topLine="115" />
+	<File name="lib\dialinechooser.c" open="0" top="0" tabpos="0">
+		<Cursor position="2571" topLine="77" />
 	</File>
-	<File name="objects\Struct\struct_class.c" open="1" top="0" tabpos="1">
-		<Cursor position="74844" topLine="2220" />
-		<BrowseMarks positions="69059,69233,69461,71276" />
-		<Book_Marks positions="0,0,70398,69220,4359" />
+	<File name="objects\standard\box.c" open="0" top="0" tabpos="1">
+		<Cursor position="11995" topLine="503" />
 	</File>
-	<File name="lib\color.c" open="0" top="0" tabpos="0">
-		<Cursor position="964" topLine="22" />
+	<File name="app\filedlg.c" open="0" top="0" tabpos="0">
+		<Cursor position="18299" topLine="557" />
 	</File>
-	<File name="lib\diamenu.h" open="0" top="0" tabpos="0">
-		<Cursor position="862" topLine="24" />
+	<File name="app\tool.h" open="0" top="0" tabpos="6">
+		<Cursor position="1403" topLine="30" />
 	</File>
-	<File name="lib\orth_conn.h" open="0" top="0" tabpos="0">
-		<Cursor position="4091" topLine="78" />
+	<File name="lib\propinternals.h" open="0" top="0" tabpos="0">
+		<Cursor position="3580" topLine="64" />
 	</File>
-	<File name="app\tool.c" open="0" top="0" tabpos="8">
-		<Cursor position="2471" topLine="76" />
+	<File name="lib\font.h" open="0" top="0" tabpos="0">
+		<Cursor position="5690" topLine="145" />
+		<BrowseMarks positions="4552" />
 	</File>
-	<File name="objects\Struct\struct_dialog.c" open="1" top="0" tabpos="2">
-		<Cursor position="113718" topLine="3231" />
-		<BrowseMarks positions="" />
-		<Book_Marks positions="0,43562,43573,114724,16302,112546" />
-	</File>
-	<File name="app\connectionpoint_ops.c" open="0" top="0" tabpos="0">
-		<Cursor position="1194" topLine="23" />
-		<BrowseMarks positions="" />
-		<Book_Marks positions="" />
-	</File>
-	<File name="lib\diarenderer.h" open="0" top="0" tabpos="0">
-		<Cursor position="2465" topLine="37" />
-	</File>
-	<File name="lib\paper.h" open="0" top="0" tabpos="0">
-		<Cursor position="2055" topLine="27" />
-	</File>
-	<File name="app\main.c" open="0" top="0" tabpos="2">
-		<Cursor position="924" topLine="12" />
-		<BrowseMarks positions="985" />
-		<Book_Marks positions="999" />
-	</File>
-	<File name="app\undo.c" open="0" top="0" tabpos="0">
-		<Cursor position="16383" topLine="655" />
-	</File>
-	<File name="objects\Struct\structformalparameter.c" open="0" top="0" tabpos="0">
-		<Cursor position="1944" topLine="103" />
-		<BrowseMarks positions="" />
-		<Book_Marks positions="" />
-	</File>
-	<File name="app\create_object.c" open="0" top="0" tabpos="7">
-		<Cursor position="5113" topLine="150" />
-		<BrowseMarks positions="" />
-		<Book_Marks positions="" />
-	</File>
-	<File name="lib\diasvgrenderer.h" open="0" top="0" tabpos="0">
-		<Cursor position="857" topLine="4" />
-	</File>
-	<File name="lib\parent.h" open="0" top="0" tabpos="17">
-		<Cursor position="846" topLine="8" />
-	</File>
-	<File name="app\menus.h" open="0" top="0" tabpos="25">
-		<Cursor position="1802" topLine="32" />
-	</File>
-	<File name="app\winmain.c" open="0" top="0" tabpos="26">
-		<Cursor position="4105" topLine="127" />
-	</File>
-	<File name="objects\Struct\structparameter.c" open="0" top="0" tabpos="0">
-		<Cursor position="1109" topLine="54" />
-		<BrowseMarks positions="" />
-		<Book_Marks positions="" />
-	</File>
-	<File name="app\cursor.c" open="0" top="0" tabpos="0">
-		<Cursor position="2209" topLine="55" />
-	</File>
-	<File name="lib\connpoint_line.c" open="0" top="0" tabpos="4">
-		<Cursor position="9636" topLine="342" />
-	</File>
-	<File name="lib\diatransform.h" open="0" top="0" tabpos="0">
-		<Cursor position="240" topLine="0" />
-	</File>
-	<File name="lib\persistence.h" open="0" top="0" tabpos="15">
-		<Cursor position="2678" topLine="59" />
-	</File>
-	<File name="app\modify_tool.h" open="0" top="0" tabpos="0">
-		<Cursor position="597" topLine="34" />
-	</File>
-	<File name="lib\arrows.c" open="0" top="0" tabpos="2">
-		<Cursor position="74937" topLine="2169" />
-	</File>
-	<File name="app\display.h" open="0" top="0" tabpos="3">
-		<Cursor position="953" topLine="9" />
-	</File>
-	<File name="objects\UML\stereotype.h" open="0" top="0" tabpos="0">
-		<Cursor position="833" topLine="5" />
-	</File>
-	<File name="app\cut_n_paste.c" open="0" top="0" tabpos="0">
-		<Cursor position="1127" topLine="18" />
-	</File>
-	<File name="app\object_ops.c" open="0" top="0" tabpos="0">
-		<Cursor position="5945" topLine="225" />
-		<BrowseMarks positions="" />
-		<Book_Marks positions="" />
+	<File name="app\autosave.c" open="0" top="0" tabpos="5">
+		<Cursor position="3536" topLine="104" />
 	</File>
 	<File name="objects\standard\image.c" open="0" top="0" tabpos="4">
 		<Cursor position="8421" topLine="257" />
 	</File>
-	<File name="lib\diavar.h" open="0" top="0" tabpos="0">
-		<Cursor position="376" topLine="0" />
+	<File name="app\find-and-replace.c" open="0" top="0" tabpos="0">
+		<Cursor position="8917" topLine="343" />
 	</File>
-	<File name="lib\plug-ins.h" open="0" top="0" tabpos="0">
-		<Cursor position="3908" topLine="87" />
+	<File name="lib\propobject.c" open="0" top="0" tabpos="10">
+		<Cursor position="7892" topLine="283" />
 	</File>
-	<File name="app\navigation.h" open="0" top="0" tabpos="0">
-		<Cursor position="527" topLine="18" />
+	<File name="lib\geometry.h" open="0" top="0" tabpos="12">
+		<Cursor position="8528" topLine="310" />
 	</File>
-	<File name="lib\attributes.c" open="0" top="0" tabpos="0">
-		<Cursor position="711" topLine="12" />
+	<File name="app\color_area.c" open="0" top="0" tabpos="13">
+		<Cursor position="12745" topLine="445" />
 	</File>
-	<File name="objects\standard\arc.c" open="0" top="0" tabpos="1">
-		<Cursor position="4555" topLine="145" />
-	</File>
-	<File name="app\defaults.c" open="0" top="0" tabpos="0">
-		<Cursor position="2864" topLine="79" />
-	</File>
-	<File name="lib\propdialogs.c" open="0" top="0" tabpos="0">
-		<Cursor position="9697" topLine="312" />
+	<File name="app\main.c" open="0" top="0" tabpos="2">
+		<Cursor position="999" topLine="12" />
+		<BrowseMarks positions="985" />
+		<Book_Marks positions="999" />
 	</File>
 	<File name="objects\standard\outline.c" open="0" top="0" tabpos="21">
 		<Cursor position="10359" topLine="290" />
 	</File>
-	<File name="lib\dynamic_obj.c" open="0" top="0" tabpos="0">
-		<Cursor position="1223" topLine="17" />
+	<File name="app\grid.c" open="0" top="0" tabpos="25">
+		<Cursor position="1938" topLine="113" />
 	</File>
-	<File name="lib\poly_conn.h" open="0" top="0" tabpos="0">
-		<Cursor position="1722" topLine="30" />
+	<File name="config.h" open="0" top="0" tabpos="0">
+		<Cursor position="220" topLine="1" />
 	</File>
-	<File name="lib\autoroute.c" open="0" top="0" tabpos="0">
-		<Cursor position="2832" topLine="58" />
+	<File name="lib\propregistry.c" open="0" top="0" tabpos="0">
+		<Cursor position="1506" topLine="27" />
 	</File>
-	<File name="objects\standard\beziergon.c" open="0" top="0" tabpos="0">
-		<Cursor position="3305" topLine="88" />
+	<File name="lib\group.h" open="0" top="0" tabpos="8">
+		<Cursor position="893" topLine="9" />
 	</File>
-	<File name="app\plugin-manager.c" open="0" top="0" tabpos="18">
-		<Cursor position="9278" topLine="275" />
+	<File name="lib\diamenu.h" open="0" top="0" tabpos="0">
+		<Cursor position="862" topLine="24" />
 	</File>
-	<File name="lib\properties.h" open="0" top="0" tabpos="5">
-		<Cursor position="13165" topLine="306" />
-		<BrowseMarks positions="" />
-		<Book_Marks positions="" />
+	<File name="app\commands.c" open="0" top="0" tabpos="6">
+		<Cursor position="28903" topLine="1187" />
+	</File>
+	<File name="app\menus.h" open="0" top="0" tabpos="25">
+		<Cursor position="1802" topLine="32" />
 	</File>
 	<File name="objects\standard\polyline.c" open="0" top="0" tabpos="23">
 		<Cursor position="15021" topLine="463" />
 	</File>
-	<File name="lib\dia-enums.h" open="0" top="0" tabpos="0">
-		<Cursor position="387" topLine="7" />
+	<File name="lib\arrows.h" open="0" top="0" tabpos="0">
+		<Cursor position="1077" topLine="61" />
 	</File>
-	<File name="lib\element.c" open="0" top="0" tabpos="0">
-		<Cursor position="9884" topLine="409" />
+	<File name="lib\render_pixmap.h" open="0" top="0" tabpos="0">
+		<Cursor position="835" topLine="3" />
+	</File>
+	<File name="lib\intl.c" open="0" top="0" tabpos="0">
+		<Cursor position="6840" topLine="256" />
+	</File>
+	<File name="lib\diarenderer.h" open="0" top="0" tabpos="0">
+		<Cursor position="2465" topLine="37" />
+	</File>
+	<File name="app\modify_tool.h" open="0" top="0" tabpos="0">
+		<Cursor position="1092" topLine="15" />
 		<BrowseMarks positions="" />
 		<Book_Marks positions="" />
-	</File>
-	<File name="lib\polyshape.h" open="0" top="0" tabpos="0">
-		<Cursor position="2305" topLine="23" />
-	</File>
-	<File name="app\preferences.c" open="0" top="0" tabpos="20">
-		<Cursor position="22488" topLine="660" />
-	</File>
-	<File name="lib\proplist.c" open="0" top="0" tabpos="4">
-		<Cursor position="2955" topLine="62" />
 	</File>
 	<File name="objects\standard\textobj.c" open="0" top="0" tabpos="8">
 		<Cursor position="0" topLine="0" />
 	</File>
-	<File name="lib\dia_dirs.c" open="0" top="0" tabpos="5">
-		<Cursor position="5536" topLine="181" />
+	<File name="app\gtkvwrapbox.c" open="0" top="0" tabpos="0">
+		<Cursor position="2772" topLine="65" />
 	</File>
-	<File name="lib\filter.c" open="0" top="0" tabpos="0">
-		<Cursor position="1912" topLine="55" />
+	<File name="lib\attributes.h" open="0" top="0" tabpos="0">
+		<Cursor position="1846" topLine="21" />
 	</File>
-	<File name="lib\prefs.h" open="0" top="0" tabpos="0">
-		<Cursor position="1001" topLine="10" />
+	<File name="lib\sheet.h" open="1" top="0" tabpos="0">
+		<Cursor position="2262" topLine="60" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
 	</File>
-	<File name="app\properties-dialog.c" open="0" top="0" tabpos="0">
-		<Cursor position="7866" topLine="247" />
+	<File name="lib\layer.c" open="0" top="0" tabpos="0">
+		<Cursor position="11785" topLine="372" />
 	</File>
-	<File name="lib\propoffsets.c" open="0" top="0" tabpos="0">
-		<Cursor position="2996" topLine="63" />
+	<File name="lib\diasvgrenderer.h" open="0" top="0" tabpos="0">
+		<Cursor position="857" topLine="4" />
+	</File>
+	<File name="app\connectionpoint_ops.c" open="0" top="0" tabpos="0">
+		<Cursor position="1194" topLine="23" />
+	</File>
+	<File name="app\navigation.h" open="0" top="0" tabpos="0">
+		<Cursor position="527" topLine="18" />
 	</File>
 	<File name="objects\standard\zigzagline.c" open="0" top="0" tabpos="9">
 		<Cursor position="9665" topLine="306" />
 	</File>
-	<File name="lib\dia_image.c" open="0" top="0" tabpos="0">
-		<Cursor position="7745" topLine="269" />
+	<File name="lib\autoroute.h" open="0" top="0" tabpos="0">
+		<Cursor position="922" topLine="4" />
 	</File>
-	<File name="app\grid.h" open="0" top="0" tabpos="0">
-		<Cursor position="987" topLine="10" />
+	<File name="lib\text.h" open="0" top="0" tabpos="0">
+		<Cursor position="2669" topLine="72" />
 	</File>
-	<File name="app\diagram.h" open="0" top="0" tabpos="7">
-		<Cursor position="915" topLine="9" />
+	<File name="app\dia-props.c" open="0" top="0" tabpos="0">
+		<Cursor position="8527" topLine="223" />
 	</File>
-	<File name="app\recent_files.c" open="0" top="0" tabpos="0">
-		<Cursor position="3688" topLine="121" />
+	<File name="lib\message.h" open="0" top="0" tabpos="0">
+		<Cursor position="1159" topLine="24" />
 	</File>
-	<File name="lib\render_pixmap.c" open="0" top="0" tabpos="0">
-		<Cursor position="2912" topLine="72" />
+	<File name="lib\diatransform.h" open="0" top="0" tabpos="0">
+		<Cursor position="240" topLine="0" />
+	</File>
+	<File name="app\create_object.c" open="0" top="0" tabpos="7">
+		<Cursor position="5113" topLine="150" />
+	</File>
+	<File name="app\object_ops.h" open="0" top="0" tabpos="0">
+		<Cursor position="633" topLine="33" />
+	</File>
+	<File name="lib\dia-lib-icons.h" open="0" top="0" tabpos="0">
+		<Cursor position="485" topLine="435" />
 	</File>
 	<File name="plug-ins\shape\shape.c" open="0" top="0" tabpos="0">
 		<Cursor position="1293" topLine="16" />
 	</File>
-	<File name="lib\font.c" open="0" top="0" tabpos="0">
-		<Cursor position="10439" topLine="320" />
+	<File name="app\handle_ops.c" open="0" top="0" tabpos="0">
+		<Cursor position="1985" topLine="41" />
 	</File>
-	<File name="lib\prop_basic.h" open="0" top="0" tabpos="0">
-		<Cursor position="4682" topLine="79" />
+	<File name="lib\bezier_conn.h" open="0" top="0" tabpos="0">
+		<Cursor position="1573" topLine="40" />
 	</File>
-	<File name="app\render_gdk.c" open="0" top="0" tabpos="0">
-		<Cursor position="2475" topLine="56" />
+	<File name="lib\textline.c" open="0" top="0" tabpos="0">
+		<Cursor position="7708" topLine="269" />
 	</File>
-	<File name="lib\sheet.c" open="1" top="1" tabpos="4">
-		<Cursor position="14411" topLine="465" />
-		<BrowseMarks positions="" />
-		<Book_Marks positions="" />
+	<File name="app\diacanvas.c" open="0" top="0" tabpos="0">
+		<Cursor position="3391" topLine="82" />
+	</File>
+	<File name="lib\polyshape.h" open="0" top="0" tabpos="0">
+		<Cursor position="2305" topLine="23" />
+	</File>
+	<File name="lib\newgroup.h" open="0" top="0" tabpos="0">
+		<Cursor position="921" topLine="0" />
+	</File>
+	<File name="lib\diavar.h" open="0" top="0" tabpos="0">
+		<Cursor position="376" topLine="0" />
+	</File>
+	<File name="app\cursor.c" open="0" top="0" tabpos="0">
+		<Cursor position="2209" topLine="55" />
+	</File>
+	<File name="lib\dia_dirs.h" open="0" top="0" tabpos="6">
+		<Cursor position="1099" topLine="11" />
 	</File>
 	<File name="plug-ins\svg\svg-import.c" open="0" top="0" tabpos="5">
 		<Cursor position="10312" topLine="335" />
-	</File>
-	<File name="lib\dia_xml.c" open="0" top="0" tabpos="0">
-		<Cursor position="10707" topLine="354" />
-		<BrowseMarks positions="" />
-		<Book_Marks positions="" />
-	</File>
-	<File name="lib\geometry.c" open="0" top="0" tabpos="13">
-		<Cursor position="1146" topLine="18" />
-	</File>
-	<File name="lib\prop_dict.h" open="0" top="0" tabpos="0">
-		<Cursor position="1172" topLine="11" />
-	</File>
-	<File name="app\gtkvwrapbox.h" open="0" top="0" tabpos="0">
-		<Cursor position="1723" topLine="36" />
-		<BrowseMarks positions="" />
-		<Book_Marks positions="" />
 	</File>
 </BrowseTracker_layout_file>

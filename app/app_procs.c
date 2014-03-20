@@ -680,7 +680,7 @@ app_init (int argc, char **argv)
 {
   static gboolean nosplash = FALSE;
   static gboolean nonew = FALSE;
-  static gboolean use_integrated_ui = FALSE;
+  static gboolean use_integrated_ui = TRUE;  // 2014-3-20 lcy 这里是一个开关,是否把工具栏与编辑区域集成在一起.
   static gboolean credits = FALSE;
   static gboolean version = FALSE;
   static gboolean verbose = FALSE;

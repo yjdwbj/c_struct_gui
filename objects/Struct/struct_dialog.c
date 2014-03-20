@@ -43,6 +43,7 @@
 #include "objchange.h"
 #include "intl.h"
 #include "struct_class.h"
+#include "sheet.h"
 
 
 
