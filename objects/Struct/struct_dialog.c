@@ -333,30 +333,34 @@ factory_create_struct_dialog(STRUCTClassDialog *dialog, FactoryStructItem *item,
   GtkTextView *itemComment;
   GtkWidget *table;
   GtkWidget *scrolledwindow;
-    GList *enumList = NULL;
-    int n  = g_list_length(dialog->enumList);
-    for (enumList = dialog->enumList;
-       enumList != NULL; enumList = enumList->next)
+  GList *enumList = NULL;
+  gboolean isEnum = FALSE;
+    for (enumList = dialog->enumList;enumList != NULL; enumList = enumList->next)
        {
+
            FactorStructEnumList *fset = enumList->data;
            if(!g_ascii_strncasecmp(item->itemType,fset->name,strlen(item->itemType)))
            {
-              columTwo = gtk_combo_box_new() ;
-              gtk_combo_box_popdown(columTwo);
-              GList *tenum = NULL;
-              for(tenum = fset->list;
-              tenum != NULL; tenum = tenum->next)
+               isEnum = TRUE;
+              columTwo = gtk_combo_box_new_text();
+              gtk_combo_box_popdown(GTK_COMBO_BOX(columTwo));
+
+              GList *tenum = fset->list;
+              for(;tenum != NULL; tenum = tenum->next)
               {
                   FactorStructEnum *o = tenum->data;
-                  gtk_combo_box_append_text(columTwo,o->key);
+                  gtk_combo_box_append_text(GTK_COMBO_BOX(columTwo),o->key);
               }
-
+              gtk_combo_box_set_active(GTK_COMBO_BOX(columTwo),0);
+                break;
            }
-           else
-            {
+
+       }
+
+       if(!isEnum) // 2014-3-20 lcy 这是不是combobox.
+       {
             columTwo = gtk_entry_new();
             gtk_entry_set_text(GTK_ENTRY(columTwo),item->itemValue);  // set default value;
-           }
        }
 
 
@@ -3202,11 +3206,11 @@ factory_get_properties(STRUCTClass *structclass)
   GtkWidget *vbox;
   GtkWidget *dialog;
   GtkTable *mainTable;
-
-   if (structclass->properties_dialog == NULL) {
-    prop_dialog = g_new(STRUCTClassDialog, 1);
-    structclass->properties_dialog = prop_dialog;
-     factoryReadDataFromFile(structclass);
+  prop_dialog = structclass->properties_dialog;
+//   if (structclass->properties_dialog == NULL) {
+//    prop_dialog = g_new(STRUCTClassDialog, 1);
+//    structclass->properties_dialog = prop_dialog;
+//     factoryReadDataFromFile(structclass);
 
     vbox = gtk_vbox_new(FALSE, 0);
     gtk_object_ref(GTK_OBJECT(vbox));
@@ -3230,12 +3234,11 @@ factory_get_properties(STRUCTClass *structclass)
     prop_dialog->mainTable = gtk_table_new(num,3,FALSE);  // 2014-3-19 lcy 根据要链表的数量,创建多少行列表.
     GList *datalist = NULL;
     int row =0;
-     for (datalist = prop_dialog->itemsData;
-       datalist != NULL; datalist = datalist->next,row++) {
+     for (datalist = prop_dialog->itemsData; datalist != NULL; datalist = datalist->next,row++) {
 
            factory_create_struct_dialog(prop_dialog,datalist->data,row);
        }
-  }
+  //}
 
   gtk_widget_show_all (structclass->properties_dialog->dialog);
   return structclass->properties_dialog->dialog;

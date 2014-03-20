@@ -203,7 +203,7 @@
 			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="All" targets="lib;app;standard;UML;svg;shape;dia;Struct;" />
+			<Add alias="All" targets="lib;app;standard;dia;Struct;" />
 			<Add alias="objects" targets="standard;UML;Struct;" />
 			<Add alias="plug-ins" targets="svg;shape;" />
 		</VirtualTargets>
@@ -212,6 +212,7 @@
 			<Add option="-g" />
 			<Add option="-std=gnu89" />
 			<Add option="-DHAVE_CONFIG_H" />
+			<Add option="-DDEBUG" />
 			<Add directory="." />
 			<Add directory="lib" />
 			<Add directory="app" />

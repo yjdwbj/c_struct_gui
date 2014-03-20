@@ -116,8 +116,8 @@ static ObjectOps structclass_ops = {
   (CopyFunc)            structclass_copy,
   (MoveFunc)            structclass_move,
   (MoveHandleFunc)      structclass_move_handle,
- // (GetPropertiesFunc)   structclass_get_properties,
-  (GetPropertiesFunc)   factory_get_properties,
+  (GetPropertiesFunc)   structclass_get_properties,
+ // (GetPropertiesFunc)   factory_get_properties,
   (ApplyPropertiesDialogFunc) _structclass_apply_props_from_dialog,
   (ObjectMenuFunc)      structclass_object_menu,
   (DescribePropsFunc)   structclass_describe_props,
@@ -1830,47 +1830,51 @@ void factoryReadDataFromFile(STRUCTClass *structclass)
     gchar* aline = NULL;
     GList *datalist = NULL;
     GList *enumlist = NULL;
+
 //     gchar *sbuf[MAX_SECTION];   // 2014-3-19 lcy 这里分几个段
     int i = 0;
     gchar *multline=NULL;
     gboolean isEmnu = FALSE;
-    FactorStructEnum kvmap;
-    FactorStructEnumList fsel;
+
+    FactorStructEnumList *fsel = NULL;
     while(fgets(filetxt,MAX_LINE,fd)!=NULL)
     {
         aline = g_strstrip(filetxt);
         if(aline[0]==':')
         {
-            fsel.name = g_locale_to_utf8(&aline[1],-1,NULL,NULL,NULL);
-            fsel.list = NULL;
+            fsel = g_new0(FactorStructEnumList,1);
+            fsel->name = g_locale_to_utf8(&aline[1],-1,NULL,NULL,NULL);
+            fsel->list = NULL;
+            //continue
         }
         else if(aline[0] == '{')
         {
             isEmnu = TRUE;
-            continue;
+            //continue;
         }
         else if(aline[0] == '}')
         {
             isEmnu = FALSE;
-            enumlist = g_list_append(enumlist,&fsel);
-            continue;
+            enumlist = g_list_append(enumlist,fsel);
+            //continue;
         }
-
-        if(isEmnu) // 2014-3-19 lcy 读取一个枚举.
+        else if(isEmnu) // 2014-3-19 lcy 读取一个枚举.
         {
+               FactorStructEnum *kvmap  = g_new0(FactorStructEnum,1);
                gchar ** sbuf=NULL;
                sbuf=  g_strsplit_set (aline,":",-1);
                 if( g_strv_length(sbuf) <2)
                 {
-                    kvmap.key = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
-                    kvmap.value = g_locale_to_utf8("0",-1,NULL,NULL,NULL);
+                    kvmap->key = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
+                    kvmap->value = g_locale_to_utf8("0",-1,NULL,NULL,NULL);
                 }
                 else
                 {
-                    kvmap.key = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
-                    kvmap.value = g_locale_to_utf8(sbuf[1],-1,NULL,NULL,NULL);
+                    kvmap->key = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
+                    kvmap->value = g_locale_to_utf8(sbuf[1],-1,NULL,NULL,NULL);
                 }
-              fsel.list =  g_list_append(fsel.list,&kvmap);
+              fsel->list  =  g_list_append(fsel->list ,kvmap);
+
               g_strfreev(sbuf);
         }
         else{
@@ -1944,7 +1948,10 @@ structclass_create(Point *startpoint,
   element_init(elem, 8, STRUCTCLASS_CONNECTIONPOINTS); /* No attribs or ops => 0 extra connectionpoints. */
 #endif
 
-  structclass->properties_dialog = NULL;
+ // structclass->properties_dialog = NULL;
+   structclass->properties_dialog =  g_new(STRUCTClassDialog, 1);
+
+   // factoryReadDataFromFile(structclass);   // 2014-3-20 lcy 在加载时读取结构体文件. 每拖一个控件进来,每读一次文件.
   fill_in_fontdata(structclass);
 
 
@@ -1955,10 +1962,10 @@ structclass_create(Point *startpoint,
   structclass->template = (GPOINTER_TO_INT(user_data)==1);
 
   if (structclass->template){
-    structclass->name = g_strdup (_("Template"));
+    structclass->name = g_strdup (_("Google")); // 2014-3-20 lcy Google
   }
   else {
-    structclass->name = g_strdup (_("Class"));
+    structclass->name = g_strdup (_("Yahoo"));  // 2014-3-20 lcy yahoo
   }
   obj->type = &structclass_type;
   obj->ops = &structclass_ops;
@@ -2385,7 +2392,9 @@ static DiaObject *structclass_load(ObjectNode obj_node, int version,
   element_init(elem, 8, STRUCTCLASS_CONNECTIONPOINTS);
 #endif
 
-  structclass->properties_dialog = NULL;
+  structclass->properties_dialog =  NULL;
+
+
 
   for (i=0;i<STRUCTCLASS_CONNECTIONPOINTS;i++) {
     obj->connections[i] = &structclass->connections[i];

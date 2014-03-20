@@ -15,15 +15,20 @@ ff:103
 
 :DAY
 {
-MON:1,
-TUE:2,
-WED:3,
-THU:4,
-FRI:5,
+MON:1
+TUE:2
+WED:3
+THU:4
+FRI:5
 SUN:6
 }
+
+
+Struct:AEC // 结构体名.
+{
 u32:dest_dac:8:3:3112: 标注错误，没有变量说明;%2%#min:1,max=30#///%(log((x^4)*32767))/log2 * 65535% 
 Weekday:workday_year_month:Monday:Monday:ff:这是一个枚举.  
+DAY:test_DAY:MON:::这是一个枚举. 
 
 u8:dest_dac_percent:8:3:3112:标注正确 增益1 %2%#min1,max=30#///%(log((x^4)*32767))/log2 * 65535% 
 u3:dest_adc:6:3:6500:增益2 标注正确;%2%///%(log((x^4)*32767))/log2 * 65535% 
@@ -38,3 +43,4 @@ AA1.Weekday:workday_year_month:WED:::星期日期该枚举变量中文说明 日期该枚举变量中
 #AA1.u62:aec_st_leakage_decay::::  
 #AA1.u72:aec_st_leakage_decay:2200:100:3000: no name 应该报错！ 增益;备注,取值范围 
 #DAY:days_days:Thursday:::星期日期该枚举变量中文说明DAY 妹毒俦淞恐形乃得鱀AY;beizhubei备注 
+}
