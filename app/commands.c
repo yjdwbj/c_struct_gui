@@ -1131,7 +1131,7 @@ dialogs_properties_callback (GtkAction *action)
   if (!dia || textedit_mode(ddisplay_active())) return;
 
   if (dia->data->selected != NULL) {
-    object_list_properties_show(dia, dia->data->selected); // 2014-3-21 lcy 这里是人右键属性.
+    object_list_properties_show(dia, dia->data->selected); // 2014-3-21 lcy 这里是右键属性.
   } else {
     diagram_properties_show(dia);
   }

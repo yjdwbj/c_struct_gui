@@ -12631,7 +12631,7 @@
 	"orth_conn.h"
 	"autoroute.h"
 
-1394620882 o:\tool\dvs50\lib\object.h
+1395402688 o:\tool\dvs50\lib\object.h
 	"diatypes.h"
 	<gtk/gtk.h>
 	"geometry.h"
@@ -13822,7 +13822,7 @@
 	"attributes.h"
 	"persistence.h"
 
-1395392738 source:o:\tool\dvs50\app\commands.c
+1395399278 source:o:\tool\dvs50\app\commands.c
 	<config.h>
 	<unistd.h>
 	<stdlib.h>
@@ -14472,7 +14472,7 @@
 	"persistence.h"
 	<io.h>
 
-1395393104 source:o:\tool\dvs50\app\properties-dialog.c
+1395404050 source:o:\tool\dvs50\app\properties-dialog.c
 	<config.h>
 	<gtk/gtk.h>
 	<gdk/gdkkeysyms.h>
@@ -15490,7 +15490,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1395395543 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1395400833 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>

@@ -3026,6 +3026,7 @@ factory_get_properties(STRUCTClass *class, gboolean is_default)
     gtk_object_sink(GTK_OBJECT(vbox));
 
     prop_dialog->dialog = vbox;
+    gtk_widget_set_name(vbox,class->name); // 2014-3-21 lcy 设置名字，用于区分不同窗体。
 
     prop_dialog->current_attr = NULL;
     prop_dialog->current_op = NULL;
@@ -3062,6 +3063,7 @@ factory_get_properties(STRUCTClass *class, gboolean is_default)
     }
 
   gtk_widget_show_all (class->properties_dialog->dialog);
+
   return class->properties_dialog->dialog;
 
 }
