@@ -53,9 +53,10 @@ structclass_dialog_free (STRUCTClassDialog *dialog)
 {
   g_list_free(dialog->deleted_connections);
   gtk_widget_destroy(dialog->dialog);
+  dialog->dialog = NULL;
   gtk_widget_destroy(dialog->mainTable); // 2014-3-19 lcy 这里是回收内存.
-  g_list_free(dialog->itemsData);
-  g_list_free(dialog->enumList);
+  g_list_free(dialog->EnumsAndStructs->enumList);
+  g_list_free(dialog->EnumsAndStructs->structList);
   /* destroy-signal destroy_properties_dialog already does 'g_free(dialog);' and more */
 }
 
@@ -331,16 +332,17 @@ factory_create_struct_dialog(STRUCTClassDialog *dialog, FactoryStructItem *item,
 {
   GtkWidget *itemName;
   GtkWidget *columTwo;
-  GtkTextView *itemComment;
-  GtkWidget *table;
-  GtkWidget *scrolledwindow;
-  GList *enumList = NULL;
+  GtkTooltips *tool_tips;
+  tool_tips = gtk_tooltips_new();
+  GList *enumList = dialog->EnumsAndStructs->enumList;
   gboolean isEnum = FALSE;
-    for (enumList = dialog->enumList;enumList != NULL; enumList = enumList->next)
+    for (;enumList != NULL; enumList = enumList->next)
        {
 
-           FactorStructEnumList *fset = enumList->data;
-           if(!g_ascii_strncasecmp(item->itemType,fset->name,strlen(item->itemType)))
+           FactoryStructEnumList *fset = enumList->data;
+           gchar **split = g_strsplit(item->itemType,".",-1);
+           int section = g_strv_length(split);
+           if(!g_ascii_strncasecmp(split[section-1],fset->name,strlen(item->itemType))) // 2014-3-21 lcy 对比最后一个点枚举名。
            {
                isEnum = TRUE;
               columTwo = gtk_combo_box_new_text();
@@ -349,12 +351,13 @@ factory_create_struct_dialog(STRUCTClassDialog *dialog, FactoryStructItem *item,
               GList *tenum = fset->list;
               for(;tenum != NULL; tenum = tenum->next)
               {
-                  FactorStructEnum *o = tenum->data;
+                  FactoryStructEnum *o = tenum->data;
                   gtk_combo_box_append_text(GTK_COMBO_BOX(columTwo),o->key);
               }
               gtk_combo_box_set_active(GTK_COMBO_BOX(columTwo),0);
                 break;
            }
+           g_strfreev(split);
 
        }
 
@@ -362,203 +365,26 @@ factory_create_struct_dialog(STRUCTClassDialog *dialog, FactoryStructItem *item,
        {
             columTwo = gtk_entry_new();
             gtk_entry_set_text(GTK_ENTRY(columTwo),item->itemValue);  // set default value;
+
        }
+        gtk_tooltips_set_tip(tool_tips,columTwo,_(item->itemComment),NULL);
 
-
-
-
-
-
-  itemName = gtk_label_new(item->itemName);
-
-  scrolledwindow = gtk_scrolled_window_new (NULL, NULL);
-  gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (scrolledwindow),
-				       GTK_SHADOW_IN);
-  itemComment = gtk_text_view_new();
-
-   set_comment(itemComment,item->itemComment);
-   gtk_text_view_set_editable (itemComment,FALSE);
-
-  gtk_container_add (GTK_CONTAINER (scrolledwindow), itemComment);
-  gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (itemComment), GTK_WRAP_WORD);
-  gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW (itemComment),FALSE);
-  gtk_widget_set_size_request(scrolledwindow, 200, 80);
-
-  gtk_table_attach_defaults(GTK_TABLE(dialog->mainTable),itemName,0,1,row,row+1);
-  gtk_table_attach_defaults(GTK_TABLE(dialog->mainTable),columTwo,1,2,row,row+1);
-  gtk_table_attach_defaults(GTK_TABLE(dialog->mainTable),scrolledwindow,2,3,row,row+1);
-
-  gtk_container_add(GTK_OBJECT(dialog->dialog),dialog->mainTable);
-
-
-}
-
-
-static
-void simple_create_page(GtkNotebook *notebook, STRUCTClass *structclass)
-{
-  STRUCTClassDialog *prop_dialog;
-  GtkWidget *page_label;
-  GtkWidget *label;
-  GtkWidget *hbox;
-  GtkWidget *hbox2;
-  GtkWidget *vbox;
-  GtkWidget *entry;
-  GtkWidget *scrolledwindow;
-  GtkWidget *checkbox;
-  GtkWidget *table;
-  GtkObject *adj;
-  GtkWidget *frame;
-  GtkWidget *list;
-  GtkWidget *scrolled_win;
-  GtkWidget *vbox2;
-  GtkWidget *omenu;
-  GtkWidget *menu;
-  GtkWidget *submenu;
-  GSList *group;
-  prop_dialog = structclass->properties_dialog;
-
-  /* Class page: */
-  page_label = gtk_label_new_with_mnemonic (_("_Class"));
-
-  vbox = gtk_vbox_new(FALSE, 5);
-  gtk_container_set_border_width (GTK_CONTAINER (vbox), 10); // 添加一个label , 在lable 上布局控件, 然后加到table 上去
-
-  table = gtk_table_new (3, 2, FALSE);
-  gtk_box_pack_start (GTK_BOX (vbox), table, FALSE, FALSE, 0);
-
-
-
-    scrolled_win = gtk_scrolled_window_new (NULL, NULL);
-  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_win),
-				  GTK_POLICY_AUTOMATIC,
-				  GTK_POLICY_AUTOMATIC);
-  gtk_box_pack_start (GTK_BOX (hbox), scrolled_win, TRUE, TRUE, 0);
-  gtk_widget_show (scrolled_win);
-
-    list = gtk_list_new ();
-  prop_dialog->attributes_list = GTK_LIST(list);
-  gtk_list_set_selection_mode (GTK_LIST (list), GTK_SELECTION_SINGLE);
-  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (scrolled_win), list);
-  gtk_container_set_focus_vadjustment (GTK_CONTAINER (list),
-				       gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (scrolled_win)));
-  gtk_widget_show (list);
-
-  gtk_signal_connect (GTK_OBJECT (list), "selection_changed",
-		      GTK_SIGNAL_FUNC(attributes_list_selection_changed_callback),
-		      structclass);
-
-   frame = gtk_frame_new(_("Attribute data"));
-  vbox2 = gtk_vbox_new(FALSE, 5);
-  gtk_container_set_border_width (GTK_CONTAINER (vbox2), 10);
-  gtk_container_add (GTK_CONTAINER (frame), vbox2);
-  gtk_widget_show(frame);
-  gtk_box_pack_start (GTK_BOX (vbox), frame, FALSE, TRUE, 0);
-
-  table = gtk_table_new (5, 2, FALSE);
-  gtk_box_pack_start (GTK_BOX (vbox2), table, FALSE, FALSE, 0);
-
-  label = gtk_label_new(_("Name:"));
-  entry = gtk_entry_new();
-  prop_dialog->attr_name = GTK_ENTRY(entry);
-  gtk_signal_connect (GTK_OBJECT (entry), "focus_out_event",
-		      GTK_SIGNAL_FUNC (attributes_update_event), structclass);
-  gtk_signal_connect (GTK_OBJECT (entry), "activate",
-		      GTK_SIGNAL_FUNC (attributes_update), structclass);
-  gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
-  gtk_table_attach (GTK_TABLE (table), label, 0,1,0,1, GTK_FILL,0, 0,0);
-  gtk_table_attach (GTK_TABLE (table), entry, 1,2,0,1, GTK_FILL | GTK_EXPAND,0, 0,2);
-
-  label = gtk_label_new(_("Type:"));
-  entry = gtk_entry_new();
-  prop_dialog->attr_type = GTK_ENTRY(entry);
-  gtk_signal_connect (GTK_OBJECT (entry), "focus_out_event",
-		      GTK_SIGNAL_FUNC (attributes_update_event), structclass);
-  gtk_signal_connect (GTK_OBJECT (entry), "activate",
-		      GTK_SIGNAL_FUNC (attributes_update), structclass);
-  gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
-  gtk_table_attach (GTK_TABLE (table), label, 0,1,1,2, GTK_FILL,0, 0,0);
-  gtk_table_attach (GTK_TABLE (table), entry, 1,2,1,2, GTK_FILL | GTK_EXPAND,0, 0,2);
-
-  label = gtk_label_new(_("Value:"));
-  entry = gtk_entry_new();
-  prop_dialog->attr_value = GTK_ENTRY(entry);
-  gtk_signal_connect (GTK_OBJECT (entry), "focus_out_event",
-		      GTK_SIGNAL_FUNC (attributes_update_event), structclass);
-  gtk_signal_connect (GTK_OBJECT (entry), "activate",
-		      GTK_SIGNAL_FUNC (attributes_update), structclass);
-  gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
-  gtk_table_attach (GTK_TABLE (table), label, 0,1,2,3, GTK_FILL,0, 0,0);
-  gtk_table_attach (GTK_TABLE (table), entry, 1,2,2,3, GTK_FILL | GTK_EXPAND,0, 0,2);
-
-  label = gtk_label_new(_("Comment:"));
-  scrolledwindow = gtk_scrolled_window_new (NULL, NULL);
-  gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (scrolledwindow),
-				       GTK_SHADOW_IN);
-  entry = gtk_text_view_new ();
-  prop_dialog->attr_comment = GTK_TEXT_VIEW(entry);
-  gtk_container_add (GTK_CONTAINER (scrolledwindow), entry);
-  gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (entry), GTK_WRAP_WORD);
-  gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW (entry),TRUE);
-  gtk_signal_connect (GTK_OBJECT (entry), "focus_out_event",
-		      GTK_SIGNAL_FUNC (attributes_update_event), structclass);
-#if 0 /* while the GtkEntry has a "activate" signal, GtkTextView does not.
-       * Maybe we should connect to "set-focus-child" instead?
-       */
-  gtk_signal_connect (GTK_OBJECT (entry), "activate",
-		      GTK_SIGNAL_FUNC (attributes_update), structclass);
-#endif
-  gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
-  gtk_table_attach (GTK_TABLE (table), label, 0,1,3,4, GTK_FILL,0, 0,0);
-  gtk_table_attach (GTK_TABLE (table), scrolledwindow, 1,2,3,4, GTK_FILL | GTK_EXPAND,0, 0,2);
-
-
-  label = gtk_label_new(_("Visibility:"));
-
-  omenu = gtk_option_menu_new ();
-  menu = gtk_menu_new ();
-  prop_dialog->attr_visible = GTK_MENU(menu);
-  prop_dialog->attr_visible_button = GTK_OPTION_MENU(omenu);
-  submenu = NULL;
-  group = NULL;
-
-  add_option_menu_item(GTK_MENU(menu), _("Public"),
-		       GTK_SIGNAL_FUNC (attributes_update),
-		       structclass, GINT_TO_POINTER(STRUCT_PUBLIC));
-  add_option_menu_item(GTK_MENU(menu), _("Private"),
-		       GTK_SIGNAL_FUNC (attributes_update),
-		       structclass, GINT_TO_POINTER(STRUCT_PRIVATE) );
-  add_option_menu_item(GTK_MENU(menu), _("Protected"),
-		       GTK_SIGNAL_FUNC (attributes_update),
-		       structclass, GINT_TO_POINTER(STRUCT_PROTECTED) );
-  add_option_menu_item(GTK_MENU(menu), _("Implementation"),
-		       GTK_SIGNAL_FUNC (attributes_update),
-		       structclass, GINT_TO_POINTER(STRUCT_IMPLEMENTATION) );
-
-  gtk_option_menu_set_menu (GTK_OPTION_MENU (omenu), menu);
-
+  itemName = gtk_label_new(item->itemCname);
+  gtk_tooltips_set_tip(tool_tips,itemName,_(item->itemComment),NULL);
+  if(  row == 0 || !(row % 2 ))
   {
-    GtkWidget * align;
-    align = gtk_alignment_new(0.0, 0.5, 0.0, 0.0);
-    gtk_container_add(GTK_CONTAINER(align), omenu);
-    gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
-    gtk_table_attach (GTK_TABLE (table), label, 0,1,4,5, GTK_FILL,0, 0,3);
-    gtk_table_attach (GTK_TABLE (table), align, 1,2,4,5, GTK_FILL,0, 0,3);
+        gtk_table_attach_defaults(GTK_TABLE(dialog->mainTable),itemName,0,1,row,row+1);
+        gtk_table_attach_defaults(GTK_TABLE(dialog->mainTable),columTwo,1,2,row,row+1);
+  }else
+  {
+        gtk_table_attach_defaults(GTK_TABLE(dialog->mainTable),itemName,2,3,row-1,row); // 2014-3-20 lcy 第三列
+        gtk_table_attach_defaults(GTK_TABLE(dialog->mainTable),columTwo,3,4,row-1,row);
   }
-
-  hbox2 = gtk_hbox_new(FALSE, 5);
-//  checkbox = gtk_check_button_new_with_label(_("Class scope"));
-//  prop_dialog->attr_class_scope = GTK_TOGGLE_BUTTON(checkbox);
-//  gtk_box_pack_start (GTK_BOX (hbox2), checkbox, TRUE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (vbox2), hbox2, FALSE, TRUE, 0);
-
-  gtk_widget_show(vbox2);
-
-  gtk_widget_show_all (vbox);
-  gtk_widget_show (page_label);
-  gtk_notebook_append_page(notebook, vbox, page_label);
-
+  gtk_container_add(GTK_OBJECT(dialog->dialog),dialog->mainTable);
 }
+
+
+
 
 static void
 class_create_page(GtkNotebook *notebook,  STRUCTClass *structclass)
@@ -1144,17 +970,6 @@ attributes_read_from_dialog(STRUCTClass *structclass,
 #if 0 /* STRUCTClass is *known* to be in an incositent state here, check later or crash ... */
   structclass_sanity_check(structclass, "Read from dialog");
 #endif
-}
-
-static void
-simple_attributes_fill_in_dialog(STRUCTClass *structclass)
-{
-  STRUCTClassDialog *prop_dialog;
-  STRUCTAttribute *attr_copy;
-  GtkWidget *list_item;
-  GList *list;
-  int i;
-
 }
 
 
@@ -3082,12 +2897,6 @@ destroy_properties_dialog (GtkWidget* widget,
 }
 
 
-static void
-factory_fill_in_dialog(STRUCTClass *structclass)
-{
-
-}
-
 
 static void
 fill_in_dialog(STRUCTClass *structclass)
@@ -3200,22 +3009,22 @@ create_dialog_pages(GtkNotebook *notebook, STRUCTClass *structclass)
 }
 
 GtkWidget *
-factory_get_properties(STRUCTClass *structclass)
+factory_get_properties(STRUCTClass *class, gboolean is_default)
 {
 
   STRUCTClassDialog *prop_dialog;
   GtkWidget *vbox;
-  GtkWidget *dialog;
   GtkTable *mainTable;
-  prop_dialog = structclass->properties_dialog;
-//   if (structclass->properties_dialog == NULL) {
-//    prop_dialog = g_new(STRUCTClassDialog, 1);
-//    structclass->properties_dialog = prop_dialog;
-//     factoryReadDataFromFile(structclass);
+   if (class->properties_dialog == NULL) {
+    prop_dialog = g_new(STRUCTClassDialog, 1);
+    class->properties_dialog = prop_dialog;
+    class->properties_dialog->EnumsAndStructs = &structList;
+   }
 
     vbox = gtk_vbox_new(FALSE, 0);
     gtk_object_ref(GTK_OBJECT(vbox));
     gtk_object_sink(GTK_OBJECT(vbox));
+
     prop_dialog->dialog = vbox;
 
     prop_dialog->current_attr = NULL;
@@ -3230,19 +3039,31 @@ factory_get_properties(STRUCTClass *structclass)
     gtk_signal_connect (GTK_OBJECT (prop_dialog->dialog),
 		        "destroy",
 			GTK_SIGNAL_FUNC(destroy_properties_dialog),
-			(gpointer) structclass);
-    int num = g_list_length(prop_dialog->itemsData);
-    prop_dialog->mainTable = gtk_table_new(num,3,FALSE);  // 2014-3-19 lcy 根据要链表的数量,创建多少行列表.
+			(gpointer) class);
+
     GList *datalist = NULL;
     int row =0;
-     for (datalist = prop_dialog->itemsData; datalist != NULL; datalist = datalist->next,row++) {
+    int col = 0;
+    GList *tlist = prop_dialog->EnumsAndStructs->structList;
+    for(;tlist != NULL;tlist = tlist->next)
+    {
+        FactoryStructItemList *fsil  = tlist->data;
+        if(0 == strcmp(fsil->name,class->name))
+        {
+            GList *item = fsil->list;
+            int num = g_list_length(item);
+            prop_dialog->mainTable = gtk_table_new(num,4,FALSE);  // 2014-3-19 lcy 根据要链表的数量,创建多少行列表.
+            for(;item != NULL ; item = item->next,row++)
+            {
+                factory_create_struct_dialog(prop_dialog,item->data,row);
+            }
+            break;
+        }
+    }
 
-           factory_create_struct_dialog(prop_dialog,datalist->data,row);
-       }
-  //}
+  gtk_widget_show_all (class->properties_dialog->dialog);
+  return class->properties_dialog->dialog;
 
-  gtk_widget_show_all (structclass->properties_dialog->dialog);
-  return structclass->properties_dialog->dialog;
 }
 
 
@@ -3264,6 +3085,7 @@ structclass_get_properties(STRUCTClass *structclass, gboolean is_default)
     vbox = gtk_vbox_new(FALSE, 0);
     gtk_object_ref(GTK_OBJECT(vbox));
     gtk_object_sink(GTK_OBJECT(vbox));
+
     prop_dialog->dialog = vbox;
 
     prop_dialog->current_attr = NULL;
@@ -3295,7 +3117,7 @@ structclass_get_properties(STRUCTClass *structclass, gboolean is_default)
     gtk_widget_show (notebook);
   }
 
-  fill_in_dialog(structclass);
+ // fill_in_dialog(structclass);
   gtk_widget_show (structclass->properties_dialog->dialog);
 
   return structclass->properties_dialog->dialog;

@@ -195,10 +195,19 @@ typedef struct _DiaFileSelectorClass  DiaFileSelectorClass;
 
 
 typedef struct _FactoryStructItem FactoryStructItem;
-typedef struct _FactorStructEnum FactorStructEnum;
-typedef struct _FactorStructEnumList FactorStructEnumList;
-typedef struct _FactorStructItemList  FactorStructItemList;
-typedef struct _FactorStructItemAll  FactorStructItemAll; // 2014-3-20 lcy 存放整个文件的结果,第一个为枚举,第二个存结构体
+typedef struct _FactoryStructEnum FactoryStructEnum;
+typedef struct _FactoryStructEnumList FactoryStructEnumList;
+typedef struct _FactoryStructItemList  FactoryStructItemList;
+struct _FactoryStructItemList{
+    gchar *name;
+    GList *list;
+    int number;
+};
 
+typedef struct _FactoryStructItemAll  FactoryStructItemAll; // 2014-3-20 lcy 存放整个文件的结果,第一个为枚举,第二个存结构体
+struct _FactoryStructItemAll{
+    GList *enumList;
+    GList *structList;
+};
 
 #endif

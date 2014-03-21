@@ -70,8 +70,9 @@ typedef struct _STRUCTClassDialog STRUCTClassDialog;
 struct _STRUCTClassDialog {
   GtkWidget *dialog;
 
-  GList *itemsData;   // 2014-3-19 lcy 这里是自定项,用存储从文件读到的条目.
-  GList *enumList;    // 2014-3-19 lcy 这里用存储枚举的链表.
+//  GList *itemsData;   // 2014-3-19 lcy 这里是自定项,用存储从文件读到的条目.
+//  GList *enumList;    // 2014-3-19 lcy 这里用存储枚举的链表.
+  FactoryStructItemAll *EnumsAndStructs ;// 2014-3-21 lcy 这里包含一个文件里的所有结构体.
   GtkWidget *mainTable; // 2014-3-19 lcy 这里添一个表格,用来布局显示.
   GtkEntry *classname;
   GtkEntry *stereotype;
@@ -262,7 +263,7 @@ attributes_list_selection_changed_callback(GtkWidget *gtklist,
 extern void structclass_sanity_check(STRUCTClass *c, gchar *msg);
 
 GtkWidget *
-factory_get_properties(STRUCTClass *structclass);
+factory_get_properties(STRUCTClass *structclass, gboolean is_default);
 
 //void factoryReadDataFromFile(STRUCTClass *structclass);
 

@@ -1031,8 +1031,8 @@ tool_button_press (GtkWidget      *w,
 
   if ((event->type == GDK_2BUTTON_PRESS) &&
       (event->button == 1)) {
-    tool_options_dialog_show (tooldata->type, tooldata->extra_data,
-                              tooldata->user_data, w, event->state&1);
+//    tool_options_dialog_show (tooldata->type, tooldata->extra_data,
+//                              tooldata->user_data, w, event->state&1); // 2014-3-21 lcy 关闭默认的人属性显示.
     return TRUE;
   }
 
@@ -1381,8 +1381,8 @@ create_sheet_dropdown_menu(GtkWidget *parent)
 //				     "Assorted");
 //  dia_dynamic_menu_add_default_entry(DIA_DYNAMIC_MENU(sheet_option_menu),
 //				     "Flowchart");
-  dia_dynamic_menu_add_default_entry(DIA_DYNAMIC_MENU(sheet_option_menu),
-				     "UML");
+//  dia_dynamic_menu_add_default_entry(DIA_DYNAMIC_MENU(sheet_option_menu),
+//				     "UML");
   dia_dynamic_menu_add_default_entry(DIA_DYNAMIC_MENU(sheet_option_menu),
 				     "STRUCT");
   /*    gtk_widget_set_size_request(sheet_option_menu, 20, -1);*/

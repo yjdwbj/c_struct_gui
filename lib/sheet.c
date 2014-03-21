@@ -39,6 +39,7 @@
 #include "object.h"
 #include "dia_dirs.h"
 
+FactoryStructItemAll structList = {NULL,NULL};
 static GSList *sheets = NULL;
 
 Sheet *
@@ -127,7 +128,7 @@ load_all_sheets(void)
 {
   char *sheet_path;
   char *home_dir;
-
+    factoryReadDataFromFile(&structList);
 //  home_dir = dia_config_filename("sheets");
 //  if (home_dir) {
 //    dia_log_message ("sheets from '%s'", home_dir);
@@ -191,6 +192,147 @@ load_sheets_from_dir(const gchar *directory, SheetScope scope)
   }
 
   g_dir_close(dp);
+}
+
+
+void factoryReadDataFromFile(FactoryStructItemAll *allstructlist)
+{
+#define MAX_LINE 1024
+#define MAX_SECTION 7
+
+    gchar *datafilepath;
+    const gchar* cfname = "test.data";
+    struct stat statbuf;
+    datafilepath = dia_get_lib_directory("config"); /// append /test.data
+    if ( stat(datafilepath, &statbuf) < 0)
+   {
+       message_error(_("Couldn't find config path "
+		  "object-libs; exiting...\n"));
+    }
+
+    char* filename = g_strconcat(datafilepath, G_DIR_SEPARATOR_S ,
+		     cfname, NULL);
+    FILE *fd;
+    if((fd =  fopen(filename,"r")) == NULL)
+    {
+         message_error(_("Couldn't open filename "
+		  "object-libs; exiting...\n"));
+    }
+
+    if(stat(filename,&statbuf) <0 )
+    {
+        message_error(_("Couldn't read  filename stats"
+		  "object-libs; exiting...\n"));
+    }
+
+
+
+    char filetxt[MAX_LINE]={'\0'};
+    gchar* aline = NULL;
+    GList *datalist = NULL;
+    GList  *structlist = NULL;
+    GList *enumlist = NULL;
+
+//     gchar *sbuf[MAX_SECTION];   // 2014-3-19 lcy 这里分几个段
+    gboolean isEmnu = FALSE;
+    gboolean isStruct = FALSE;
+
+    FactoryStructEnumList *fsel = NULL;
+    FactoryStructItemList *fssl = NULL;
+    int n = 0;
+    while(fgets(filetxt,MAX_LINE,fd)!=NULL)
+    {
+        aline = g_strstrip(filetxt);
+        if(aline[0]==':')
+        {
+            gchar ** sbuf=NULL;
+            sbuf=  g_strsplit_set (filetxt,":",-1);
+
+            if(g_strv_length(sbuf) < 3)
+            {
+                    message_error(_("This Header format is error."
+                    "object-libs; exiting...\n"));
+            }
+            if(0 == strncmp("Enum",sbuf[1],4)) // 2014-3-20 lcy 这里匹配到枚举名字.
+            {
+                isEmnu = TRUE;
+                fsel = g_new0(FactoryStructEnumList,1);
+                fsel->name = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
+                fsel->list = NULL;
+
+            }
+            else if( 0 == strncmp("Struct",sbuf[1],6)) // 2014-3-20 lcy 这里匹配到结构体名字.
+            {
+                isStruct = TRUE;
+                fssl = g_new0(FactoryStructItemList,1);
+                fssl->name = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
+                fssl->list = NULL;
+                fssl->number = n++;
+
+            }
+            g_strfreev(sbuf);
+        }
+        else if(aline[0] == '{' )
+        {
+            continue;
+        }
+        else if(aline[0] == '}')
+        {
+            if(isStruct)
+            {
+                isStruct = FALSE;
+                allstructlist->structList = g_list_append(allstructlist->structList,fssl);
+            }
+            else{
+                isEmnu = FALSE;
+                allstructlist->enumList = g_list_append(allstructlist->enumList,fsel);
+            }
+        }
+        else if(isEmnu) // 2014-3-19 lcy 读取一个枚举.
+        {
+               if(aline[0] == '/' || aline[0] == '#' || !strlen(aline))
+                continue;
+               FactoryStructEnum *kvmap  = g_new0(FactoryStructEnum,1);
+               gchar ** sbuf=NULL;
+               sbuf=  g_strsplit_set (aline,":",-1);
+                if( g_strv_length(sbuf) <2)
+                {
+                    kvmap->key = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
+                    kvmap->value = g_locale_to_utf8("0",-1,NULL,NULL,NULL);
+                }
+                else
+                {
+                    kvmap->key = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
+                    kvmap->value = g_locale_to_utf8(sbuf[1],-1,NULL,NULL,NULL);
+                }
+              fsel->list  =  g_list_append(fsel->list ,kvmap);
+              g_strfreev(sbuf);
+        }
+        else{   // 2013-3-20 lcy  这里把每一项结构体数据放进链表.
+
+         gchar ** sbuf=NULL;
+        if(aline[0] == '/' || aline[0] == '#' || !strlen(aline))
+           continue;
+         FactoryStructItem *item = g_new0(FactoryStructItem,1);
+      //  sscanf(&aline,"%[^:]:%[^:]:%[^:]:%[^:]:%[^:]:%[^:]",sbuf[0],sbuf[1],sbuf[2],sbuf[3],sbuf[4],sbuf[5]);
+       sbuf=  g_strsplit_set (filetxt,":",-1);
+
+       if( g_strv_length(sbuf) <MAX_SECTION)
+        continue;
+
+        item->itemType = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
+        item->itemName = g_locale_to_utf8(sbuf[1],-1,NULL,NULL,NULL);
+        item->itemCname = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
+        item->itemValue = g_locale_to_utf8(sbuf[3],-1,NULL,NULL,NULL);
+        item->itemMin = g_locale_to_utf8(sbuf[4],-1,NULL,NULL,NULL);
+        item->itemMax = g_locale_to_utf8(sbuf[5],-1,NULL,NULL,NULL);
+        item->itemComment = g_locale_to_utf8(sbuf[6],-1,NULL,NULL,NULL);
+        fssl->list = g_list_append(fssl->list,item);
+        g_strfreev(sbuf);
+        }
+
+    }
+    fclose(fd);
 }
 
 static void
@@ -434,14 +576,20 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
 
     tmp = xmlGetProp(node, (xmlChar *)"name");
 
+    GList *slist = structList.structList;
 
+     FactoryStructItemList *fssl = NULL;
+    for(;slist != NULL; slist = slist->next) // 2014-3-21 lcy 这里根据结构体个数创那图标.
+    {
+       fssl = slist->data;
     sheet_obj = g_new(SheetObject,1);
     sheet_obj->object_type = g_strdup((char *) tmp);
-    sheet_obj->description = g_strdup(objdesc);
-    xmlFree(objdesc); objdesc = NULL;
+    sheet_obj->description = g_strdup(fssl->name);
+//    xmlFree(objdesc);     objdesc = NULL;
 
     sheet_obj->pixmap = NULL;
-    sheet_obj->user_data = GINT_TO_POINTER(intdata); /* XXX modify user_data type ? */
+   // sheet_obj->user_data = GINT_TO_POINTER(intdata); /* XXX modify user_data type ? */
+    sheet_obj->user_data = GINT_TO_POINTER(fssl->number);
     sheet_obj->user_data_type = has_intdata ? USER_DATA_IS_INTDATA /* sure,   */
                                             : USER_DATA_IS_OTHER;  /* why not */
     sheet_obj->pixmap_file = iconname;
@@ -456,7 +604,8 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
       g_free(sheet_obj->pixmap_file);
       g_free(sheet_obj->object_type);
       g_free(sheet_obj);
-      if (tmp) xmlFree(tmp);
+      if (tmp)
+        xmlFree(tmp);
       continue;
     }
 
@@ -473,12 +622,16 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
     else
       sheet_obj->user_data_type = USER_DATA_IS_INTDATA;
 
-    if (tmp) xmlFree(tmp);
+   // if (tmp) xmlFree(tmp);
 
     /* we don't need to fix up the icon and descriptions for simple objects,
        since they don't have their own description, and their icon is
        already automatically handled. */
     sheet_append_sheet_obj(sheet,sheet_obj);
+
+    }
+    if (tmp) xmlFree(tmp);
+    xmlFree(objdesc);     objdesc = NULL;
   }    // 2014-3-20 lcy 超长的for循环.
 
   if (!shadowing_sheet)

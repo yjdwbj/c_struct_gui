@@ -39,7 +39,7 @@ static Diagram *current_dia = NULL;
 
 static GtkWidget *no_properties_dialog = NULL;
 
-static gint properties_respond(GtkWidget *widget, 
+static gint properties_respond(GtkWidget *widget,
                                gint       response_id,
                                gpointer   data);
 static gboolean properties_key_event(GtkWidget *widget,
@@ -54,7 +54,7 @@ static void create_dialog()
 
   dialog = gtk_dialog_new_with_buttons(
              _("Object properties"),
-             GTK_WINDOW (ddisplay_active()->shell), 
+             GTK_WINDOW (ddisplay_active()->shell),
              GTK_DIALOG_DESTROY_WITH_PARENT,
              GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
              GTK_STOCK_APPLY, GTK_RESPONSE_APPLY,
@@ -120,7 +120,7 @@ properties_key_event(GtkWidget *widget, GdkEventKey *event, gpointer data)
 }
 
 static gint
-properties_respond(GtkWidget *widget, 
+properties_respond(GtkWidget *widget,
                    gint       response_id,
                    gpointer   data)
 {
@@ -128,7 +128,7 @@ properties_respond(GtkWidget *widget,
   gboolean set_tp = TRUE;
   GList *tmp;
 
-  if (   response_id == GTK_RESPONSE_APPLY 
+  if (   response_id == GTK_RESPONSE_APPLY
       || response_id == GTK_RESPONSE_OK) {
     if ((current_objects != NULL) && (current_dia != NULL)) {
       object_add_updates_list(current_objects, current_dia);
@@ -138,7 +138,7 @@ properties_respond(GtkWidget *widget,
 	obj_change = current_obj->ops->apply_properties_from_dialog(current_obj, object_part);
 	object_add_updates(current_obj, current_dia);
 	diagram_update_connections_object(current_dia, current_obj, TRUE);
-    
+
 	if (obj_change != NULL) {
 	  undo_object_change(current_dia, current_obj, obj_change);
 	  set_tp = set_tp && TRUE;
@@ -147,10 +147,10 @@ properties_respond(GtkWidget *widget,
 
 	diagram_object_modified(current_dia, current_obj);
       }
-    
+
       diagram_modified(current_dia);
       diagram_update_extents(current_dia);
-      
+
       if (set_tp) {
 	undo_set_transactionpoint(current_dia->undo);
       }  else {
@@ -241,7 +241,7 @@ object_list_properties_show(Diagram *dia, GList *objects)
   if (one_obj) {
     DiaObjectType *otype = one_obj->type;
     gchar *buf;
-    
+
     buf = g_strconcat(_("Properties: "), otype->name, NULL);
     gtk_window_set_title(GTK_WINDOW(dialog), buf);
     g_free(buf);

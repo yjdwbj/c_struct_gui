@@ -60,7 +60,7 @@ typedef struct {
 
 static HoldTimeoutData hold_data = {NULL, NULL, 0};
 
-	
+
 
 static void
 object_menu_proxy(GtkWidget *widget, gpointer data)
@@ -101,7 +101,7 @@ object_menu_proxy(GtkWidget *widget, gpointer data)
 }
 
 static void
-dia_menu_free(DiaMenu *dia_menu) 
+dia_menu_free(DiaMenu *dia_menu)
 {
   if (dia_menu->app_data)
     gtk_object_destroy((GtkObject *)dia_menu->app_data);
@@ -116,8 +116,8 @@ dia_menu_free(DiaMenu *dia_menu)
   pass TRUE in separator if you want to insert a separator before the poperty
   menu item.
 */
-static void 
-add_properties_menu_item (GtkMenu *menu, gboolean separator) 
+static void
+add_properties_menu_item (GtkMenu *menu, gboolean separator)
 {
   GtkWidget *menu_item = NULL;
 
@@ -150,47 +150,48 @@ create_object_menu(DiaMenu *dia_menu)
   }
 
   /* separator below the menu title */
-  menu_item = gtk_menu_item_new();
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-  gtk_widget_show(menu_item);
+//  menu_item = gtk_menu_item_new();
+//  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+//  gtk_widget_show(menu_item);
 
-  for (i=0;i<dia_menu->num_items;i++) {
-    DiaMenuItem *item = &dia_menu->items[i];
-
-    if (item->active & DIAMENU_TOGGLE) {
-      if (item->text)
-        menu_item = gtk_check_menu_item_new_with_label(gettext(item->text));
-      else
-        menu_item = gtk_check_menu_item_new();
-      gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item),
-                                     item->active & DIAMENU_TOGGLE_ON);
-    } else {
-      if (item->text)
-        menu_item = gtk_menu_item_new_with_label(gettext(item->text));
-      else
-        menu_item = gtk_menu_item_new();
-    }
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-    gtk_widget_show(menu_item);
-    item->app_data = menu_item;
-    if ( dia_menu->items[i].callback ) {
-          /* only connect signal handler if there is actually a callback */
-      g_signal_connect (G_OBJECT (menu_item), "activate",
-                        G_CALLBACK (object_menu_proxy), &dia_menu->items[i]);
-    } else { 
-      if ( item->callback_data ) { 
-            /* This menu item is a submenu if it has no callback, but does
-             * Have callback_data. In this case the callback_data is a
-             * DiaMenu pointer for the submenu. */
-        if ( ((DiaMenu*)item->callback_data)->app_data == NULL ) {
-              /* Create the popup menu items for the submenu. */
-          create_object_menu((DiaMenu*)(item->callback_data) ) ;
-          gtk_menu_item_set_submenu( GTK_MENU_ITEM (menu_item), 
-                                     GTK_WIDGET(((DiaMenu*)(item->callback_data))->app_data));
-        }
-      }
-    }
-  }
+//  for (i=0;i<dia_menu->num_items;i++) {
+//    DiaMenuItem *item = &dia_menu->items[i];
+//
+//    if (item->active & DIAMENU_TOGGLE) {
+//      if (item->text)
+//        menu_item = gtk_check_menu_item_new_with_label(gettext(item->text));
+//      else
+//        menu_item = gtk_check_menu_item_new();
+//      gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item),
+//                                     item->active & DIAMENU_TOGGLE_ON);
+//    } else {
+//      if (item->text)
+//        menu_item = gtk_menu_item_new_with_label(gettext(item->text));
+//      else
+//        menu_item = gtk_menu_item_new();
+//    }
+//    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+//    gtk_widget_show(menu_item);
+//    item->app_data = menu_item;
+//    if ( dia_menu->items[i].callback ) {
+//          /* only connect signal handler if there is actually a callback */
+//      g_signal_connect (G_OBJECT (menu_item), "activate",
+//                        G_CALLBACK (object_menu_proxy), &dia_menu->items[i]);
+//    } else {
+//      if ( item->callback_data ) {
+//            /* This menu item is a submenu if it has no callback, but does
+//             * Have callback_data. In this case the callback_data is a
+//             * DiaMenu pointer for the submenu. */
+//        if ( ((DiaMenu*)item->callback_data)->app_data == NULL ) {
+//              /* Create the popup menu items for the submenu. */
+//          create_object_menu((DiaMenu*)(item->callback_data) ) ;
+//          gtk_menu_item_set_submenu( GTK_MENU_ITEM (menu_item),
+//                                     GTK_WIDGET(((DiaMenu*)(item->callback_data))->app_data));
+//        }
+//      }
+//    }
+//  }
+        // 2014-3-21 lcy 这里注释掉 中间一个菜单项.
 
   /* Finally add a Properties... menu item for objects*/
   add_properties_menu_item(GTK_MENU (menu), i > 0);
@@ -217,22 +218,23 @@ popup_object_menu(DDisplay *ddisp, GdkEventButton *bevent)
   GList *selected_list;
   int i;
   int num_items;
-  
+
   diagram = ddisp->diagram;
   if (g_list_length (diagram->data->selected) < 1)
     return;
-  
-  selected_list = diagram->data->selected;
-  
+
+
+  selected_list = diagram->data->selected; // 2014-3-21 lcy 这里是选择的对像个数,可以单选和多选.
+
   /* Have to have exactly one selected object */
   if (selected_list == NULL) {
     message_error("Selected list is %s while selected_count is %d\n",
 		  (selected_list?"long":"empty"), g_list_length (diagram->data->selected));
     return;
   }
-  
+
   obj = (DiaObject *)g_list_first(selected_list)->data;
-  
+
   /* Possibly react differently at a handle? */
 
   /* Get its menu, and remember the # of object-generated items */
@@ -274,7 +276,7 @@ popup_object_menu(DDisplay *ddisp, GdkEventButton *bevent)
 
   menu = GTK_MENU(dia_menu->app_data);
   /* add the properties menu item to raise the properties from the contextual menu */
-  
+
   gtk_menu_popup(menu, NULL, NULL, NULL, NULL, bevent->button, bevent->time);
 }
 
@@ -292,7 +294,7 @@ ddisplay_focus_in_event(GtkWidget *widget, GdkEventFocus *event, gpointer data)
   GTK_WIDGET_SET_FLAGS(widget, GTK_HAS_FOCUS);
 
   gtk_im_context_focus_in(GTK_IM_CONTEXT(ddisp->im_context));
-  
+
   return FALSE;
 }
 
@@ -301,7 +303,7 @@ ddisplay_focus_out_event(GtkWidget *widget, GdkEventFocus *event,gpointer data)
 {
   DDisplay *ddisp;
   int return_val;
-  
+
   g_return_val_if_fail (widget != NULL, FALSE);
   g_return_val_if_fail (event != NULL, FALSE);
   g_return_val_if_fail (data != NULL, FALSE);
@@ -335,7 +337,7 @@ void
 ddisplay_unrealize (GtkWidget *widget, gpointer data)
 {
   DDisplay *ddisp;
-  
+
   g_return_if_fail (widget != NULL);
   g_return_if_fail (data != NULL);
 
@@ -375,9 +377,9 @@ ddisplay_popup_menu(DDisplay *ddisp, GdkEventButton *event)
   gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL,
 		 event->button, event->time);
 }
-static void 
+static void
 handle_key_event(DDisplay *ddisp, Focus *focus, guint keysym,
-                 const gchar *str, int strlen) 
+                 const gchar *str, int strlen)
 {
   DiaObject *obj = focus_get_object(focus);
   Point p = obj->position;
@@ -385,15 +387,15 @@ handle_key_event(DDisplay *ddisp, Focus *focus, guint keysym,
   gboolean modified;
 
   object_add_updates(obj, ddisp->diagram);
-  
+
   modified = (focus->key_event)(focus, keysym, str, strlen,
 				&obj_change);
 
   /* Make sure object updates its data and its connected: */
   p = obj->position;
-  (obj->ops->move)(obj,&p);  
+  (obj->ops->move)(obj,&p);
   diagram_update_connections_object(ddisp->diagram,obj,TRUE);
-	  
+
   object_add_updates(obj, ddisp->diagram);
 
   if (modified) {
@@ -407,11 +409,11 @@ handle_key_event(DDisplay *ddisp, Focus *focus, guint keysym,
 
   diagram_flush(ddisp->diagram);
 }
-  
 
-void 
+
+void
 ddisplay_im_context_commit(GtkIMContext *context, const gchar  *str,
-                           DDisplay     *ddisp) 
+                           DDisplay     *ddisp)
 {
       /* When using IM, we'll not get many key events past the IM filter,
          mostly IM Commits.
@@ -419,24 +421,24 @@ ddisplay_im_context_commit(GtkIMContext *context, const gchar  *str,
          regardless of the platform, "str" should be a clean UTF8 string
          (the default IM on X should perform the local->UTF8 conversion)
       */
-      
+
   Focus *focus = get_active_focus((DiagramData *) ddisp->diagram);
 
   ddisplay_im_context_preedit_reset(ddisp, focus);
-  
+
   if (focus != NULL)
     handle_key_event(ddisp, focus, 0, str, g_utf8_strlen(str,-1));
 }
 
-void 
+void
 ddisplay_im_context_preedit_changed(GtkIMContext *context,
-                                    DDisplay *ddisp) 
+                                    DDisplay *ddisp)
 {
   gint cursor_pos;
   Focus *focus = get_active_focus((DiagramData *) ddisp->diagram);
 
   ddisplay_im_context_preedit_reset(ddisp, focus);
-  
+
   gtk_im_context_get_preedit_string(context, &ddisp->preedit_string,
                                     &ddisp->preedit_attrs, &cursor_pos);
   if (ddisp->preedit_string != NULL) {
@@ -499,8 +501,8 @@ _scroll_step (DDisplay *ddisp, guint keyval)
 
 /** Cleanup/Remove Timeout Handler for Button Press and Hold
  */
-static void 
-hold_remove_handler(void) 
+static void
+hold_remove_handler(void)
 {
   if (hold_data.tag != 0) {
     g_source_remove(hold_data.tag);
@@ -515,8 +517,8 @@ hold_remove_handler(void)
  * the pointer (mouse).
  * Dynamic data is cleaned up in ddisplay_canvas_events
  */
-static gboolean 
-hold_timeout_handler(gpointer data) 
+static gboolean
+hold_timeout_handler(gpointer data)
 {
   if (active_tool->button_hold_func)
     (*active_tool->button_hold_func) (active_tool, (GdkEventButton *)(hold_data.event), hold_data.ddisp);
@@ -550,10 +552,10 @@ ddisplay_canvas_events (GtkWidget *canvas,
   int new_size;
   int im_context_used;
   static gboolean moving = FALSE;
-  
+
   return_val = FALSE;
- 
-  if (!canvas->window) 
+
+  if (!canvas->window)
     return FALSE;
 
   switch (event->type)
@@ -580,13 +582,13 @@ ddisplay_canvas_events (GtkWidget *canvas,
 		  /* zooming with the wheel in small steps 1^(1/8) */
                   ddisplay_zoom_centered(ddisp, &middle, 1.090508);
               }
-              else 
+              else
                   ddisplay_scroll_up(ddisp);
               break;
             case GDK_SCROLL_DOWN:
               if (sevent->state & GDK_SHIFT_MASK)
                   ddisplay_scroll_right(ddisp);
-              else if (sevent->state & GDK_CONTROL_MASK) { 
+              else if (sevent->state & GDK_CONTROL_MASK) {
                   ddisplay_untransform_coords(ddisp, (int)sevent->x, (int)sevent->y, &middle.x, &middle.y);
 		  /* zooming with the wheel in small steps 1/(1^(1/8)) */
                   ddisplay_zoom_centered(ddisp, &middle, 0.917004);
@@ -733,7 +735,7 @@ ddisplay_canvas_events (GtkWidget *canvas,
         {
             case 1:
 	      if (moving)
-  		moving = FALSE;		      
+  		moving = FALSE;
               if (active_tool->button_release_func)
                 (*active_tool->button_release_func) (active_tool,
                                                      bevent, ddisp);
@@ -745,7 +747,7 @@ ddisplay_canvas_events (GtkWidget *canvas,
 	      if (transient_tool) {
 	        (*transient_tool->button_release_func) (transient_tool,
   	                                             bevent, ddisp);
-								
+
 	        tool_free(transient_tool);
 	        transient_tool = NULL;
 	      }
@@ -773,14 +775,14 @@ ddisplay_canvas_events (GtkWidget *canvas,
           mevent->state = tmask;
           mevent->is_hint = FALSE;
         }
-        if (transient_tool && (*transient_tool->motion_func)) 
+        if (transient_tool && (*transient_tool->motion_func))
           (*transient_tool->motion_func) (transient_tool, mevent, ddisp);
         else if (active_tool->motion_func)
           (*active_tool->motion_func) (active_tool, mevent, ddisp);
         break;
 
       case GDK_KEY_PRESS:
-	if (moving)	/*Disable Keyboard accels whilst draggin an object*/ 
+	if (moving)	/*Disable Keyboard accels whilst draggin an object*/
 		break;
         display_set_active(ddisp);
         kevent = (GdkEventKey *)event;
@@ -798,7 +800,7 @@ ddisplay_canvas_events (GtkWidget *canvas,
 
 	    if (!gtk_im_context_filter_keypress(
 		  GTK_IM_CONTEXT(ddisp->im_context), kevent)) {
-	      
+
 	      switch (kevent->keyval) {
 		  case GDK_Tab:
 		    focus = textedit_move_focus(ddisp, focus,
@@ -814,7 +816,7 @@ ddisplay_canvas_events (GtkWidget *canvas,
 		    /*! key event not swallowed by the input method ? */
 		    handle_key_event(ddisp, focus, kevent->keyval,
 				     kevent->string, kevent->length);
-		    
+
 		    diagram_flush(ddisp->diagram);
 	      }
 	    }
@@ -826,12 +828,12 @@ ddisplay_canvas_events (GtkWidget *canvas,
                * shouldn't break im_context handling. How to test?    --hb
                */
         if (!key_handled && (state & (GDK_CONTROL_MASK | GDK_MOD1_MASK))) {
-#else            
+#else
         if (!key_handled) {
 #endif
               /* IM doesn't need receive keys, take care of it ourselves. */
           return_val = TRUE;
-          
+
           switch(kevent->keyval) {
 	      case GDK_Home :
 	        /* match upper left corner of the diagram with it's view */
@@ -842,8 +844,8 @@ ddisplay_canvas_events (GtkWidget *canvas,
 	      case GDK_End :
 	        /* match lower right corner of the diagram with it's view */
 		visible = &ddisp->visible;
-		ddisplay_set_origo(ddisp, 
-		                   ddisp->diagram->data->extents.right - (visible->right - visible->left), 
+		ddisplay_set_origo(ddisp,
+		                   ddisp->diagram->data->extents.right - (visible->right - visible->left),
 				   ddisp->diagram->data->extents.bottom - (visible->bottom - visible->top));
 		ddisplay_update_scrollbars(ddisp);
 		ddisplay_add_update_all(ddisp);
@@ -865,13 +867,13 @@ ddisplay_canvas_events (GtkWidget *canvas,
 				  GDK_Down == kevent->keyval ? DIR_DOWN :
 				  GDK_Right == kevent->keyval ? DIR_RIGHT : DIR_LEFT;
 		  object_add_updates_list(objects, dia);
-		  object_list_nudge(objects, dia, dir, 
+		  object_list_nudge(objects, dia, dir,
 				    /* step one pixel or more with <ctrl> */
 				    ddisplay_untransform_length (ddisp, (state & GDK_SHIFT_MASK) ? 10 : 1));
 		  diagram_update_connections_selection(dia);
 		  object_add_updates_list(objects, dia);
 		  diagram_modified(dia);
-		  diagram_flush(dia);     
+		  diagram_flush(dia);
 
 		  undo_set_transactionpoint(dia->undo);
 		} else {
@@ -883,7 +885,7 @@ ddisplay_canvas_events (GtkWidget *canvas,
                 visible = &ddisp->visible;
                 middle.x = visible->left*0.5 + visible->right*0.5;
                 middle.y = visible->top*0.5 + visible->bottom*0.5;
-	  
+
                 ddisplay_zoom(ddisp, &middle, M_SQRT2);
                 break;
               case GDK_KP_Subtract:
@@ -891,7 +893,7 @@ ddisplay_canvas_events (GtkWidget *canvas,
                 visible = &ddisp->visible;
                 middle.x = visible->left*0.5 + visible->right*0.5;
                 middle.y = visible->top*0.5 + visible->bottom*0.5;
-	  
+
                 ddisplay_zoom(ddisp, &middle, M_SQRT1_2);
                 break;
               case GDK_Shift_L:
@@ -909,7 +911,7 @@ ddisplay_canvas_events (GtkWidget *canvas,
               default:
                 if (kevent->string && kevent->keyval == ' ') {
                   tool_select_former();
-                } else if ((kevent->state & (GDK_MOD1_MASK|GDK_CONTROL_MASK)) == 0 && 
+                } else if ((kevent->state & (GDK_MOD1_MASK|GDK_CONTROL_MASK)) == 0 &&
 			   kevent->length != 0) {
 		  /* Find first editable */
 #ifdef NEW_TEXT_EDIT
@@ -922,7 +924,7 @@ ddisplay_canvas_events (GtkWidget *canvas,
 
         if (!im_context_used)
           gtk_im_context_reset(GTK_IM_CONTEXT(ddisp->im_context));
-        
+
         break;
 
       case GDK_KEY_RELEASE:
@@ -943,11 +945,11 @@ ddisplay_canvas_events (GtkWidget *canvas,
           }
         }
         break;
-      
+
       default:
         break;
   }
-  
+
   return return_val;
 }
 
@@ -977,7 +979,7 @@ ddisplay_delete (GtkWidget *widget, GdkEvent  *event, gpointer data)
   DDisplay *ddisp;
 
   ddisp = (DDisplay *)data;
-  
+
   ddisplay_close(ddisp);
   return TRUE;
 }
@@ -986,7 +988,7 @@ void
 ddisplay_destroy (GtkWidget *widget, gpointer data)
 {
   DDisplay *ddisp;
-  
+
   ddisp = (DDisplay *) data;
 
   ddisplay_really_destroy(ddisp);

@@ -21,7 +21,7 @@
 #include <glib.h>
 
 #include "diatypes.h"
-
+DIAVAR FactoryStructItemAll structList;
 struct _SheetObject {
   char *object_type;
   char *description;
@@ -61,7 +61,7 @@ struct _Sheet {
 };
 
 
-struct _FactorStructEnum
+struct _FactoryStructEnum
 {
     gchar *key;
     gchar *value;
@@ -76,21 +76,14 @@ struct _FactoryStructItem{  // ÕâÀï¶¨ÒåÒ»¸ö½á¹¹µÄÃ¿Ò»ÏîÐèÒªÏÔÊ¾µÄ¶«Î÷, Õâ¾ÍÏàµ±Ó
     gchar  *itemMax;
     gchar *itemComment;   // ¸¡¶¯×¢ÊÍ
 };
-struct _FactorStructEnumList{
+struct _FactoryStructEnumList{
     gchar *name;
     GList *list;
 };
 
-struct _FactorStructItemList{
-    gchar *name;
-    GList *list;
-    int number;
-};
 
-struct _FactorStructItemAll{
-    GList *enumList;
-    GList *structList;
-};
+
+
 
 Sheet *new_sheet(char *name, char *description, char *filename,
                  SheetScope scope, Sheet *shadowing);
@@ -98,6 +91,7 @@ void sheet_prepend_sheet_obj(Sheet *sheet, SheetObject *type);
 DIAVAR void sheet_append_sheet_obj(Sheet *sheet, SheetObject *type);
 DIAVAR void register_sheet(Sheet *sheet);
 DIAVAR GSList *get_sheets_list(void);
+DIAVAR void factoryReadDataFromFile(FactoryStructItemAll *allstructlist);
 
 DIAVAR void load_all_sheets(void);
 DIAVAR void dia_sort_sheets(void);

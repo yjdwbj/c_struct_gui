@@ -29,8 +29,8 @@
 
 #ifdef GNOME
 #undef GTK_DISABLE_DEPRECATED
-#  include <gnome.h> 	 
-#endif 	 
+#  include <gnome.h>
+#endif
 
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gtk/gtk.h>
@@ -89,7 +89,7 @@ ShellExecuteA (long        hwnd,
 #include "diagram_tree_window.h"
 #include "authors.h"                /* master contributors data */
 
-void 
+void
 file_quit_callback (GtkAction *action)
 {
   app_exit();
@@ -116,7 +116,7 @@ file_print_callback (GtkAction *_action)
   if (!dia) return;
   ddisp = ddisplay_active();
   if (!ddisp) return;
-  
+
   action = menus_get_action ("FilePrintGTK");
   if (!action)
     action = menus_get_action ("FilePrintGDI");
@@ -195,12 +195,12 @@ insert_text(DDisplay *ddisp, Focus *focus, const gchar *text)
 
     /* Perhaps this can be improved */
     object_add_updates(obj, ddisp->diagram);
-    
+
     if (modified && (change != NULL)) {
       undo_object_change(ddisp->diagram, obj, change);
       any_modified = TRUE;
     }
-    
+
     diagram_flush(ddisp->diagram);
   }
 
@@ -213,12 +213,12 @@ insert_text(DDisplay *ddisp, Focus *focus, const gchar *text)
 
 
 static void
-received_clipboard_handler(GtkClipboard *clipboard, 
+received_clipboard_handler(GtkClipboard *clipboard,
 			   const gchar *text,
 			   gpointer data) {
   DDisplay *ddisp = (DDisplay *)data;
   Focus *focus = get_active_focus((DiagramData *) ddisp->diagram);
-  
+
   if (text == NULL) return;
 
   if ((focus == NULL) || (!focus->has_focus)) return;
@@ -235,8 +235,8 @@ static PropDescription text_prop_singleton_desc[] = {
     { "text", PROP_TYPE_TEXT },
     PROP_DESC_END};
 
-static void 
-make_text_prop_singleton(GPtrArray **props, TextProperty **prop) 
+static void
+make_text_prop_singleton(GPtrArray **props, TextProperty **prop)
 {
   *props = prop_list_from_descs(text_prop_singleton_desc,pdtpp_true);
   g_assert((*props)->len == 1);
@@ -260,14 +260,14 @@ edit_copy_callback (GtkAction *action)
     DiaObject *obj = focus_get_object(focus);
     GPtrArray *textprops;
     TextProperty *prop;
-    
-    if (obj->ops->get_props == NULL) 
+
+    if (obj->ops->get_props == NULL)
       return;
-    
+
     make_text_prop_singleton(&textprops,&prop);
     /* Get the first text property */
     obj->ops->get_props(obj, textprops);
-    
+
     /* GTK docs claim the selection clipboard is ignored on Win32.
      * The "clipboard" clipboard is mostly ignored in Unix
      */
@@ -281,10 +281,10 @@ edit_copy_callback (GtkAction *action)
     prop_list_free(textprops);
   } else {
     copy_list = parent_list_affected(diagram_get_sorted_selected(ddisp->diagram));
-    
+
     cnp_store_objects(object_copy_list(copy_list), 1);
     g_list_free(copy_list);
-    
+
     ddisplay_do_update_menu_sensitivity(ddisp);
   }
 }
@@ -309,7 +309,7 @@ edit_cut_callback (GtkAction *action)
 
     change = undo_delete_objects_children(ddisp->diagram, cut_list);
     (change->apply)(change, ddisp->diagram);
-  
+
     ddisplay_do_update_menu_sensitivity(ddisp);
     diagram_flush(ddisp->diagram);
 
@@ -328,15 +328,15 @@ edit_paste_callback (GtkAction *action)
   Point delta;
   Change *change;
   int generation = 0;
-  
+
   ddisp = ddisplay_active();
   if (!ddisp) return;
   if (textedit_mode(ddisp)) {
 #ifdef G_OS_WIN32
-    gtk_clipboard_request_text(gtk_clipboard_get(GDK_NONE), 
+    gtk_clipboard_request_text(gtk_clipboard_get(GDK_NONE),
 			       received_clipboard_handler, ddisp);
 #else
-    gtk_clipboard_request_text(gtk_clipboard_get(GDK_SELECTION_PRIMARY), 
+    gtk_clipboard_request_text(gtk_clipboard_get(GDK_SELECTION_PRIMARY),
 			       received_clipboard_handler, ddisp);
 #endif
   } else {
@@ -344,11 +344,11 @@ edit_paste_callback (GtkAction *action)
       message_warning(_("No existing object to paste.\n"));
       return;
     }
-  
+
     paste_list = cnp_get_stored_objects(&generation); /* Gets a copy */
 
     paste_corner = object_list_corner(paste_list);
-  
+
     delta.x = ddisp->visible.left - paste_corner.x;
     delta.y = ddisp->visible.top - paste_corner.y;
 
@@ -364,7 +364,7 @@ edit_paste_callback (GtkAction *action)
 
     diagram_modified(ddisp->diagram);
     undo_set_transactionpoint(ddisp->diagram->undo);
-  
+
     diagram_remove_all_selected(ddisp->diagram, TRUE);
     diagram_select_list(ddisp->diagram, paste_list);
 
@@ -384,7 +384,7 @@ edit_paste_callback (GtkAction *action)
  */
 void
 edit_duplicate_callback (GtkAction *action)
-{ 
+{
   GList *duplicate_list;
   DDisplay *ddisp;
   Point duplicate_corner;
@@ -395,7 +395,7 @@ edit_duplicate_callback (GtkAction *action)
   if (!ddisp || textedit_mode(ddisp)) return;
   duplicate_list = object_copy_list(diagram_get_sorted_selected(ddisp->diagram));
   duplicate_corner = object_list_corner(duplicate_list);
-  
+
   /* Move down some 10% of the visible area. */
   delta.x = (ddisp->visible.right - ddisp->visible.left)*0.05;
   delta.y = (ddisp->visible.bottom - ddisp->visible.top)*0.05;
@@ -407,12 +407,12 @@ edit_duplicate_callback (GtkAction *action)
 
   diagram_modified(ddisp->diagram);
   undo_set_transactionpoint(ddisp->diagram->undo);
-  
+
   diagram_remove_all_selected(ddisp->diagram, TRUE);
   diagram_select_list(ddisp->diagram, duplicate_list);
 
   diagram_flush(ddisp->diagram);
-  
+
   ddisplay_do_update_menu_sensitivity(ddisp);
 }
 
@@ -427,14 +427,14 @@ objects_move_up_layer(GtkAction *action)
   selected_list = diagram_get_sorted_selected(ddisp->diagram);
 
   change = undo_move_object_other_layer(ddisp->diagram, selected_list, TRUE);
-  
+
   (change->apply)(change, ddisp->diagram);
 
   diagram_modified(ddisp->diagram);
   undo_set_transactionpoint(ddisp->diagram->undo);
-  
+
   diagram_flush(ddisp->diagram);
-  
+
   ddisplay_do_update_menu_sensitivity(ddisp);
 }
 
@@ -451,14 +451,14 @@ objects_move_down_layer(GtkAction *action)
   /* Must check if move is legal here */
 
   change = undo_move_object_other_layer(ddisp->diagram, selected_list, FALSE);
-  
+
   (change->apply)(change, ddisp->diagram);
 
   diagram_modified(ddisp->diagram);
   undo_set_transactionpoint(ddisp->diagram->undo);
-  
+
   diagram_flush(ddisp->diagram);
-  
+
   ddisplay_do_update_menu_sensitivity(ddisp);
 }
 
@@ -479,13 +479,13 @@ edit_copy_text_callback (GtkAction *action)
 
   obj = focus_get_object(focus);
 
-  if (obj->ops->get_props == NULL) 
+  if (obj->ops->get_props == NULL)
     return;
 
   make_text_prop_singleton(&textprops,&prop);
   /* Get the first text property */
   obj->ops->get_props(obj, textprops);
-  
+
   /* GTK docs claim the selection clipboard is ignored on Win32.
    * The "clipboard" clipboard is mostly ignored in Unix
    */
@@ -519,13 +519,13 @@ edit_cut_text_callback (GtkAction *action)
   obj = focus_get_object(focus);
   text = (Text*)focus->user_data;
 
-  if (obj->ops->get_props == NULL) 
+  if (obj->ops->get_props == NULL)
     return;
 
   make_text_prop_singleton(&textprops,&prop);
   /* Get the first text property */
   obj->ops->get_props(obj, textprops);
-  
+
   /* GTK docs claim the selection clipboard is ignored on Win32.
    * The "clipboard" clipboard is mostly ignored in Unix
    */
@@ -539,7 +539,7 @@ edit_cut_text_callback (GtkAction *action)
 
   prop_list_free(textprops);
 
-  if (text_delete_all(text, &change)) { 
+  if (text_delete_all(text, &change)) {
     object_add_updates(obj, ddisp->diagram);
     undo_object_change(ddisp->diagram, obj, change);
     undo_set_transactionpoint(ddisp->diagram->undo);
@@ -557,10 +557,10 @@ edit_paste_text_callback (GtkAction *action)
   if (!ddisp) return;
 
 #ifdef G_OS_WIN32
-  gtk_clipboard_request_text(gtk_clipboard_get(GDK_NONE), 
+  gtk_clipboard_request_text(gtk_clipboard_get(GDK_NONE),
 			     received_clipboard_handler, ddisp);
 #else
-  gtk_clipboard_request_text(gtk_clipboard_get(GDK_SELECTION_PRIMARY), 
+  gtk_clipboard_request_text(gtk_clipboard_get(GDK_SELECTION_PRIMARY),
 			     received_clipboard_handler, ddisp);
 #endif
 }
@@ -585,11 +585,11 @@ edit_delete_callback (GtkAction *action)
     if (!text_delete_key_handler(focus, &change)) {
       return;
     }
-    object_add_updates(focus->obj, ddisp->diagram);    
+    object_add_updates(focus->obj, ddisp->diagram);
   } else {
     Change *change = NULL;
     diagram_selected_break_external(ddisp->diagram);
-    
+
     delete_list = diagram_get_sorted_selected(ddisp->diagram);
     change = undo_delete_objects_children(ddisp->diagram, delete_list);
     g_list_free(delete_list);
@@ -597,18 +597,18 @@ edit_delete_callback (GtkAction *action)
   }
   diagram_modified(ddisp->diagram);
   diagram_update_extents(ddisp->diagram);
-  
+
   ddisplay_do_update_menu_sensitivity(ddisp);
   diagram_flush(ddisp->diagram);
-  
+
   undo_set_transactionpoint(ddisp->diagram->undo);
-} 
+}
 
 void
 edit_undo_callback (GtkAction *action)
 {
   Diagram *dia;
-  
+
   dia = ddisplay_active_diagram();
   if (!dia) return;
 
@@ -618,13 +618,13 @@ edit_undo_callback (GtkAction *action)
   diagram_update_extents(dia);
 
   diagram_flush(dia);
-} 
+}
 
 void
 edit_redo_callback (GtkAction *action)
 {
   Diagram *dia;
-  
+
 /* Handle text undo edit here! */
   dia = ddisplay_active_diagram();
   if (!dia) return;
@@ -634,7 +634,7 @@ edit_redo_callback (GtkAction *action)
   diagram_update_extents(dia);
 
   diagram_flush(dia);
-} 
+}
 
 void
 help_manual_callback (GtkAction *action)
@@ -662,7 +662,7 @@ help_manual_callback (GtkAction *action)
     g_error_free (error);
     return;
   }
-  
+
   while ((dentry = g_dir_read_name(dp)) != NULL) {
     guint score;
 
@@ -706,7 +706,7 @@ help_manual_callback (GtkAction *action)
 #endif
 }
 
-static void 
+static void
 activate_url (GtkAboutDialog *about,
               const gchar    *link,
 	      gpointer        data)
@@ -776,7 +776,7 @@ view_zoom_in_callback (GtkAction *action)
   visible = &ddisp->visible;
   middle.x = visible->left*0.5 + visible->right*0.5;
   middle.y = visible->top*0.5 + visible->bottom*0.5;
-  
+
   ddisplay_zoom(ddisp, &middle, M_SQRT2);
 }
 
@@ -786,17 +786,17 @@ view_zoom_out_callback (GtkAction *action)
   DDisplay *ddisp;
   Point middle;
   Rectangle *visible;
-  
+
   ddisp = ddisplay_active();
   if (!ddisp) return;
   visible = &ddisp->visible;
   middle.x = visible->left*0.5 + visible->right*0.5;
   middle.y = visible->top*0.5 + visible->bottom*0.5;
-  
+
   ddisplay_zoom(ddisp, &middle, M_SQRT1_2);
 }
 
-void 
+void
 view_zoom_set_callback (GtkAction *action)
 {
   int factor;
@@ -816,14 +816,14 @@ view_show_cx_pts_callback (GtkToggleAction *action)
 
   old_val = ddisp->show_cx_pts;
   ddisp->show_cx_pts = gtk_toggle_action_get_active (action);
-  
+
   if (old_val != ddisp->show_cx_pts) {
     ddisplay_add_update_all(ddisp);
     ddisplay_flush(ddisp);
   }
 }
 
-void 
+void
 view_unfullscreen (void)
 {
   DDisplay *ddisp;
@@ -849,7 +849,7 @@ view_fullscreen_callback (GtkToggleAction *action)
   if (!ddisp) return;
 
   fs = gtk_toggle_action_get_active (action);
-  
+
   if (fs) /* it is already toggled */
     gtk_window_fullscreen(GTK_WINDOW(ddisp->shell));
   else
@@ -864,9 +864,9 @@ view_aa_callback (GtkToggleAction *action)
 
   ddisp = ddisplay_active();
   if (!ddisp) return;
- 
+
   aa = gtk_toggle_action_get_active (action);
-  
+
   if (aa != ddisp->aa_renderer) {
     ddisplay_set_renderer(ddisp, aa);
     ddisplay_add_update_all(ddisp);
@@ -882,9 +882,9 @@ view_visible_grid_callback (GtkToggleAction *action)
 
   ddisp = ddisplay_active();
   if (!ddisp) return;
-  
+
   old_val = ddisp->grid.visible;
-  ddisp->grid.visible = gtk_toggle_action_get_active (action); 
+  ddisp->grid.visible = gtk_toggle_action_get_active (action);
 
   if (old_val != ddisp->grid.visible) {
     ddisplay_add_update_all(ddisp);
@@ -899,7 +899,7 @@ view_snap_to_grid_callback (GtkToggleAction *action)
 
   ddisp = ddisplay_active();
   if (!ddisp) return;
-  
+
   ddisplay_set_snap_to_grid(ddisp, gtk_toggle_action_get_active (action));
 }
 
@@ -910,15 +910,15 @@ view_snap_to_objects_callback (GtkToggleAction *action)
 
   ddisp = ddisplay_active();
   if (!ddisp) return;
-  
+
   ddisplay_set_snap_to_objects(ddisp, gtk_toggle_action_get_active (action));
 }
 
-void 
+void
 view_toggle_rulers_callback (GtkToggleAction *action)
 {
   DDisplay *ddisp;
-  
+
   ddisp = ddisplay_active();
   if (!ddisp) return;
 
@@ -940,7 +940,7 @@ view_new_view_callback (GtkAction *action)
 
   dia = ddisplay_active_diagram();
   if (!dia) return;
-  
+
   new_display(dia);
 }
 
@@ -951,7 +951,7 @@ view_clone_view_callback (GtkAction *action)
 
   ddisp = ddisplay_active();
   if (!ddisp) return;
-  
+
   copy_display(ddisp);
 }
 
@@ -962,7 +962,7 @@ view_show_all_callback (GtkAction *action)
 
   ddisp = ddisplay_active();
   if (!ddisp) return;
-  
+
   ddisplay_show_all (ddisp);
 }
 
@@ -1025,7 +1025,7 @@ view_layers_callback (GtkAction *action)
   }
 }
 
-void 
+void
 layers_add_layer_callback (GtkAction *action)
 {
   Diagram *dia;
@@ -1036,7 +1036,7 @@ layers_add_layer_callback (GtkAction *action)
   diagram_edit_layer (dia, NULL);
 }
 
-void 
+void
 layers_rename_layer_callback (GtkAction *action)
 {
   Diagram *dia;
@@ -1109,7 +1109,7 @@ objects_group_callback (GtkAction *action)
 
   diagram_group_selected(ddisplay_active_diagram());
   ddisplay_do_update_menu_sensitivity(ddisp);
-} 
+}
 
 void
 objects_ungroup_callback (GtkAction *action)
@@ -1119,7 +1119,7 @@ objects_ungroup_callback (GtkAction *action)
 
   diagram_ungroup_selected(ddisplay_active_diagram());
   ddisplay_do_update_menu_sensitivity(ddisp);
-} 
+}
 
 void
 dialogs_properties_callback (GtkAction *action)
@@ -1131,10 +1131,10 @@ dialogs_properties_callback (GtkAction *action)
   if (!dia || textedit_mode(ddisplay_active())) return;
 
   if (dia->data->selected != NULL) {
-    object_list_properties_show(dia, dia->data->selected);
+    object_list_properties_show(dia, dia->data->selected); // 2014-3-21 lcy 这里是人右键属性.
   } else {
     diagram_properties_show(dia);
-  } 
+  }
 }
 
 void
@@ -1160,16 +1160,16 @@ objects_align_h_callback (GtkAction *action)
   a = gtk_action_get_name (action) + strlen ("ObjectsAlign");
   if (0 == strcmp ("Left", a)) {
 	align = DIA_ALIGN_LEFT;
-  } 
+  }
   else if (0 == strcmp ("Center", a)) {
 	align = DIA_ALIGN_CENTER;
-  } 
+  }
   else if (0 == strcmp ("Right", a)) {
 	align = DIA_ALIGN_RIGHT;
-  } 
+  }
   else if (0 == strcmp ("Spreadouthorizontally", a)) {
 	align = DIA_ALIGN_EQUAL;
-  } 
+  }
   else if (0 == strcmp ("Adjacent", a)) {
 	align = DIA_ALIGN_ADJACENT;
   }
@@ -1181,13 +1181,13 @@ objects_align_h_callback (GtkAction *action)
   dia = ddisplay_active_diagram();
   if (!dia) return;
   objects = dia->data->selected;
-  
+
   object_add_updates_list(objects, dia);
   object_list_align_h(objects, dia, align);
   diagram_update_connections_selection(dia);
   object_add_updates_list(objects, dia);
   diagram_modified(dia);
-  diagram_flush(dia);     
+  diagram_flush(dia);
 
   undo_set_transactionpoint(dia->undo);
 }
@@ -1207,16 +1207,16 @@ objects_align_v_callback (GtkAction *action)
   a = gtk_action_get_name (action) + strlen ("ObjectsAlign");
   if (0 == strcmp ("Top", a)) {
 	align = DIA_ALIGN_TOP;
-  } 
+  }
   else if (0 == strcmp ("Middle", a)) {
 	align = DIA_ALIGN_CENTER;
-  } 
+  }
   else if (0 == strcmp ("Bottom", a)) {
 	align = DIA_ALIGN_BOTTOM;
-  } 
+  }
   else if (0 == strcmp ("Spreadoutvertically", a)) {
 	align = DIA_ALIGN_EQUAL;
-  } 
+  }
   else if (0 == strcmp ("Stacked", a)) {
 	align = DIA_ALIGN_ADJACENT;
   }
@@ -1234,7 +1234,7 @@ objects_align_v_callback (GtkAction *action)
   diagram_update_connections_selection(dia);
   object_add_updates_list(objects, dia);
   diagram_modified(dia);
-  diagram_flush(dia);     
+  diagram_flush(dia);
 
   undo_set_transactionpoint(dia->undo);
 }

@@ -43,6 +43,8 @@
 
 #include "debug.h"
 #include "sheet.h"
+extern FactoryStructItemAll structList;
+
 
 #define STRUCTCLASS_BORDER 0.1
 #define STRUCTCLASS_UNDERLINEWIDTH 0.05
@@ -98,7 +100,7 @@ static ObjectTypeOps structclass_type_ops =
  * type.
 */
 
-FactorStructItemAll structList = {NULL,NULL};
+
 DiaObjectType structclass_type =
 {
   "STRUCT - Class",   /* name */
@@ -119,8 +121,8 @@ static ObjectOps structclass_ops = {
   (CopyFunc)            structclass_copy,
   (MoveFunc)            structclass_move,
   (MoveHandleFunc)      structclass_move_handle,
-  (GetPropertiesFunc)   structclass_get_properties,
- // (GetPropertiesFunc)   factory_get_properties,
+ // (GetPropertiesFunc)   structclass_get_properties,
+  (GetPropertiesFunc)   factory_get_properties,
   (ApplyPropertiesDialogFunc) _structclass_apply_props_from_dialog,
   (ObjectMenuFunc)      structclass_object_menu,
   (DescribePropsFunc)   structclass_describe_props,
@@ -1930,25 +1932,27 @@ structclass_create(Point *startpoint,
   element_init(elem, 8, STRUCTCLASS_CONNECTIONPOINTS); /* No attribs or ops => 0 extra connectionpoints. */
 #endif
 
- // structclass->properties_dialog = NULL;
-   structclass->properties_dialog =  g_new(STRUCTClassDialog, 1);
-
-   // factoryReadDataFromFile(structclass);   // 2014-3-20 lcy 在加载时读取结构体文件. 每拖一个控件进来,每读一次文件.
-  fill_in_fontdata(structclass);
-
+    fill_in_fontdata(structclass);
 
   /*
    * The following block of code may need to be converted to a switch statement if more than
    * two types of objects can be made - Dave Klotzbach
    */
-  structclass->template = (GPOINTER_TO_INT(user_data)==1);
+  // structclass->template = (GPOINTER_TO_INT(user_data)==1);
+  structclass->template = FALSE;
+  int index = GPOINTER_TO_INT(user_data);
+  GList *sstruct = structList.structList;
+  for(;sstruct !=NULL;sstruct = sstruct->next)
+  {
+      FactoryStructItemList *i = sstruct->data;
+      if(i->number == index)
+      {
+          structclass->name = g_strdup(_(i->name));
+          break;
+      }
+  }
 
-  if (structclass->template){
-    structclass->name = g_strdup (_("Google")); // 2014-3-20 lcy Google
-  }
-  else {
-    structclass->name = g_strdup (_("Yahoo"));  // 2014-3-20 lcy yahoo
-  }
+
   obj->type = &structclass_type;
   obj->ops = &structclass_ops;
 
@@ -2375,8 +2379,6 @@ static DiaObject *structclass_load(ObjectNode obj_node, int version,
 #endif
 
   structclass->properties_dialog =  NULL;
-
-
 
   for (i=0;i<STRUCTCLASS_CONNECTIONPOINTS;i++) {
     obj->connections[i] = &structclass->connections[i];
