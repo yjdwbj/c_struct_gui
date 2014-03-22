@@ -67,6 +67,10 @@ static DiaObject *structclass_copy(STRUCTClass *structclass);
 
 static void structclass_save(STRUCTClass *structclass, ObjectNode obj_node,
 			  const char *filename);
+
+static void factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
+			  const char *filename);
+
 static DiaObject *structclass_load(ObjectNode obj_node, int version,
 			     const char *filename);
 
@@ -83,12 +87,15 @@ static void fill_in_fontdata(STRUCTClass *structclass);
 static int structclass_num_dynamic_connectionpoints(STRUCTClass *class);
 
 static ObjectChange *_structclass_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
+ObjectChange *
+factory_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
 
 static ObjectTypeOps structclass_type_ops =
 {
   (CreateFunc) structclass_create,
   (LoadFunc)   structclass_load,
-  (SaveFunc)   structclass_save
+  (LoadFunc)   factory_struct_items_save
+ // (SaveFunc)   structclass_save
 };
 
 /**
@@ -123,7 +130,8 @@ static ObjectOps structclass_ops = {
   (MoveHandleFunc)      structclass_move_handle,
  // (GetPropertiesFunc)   structclass_get_properties,
   (GetPropertiesFunc)   factory_get_properties,
-  (ApplyPropertiesDialogFunc) _structclass_apply_props_from_dialog,
+//  (ApplyPropertiesDialogFunc) _structclass_apply_props_from_dialog,
+  (ApplyPropertiesDialogFunc)   factory_apply_props_from_dialog,
   (ObjectMenuFunc)      structclass_object_menu,
   (DescribePropsFunc)   structclass_describe_props,
   (GetPropsFunc)        structclass_get_props,
@@ -254,40 +262,6 @@ _structclass_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget
     return object_apply_props_from_dialog (obj, widget);
   else
     return structclass_apply_props_from_dialog (structclass, widget);
-}
-
-static PropDescription *
-structtest_describe_props(STRUCTClass *strictclass)
-{
-    if (MyStruct_props[0].quark == 0) {
-    int i = 0;
-
-    prop_desc_list_calculate_quarks(MyStruct_props);
-    while (MyStruct_props[i].name != NULL) {
-      /* can't do this static, at least not on win32
-       * due to relocation (initializer not a constant)
-       */
-      if (0 == strcmp(MyStruct_props[i].name, "attributes"))
-        MyStruct_props[i].extra_data = &structattribute_extra;
-//      else if (0 == strcmp(structclass_props[i].name, "operations")) {
-//        PropDescription *records = structoperation_extra.common.record;
-//        int j = 0;
-//
-//        structclass_props[i].extra_data = &structoperation_extra;
-//	while (records[j].name != NULL) {
-//          if (0 == strcmp(records[j].name, "parameters"))
-//	    records[j].extra_data = &structparameter_extra;
-//	  j++;
-//	}
-//      }
-//      else if (0 == strcmp(structclass_props[i].name, "templates"))
-//        structclass_props[i].extra_data = &structformalparameter_extra;
-
-      i++;
-    }
-  }
-  return MyStruct_props;
-
 }
 
 
@@ -1796,115 +1770,6 @@ fill_in_fontdata(STRUCTClass *structclass)
  *      handling global STRUCT functionallity at some point.
  */
 
-//void factoryReadDataFromFile(STRUCTClass *structclass)
-//{
-//#define MAX_LINE 1024
-//#define MAX_SECTION 6
-//
-//    gchar *datafilepath;
-//    const gchar* cfname = "test.data";
-//    struct stat statbuf;
-//    datafilepath = dia_get_lib_directory("config"); /// append /test.data
-//    if ( stat(datafilepath, &statbuf) < 0)
-//   {
-//       message_error(_("Couldn't find config path "
-//		  "object-libs; exiting...\n"));
-//    }
-//
-//    char* filename = g_strconcat(datafilepath, G_DIR_SEPARATOR_S ,
-//		     cfname, NULL);
-//    FILE *fd;
-//    if((fd =  fopen(filename,"r")) == NULL)
-//    {
-//         message_error(_("Couldn't open filename "
-//		  "object-libs; exiting...\n"));
-//    }
-//
-//    if(stat(filename,&statbuf) <0 )
-//    {
-//        message_error(_("Couldn't read  filename stats"
-//		  "object-libs; exiting...\n"));
-//    }
-//
-//
-//
-//    char filetxt[MAX_LINE]={'\0'};
-//    gchar* aline = NULL;
-//    GList *datalist = NULL;
-//    GList *enumlist = NULL;
-//
-////     gchar *sbuf[MAX_SECTION];   // 2014-3-19 lcy 这里分几个段
-//    gboolean isEmnu = FALSE;
-//
-//    FactorStructEnumList *fsel = NULL;
-//    while(fgets(filetxt,MAX_LINE,fd)!=NULL)
-//    {
-//        aline = g_strstrip(filetxt);
-//        if(aline[0]==':')
-//        {
-//            fsel = g_new0(FactorStructEnumList,1);
-//            fsel->name = g_locale_to_utf8(&aline[1],-1,NULL,NULL,NULL);
-//            fsel->list = NULL;
-//            //continue
-//        }
-//        else if(aline[0] == '{')
-//        {
-//            isEmnu = TRUE;
-//            //continue;
-//        }
-//        else if(aline[0] == '}')
-//        {
-//            isEmnu = FALSE;
-//            enumlist = g_list_append(enumlist,fsel);
-//            //continue;
-//        }
-//        else if(isEmnu) // 2014-3-19 lcy 读取一个枚举.
-//        {
-//               FactorStructEnum *kvmap  = g_new0(FactorStructEnum,1);
-//               gchar ** sbuf=NULL;
-//               sbuf=  g_strsplit_set (aline,":",-1);
-//                if( g_strv_length(sbuf) <2)
-//                {
-//                    kvmap->key = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
-//                    kvmap->value = g_locale_to_utf8("0",-1,NULL,NULL,NULL);
-//                }
-//                else
-//                {
-//                    kvmap->key = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
-//                    kvmap->value = g_locale_to_utf8(sbuf[1],-1,NULL,NULL,NULL);
-//                }
-//              fsel->list  =  g_list_append(fsel->list ,kvmap);
-//
-//              g_strfreev(sbuf);
-//        }
-//        else{
-//
-//         gchar ** sbuf=NULL;
-//        if(aline[0] == '/' || aline[0] == '#' || !strlen(aline))
-//           continue;
-//         FactoryStructItem *item = g_new0(FactoryStructItem,1);
-//      //  sscanf(&aline,"%[^:]:%[^:]:%[^:]:%[^:]:%[^:]:%[^:]",sbuf[0],sbuf[1],sbuf[2],sbuf[3],sbuf[4],sbuf[5]);
-//       sbuf=  g_strsplit_set (filetxt,":",-1);
-//
-//       if( g_strv_length(sbuf) <MAX_SECTION)
-//        continue;
-//
-//        item->itemName = g_locale_to_utf8(sbuf[1],-1,NULL,NULL,NULL);
-//        item->itemType = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
-//        item->itemValue = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
-//        item->itemMin = g_locale_to_utf8(sbuf[3],-1,NULL,NULL,NULL);
-//        item->itemMax = g_locale_to_utf8(sbuf[4],-1,NULL,NULL,NULL);
-//        item->itemComment = g_locale_to_utf8(sbuf[5],-1,NULL,NULL,NULL);
-//        datalist = g_list_append(datalist,item);
-//        g_strfreev(sbuf);
-//        }
-//
-//    }
-//    fclose(fd);
-//    structclass->properties_dialog->itemsData = datalist;
-//
-//    structclass->properties_dialog->enumList = enumlist;
-//}
 
 
 
@@ -1951,7 +1816,7 @@ structclass_create(Point *startpoint,
           break;
       }
   }
-
+  structclass->widgetmap = NULL;
 
   obj->type = &structclass_type;
   obj->ops = &structclass_ops;
@@ -2240,6 +2105,39 @@ structclass_copy(STRUCTClass *structclass)
 #endif
 
   return &newstructclass->element.object;
+}
+
+static void
+factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
+	      const char *filename)
+{
+  STRUCTAttribute *attr;
+  STRUCTOperation *op;
+  STRUCTFormalParameter *formal_param;
+  GList *list;
+  AttributeNode attr_node;
+
+
+
+  element_save(&structclass->element, obj_node);
+
+  /*  2014-3-22 lcy 这里保存自定义控件的数据 */
+
+  GList* widgetmap = structclass->widgetmap;
+  for(;widgetmap != NULL; widgetmap = widgetmap->next)
+  {
+      WidgetAndValue *wav = widgetmap->data;
+       data_add_string(new_attribute(obj_node, "name"),
+		  wav->name);
+       data_add_string(new_attribute(obj_node, "type"),
+		  wav->type);
+        data_add_string(new_attribute(obj_node, "value"),
+		  wav->value);
+		//  factory_widget_value_write(obj_node);
+  }
+
+
+
 }
 
 

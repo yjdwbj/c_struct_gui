@@ -74,6 +74,7 @@ struct _STRUCTClassDialog {
 //  GList *enumList;    // 2014-3-19 lcy 这里用存储枚举的链表.
   FactoryStructItemAll *EnumsAndStructs ;// 2014-3-21 lcy 这里包含一个文件里的所有结构体.
   GtkWidget *mainTable; // 2014-3-19 lcy 这里添一个表格,用来布局显示.
+  FactoryStructItemList *newValue;  // 2014-3-22 lcy 这里用来存储更新的值。
   GtkEntry *classname;
   GtkEntry *stereotype;
   GtkTextView *comment;
@@ -156,7 +157,68 @@ struct _STRUCTClassDialog {
 };
 
 
+typedef struct  _FactoryClassDialog  FactoryClassDialog;
 
+struct _FactoryClassDialog{
+  GtkWidget *dialog;
+
+//  GList *itemsData;   // 2014-3-19 lcy 这里是自定项,用存储从文件读到的条目.
+//  GList *enumList;    // 2014-3-19 lcy 这里用存储枚举的链表.
+  FactoryStructItemAll *EnumsAndStructs ;// 2014-3-21 lcy 这里包含一个文件里的所有结构体.
+  GtkWidget *mainTable; // 2014-3-19 lcy 这里添一个表格,用来布局显示.
+
+};
+
+
+typedef struct _FactoryClass FactoryClass;
+
+struct _FactoryClass{
+  Element element; /**< inheritance */
+
+  /** static connection point storage,  the mainpoint must be behind the dynamics in Element::connections */
+#ifdef STRUCT_MAINPOINT
+  ConnectionPoint connections[STRUCTCLASS_CONNECTIONPOINTS + 1];
+#else
+  ConnectionPoint connections[STRUCTCLASS_CONNECTIONPOINTS];
+#endif
+  DiaFont *normal_font;
+  DiaFont *abstract_font;
+  DiaFont *polymorphic_font;
+  DiaFont *classname_font;
+  DiaFont *abstract_classname_font;
+  DiaFont *comment_font;
+
+  char *name;
+
+    Color line_color;
+  Color fill_color;
+  Color text_color;
+
+   /* Dialog: */
+  FactoryClassDialog *properties_dialog;
+
+  /** Until GtkList replaced by something better, set this when being
+   * destroyed, and don't do structclass_calculate_data when it is set.
+   * This is to avoid a half-way destroyed list being updated.
+   */
+  gboolean destroyed;
+
+};
+
+typedef enum{
+    ENUM,
+    ENTRY
+}CellType;
+
+typedef struct _WidgetAndValue WidgetAndValue;
+
+struct _WidgetAndValue{
+    gpointer *widget;
+    gchar* type;
+    gchar* name;
+    CellType celltype;
+    gchar *value;
+};
 
 /**
  * \brief The most complex object Dia has
@@ -243,6 +305,7 @@ struct _STRUCTClass {
    * This is to avoid a half-way destroyed list being updated.
    */
   gboolean destroyed;
+  GList *widgetmap; // 2014-3-22 lcy 这里用一个链表来保存界面上所有的值。
 
 };
 
@@ -264,6 +327,9 @@ extern void structclass_sanity_check(STRUCTClass *c, gchar *msg);
 
 GtkWidget *
 factory_get_properties(STRUCTClass *structclass, gboolean is_default);
+
+extern ObjectChange *
+factory_apple_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
 
 //void factoryReadDataFromFile(STRUCTClass *structclass);
 

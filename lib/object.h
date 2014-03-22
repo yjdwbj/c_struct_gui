@@ -507,7 +507,7 @@ struct _DiaObject {
   Rectangle         enclosing_box;
   /** Metainfo of the object, should not be manipulated directy */
   GHashTable       *meta;
-  GtkWidget *dialog;
+
 };
 
 /*!

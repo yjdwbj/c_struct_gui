@@ -328,14 +328,15 @@ create_font_props_row (GtkTable   *table,
 
 
 static void
-factory_create_struct_dialog(STRUCTClassDialog *dialog, FactoryStructItem *item,int row )   // 创建结构体的每一个项.
+factory_create_struct_dialog(STRUCTClass *class, FactoryStructItem *item,int row )   // 创建结构体的每一个项.
 {
+  STRUCTClassDialog *dialog = class->properties_dialog;
   GtkWidget *itemName;
   GtkWidget *columTwo;
   GtkTooltips *tool_tips;
   tool_tips = gtk_tooltips_new();
   GList *enumList = dialog->EnumsAndStructs->enumList;
-  gboolean isEnum = FALSE;
+  CellType isEnum = ENTRY;
     for (;enumList != NULL; enumList = enumList->next)
        {
 
@@ -344,7 +345,7 @@ factory_create_struct_dialog(STRUCTClassDialog *dialog, FactoryStructItem *item,
            int section = g_strv_length(split);
            if(!g_ascii_strncasecmp(split[section-1],fset->name,strlen(item->itemType))) // 2014-3-21 lcy 对比最后一个点枚举名。
            {
-               isEnum = TRUE;
+               isEnum = ENUM;
               columTwo = gtk_combo_box_new_text();
               gtk_combo_box_popdown(GTK_COMBO_BOX(columTwo));
 
@@ -361,7 +362,7 @@ factory_create_struct_dialog(STRUCTClassDialog *dialog, FactoryStructItem *item,
 
        }
 
-       if(!isEnum) // 2014-3-20 lcy 这是不是combobox.
+       if(isEnum != ENUM) // 2014-3-20 lcy 这是不是combobox.
        {
             columTwo = gtk_entry_new();
             gtk_entry_set_text(GTK_ENTRY(columTwo),item->itemValue);  // set default value;
@@ -380,6 +381,14 @@ factory_create_struct_dialog(STRUCTClassDialog *dialog, FactoryStructItem *item,
         gtk_table_attach_defaults(GTK_TABLE(dialog->mainTable),itemName,2,3,row-1,row); // 2014-3-20 lcy 第三列
         gtk_table_attach_defaults(GTK_TABLE(dialog->mainTable),columTwo,3,4,row-1,row);
   }
+
+  WidgetAndValue wav;
+  wav.widget = columTwo;
+  wav.name = item->itemName;
+  wav.type = item->itemType;
+  wav.value = item->itemValue;
+  wav.celltype = isEnum;
+  class->widgetmap = g_list_append(class->widgetmap,&wav);
   gtk_container_add(GTK_OBJECT(dialog->dialog),dialog->mainTable);
 }
 
@@ -2911,6 +2920,35 @@ fill_in_dialog(STRUCTClass *structclass)
 }
 
 ObjectChange *
+factory_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget)
+{
+  STRUCTClassDialog *prop_dialog;
+  DiaObject *obj;
+  GList *list;
+  int num_attrib, num_ops;
+  GList *added, *deleted, *disconnected;
+  STRUCTClassState *old_state = NULL;
+  prop_dialog = structclass->properties_dialog;
+  old_state = structclass_get_state(structclass);
+  GList *widgetmap = structclass->widgetmap;
+  for(;widgetmap != NULL;widgetmap = widgetmap->next)
+  {
+      WidgetAndValue *wav = widgetmap->data;
+      g_free(wav->value);
+      if(wav->celltype == ENTRY)
+      {
+         wav->value = gtk_entry_get_text (GTK_ENTRY (wav->widget));
+      }
+      else{
+
+         wav->value =  gtk_combo_box_get_active_text(GTK_COMBO_BOX(wav->widget));
+      }
+  }
+
+}
+
+
+ObjectChange *
 structclass_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget)
 {
   STRUCTClassDialog *prop_dialog;
@@ -2999,13 +3037,12 @@ structclass_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget)
 static void
 create_dialog_pages(GtkNotebook *notebook, STRUCTClass *structclass)
 {
-  //  factory_create_struct_frame(notebook,structclass);
-  //  simple_create_page(notebook,structclass);
-//  class_create_page(notebook, structclass);
-//  attributes_create_page(notebook, structclass);
-//  operations_create_page(notebook, structclass);
-//  templates_create_page(notebook, structclass);
-//  style_create_page(notebook, structclass);
+
+  class_create_page(notebook, structclass);
+  attributes_create_page(notebook, structclass);
+  operations_create_page(notebook, structclass);
+  templates_create_page(notebook, structclass);
+  style_create_page(notebook, structclass);
 }
 
 GtkWidget *
@@ -3018,12 +3055,13 @@ factory_get_properties(STRUCTClass *class, gboolean is_default)
    if (class->properties_dialog == NULL) {
     prop_dialog = g_new(STRUCTClassDialog, 1);
     class->properties_dialog = prop_dialog;
+
     class->properties_dialog->EnumsAndStructs = &structList;
    }
 
-    vbox = gtk_vbox_new(FALSE, 0);
-    gtk_object_ref(GTK_OBJECT(vbox));
-    gtk_object_sink(GTK_OBJECT(vbox));
+      vbox = gtk_vbox_new(FALSE, 0);
+//    gtk_object_ref(GTK_OBJECT(vbox));
+//    gtk_object_sink(GTK_OBJECT(vbox));
 
     prop_dialog->dialog = vbox;
     gtk_widget_set_name(vbox,class->name); // 2014-3-21 lcy 设置名字，用于区分不同窗体。
@@ -3062,6 +3100,7 @@ factory_get_properties(STRUCTClass *class, gboolean is_default)
         }
     }
 
+    gtk_table_set_col_spacing(GTK_TABLE(prop_dialog->mainTable),1,20);
   gtk_widget_show_all (class->properties_dialog->dialog);
 
   return class->properties_dialog->dialog;
@@ -3119,7 +3158,7 @@ structclass_get_properties(STRUCTClass *structclass, gboolean is_default)
     gtk_widget_show (notebook);
   }
 
- // fill_in_dialog(structclass);
+  fill_in_dialog(structclass);
   gtk_widget_show (structclass->properties_dialog->dialog);
 
   return structclass->properties_dialog->dialog;

@@ -432,7 +432,7 @@ diagram_data_load(const char *filename, DiagramData *data, void* user_data)
   }
 
   if (read(fd, &firstchar, 1)) {
-    data->is_compressed = (firstchar != '<');
+    data->is_compressed = (firstchar != '<'); // 2014-3-22 lcy 这里读取第一个字符，看它是不是尖括号来检测是不是一个压缩过的文件。
   } else {
     /* Couldn't read a single char?  Set to default. */
     data->is_compressed = prefs.new_diagram.compress_save;

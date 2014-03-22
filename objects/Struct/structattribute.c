@@ -159,6 +159,20 @@ struct_attribute_destroy(STRUCTAttribute *attr)
   g_free(attr);
 }
 
+void factory_widget_value_write(AttributeNode attr_node,FactoryAttribute *attr)
+{
+     DataNode composite;
+
+  composite = data_add_composite(attr_node, "structattribute");
+
+  data_add_string(composite_add_attribute(composite, "name"),
+		  attr->name);
+  data_add_string(composite_add_attribute(composite, "type"),
+		  attr->type);
+  data_add_string(composite_add_attribute(composite, "value"),
+		  attr->value);
+}
+
 void
 struct_attribute_write(AttributeNode attr_node, STRUCTAttribute *attr)
 {

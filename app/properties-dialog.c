@@ -47,7 +47,7 @@ static gboolean properties_key_event(GtkWidget *widget,
 				     gpointer data);
 static void properties_dialog_hide(void);
 
-static GtkWidget * create_dialog()
+static void create_dialog()
 {
 /*   GtkWidget *actionbox; */
 /*   GList *buttons; */
@@ -86,7 +86,7 @@ static GtkWidget * create_dialog()
   g_object_ref (G_OBJECT (no_properties_dialog));
   gtk_object_sink (GTK_OBJECT (no_properties_dialog));
 #endif
-    return dialog;
+
 }
 
 /* when the dialog gets destroyed we need to drop our references */
@@ -219,32 +219,27 @@ object_list_properties_show(Diagram *dia, GList *objects)
   GtkWidget *properties;
   DiaObject *one_obj;
 
-  if(objects == current_objects)
-    return ;
 
 
- one_obj = (g_list_length(objects) == 1) ? objects->data : NULL;   // 2014-3-21 lcy 这里是创建多窗体。
- // if (!dialog)
- if(one_obj->dialog == NULL)
-  one_obj->dialog = create_dialog();
-  else
+
+    if (!dialog)
+    create_dialog();
+  clear_dialog_globals();
+
+
+  if (!objects) {
+    /* Hide dialog when no object is selected */
+    properties_dialog_hide();
     return;
-
- // clear_dialog_globals();
-
-
-//  if (!objects) {
-//    /* Hide dialog when no object is selected */
-//    properties_dialog_hide();
-//    return;
-//  }
+  }
 
   /* Prefer object-specific UI when only one object is selected. */
+  one_obj = (g_list_length(objects) == 1) ? objects->data : NULL;   // 2014-3-21 lcy 这里是创建多窗体。
 
   if (one_obj)
     properties = one_obj->ops->get_properties(one_obj, FALSE);
   else
-    properties = object_list_create_props_dialog(one_obj->dialog, FALSE);
+    properties = object_list_create_props_dialog(one_obj, FALSE);
   if (properties == NULL) {
     properties = no_properties_dialog;
   }
@@ -254,10 +249,10 @@ object_list_properties_show(Diagram *dia, GList *objects)
     gchar *buf;
 
     buf = g_strconcat(_("Properties: "), otype->name, NULL);
-    gtk_window_set_title(GTK_WINDOW(one_obj->dialog), gtk_widget_get_name(properties));
+    gtk_window_set_title(GTK_WINDOW(dialog), gtk_widget_get_name(properties));
     g_free(buf);
   } else {
-    gtk_window_set_title(GTK_WINDOW(one_obj->dialog),gtk_widget_get_name(properties));
+    gtk_window_set_title(GTK_WINDOW(dialog),gtk_widget_get_name(properties));
   }
 
   g_signal_connect (G_OBJECT (properties), "destroy",
@@ -270,10 +265,10 @@ object_list_properties_show(Diagram *dia, GList *objects)
 
   /* resize to minimum */
   /* if (obj != current_obj) */
-  gtk_window_resize (GTK_WINDOW(one_obj->dialog), 1, 1);
-  gtk_window_set_transient_for(GTK_WINDOW(one_obj->dialog),
+  gtk_window_resize (GTK_WINDOW(dialog), 1, 1);
+  gtk_window_set_transient_for(GTK_WINDOW(dialog),
 			       GTK_WINDOW (ddisplay_active()->shell));
-  gtk_window_present (GTK_WINDOW (one_obj->dialog));
+  gtk_window_present (GTK_WINDOW (dialog));
   object_part = properties;
   current_objects = g_list_copy(objects);
   current_dia = dia;

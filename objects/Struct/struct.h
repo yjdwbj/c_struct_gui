@@ -26,6 +26,8 @@
 #include "connectionpoint.h"
 #include "dia_xml.h"
 
+typedef struct _FactoryAttribute  FactoryAttribute;
+
 typedef struct _STRUCTAttribute STRUCTAttribute;
 typedef struct _STRUCTOperation STRUCTOperation;
 typedef struct _STRUCTParameter STRUCTParameter;
@@ -59,8 +61,15 @@ typedef gchar * STRUCTStereotype;
 /** \brief A list of STRUCTAttribute is contained in STRUCTClass
  * Some would call them member variables ;)
  */
+struct _FactoryAttribute
+{
+    gchar *name;
+    gchar *type;
+    gchar *value;
+};
+
 struct _STRUCTAttribute {
-  gint internal_id; /**< Arbitrary integer to recognize attributes after 
+  gint internal_id; /**< Arbitrary integer to recognize attributes after
 		     * the user has shuffled them in the dialog. */
   gchar *name; /**< the member variables name */
   gchar *type; /**< the return value */
@@ -69,7 +78,7 @@ struct _STRUCTAttribute {
   STRUCTVisibility visibility; /**< attributes visibility */
   int abstract; /**< not sure if this applicable */
   int class_scope; /**< in C++ : static member */
-  
+
   ConnectionPoint* left_connection; /**< left */
   ConnectionPoint* right_connection; /**< right */
 };
@@ -82,7 +91,7 @@ struct _STRUCTOperation {
 		     * the user has shuffled them in the dialog. */
   gchar *name; /**< the function name */
   gchar *type; /**< Return type, NULL => No return type */
-  gchar *comment; /**< comment */  
+  gchar *comment; /**< comment */
   STRUCTStereotype stereotype; /**< just some string */
   STRUCTVisibility visibility; /**< allowed access */
   STRUCTInheritanceType inheritance_type;
@@ -149,6 +158,7 @@ extern STRUCTFormalParameter *struct_formalparameter_new(void);
 
 extern void struct_attribute_ensure_connection_points (STRUCTAttribute *attr, DiaObject* obj);
 extern void struct_operation_ensure_connection_points (STRUCTOperation *oper, DiaObject* obj);
+extern void factory_widget_value_write(AttributeNode attr_node, FactoryAttribute *attr);
 
 extern void struct_attribute_write(AttributeNode attr_node, STRUCTAttribute *attr);
 extern void struct_operation_write(AttributeNode attr_node, STRUCTOperation *op);
