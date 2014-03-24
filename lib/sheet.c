@@ -240,6 +240,7 @@ void factoryReadDataFromFile(FactoryStructItemAll *allstructlist)
     FactoryStructEnumList *fsel = NULL;
     FactoryStructItemList *fssl = NULL;
     int n = 0;
+    int zero = 0; // 2014-3-25 lcy  这里是初始化枚举值;
     while(fgets(filetxt,MAX_LINE,fd)!=NULL)
     {
         aline = g_strstrip(filetxt);
@@ -256,6 +257,7 @@ void factoryReadDataFromFile(FactoryStructItemAll *allstructlist)
             if(0 == strncmp("Enum",sbuf[1],4)) // 2014-3-20 lcy 这里匹配到枚举名字.
             {
                 isEmnu = TRUE;
+                zero = 0;
                 fsel = g_new0(FactoryStructEnumList,1);
                 fsel->name = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
                 fsel->list = NULL;
@@ -298,10 +300,12 @@ void factoryReadDataFromFile(FactoryStructItemAll *allstructlist)
                 if( g_strv_length(sbuf) <2)
                 {
                     kvmap->key = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
-                    kvmap->value = g_locale_to_utf8("0",-1,NULL,NULL,NULL);
+                    kvmap->value = g_locale_to_utf8(g_strdup_printf("%d",zero++),-1,NULL,NULL,NULL);
                 }
                 else
                 {
+                    /* 2014-3-25 lcy 这里把上一个枚举值存下来，做为下一个没有指定值的时候在此基础上递增。*/
+                    zero = g_ascii_strtod(sbuf[1],NULL);
                     kvmap->key = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
                     kvmap->value = g_locale_to_utf8(sbuf[1],-1,NULL,NULL,NULL);
                 }

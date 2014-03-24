@@ -1375,16 +1375,16 @@ create_sheet_dropdown_menu(GtkWidget *parent)
   sheet_option_menu =
     dia_dynamic_menu_new_stringlistbased(_("STRUCT"), sheet_names,
 					 NULL, "sheets");
-//  g_signal_connect(DIA_DYNAMIC_MENU(sheet_option_menu), "value-changed",
-//		   G_CALLBACK(sheet_option_menu_changed), sheet_option_menu);
+  g_signal_connect(DIA_DYNAMIC_MENU(sheet_option_menu), "value-changed",
+		   G_CALLBACK(sheet_option_menu_changed), sheet_option_menu);
 //  dia_dynamic_menu_add_default_entry(DIA_DYNAMIC_MENU(sheet_option_menu),
 //				     "Assorted");
 //  dia_dynamic_menu_add_default_entry(DIA_DYNAMIC_MENU(sheet_option_menu),
 //				     "Flowchart");
 //  dia_dynamic_menu_add_default_entry(DIA_DYNAMIC_MENU(sheet_option_menu),
 //				     "UML");
-//  dia_dynamic_menu_add_default_entry(DIA_DYNAMIC_MENU(sheet_option_menu),
-//				     "STRUCT");
+  dia_dynamic_menu_add_default_entry(DIA_DYNAMIC_MENU(sheet_option_menu),
+				     "STRUCT");
   /*    gtk_widget_set_size_request(sheet_option_menu, 20, -1);*/
   gtk_wrap_box_pack_wrapped(GTK_WRAP_BOX(parent), sheet_option_menu,
 			    TRUE, TRUE, FALSE, FALSE, TRUE);

@@ -82,6 +82,7 @@ DIAVAR char *data_filename(DataNode data);
 DIAVAR DiaFont *data_font(DataNode data);
 
 DIAVAR AttributeNode new_attribute(ObjectNode obj_node, const char *attrname);
+DIAVAR AttributeNode new_custom_attribute(ObjectNode obj_node,const char* customnode,const char *attrname);
 DIAVAR AttributeNode composite_add_attribute(DataNode composite_node,
 				      const char *attrname);
 DIAVAR void data_add_int(AttributeNode attr, int data);

@@ -94,8 +94,8 @@ static ObjectTypeOps structclass_type_ops =
 {
   (CreateFunc) structclass_create,
   (LoadFunc)   structclass_load,
-  (LoadFunc)   factory_struct_items_save
  // (SaveFunc)   structclass_save
+  (SaveFunc)  factory_struct_items_save
 };
 
 /**
@@ -1780,6 +1780,7 @@ structclass_create(Point *startpoint,
 	       Handle **handle2)
 {
   STRUCTClass *structclass;
+  STRUCTClassDialog *properties_dialog;
   Element *elem;
   DiaObject *obj;
   int i;
@@ -1817,6 +1818,7 @@ structclass_create(Point *startpoint,
       }
   }
   structclass->widgetmap = NULL;
+
 
   obj->type = &structclass_type;
   obj->ops = &structclass_ops;
@@ -1874,8 +1876,8 @@ structclass_create(Point *startpoint,
 
   *handle1 = NULL;
   *handle2 = NULL;
-
-
+  structclass->EnumsAndStructs = NULL;
+  structclass->EnumsAndStructs = &structList;
   return &structclass->element.object;
 }
 
@@ -2123,18 +2125,55 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
 
   /*  2014-3-22 lcy 这里保存自定义控件的数据 */
 
-  GList* widgetmap = structclass->widgetmap;
-  for(;widgetmap != NULL; widgetmap = widgetmap->next)
+
+  /* 2014-3-25 lcy 这里添加一个自定义节点名来安置这个结构体的成员*/
+  obj_node = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_struct", NULL);
+  xmlSetProp(obj_node, (const xmlChar *)"name", (xmlChar *)structclass->name);
+
+  if(NULL == structclass->widgetmap)
   {
-      WidgetAndValue *wav = widgetmap->data;
-       data_add_string(new_attribute(obj_node, "name"),
-		  wav->name);
-       data_add_string(new_attribute(obj_node, "type"),
-		  wav->type);
-        data_add_string(new_attribute(obj_node, "value"),
-		  wav->value);
-		//  factory_widget_value_write(obj_node);
+      FactoryStructItemAll *tmp =  structclass->EnumsAndStructs;
+
+            GList *finditem = tmp->structList;
+            for(;finditem!=NULL; finditem = finditem->next)
+            {
+                FactoryStructItemList *t = finditem->data;
+                if(!g_ascii_strncasecmp(t->name,structclass->name,strlen(t->name)))
+                {
+                    GList *thisstruct = t->list;
+                    for(;thisstruct != NULL; thisstruct = thisstruct->next)
+                    {
+                        FactoryStructItem *item = thisstruct->data;
+                          obj_node = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+                          xmlSetProp(obj_node, (const xmlChar *)"name", (xmlChar *)item->itemName);
+
+                         data_add_string(new_attribute(obj_node,"type"),item->itemType);
+                       //  data_add_string(new_attribute(obj_node,"name"),item->itemName);
+                         data_add_string(new_attribute(obj_node,"value"),item->itemValue);
+                    }
+                  break;
+                }
+            }
+
+
   }
+  else {
+
+      GList* widgetmap = structclass->widgetmap;
+      for(;widgetmap != NULL; widgetmap = widgetmap->next)
+      {
+          WidgetAndValue *wav = widgetmap->data;
+         obj_node = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+         xmlSetProp(obj_node, (const xmlChar *)"name", (xmlChar *)wav->name);
+
+           data_add_string(new_attribute(obj_node, "name"),wav->name);
+           data_add_string(new_attribute(obj_node, "type"),wav->type);
+           data_add_string(new_attribute(obj_node, "value"),wav->value);
+            //  factory_widget_value_write(obj_node);
+      }
+
+  }
+
 
 
 

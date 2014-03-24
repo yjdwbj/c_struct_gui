@@ -207,7 +207,7 @@ struct _FactoryStructItemList{
 typedef struct _FactoryStructItemAll  FactoryStructItemAll; // 2014-3-20 lcy 存放整个文件的结果,第一个为枚举,第二个存结构体
 struct _FactoryStructItemAll{
     GList *enumList;
-    GList *structList;
+    GList *structList; // 2014-3-25 lcy 这里存放 FactoryStructItemList 的链表。
 };
 
 #endif

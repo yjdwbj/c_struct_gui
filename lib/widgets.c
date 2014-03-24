@@ -2061,9 +2061,9 @@ dia_dynamic_menu_create_menu(DiaDynamicMenu *ddm)
       gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
       gtk_widget_show(item);
     }
-    sep = gtk_separator_menu_item_new();
-    gtk_widget_show(sep);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), sep);
+//    sep = gtk_separator_menu_item_new();
+//    gtk_widget_show(sep);
+//    gtk_menu_shell_append(GTK_MENU_SHELL(menu), sep);
   }
 
   for (tmplist = persistent_list_get_glist(ddm->persistent_name);

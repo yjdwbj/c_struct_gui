@@ -72,9 +72,7 @@ struct _STRUCTClassDialog {
 
 //  GList *itemsData;   // 2014-3-19 lcy 这里是自定项,用存储从文件读到的条目.
 //  GList *enumList;    // 2014-3-19 lcy 这里用存储枚举的链表.
-  FactoryStructItemAll *EnumsAndStructs ;// 2014-3-21 lcy 这里包含一个文件里的所有结构体.
-  GtkWidget *mainTable; // 2014-3-19 lcy 这里添一个表格,用来布局显示.
-  FactoryStructItemList *newValue;  // 2014-3-22 lcy 这里用来存储更新的值。
+   GtkWidget *mainTable; // 2014-3-19 lcy 这里添一个表格,用来布局显示.
   GtkEntry *classname;
   GtkEntry *stereotype;
   GtkTextView *comment;
@@ -207,7 +205,8 @@ struct _FactoryClass{
 
 typedef enum{
     ENUM,
-    ENTRY
+    ENTRY,
+    SPINBOX
 }CellType;
 
 typedef struct _WidgetAndValue WidgetAndValue;
@@ -306,7 +305,8 @@ struct _STRUCTClass {
    */
   gboolean destroyed;
   GList *widgetmap; // 2014-3-22 lcy 这里用一个链表来保存界面上所有的值。
-
+  FactoryStructItemAll *EnumsAndStructs ;// 2014-3-21 lcy 这里包含一个文件里的所有结构体.
+  FactoryStructItemList *newValue;  // 2014-3-22 lcy 这里用来存储更新的值。
 };
 
 void structclass_dialog_free (STRUCTClassDialog *dialog);
@@ -327,6 +327,8 @@ extern void structclass_sanity_check(STRUCTClass *c, gchar *msg);
 
 GtkWidget *
 factory_get_properties(STRUCTClass *structclass, gboolean is_default);
+
+void factory_create_and_fill_dialog(STRUCTClass *structclass, gboolean is_default);
 
 extern ObjectChange *
 factory_apple_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
