@@ -27,7 +27,7 @@
 	"diatypes.h"
 	"geometry.h"
 
-1395633258 o:\tool\dvs50\lib\diatypes.h
+1395719526 o:\tool\dvs50\lib\diatypes.h
 	"diavar.h"
 
 1394621090 o:\tool\dvs50\lib\geometry.h
@@ -1051,7 +1051,7 @@
 	"message.h"
 	"diagdkrenderer.h"
 
-1395645713 source:o:\tool\dvs50\lib\sheet.c
+1395744908 source:o:\tool\dvs50\lib\sheet.c
 	<config.h>
 	<stdlib.h>
 	<string.h>
@@ -1070,7 +1070,7 @@
 	"object.h"
 	"dia_dirs.h"
 
-1395371693 o:\tool\dvs50\lib\sheet.h
+1395719457 o:\tool\dvs50\lib\sheet.h
 	<glib.h>
 	"diatypes.h"
 
@@ -2384,7 +2384,7 @@
 	"connectionpoint.h"
 	"dia_xml.h"
 
-1395646414 source:o:\tool\dvs50\objects\struct\struct_class.c
+1395741425 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2400,7 +2400,7 @@
 	"debug.h"
 	"sheet.h"
 
-1395648304 o:\tool\dvs50\objects\struct\struct_class.h
+1395741569 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2409,7 +2409,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1395654880 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1395750224 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>

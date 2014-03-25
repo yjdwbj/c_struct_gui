@@ -199,6 +199,8 @@ void factoryReadDataFromFile(FactoryStructItemAll *allstructlist)
 {
 #define MAX_LINE 1024
 #define MAX_SECTION 7
+   allstructlist->structTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+   allstructlist->enumTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
 
     gchar *datafilepath;
     const gchar* cfname = "test.data";
@@ -230,15 +232,18 @@ void factoryReadDataFromFile(FactoryStructItemAll *allstructlist)
     char filetxt[MAX_LINE]={'\0'};
     gchar* aline = NULL;
     GList *datalist = NULL;
-    GList  *structlist = NULL;
+//    GList  *structlist = NULL;
     GList *enumlist = NULL;
 
 //     gchar *sbuf[MAX_SECTION];   // 2014-3-19 lcy 这里分几个段
     gboolean isEmnu = FALSE;
     gboolean isStruct = FALSE;
 
-    FactoryStructEnumList *fsel = NULL;
+  //  FactoryStructEnumList *fsel = NULL;
     FactoryStructItemList *fssl = NULL;
+
+    gchar *hashKey = NULL;
+    GHashTable *hashValue = NULL; // 2014-3-26 lcy 这里用HASH表来保存枚举结
     int n = 0;
     int zero = 0; // 2014-3-25 lcy  这里是初始化枚举值;
     while(fgets(filetxt,MAX_LINE,fd)!=NULL)
@@ -258,9 +263,10 @@ void factoryReadDataFromFile(FactoryStructItemAll *allstructlist)
             {
                 isEmnu = TRUE;
                 zero = 0;
-                fsel = g_new0(FactoryStructEnumList,1);
-                fsel->name = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
-                fsel->list = NULL;
+                enumlist = NULL;
+             //   fsel = g_new0(FactoryStructEnumList,1);
+                hashKey = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
+                //hashValue = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
 
             }
             else if( 0 == strncmp("Struct",sbuf[1],6)) // 2014-3-20 lcy 这里匹配到结构体名字.
@@ -270,6 +276,9 @@ void factoryReadDataFromFile(FactoryStructItemAll *allstructlist)
                 fssl->name = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
                 fssl->list = NULL;
                 fssl->number = n++;
+                  datalist = NULL;
+                  hashKey = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
+
 
             }
             g_strfreev(sbuf);
@@ -283,11 +292,14 @@ void factoryReadDataFromFile(FactoryStructItemAll *allstructlist)
             if(isStruct)
             {
                 isStruct = FALSE;
+                fssl->list = datalist;
                 allstructlist->structList = g_list_append(allstructlist->structList,fssl);
+               g_hash_table_insert(allstructlist->structTable,hashKey,(gpointer*)datalist);
             }
             else{
                 isEmnu = FALSE;
-                allstructlist->enumList = g_list_append(allstructlist->enumList,fsel);
+               //allstructlist->enumList = g_list_append(allstructlist->enumList,fsel);
+               g_hash_table_insert(allstructlist->enumTable,hashKey,(gpointer*)enumlist);
             }
         }
         else if(isEmnu) // 2014-3-19 lcy 读取一个枚举.
@@ -309,7 +321,10 @@ void factoryReadDataFromFile(FactoryStructItemAll *allstructlist)
                     kvmap->key = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
                     kvmap->value = g_locale_to_utf8(sbuf[1],-1,NULL,NULL,NULL);
                 }
-              fsel->list  =  g_list_append(fsel->list ,kvmap);
+             // fsel->list  =  g_list_append(fsel->list ,kvmap);
+
+             enumlist = g_list_append(enumlist,kvmap);
+           // g_hash_table_insert(hashValue,(char*)kvmap->key,(char*)kvmap->value);
               g_strfreev(sbuf);
         }
         else{   // 2013-3-20 lcy  这里把每一项结构体数据放进链表.
@@ -331,7 +346,7 @@ void factoryReadDataFromFile(FactoryStructItemAll *allstructlist)
         item->itemMin = g_locale_to_utf8(sbuf[4],-1,NULL,NULL,NULL);
         item->itemMax = g_locale_to_utf8(sbuf[5],-1,NULL,NULL,NULL);
         item->itemComment = g_locale_to_utf8(sbuf[6],-1,NULL,NULL,NULL);
-        fssl->list = g_list_append(fssl->list,item);
+        datalist = g_list_append(datalist,item);
         g_strfreev(sbuf);
         }
 
@@ -579,9 +594,15 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
     }
 
     tmp = xmlGetProp(node, (xmlChar *)"name");
-
-    GList *slist = structList.structList;
-
+//    FactoryCreateSheets fcs;
+//    fcs.callback_func = factory_add_sheet_obj;
+//    fcs.otype = otype;
+//    fcs.sheet = sheet;
+//    fcs.sheet_obj = sheet_obj;
+//    fcs.tmp = tmp;
+//
+//    g_hash_table_foreach(structList.structTable,factory_create_obj_from_hashtable,&fcs);
+     GList *slist = structList.structList;
      FactoryStructItemList *fssl = NULL;
     for(;slist != NULL; slist = slist->next) // 2014-3-21 lcy 这里根据结构体个数创那图标.
     {
@@ -642,5 +663,69 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
     register_sheet(sheet);
 
   xmlFreeDoc(doc);
+}
+
+static int increnum = 0;
+
+static void factory_add_sheet_obj(Sheet *sheet,SheetObject *sheet_obj,DiaObjectType *otype,gchar *tmp,gchar *sheet_name)
+{
+    gchar *iconname = NULL;
+    gchar *sheetdir = dia_get_data_directory("sheets");
+    iconname = g_strconcat(sheetdir,G_DIR_SEPARATOR_S, (char *) tmp,NULL);
+    g_free(sheetdir);
+    sheet_obj = g_new(SheetObject,1);
+    sheet_obj->object_type = g_strdup((char *) tmp);
+    sheet_obj->description = g_strdup(sheet_name);
+//    xmlFree(objdesc);     objdesc = NULL;
+
+    sheet_obj->pixmap = NULL;
+   // sheet_obj->user_data = GINT_TO_POINTER(intdata); /* XXX modify user_data type ? */
+    sheet_obj->user_data = GINT_TO_POINTER(increnum++);
+    sheet_obj->user_data_type = TRUE ? USER_DATA_IS_INTDATA /* sure,   */
+                                            : USER_DATA_IS_OTHER;  /* why not */
+    sheet_obj->pixmap_file = iconname;
+    sheet_obj->has_icon_on_sheet = FALSE;
+    sheet_obj->line_break = FALSE;
+
+//    if ((otype = object_get_type((char *) tmp)) == NULL) {
+//      /* Don't complain. This does happen when disabling plug-ins too.
+//      g_warning("object_get_type(%s) returned NULL", tmp); */
+//      if (sheet_obj->description) g_free(sheet_obj->description);
+//      g_free(sheet_obj->pixmap_file);
+//      g_free(sheet_obj->object_type);
+//      g_free(sheet_obj);
+//      if (tmp)
+//        xmlFree(tmp);
+//      continue;
+//    }
+
+    /* set defaults */
+    if (sheet_obj->pixmap_file == NULL) {
+      g_assert(otype->pixmap || otype->pixmap_file);
+      sheet_obj->pixmap = otype->pixmap; // 2014-3-20 lcy 这里是加xpm 的图片.
+      sheet_obj->pixmap_file = otype->pixmap_file;
+      sheet_obj->has_icon_on_sheet = FALSE;
+    }
+    if (sheet_obj->user_data == NULL
+        && sheet_obj->user_data_type != USER_DATA_IS_INTDATA)
+      sheet_obj->user_data = otype->default_user_data;
+    else
+      sheet_obj->user_data_type = USER_DATA_IS_INTDATA;
+
+   // if (tmp) xmlFree(tmp);
+
+    /* we don't need to fix up the icon and descriptions for simple objects,
+       since they don't have their own description, and their icon is
+       already automatically handled. */
+    sheet_append_sheet_obj(sheet,sheet_obj);
+}
+
+static void factory_create_obj_from_hashtable(gpointer key,
+                gpointer value,
+                gpointer user_data)
+{
+    gchar *name = (gchar*)key;
+    FactoryCreateSheets *fcs = (FactoryCreateSheets *)user_data;
+    fcs->callback_func(fcs->sheet,fcs->sheet_obj,fcs->otype,fcs->tmp,name);
 }
 

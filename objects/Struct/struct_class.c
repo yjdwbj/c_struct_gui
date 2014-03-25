@@ -86,6 +86,8 @@ static void structclass_set_props(STRUCTClass *structclass, GPtrArray *props);
 static void fill_in_fontdata(STRUCTClass *structclass);
 static int structclass_num_dynamic_connectionpoints(STRUCTClass *class);
 
+
+
 static ObjectChange *_structclass_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
 ObjectChange *
 factory_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
@@ -1770,7 +1772,11 @@ fill_in_fontdata(STRUCTClass *structclass)
  *      handling global STRUCT functionallity at some point.
  */
 
-
+static void factory_set_name(gpointer key,gpointer value,gpointer user_data)
+{
+    STRUCTClass *structclass = (STRUCTClass *)user_data;
+    structclass->name = (gchar*)key;
+}
 
 
 static DiaObject *  // 2014-3-19 lcy 这里初始化结构
@@ -1817,8 +1823,11 @@ structclass_create(Point *startpoint,
           break;
       }
   }
-  structclass->widgetmap = NULL;
 
+  /* 2014-3-26 lcy  这里初始哈希表用存widget与它的值*/
+ // structclass->widgetmap = g_hash_table_new(g_direct_hash,g_direct_equal);
+  structclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+ // structclass->widgetmap = NULL;
 
   obj->type = &structclass_type;
   obj->ops = &structclass_ops;
@@ -2130,55 +2139,62 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
   obj_node = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_struct", NULL);
   xmlSetProp(obj_node, (const xmlChar *)"name", (xmlChar *)structclass->name);
 
-  if(NULL == structclass->widgetmap)
+  GList *targetlist = g_hash_table_lookup(structList.structTable,(gpointer)structclass->name);
+  if(targetlist)
   {
-      FactoryStructItemAll *tmp =  structclass->EnumsAndStructs;
-
-            GList *finditem = tmp->structList;
-            for(;finditem!=NULL; finditem = finditem->next)
-            {
-                FactoryStructItemList *t = finditem->data;
-                if(!g_ascii_strncasecmp(t->name,structclass->name,strlen(t->name)))
-                {
-                    GList *thisstruct = t->list;
-                    for(;thisstruct != NULL; thisstruct = thisstruct->next)
-                    {
-                        FactoryStructItem *item = thisstruct->data;
-                          obj_node = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
-                          xmlSetProp(obj_node, (const xmlChar *)"name", (xmlChar *)item->itemName);
-
-                         data_add_string(new_attribute(obj_node,"type"),item->itemType);
-                       //  data_add_string(new_attribute(obj_node,"name"),item->itemName);
-                         data_add_string(new_attribute(obj_node,"value"),item->itemValue);
-                    }
-                  break;
-                }
-            }
-
-
-  }
-  else {
-
-      GList* widgetmap = structclass->widgetmap;
-      for(;widgetmap != NULL; widgetmap = widgetmap->next)
+      GList *dstList = NULL;
+      factory_get_enum_values(targetlist,dstList);
+      for(;dstList != NULL; dstList = dstList->next)
       {
-          WidgetAndValue *wav = widgetmap->data;
-         obj_node = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
-         xmlSetProp(obj_node, (const xmlChar *)"name", (xmlChar *)wav->name);
-
-           data_add_string(new_attribute(obj_node, "name"),wav->name);
-           data_add_string(new_attribute(obj_node, "type"),wav->type);
-           data_add_string(new_attribute(obj_node, "value"),wav->value);
-            //  factory_widget_value_write(obj_node);
+                SaveStruct *sss= dstList->data;
+                ObjectNode childnode = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+                xmlSetProp(childnode, (const xmlChar *)"name", (xmlChar *)sss->name);
+                data_add_string(new_attribute(childnode,"type"),sss->type);
+              //  data_add_string(new_attribute(childnode,"value"),sss->value);
+                data_add_string(new_attribute(childnode,"vtype"), g_strdup_printf("%d",sss->celltype));
       }
 
   }
 
 
-
-
 }
 
+void factory_get_enum_values(GList* src,GList *dst)
+{
+    /* 2014-3-26 lcy 这里处理控件上的值，用来做保存文件时的数据源。*/
+                    GList *thisstruct = src;
+                    for(;thisstruct != NULL; thisstruct = thisstruct->next)
+                    {
+                        SaveStruct *ss = g_new0(SaveStruct,1);
+                        FactoryStructItem *item = thisstruct->data;
+                        gchar **split = g_strsplit(item->itemType,".",-1);
+                        int section = g_strv_length(split);
+                        /* 查询枚举哈希表的值*/
+                         GList *enumitem =  g_hash_table_lookup(structList.enumTable,(gpointer)split[section-1]);
+                         if(enumitem)
+                         {
+                             GList *tmp  = enumitem;
+                             ss->celltype = ENUM;
+                            for(;tmp != NULL ; tmp = tmp->next)
+                            {
+                               ss->value.index = g_list_index(tmp,(gpointer)item->itemValue);
+                            }
+
+
+                         }
+                         else if(factory_find_array_flag(item->itemName))
+                         {
+                            ss->celltype = ENTRY;
+                         }
+                         else{
+                            ss->celltype = SPINBOX;
+                         }
+                         ss->name = item->itemName;
+                         ss->type = item->itemType;
+                         g_strfreev(split);
+                         dst = g_list_append(dst,ss);
+                    }
+}
 
 static void
 structclass_save(STRUCTClass *structclass, ObjectNode obj_node,

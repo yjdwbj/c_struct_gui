@@ -209,14 +209,28 @@ typedef enum{
     SPINBOX
 }CellType;
 
-typedef struct _WidgetAndValue WidgetAndValue;
+//typedef struct _WidgetAndValue WidgetAndValue;
+//
+//struct _WidgetAndValue{
+//    gpointer *widget;
+//
+//    gchar* name;
+//    CellType celltype;
+//    gchar *value;
+//};
 
-struct _WidgetAndValue{
+typedef struct _SaveStruct SaveStruct;
+typedef struct _SaveStruct{
     gpointer *widget;
     gchar* type;
     gchar* name;
     CellType celltype;
-    gchar *value;
+     union{
+        gchar *text;
+        gdouble number;
+        gint index;
+    }value;
+
 };
 
 /**
@@ -324,6 +338,9 @@ attributes_list_selection_changed_callback(GtkWidget *gtklist,
 					   STRUCTClass *structclass);
 
 extern void structclass_sanity_check(STRUCTClass *c, gchar *msg);
+
+
+gboolean factory_find_array_flag(const gchar *data);
 
 GtkWidget *
 factory_get_properties(STRUCTClass *structclass, gboolean is_default);

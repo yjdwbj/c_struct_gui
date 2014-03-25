@@ -326,7 +326,7 @@ create_font_props_row (GtkTable   *table,
 }
 
 
-static gboolean factory_find_array_flag(const gchar *data)
+gboolean factory_find_array_flag(const gchar *data)
 {
     gboolean  lflag = FALSE;
     gboolean  rflag = FALSE;
@@ -348,40 +348,71 @@ static gboolean factory_find_array_flag(const gchar *data)
 
 
 static void
+factory_comobox_appen_text(gpointer key,gpointer value, gpointer user_data)
+{
+    gchar *skey = (gchar*)key;
+    GtkWidget *widget = (GtkWidget *)user_data;
+    gtk_combo_box_append_text(GTK_COMBO_BOX(widget),skey);
+}
+
+static void
+factory_find_index_from_list(gpointer key,gpointer value)
+{
+
+}
+
+
+static void
+factory_set_twoxtwo_table(GtkWidget*table ,GtkWidget* first,GtkWidget *second,int row)
+{
+  if(  row == 0 || !(row % 2 ))
+  {
+        gtk_table_attach_defaults(GTK_TABLE(table),first,0,1,row,row+1);
+        gtk_table_attach_defaults(GTK_TABLE(table),second,1,2,row,row+1);
+  }else
+  {
+        gtk_table_attach_defaults(GTK_TABLE(table),first,2,3,row-1,row); // 2014-3-20 lcy 第三列
+        gtk_table_attach_defaults(GTK_TABLE(table),second,3,4,row-1,row);
+  }
+}
+
+static void
 factory_create_struct_dialog(STRUCTClass *class, FactoryStructItem *item,int row )   // 创建结构体的每一个项.
 {
+
+  SaveStruct *sss = g_new0(SaveStruct,1);
   STRUCTClassDialog *dialog = class->properties_dialog;
   GtkWidget *itemName;
   GtkWidget *columTwo;
-  GtkTooltips *tool_tips;
-  tool_tips = gtk_tooltips_new();
-  GList *enumList = class->EnumsAndStructs->enumList;
-   gchar **split = g_strsplit(item->itemType,".",-1);
-    int section = g_strv_length(split);
+  GtkTooltips *tool_tips = gtk_tooltips_new();
+  GHashTable *enumtable = class->EnumsAndStructs->enumTable;
+  gchar **split = g_strsplit(item->itemType,".",-1);
+  int section = g_strv_length(split);
   CellType datatype  =SPINBOX;
-    for (;enumList != NULL; enumList = enumList->next)
+   /* 2014-3-26 lcy 通过名字去哈希表里找链表*/
+    GList *targettable = g_hash_table_lookup(enumtable,split[section-1]);
+    if(targettable)
     {
-           FactoryStructEnumList *fset = enumList->data;
-          if(!g_ascii_strncasecmp(split[section-1],fset->name,strlen(item->itemType))) // 2014-3-21 lcy 对比最后一个点枚举名。
-           {
-               datatype = ENUM;
+              datatype = ENUM;
               columTwo = gtk_combo_box_new_text();
               gtk_combo_box_popdown(GTK_COMBO_BOX(columTwo));
-
-              GList *tenum = fset->list;
-              for(;tenum != NULL; tenum = tenum->next)
+              //g_hash_table_foreach(targettable,factory_comobox_appen_text,columTwo);
+              GList *t = targettable;
+              FactoryStructEnum *cur = NULL;
+              for(; t != NULL ; t = t->next)
               {
-                  FactoryStructEnum *o = tenum->data;
-                  gtk_combo_box_append_text(GTK_COMBO_BOX(columTwo),o->key);
+                  FactoryStructEnum *kvmap = t->data;
+                  if(!g_ascii_strncasecmp(item->itemValue,kvmap->key,strlen(item->itemValue)))
+                    cur = t->data;
+                  gtk_combo_box_append_text(GTK_COMBO_BOX(columTwo),kvmap->key);
               }
-              gtk_combo_box_set_active(GTK_COMBO_BOX(columTwo),0);
-                break;
-           }
 
-
+              sss->value.index = g_list_index(targettable,cur);
+              gtk_combo_box_set_active(GTK_COMBO_BOX(columTwo),sss->value.index);
+              //gtk_combo_box_set_active(GTK_COMBO_BOX(columTwo),0);
     }
 
-      if(datatype != ENUM ) // 不是枚举型的。
+    if(datatype != ENUM ) // 不是枚举型的。
       {
 
             if( factory_find_array_flag(item->itemName))
@@ -397,6 +428,7 @@ factory_create_struct_dialog(STRUCTClass *class, FactoryStructItem *item,int row
 //                       gtk_entry_ (GTK_ENTRY(columTwo),GTK_INPUT_PURPOSE_ALPHA|
 //                                                   GTK_INPUT_PURPOSE_DIGITS);
                        gtk_entry_set_text(GTK_ENTRY(columTwo),item->itemValue);  // set default value;
+                       sss->value.text = g_locale_to_utf8(item->itemValue,-1,NULL,NULL,NULL);
                }
                else if (datatype == SPINBOX ){
                  GtkObject *adj;
@@ -405,32 +437,32 @@ factory_create_struct_dialog(STRUCTClass *class, FactoryStructItem *item,int row
                  columTwo = GTK_SPIN_BUTTON(gtk_spin_button_new( GTK_ADJUSTMENT( adj), 0.1, 0));
                  gtk_spin_button_set_numeric( GTK_SPIN_BUTTON( columTwo), TRUE);
                  gtk_spin_button_set_snap_to_ticks( GTK_SPIN_BUTTON(columTwo), TRUE);
+                 sss->value.number = (gdouble)gtk_spin_button_get_value_as_float(GTK_SPIN_BUTTON(columTwo));
                }
       }
-
-
     g_strfreev(split);
-        gtk_tooltips_set_tip(tool_tips,columTwo,_(item->itemComment),NULL);
+
+
+  gtk_tooltips_set_tip(tool_tips,columTwo,_(item->itemComment),NULL);
 
   itemName = gtk_label_new(item->itemCname);
   gtk_tooltips_set_tip(tool_tips,itemName,_(item->itemComment),NULL);
-  if(  row == 0 || !(row % 2 ))
-  {
-        gtk_table_attach_defaults(GTK_TABLE(dialog->mainTable),itemName,0,1,row,row+1);
-        gtk_table_attach_defaults(GTK_TABLE(dialog->mainTable),columTwo,1,2,row,row+1);
-  }else
-  {
-        gtk_table_attach_defaults(GTK_TABLE(dialog->mainTable),itemName,2,3,row-1,row); // 2014-3-20 lcy 第三列
-        gtk_table_attach_defaults(GTK_TABLE(dialog->mainTable),columTwo,3,4,row-1,row);
-  }
 
-  WidgetAndValue *wav = g_new0(WidgetAndValue,1);
-  wav->widget = columTwo;
-  wav->name = item->itemName;
-  wav->type = item->itemType;
-  wav->value = item->itemValue;
-  wav->celltype = datatype;
-  class->widgetmap = g_list_append(class->widgetmap,wav);
+  factory_set_twoxtwo_table(dialog->mainTable,itemName,columTwo,row);
+
+
+  sss->widget = (gpointer)columTwo;
+  sss->name = item->itemName;
+  sss->type = item->itemType;
+  sss->celltype = datatype;
+
+  g_hash_table_insert(class->widgetmap,g_strjoin("##",item->itemType,item->itemName,NULL),sss);
+  //g_free(key);
+#ifdef DEBUG
+  int s = g_hash_table_size(class->widgetmap);
+#endif // DEBUG
+
+//  class->widgetmap =  g_list_append(class->widgetmap,sss);
   gtk_container_add(GTK_OBJECT(dialog->dialog),dialog->mainTable);
 }
 
@@ -2960,7 +2992,55 @@ fill_in_dialog(STRUCTClass *structclass)
 //  operations_fill_in_dialog(structclass);
 //  templates_fill_in_dialog(structclass);
 }
+/* 2014-3-26 lcy 这里查找含有这个关键字的链表节点*/
+static gpointer factory_find_list_node(GList *list,gchar *data)
+{
+    GList *t = list;
+    for(;t != NULL ; t = t->next)
+    {
+        FactoryStructEnum *p = t->data;
+        if(!g_ascii_strncasecmp(data,p->key,strlen(data)))
+            return t->data;
+    }
+}
 
+static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer user_data)
+{
+    SaveStruct *sss = (SaveStruct *)value;
+    switch(sss->celltype)
+    {
+    case ENUM:
+        sss->value.index = gtk_combo_box_get_active(GTK_COMBO_BOX(sss->widget));
+        break;
+    case ENTRY:
+        sss->value.text = g_locale_to_utf8(gtk_entry_get_text(GTK_ENTRY (sss->widget)),-1,NULL,NULL,NULL);
+    break;
+    case SPINBOX:
+        sss->value.number =gtk_spin_button_get_value(GTK_SPIN_BUTTON(sss->widget));
+        break;
+        default:
+            break;
+    }
+}
+
+static void factory_write_props_to_widget(gpointer key,gpointer value ,gpointer user_data)
+{
+     SaveStruct *sss = (SaveStruct *)value;
+    switch(sss->celltype)
+    {
+    case ENUM:
+        gtk_combo_box_set_active(GTK_COMBO_BOX(sss->widget),sss->value.index);
+        break;
+    case ENTRY:
+        gtk_entry_set_text(GTK_ENTRY (sss->widget),sss->value.text);
+    break;
+    case SPINBOX:
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(sss->widget),sss->value.number);
+        break;
+        default:
+            break;
+    }
+}
 
 /* 2014-3-25 lcy 这里是更新界面上的值*/
 ObjectChange *
@@ -2974,22 +3054,7 @@ factory_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget)
   STRUCTClassState *old_state = NULL;
   prop_dialog = structclass->properties_dialog;
   old_state = structclass_get_state(structclass);
-  GList *widgetmap = structclass->widgetmap;
-  for(;widgetmap != NULL;widgetmap = widgetmap->next)
-  {
-      WidgetAndValue *wav = widgetmap->data;
-      gchar *old = wav->value;
-     // g_free(wav->value);
-      if(wav->celltype == ENTRY)
-      {
-         wav->value = gtk_entry_get_text(GTK_ENTRY (wav->widget));
-      }
-      else{
-         wav->value = gtk_combo_box_get_active_text(GTK_COMBO_BOX(wav->widget));
-      }
-      g_free(old);
-  }
-
+  g_hash_table_foreach(structclass->widgetmap,factory_read_props_from_widget,NULL);
 }
 
 
@@ -3124,6 +3189,7 @@ factory_get_properties(STRUCTClass *class, gboolean is_default)
 		        "destroy",
 			GTK_SIGNAL_FUNC(destroy_properties_dialog),
 			(gpointer) class);
+ //  int mapsize =   g_hash_table_size(class->widgetmap);
    factory_create_and_fill_dialog(class,FALSE);
   gtk_widget_show_all (class->properties_dialog->dialog);
 
@@ -3132,26 +3198,94 @@ factory_get_properties(STRUCTClass *class, gboolean is_default)
 }
 
 
+static void factory_set_exist_widgets(STRUCTClass *class, FactoryStructItem *item,int row)
+{
+    GtkWidget *itemName;
+    GtkWidget *columTwo;
+    GtkTooltips *tool_tips = gtk_tooltips_new();
+
+    /* 2014-3-26 lcy 用两个区间做键值。*/
+     SaveStruct *sss = g_hash_table_lookup(class->widgetmap,g_strjoin("##",item->itemType,item->itemName,NULL));
+
+    if(sss)
+    {
+        itemName = gtk_label_new(item->itemCname);
+        gtk_tooltips_set_tip(tool_tips,itemName,_(item->itemComment),NULL);
+
+        switch(sss->celltype)
+        {
+        case ENUM:
+              columTwo = gtk_combo_box_new_text();
+              gtk_combo_box_popdown(GTK_COMBO_BOX(columTwo));
+              gchar **ttt = g_strsplit(sss->type,".",-1);
+              int section = g_strv_length(ttt);
+              GList *targettable = g_hash_table_lookup(class->EnumsAndStructs->enumTable,ttt[section-1]);
+              g_strfreev(ttt);
+              if(targettable)
+              {
+                  GList *p = targettable;
+                  for(;p != NULL ; p= p->next)
+                  {
+                      FactoryStructEnum *kvmap = p->data;
+                      gtk_combo_box_append_text(GTK_COMBO_BOX(columTwo),kvmap->key);
+                  }
+
+              }
+              gtk_combo_box_set_active(GTK_COMBO_BOX(columTwo),sss->value.index);
+            break;
+        case ENTRY:
+            {
+                       gchar **ooo = g_strsplit_set (item->itemName,"[]",-1);
+                       gdouble maxlen = g_strtod(ooo[1],NULL); // 得到文本框的大小。
+                       g_strfreev(ooo);
+                       columTwo = gtk_entry_new();
+                       gtk_entry_set_max_length (GTK_ENTRY(columTwo),maxlen);
+//                       gtk_entry_ (GTK_ENTRY(columTwo),GTK_INPUT_PURPOSE_ALPHA|
+//                                                   GTK_INPUT_PURPOSE_DIGITS);
+                       gtk_entry_set_text(GTK_ENTRY(columTwo),sss->value.text);  // set default value;
+            }
+            break;
+        case SPINBOX:
+            {
+                GtkObject *adj =gtk_adjustment_new( sss->value.number , g_strtod(item->itemMin,NULL),
+                                           g_strtod(item->itemMax,NULL), 1.0, 5.0, 0);
+                 columTwo = GTK_SPIN_BUTTON(gtk_spin_button_new( GTK_ADJUSTMENT( adj), 0.1, 0));
+                 gtk_spin_button_set_numeric( GTK_SPIN_BUTTON( columTwo), TRUE);
+                 gtk_spin_button_set_snap_to_ticks( GTK_SPIN_BUTTON(columTwo), TRUE);
+            }
+            break;
+        }
+        sss->widget = columTwo;
+        factory_set_twoxtwo_table(class->properties_dialog->mainTable,itemName,columTwo,row);
+        gtk_container_add(GTK_OBJECT(class->properties_dialog->dialog),class->properties_dialog->mainTable);
+    }
+}
+
 void factory_create_and_fill_dialog(STRUCTClass *class, gboolean is_default)
 {
     STRUCTClassDialog *prop_dialog = class->properties_dialog;
     int row =0;
-    GList *tlist = class->EnumsAndStructs->structList;
-    for(;tlist != NULL;tlist = tlist->next)
+
+    GList *targetlist =  g_hash_table_lookup(class->EnumsAndStructs->structTable,(gpointer)class->name);
+    int mapsize = g_hash_table_size(class->widgetmap);
+    if(targetlist)
     {
-        FactoryStructItemList *fsil  = tlist->data;
-        if(0 == strcmp(fsil->name,class->name))
-        {
-            GList *item = fsil->list;
+            GList *item = targetlist;
             int num = g_list_length(item);
             prop_dialog->mainTable = gtk_table_new(num,4,FALSE);  // 2014-3-19 lcy 根据要链表的数量,创建多少行列表.
+
+            if(mapsize == 0 )
             for(;item != NULL ; item = item->next,row++)
             {
                 factory_create_struct_dialog(class,item->data,row);
             }
-            break;
-        }
+            else
+            for(;item != NULL ; item = item->next,row++)
+            {
+                factory_set_exist_widgets(class,item->data,row);
+            }
     }
+
 
     gtk_table_set_col_spacing(GTK_TABLE(prop_dialog->mainTable),1,20);
 }
