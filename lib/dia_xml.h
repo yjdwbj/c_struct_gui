@@ -61,6 +61,9 @@ typedef enum{
   DATATYPE_DICT
 } DataType;
 
+DIAVAR AttributeNode factory_find_custom_node(ObjectNode obj_node,const char *nodename);
+
+
 DIAVAR AttributeNode object_find_attribute(ObjectNode obj_node,
 				    const char *attrname);
 DIAVAR AttributeNode composite_find_attribute(DataNode composite_node,

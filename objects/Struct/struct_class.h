@@ -219,6 +219,14 @@ typedef enum{
 //    gchar *value;
 //};
 
+typedef struct _SaveEnum SaveEnum;
+struct _SaveEnum{
+    GList *enumList;
+    int index;
+    gchar* evalue;
+    gchar* width;
+};
+
 typedef struct _SaveStruct SaveStruct;
 typedef struct _SaveStruct{
     gpointer *widget;
@@ -226,9 +234,9 @@ typedef struct _SaveStruct{
     gchar* name;
     CellType celltype;
      union{
-        gchar *text;
-        gdouble number;
-        gint index;
+        gchar *text; // entry value
+        gint number; // spinbox value
+        SaveEnum senum;  // enum value;
     }value;
 
 };
@@ -320,7 +328,6 @@ struct _STRUCTClass {
   gboolean destroyed;
   GList *widgetmap; // 2014-3-22 lcy 这里用一个链表来保存界面上所有的值。
   FactoryStructItemAll *EnumsAndStructs ;// 2014-3-21 lcy 这里包含一个文件里的所有结构体.
-  FactoryStructItemList *newValue;  // 2014-3-22 lcy 这里用来存储更新的值。
 };
 
 void structclass_dialog_free (STRUCTClassDialog *dialog);
@@ -341,6 +348,8 @@ extern void structclass_sanity_check(STRUCTClass *c, gchar *msg);
 
 
 gboolean factory_find_array_flag(const gchar *data);
+
+static  void factory_calculate_data(STRUCTClass *structclass);
 
 GtkWidget *
 factory_get_properties(STRUCTClass *structclass, gboolean is_default);

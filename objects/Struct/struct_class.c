@@ -68,8 +68,7 @@ static DiaObject *structclass_copy(STRUCTClass *structclass);
 static void structclass_save(STRUCTClass *structclass, ObjectNode obj_node,
 			  const char *filename);
 
-static void factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
-			  const char *filename);
+
 
 static DiaObject *structclass_load(ObjectNode obj_node, int version,
 			     const char *filename);
@@ -79,9 +78,19 @@ static ObjectChange *structclass_show_comments_callback(DiaObject *obj, Point *p
 
 static PropDescription *structclass_describe_props(STRUCTClass *structclass);
 
+
 static PropDescription *structtest_describe_props(STRUCTClass *structclass); // 2013-3-13 lcy change first function
 static void structclass_get_props(STRUCTClass *structclass, GPtrArray *props);
 static void structclass_set_props(STRUCTClass *structclass, GPtrArray *props);
+
+static PropDescription *factory_describe_props(STRUCTClass *structclass);
+static void factory_get_props(STRUCTClass *structclass, GPtrArray *props);
+static void factory_set_props(STRUCTClass *structclass, GPtrArray *props);
+static void factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
+			  const char *filename);
+
+static DiaObject * factory_struct_items_load(ObjectNode obj_node, int version,
+			  const char *filename);
 
 static void fill_in_fontdata(STRUCTClass *structclass);
 static int structclass_num_dynamic_connectionpoints(STRUCTClass *class);
@@ -95,8 +104,9 @@ factory_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
 static ObjectTypeOps structclass_type_ops =
 {
   (CreateFunc) structclass_create,
-  (LoadFunc)   structclass_load,
+//  (LoadFunc)   structclass_load,
  // (SaveFunc)   structclass_save
+  (LoadFunc)  factory_struct_items_load,
   (SaveFunc)  factory_struct_items_save
 };
 
@@ -1344,6 +1354,63 @@ structclass_update_data(STRUCTClass *structclass)
  *
  */
 
+
+static real
+factory_calculate_name_data(STRUCTClass *structclass)
+{
+  real   maxwidth = 0.0;
+  real   width = 0.0;
+  /* name box: */
+
+  if (structclass->name != NULL && structclass->name[0] != '\0') {
+    if (structclass->abstract) {
+      maxwidth = dia_font_string_width(structclass->name,
+                                       structclass->abstract_classname_font,
+                                       structclass->abstract_classname_font_height);
+    } else {
+      maxwidth = dia_font_string_width(structclass->name,
+                                       structclass->classname_font,
+                                       structclass->classname_font_height);
+    }
+  }
+
+  structclass->namebox_height = structclass->classname_font_height + 4*0.1;
+  if (structclass->stereotype_string != NULL) {
+    g_free(structclass->stereotype_string);
+  }
+  if (structclass->stereotype != NULL && structclass->stereotype[0] != '\0') {
+    structclass->namebox_height += structclass->font_height;
+    structclass->stereotype_string = g_strconcat ( STRUCT_STEREOTYPE_START,
+			                                    structclass->stereotype,
+			                                    STRUCT_STEREOTYPE_END,
+			                                    NULL);
+
+    width = dia_font_string_width (structclass->stereotype_string,
+                                   structclass->normal_font,
+                                   structclass->font_height);
+    maxwidth = MAX(width, maxwidth);
+  } else {
+    structclass->stereotype_string = NULL;
+  }
+
+  if (structclass->visible_comments && structclass->comment != NULL && structclass->comment[0] != '\0')
+  {
+    int NumberOfLines = 0;
+    gchar *CommentString = struct_create_documentation_tag (structclass->comment,
+                                                         structclass->comment_tagging,
+                                                         structclass->comment_line_length,
+                                                         &NumberOfLines);
+    width = dia_font_string_width (CommentString,
+                                    structclass->comment_font,
+                                    structclass->comment_font_height);
+
+    g_free(CommentString);
+    structclass->namebox_height += structclass->comment_font_height * NumberOfLines;
+    maxwidth = MAX(width, maxwidth);
+  }
+  return maxwidth;
+}
+
 static real
 structclass_calculate_name_data(STRUCTClass *structclass)
 {
@@ -1720,6 +1787,63 @@ structclass_calculate_data(STRUCTClass *structclass)
   }
 }
 
+
+static void
+factory_calculate_data(STRUCTClass *structclass)
+{
+      int    i;
+  int    num_templates;
+  real   maxwidth = 0.0;
+  real   width;
+  GList *list;
+
+  if (!structclass->destroyed)
+  {
+    maxwidth = MAX(factory_calculate_name_data(structclass),maxwidth);
+
+    structclass->element.height = structclass->namebox_height;
+
+    if (structclass->visible_attributes){
+      maxwidth = MAX(structclass_calculate_attribute_data(structclass), maxwidth);
+      structclass->element.height += structclass->attributesbox_height;
+    }
+    if (structclass->visible_operations){
+      maxwidth = MAX(structclass_calculate_operation_data(structclass), maxwidth);
+      structclass->element.height += structclass->operationsbox_height;
+    }
+    structclass->element.width  = maxwidth+0.5;
+    /* templates box: */
+    num_templates = g_list_length(structclass->formal_params);
+
+    structclass->templates_height =
+      structclass->font_height * num_templates + 2*0.1;
+    structclass->templates_height = MAX(structclass->templates_height, 0.4);
+
+
+    maxwidth = STRUCTCLASS_TEMPLATE_OVERLAY_X;
+    if (num_templates != 0)
+    {
+      i = 0;
+      list = structclass->formal_params;
+      while (list != NULL)
+      {
+        STRUCTFormalParameter *param = (STRUCTFormalParameter *) list->data;
+	gchar *paramstr = struct_get_formalparameter_string(param);
+
+        width = dia_font_string_width(paramstr,
+                                      structclass->normal_font,
+                                      structclass->font_height);
+        maxwidth = MAX(width, maxwidth);
+
+        i++;
+        list = g_list_next(list);
+	g_free (paramstr);
+      }
+    }
+    structclass->templates_width = maxwidth + 2*0.2;
+  }
+}
+
 static void
 fill_in_fontdata(STRUCTClass *structclass)
 {
@@ -1887,7 +2011,123 @@ structclass_create(Point *startpoint,
   *handle2 = NULL;
   structclass->EnumsAndStructs = NULL;
   structclass->EnumsAndStructs = &structList;
+  factory_read_initial_to_struct(structclass);
   return &structclass->element.object;
+}
+
+
+void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
+{
+
+    GList *tlist = g_hash_table_lookup(structclass->EnumsAndStructs->structTable,structclass->name);
+    int s = g_list_length(tlist);
+    if(tlist)
+    for(;tlist != NULL ; tlist = tlist->next)
+    {
+        FactoryStructItem *fst = tlist->data;
+        SaveStruct *sss = g_new0(SaveStruct,1);
+        sss->widget = NULL;
+
+        AttributeNode attr_node;
+        attr_node  = object_find_attribute(obj_node, fst->itemName);
+        if(attr_node)
+        {
+            xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"type");
+            if (key) {
+               sss->type  =  g_locale_to_utf8(key,-1,NULL,NULL,NULL);
+                xmlFree (key);
+            }
+            else{
+                sss->type = fst->itemType;
+            }
+            xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"wtype");
+            if(key)
+            {
+                xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"value");
+                if(0== g_ascii_strncasecmp(key,"ENUM",4))
+                {
+                    sss->celltype = ENUM;
+                    gchar **split = g_strsplit(fst->itemType,".",-1);
+                    int section = g_strv_length(split);
+                    /* 2014-3-26 lcy 通过名字去哈希表里找链表*/
+                    GList *targettable = g_hash_table_lookup(structclass->EnumsAndStructs->enumTable,split[section-1]);
+                    g_strfreev(split);
+                    if(targettable)
+                    {
+                        sss->value.senum.enumList = targettable;
+                    }
+
+
+
+
+                }
+                else if(0== g_ascii_strncasecmp(key,"ENTRY",5))
+                {
+                    sss->celltype = ENTRY;
+                }
+                else
+                {
+                    sss->celltype = SPINBOX;
+                }
+            }
+        }
+
+    }
+    g_hash_table_insert(structclass->widgetmap,g_strjoin("##",fst->itemType,fst->itemName,NULL),sss);
+}
+
+void factory_read_initial_to_struct(STRUCTClass *structclass) /*2014-3-26 lcy 拖入控件时取得它的值*/
+{
+    GList *tlist = g_hash_table_lookup(structclass->EnumsAndStructs->structTable,structclass->name);
+    int s = g_list_length(tlist);
+    if(tlist)
+    for(;tlist != NULL ; tlist = tlist->next)
+    {
+        FactoryStructItem *fst = tlist->data;
+        SaveStruct *sss = g_new0(SaveStruct,1);
+        sss->widget = NULL;
+        sss->type = fst->itemType;
+        sss->name = fst->itemName;
+
+        gchar **split = g_strsplit(fst->itemType,".",-1);
+        int section = g_strv_length(split);
+       /* 2014-3-26 lcy 通过名字去哈希表里找链表*/
+        GList *targettable = g_hash_table_lookup(structclass->EnumsAndStructs->enumTable,split[section-1]);
+        g_strfreev(split);
+        if(targettable)
+        {
+                  sss->celltype = ENUM;
+                  sss->value.senum.enumList = targettable;
+                  GList *t = targettable;
+                  for(; t != NULL ; t = t->next)
+                  {
+                      FactoryStructEnum *kvmap = t->data;
+                      if(!g_ascii_strncasecmp(fst->itemValue,kvmap->key,strlen(fst->itemValue)))
+                      {
+                         sss->value.senum.index = g_list_index(targettable,t->data);
+                         sss->value.senum.width = fst->itemMax;
+                         sss->value.senum.evalue = kvmap->value;
+                         break;
+                      }
+
+                }
+
+        }
+        else if( factory_find_array_flag(fst->itemName))
+        {
+                           /* 2014-3-25 lcy 这里是字符串，需用文本框显示了*/
+                           sss->celltype = ENTRY;
+                           gchar **ooo = g_strsplit_set (fst->itemName,"[]",-1);
+                           gdouble maxlen = g_strtod(ooo[1],NULL); // 得到文本框的大小。
+                           g_strfreev(ooo);
+                           sss->value.text = g_locale_to_utf8(fst->itemValue,-1,NULL,NULL,NULL);
+        }else
+        {
+                     sss->celltype = SPINBOX;
+                     sss->value.number = g_strtod(fst->itemValue,NULL);
+        }
+        g_hash_table_insert(structclass->widgetmap,g_strjoin("##",fst->itemType,fst->itemName,NULL),sss);
+    }
 }
 
 static void
@@ -2118,6 +2358,123 @@ structclass_copy(STRUCTClass *structclass)
   return &newstructclass->element.object;
 }
 
+static void factory_struct_save_to_xml(gpointer key,gpointer value,gpointer user_data)
+{
+    SaveStruct *sss = (SaveStruct*)value;
+    ObjectNode obj_node = (ObjectNode)user_data;
+    ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+     xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
+     //data_add_string(new_attribute(ccc, "type"),sss->type);
+     xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
+     switch(sss->celltype)
+     {
+     case ENUM:
+         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"ENUM");
+         xmlSetProp(ccc, (const xmlChar *)"width", (xmlChar *)sss->value.senum.width);
+         xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.senum.evalue);
+        break;
+     case ENTRY:
+         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"ENTRY");
+         xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.text);
+        break;
+     case SPINBOX:
+         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"SPINBOX");
+        // data_add_int(ccc,sss->value.number);
+        // data_add_string(new_attribute(ccc, "value"),g_strdup_printf("%d", sss->value.number));
+        char buffer[20+1]; /* Enought for 64bit int + zero */
+        g_snprintf(buffer, 20, "%d", sss->value.number);
+        xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)buffer);
+        g_free(buffer);
+        break;
+     }
+
+}
+
+
+static DiaObject *
+factory_struct_items_load(ObjectNode obj_node,int version, const char *filename )
+{
+  STRUCTClass *structclass;
+  Element *elem;
+  DiaObject *obj;
+  AttributeNode attr_node;
+  int i;
+  GList *list;
+
+
+
+  structclass = g_malloc0(sizeof(STRUCTClass));
+
+
+  elem = &structclass->element;
+  obj = &elem->object;
+
+  obj->type = &structclass_type;
+  obj->ops = &structclass_ops;
+
+  element_load(elem, obj_node);
+
+#ifdef STRUCT_MAINPOINT
+  element_init(elem, 8, STRUCTCLASS_CONNECTIONPOINTS + 1);
+#else
+  element_init(elem, 8, STRUCTCLASS_CONNECTIONPOINTS);
+#endif
+
+  structclass->properties_dialog =  NULL;
+
+  for (i=0;i<STRUCTCLASS_CONNECTIONPOINTS;i++) {
+    obj->connections[i] = &structclass->connections[i];
+    structclass->connections[i].object = obj;
+    structclass->connections[i].connected = NULL;
+  }
+
+  structclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+  fill_in_fontdata(structclass);
+
+  /* kind of dirty, object_load_props() may leave us in an inconsistent state --hb */
+  object_load_props(obj,obj_node);
+
+  /* parameters loaded via StdProp dont belong here anymore. In case of strings they
+   * will produce leaks. Otherwise the are just wasteing time (at runtime and while
+   * reading the code). Except maybe for some compatibility stuff.
+   * Although that *could* probably done via StdProp too.                      --hb
+   */
+
+  /* new since 0.94, don't wrap by default to keep old diagrams intact */
+  structclass->wrap_operations = FALSE;
+  structclass->fill_color = color_white;
+  attr_node  =   factory_find_custom_node(obj_node,"JL_struct");
+  if(attr_node)
+  {
+      xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
+      if (key) {
+           structclass->name =  g_locale_to_utf8(key,-1,NULL,NULL,NULL);
+            xmlFree (key);
+        }
+  }
+
+  fill_in_fontdata(structclass);
+
+  structclass->stereotype_string = NULL;
+
+
+  factory_calculate_data(structclass);
+
+  elem->extra_spacing.border_trans = structclass->line_width/2.0;
+  structclass_update_data(structclass);
+
+  for (i=0;i<8;i++) {
+    obj->handles[i]->type = HANDLE_NON_MOVABLE;
+  }
+
+#ifdef DEBUG
+  //structclass_sanity_check(structclass, "Loaded class");
+#endif
+
+  return &structclass->element.object;
+
+}
+
 static void
 factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
 	      const char *filename)
@@ -2139,22 +2496,10 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
   obj_node = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_struct", NULL);
   xmlSetProp(obj_node, (const xmlChar *)"name", (xmlChar *)structclass->name);
 
-  GList *targetlist = g_hash_table_lookup(structList.structTable,(gpointer)structclass->name);
-  if(targetlist)
-  {
-      GList *dstList = NULL;
-      factory_get_enum_values(targetlist,dstList);
-      for(;dstList != NULL; dstList = dstList->next)
-      {
-                SaveStruct *sss= dstList->data;
-                ObjectNode childnode = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
-                xmlSetProp(childnode, (const xmlChar *)"name", (xmlChar *)sss->name);
-                data_add_string(new_attribute(childnode,"type"),sss->type);
-              //  data_add_string(new_attribute(childnode,"value"),sss->value);
-                data_add_string(new_attribute(childnode,"vtype"), g_strdup_printf("%d",sss->celltype));
-      }
+  int mapsize = g_hash_table_size(structclass->widgetmap);
 
-  }
+
+  g_hash_table_foreach(structclass->widgetmap,factory_struct_save_to_xml,(gpointer)obj_node);
 
 
 }
@@ -2173,14 +2518,10 @@ void factory_get_enum_values(GList* src,GList *dst)
                          GList *enumitem =  g_hash_table_lookup(structList.enumTable,(gpointer)split[section-1]);
                          if(enumitem)
                          {
-                             GList *tmp  = enumitem;
-                             ss->celltype = ENUM;
-                            for(;tmp != NULL ; tmp = tmp->next)
-                            {
-                               ss->value.index = g_list_index(tmp,(gpointer)item->itemValue);
-                            }
-
-
+//                             GList *tmp  = enumitem;
+//                             ss->celltype = ENUM;
+//                             FactoryStructEnum *cur =  factory_find_list_node(tmp,item->itemValue);
+//                             ss->value.index = g_list_index(tmp,cur);
                          }
                          else if(factory_find_array_flag(item->itemName))
                          {
@@ -2314,7 +2655,6 @@ static DiaObject *structclass_load(ObjectNode obj_node, int version,
   GList *list;
 
 
-
   structclass = g_malloc0(sizeof(STRUCTClass));
 
   elem = &structclass->element;
@@ -2351,6 +2691,16 @@ static DiaObject *structclass_load(ObjectNode obj_node, int version,
    */
 
   /* new since 0.94, don't wrap by default to keep old diagrams intact */
+    attr_node  =   factory_find_custom_node(obj_node,"JL_struct");
+  if(attr_node)
+  {
+      xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
+      if (key) {
+           structclass->name =  g_locale_to_utf8(key,-1,NULL,NULL,NULL);
+            xmlFree (key);
+        }
+  }
+
   structclass->wrap_operations = FALSE;
   attr_node = object_find_attribute(obj_node, "wrap_operations");
   if (attr_node != NULL)

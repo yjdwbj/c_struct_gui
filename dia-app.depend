@@ -49,7 +49,7 @@
 	<gdk/gdk.h>
 	"diavar.h"
 
-1395642487 o:\tool\dvs50\lib\dia_xml.h
+1395821692 o:\tool\dvs50\lib\dia_xml.h
 	<glib.h>
 	"geometry.h"
 	"color.h"
@@ -419,7 +419,7 @@
 	"dia_xml.h"
 	"font.h"
 
-1395642293 source:o:\tool\dvs50\lib\dia_xml.c
+1395821901 source:o:\tool\dvs50\lib\dia_xml.c
 	<config.h>
 	<stdio.h>
 	<stdlib.h>
@@ -1827,7 +1827,7 @@
 	"intl.h"
 	<math.h>
 
-1395469684 source:o:\tool\dvs50\app\load_save.c
+1395827302 source:o:\tool\dvs50\app\load_save.c
 	<config.h>
 	<sys/stat.h>
 	<unistd.h>
@@ -2384,7 +2384,7 @@
 	"connectionpoint.h"
 	"dia_xml.h"
 
-1395741425 source:o:\tool\dvs50\objects\struct\struct_class.c
+1395833817 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2400,7 +2400,7 @@
 	"debug.h"
 	"sheet.h"
 
-1395741569 o:\tool\dvs50\objects\struct\struct_class.h
+1395831429 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2409,7 +2409,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1395750224 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1395814659 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>

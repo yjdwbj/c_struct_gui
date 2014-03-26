@@ -269,6 +269,30 @@ xmlDoParseFile(const char *filename)
  * @param attrname The name of the attribute node to find.
  * @return The node matching the given name, or NULL if none found.
  */
+
+AttributeNode
+factory_find_custom_node(ObjectNode obj_node,
+		      const char *nodename)
+{
+  AttributeNode attr;
+  while (obj_node && xmlIsBlankNode(obj_node))
+    obj_node = obj_node->next;
+  if (!obj_node) return NULL;
+
+  attr =  obj_node->xmlChildrenNode;
+  while (attr != NULL) {
+    if (xmlIsBlankNode(attr)) {
+      attr = attr->next;
+      continue;
+    }
+     if ( attr  && (strcmp((char *) attr->name, nodename)==0) ) {
+      return attr;
+    }
+    attr = attr->next;
+  }
+  return NULL;
+}
+
 AttributeNode
 object_find_attribute(ObjectNode obj_node,
 		      const char *attrname)

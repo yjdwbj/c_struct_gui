@@ -17,11 +17,11 @@ Tuesday:1
 Wednesday:5
 Thursday:6
 Friday:7
-Saturday:99
-Sunday:100
-dd:101
-ee:102
-ff:103
+Saturday:65538
+Sunday:65539
+dd:65540
+ee:65541
+ff:65542
 }
 
 :Enum:DAY
@@ -30,131 +30,141 @@ MON:1
 TUE:2
 WED:3
 THU:4
-FRI:5
-SUN:6
+FRI:512
+SUN:513
 }
 
 
 :Struct:AEC_Agc_A_Var
 {
-u32:dest_dac::8:3:3112:±ê×¢´íÎó£¬Ã»ÓĞ±äÁ¿ËµÃ÷;%2%#min:1,max=30#///%(log((x^4)*32767))/log2 * 65535%  
-u8:dest_dac_percent[16]:±ê×¢ÕıÈ·:::3112:ÔöÒæ1 %2%#min:1,max=30#///%(log((x^4)*32767))/log2 * 65535% 
+u32:dest_dac:±ê×¢ÖĞÎÄÃû:8:3:31:%2%#min:1,max=30#///%(log((x^4)*32767))/log2 * 65535% 
+Weekday:workday_year_month::Monday::4: 
+u8:dest_dac_percent[16]:±ê×¢ÕıÈ·ÖĞÎÄÃû:6:3:32:ÔöÒæ1 %2%#min:1,max=30#///%(log((x^4)*32767))/log2 * 65535% 
 u32:dest_adc:ÔöÒæ2:6:3:6500:±ê×¢ÕıÈ·;%2%///%(log((x^4)*32767))/log2 * 65535% 
-s32:dest_adc_percent[64]:ÔöÒæ3:6:3:6500:±ê×¢ÕıÈ·;%2%///%(log((x^4)*32767))/log2 * 65535% 
-AA1.u1:dac_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷:100:10:300:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-AA1.escapes:escape_control:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:'\b':::ÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ?beizhubei±¸×¢ 
-AA1.Weekday:workday_year_month:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:WED:::ÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;ÌáÊ¾Ä¬ÈÏÖµ²»¶Ôbeizhubei±¸×¢ 
-AA1.u32:mic_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷::10:300:Ã»ÓĞÄ¬ÈÏÖµ£¬4ÏîÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-AA1.u16:mic_digital_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷:2:1::Ã»ÓĞ max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-AA1.s8:aec_st_leakaget_decay[8]:FarEnd_Threshold ÖĞÎÄËµÃ÷:2200::3000:no min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-AA1.u5:aec_st_leakage_decay:FarEnd_Threshold ÖĞÎÄËµÃ÷::::no Ä¬ÈÏÖµ no min,no max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-AA1.u72:aec_st_leakage_decay::2200:100:3000:no name Ó¦¸Ã±¨´í£¡ ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-DAY:days_days:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷DAY:Thursday:::ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷DAY;beizhubei±¸×¢ 
+s32:dest_percent[64]:ÔöÒæ3:6:3:6500:±ê×¢ÕıÈ·;%2%///%(log((x^4)*32767))/log2 * 65535% 
+AA1.u16:dac_analog_gain[7]:FarEnd_Threshold ÖĞÎÄËµÃ÷:100:10:300:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+AA1.escapes:escape_control:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:NEWLINE::1:¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;beizhubei±¸×¢ 
+AA1.Weekday:workday_year_month:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:Sunday::4:Ú¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;ÌáÊ¾Ä¬ÈÏÖµ²»¶Ôbeizhubei±¸×¢ 
+AA1.u32:mic_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷A:0:10:300:Ã»ÓĞÄ¬ÈÏÖµ£¬4ÏîÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+AA1.s16:mic_digital_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷B:2:1:10:Ã»ÓĞ max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+AA1.s8:aec_st_leakage_decay[8]:FarEnd_Threshold ÖĞÎÄËµÃ÷C:2200:2:3000:no min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+AA1.u8:aec_st_leakage_u8:FarEnd_Threshold ÖĞÎÄËµÃ÷D:0:2:9:no Ä¬ÈÏÖµ no min,no max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+AA1.s32:aec_st_leakage_s32:FarEnd_Threshold ÖĞÎÄËµÃ÷E:2200:6:3000:±¨´íno min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+AA1.u32:aec_st_leakage_u32:ÔöÒæ:2200:100:3000:±¸×¢,È¡Öµ·¶Î§ 
+DAY:days_days:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷DAY:Thursday::2:ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷DAY;beizhubei±¸×¢ 
 }
 
 :Struct:AAA_GNU_PACKED_AEC_CFG
 {
-u1:dac_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷:100:10:300:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-escapes:escape_control:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:BACKSPACE:::ÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ?beizhubei±¸×¢ 
-Weekday:workday_year_month:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:WED:::ÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;ÌáÊ¾Ä¬ÈÏÖµ²»¶Ôbeizhubei±¸×¢ 
-u32:mic_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷::10:300:Ã»ÓĞÄ¬ÈÏÖµ£¬4ÏîÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-u16:mic_digital_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷:2:1::Ã»ÓĞ max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-s8:aec_st_leakaget_decay[8]:FarEnd_Threshold ÖĞÎÄËµÃ÷:2200::3000:no min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-u5:aec_st_leakage_decay:FarEnd_Threshold ÖĞÎÄËµÃ÷::::no Ä¬ÈÏÖµ no min,no max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-u72:aec_st_leakage_decay::2200:100:3000:no name Ó¦¸Ã±¨´í£¡ ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+u16:dac_analog_gain[7]:FarEnd_Threshold ÖĞÎÄËµÃ÷:100:10:300:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+escapes:escape_control:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:NEWLINE::1:¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;beizhubei±¸×¢ 
+Weekday:workday_year_month:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:Sunday::4:Ú¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;ÌáÊ¾Ä¬ÈÏÖµ²»¶Ôbeizhubei±¸×¢ 
+u32:mic_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷A:0:10:300:Ã»ÓĞÄ¬ÈÏÖµ£¬4ÏîÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+s16:mic_digital_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷B:2:1:10:Ã»ÓĞ max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+s8:aec_st_leakage_decay[8]:FarEnd_Threshold ÖĞÎÄËµÃ÷C:2200:2:3000:no min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+u8:aec_st_leakage_u8:FarEnd_Threshold ÖĞÎÄËµÃ÷D:0:2:9:no Ä¬ÈÏÖµ no min,no max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+s32:aec_st_leakage_s32:FarEnd_Threshold ÖĞÎÄËµÃ÷E:2200:6:3000:±¨´íno min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+u32:aec_st_leakage_u32:ÔöÒæ:2200:100:3000:±¸×¢,È¡Öµ·¶Î§ 
 }
 
 :Struct:BBBAEC_First_Amplifier_A_Var
 {
-u126:FarEnd_Threshold:a FarEnd_ÖĞÎÄËµÃ÷a::10:300:ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-A1.u1:dac_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷:100:10:300:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-A1.escapes:escape_control:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:BACKSPACE:::ÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ?beizhubei±¸×¢ 
-A1.Weekday:workday_year_month:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:WED:::ÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;ÌáÊ¾Ä¬ÈÏÖµ²»¶Ôbeizhubei±¸×¢ 
-A1.u32:mic_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷::10:300:Ã»ÓĞÄ¬ÈÏÖµ£¬4ÏîÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-A1.u16:mic_digital_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷:2:1::Ã»ÓĞ max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-A1.s8:aec_st_leakaget_decay[8]:FarEnd_Threshold ÖĞÎÄËµÃ÷:2200::3000:no min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-A1.u5:aec_st_leakage_decay:FarEnd_Threshold ÖĞÎÄËµÃ÷::::no Ä¬ÈÏÖµ no min,no max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-A1.u72:aec_st_leakage_decay::2200:100:3000:no name Ó¦¸Ã±¨´í£¡ ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-u136:NearEnd_Threshold2:b FarEnd_Threshold ÖĞÎÄËµÃ÷:100::300:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-u146:DT_max_gain:c FarEnd_Threshold ÖĞÎÄËµÃ÷:100:10::5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-DAY:yesterday:d FarEnd_Threshold ÖĞÎÄËµÃ÷:2:10:300:FarEnd_Threshold ÖĞÎÄËµÃ÷;5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-DAYq:tomorrow:10-300:100:1::00;e FarEnd_Threshold ÖĞÎÄËµÃ÷; 
+u16:gain:Öéº££»lllo:64:3:199: 
+s16:FarEnd_Threshold:a FarEnd_ÖĞÎÄËµÃ÷a:0:10:300:ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+A1.u16:dac_analog_gain[7]:FarEnd_Threshold ÖĞÎÄËµÃ÷:100:10:300:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+A1.escapes:escape_control:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:NEWLINE::1:¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;beizhubei±¸×¢ 
+A1.Weekday:workday_year_month:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:Sunday::4:Ú¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;ÌáÊ¾Ä¬ÈÏÖµ²»¶Ôbeizhubei±¸×¢ 
+A1.u32:mic_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷A:0:10:300:Ã»ÓĞÄ¬ÈÏÖµ£¬4ÏîÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+A1.s16:mic_digital_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷B:2:1:10:Ã»ÓĞ max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+A1.s8:aec_st_leakage_decay[8]:FarEnd_Threshold ÖĞÎÄËµÃ÷C:2200:2:3000:no min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+A1.u8:aec_st_leakage_u8:FarEnd_Threshold ÖĞÎÄËµÃ÷D:0:2:9:no Ä¬ÈÏÖµ no min,no max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+A1.s32:aec_st_leakage_s32:FarEnd_Threshold ÖĞÎÄËµÃ÷E:2200:6:3000:±¨´íno min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+A1.u32:aec_st_leakage_u32:ÔöÒæ:2200:100:3000:±¸×¢,È¡Öµ·¶Î§ 
+s32:NearEnd_Threshold2:b FarEnd_Threshold ÖĞÎÄËµÃ÷:100:1:300:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+u16:DT_max_gain:c FarEnd_Threshold ÖĞÎÄËµÃ÷:100:10:2:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+DAY:yesterday::SUN::2:arEnd_Threshold ÖĞÎÄËµÃ÷;5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
 }
 
 :Struct:CCCAEC_Second_Amplifier_A_Var
 {
-u18:FadeIn_Time[20]:FarEnd_Threshold ÖĞÎÄËµÃ÷1:10:0:100:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-u16:FadeIn_Threshold:FarEnd_Threshold ÖĞÎÄËµÃ÷2:20:1:200:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-A2.u1:dac_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷:100:10:300:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-A2.escapes:escape_control:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:NEWLINE:::ÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ?beizhubei±¸×¢ 
-A2.Weekday:workday_year_month:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:WED:::ÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;ÌáÊ¾Ä¬ÈÏÖµ²»¶Ôbeizhubei±¸×¢ 
-A2.u32:mic_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷::10:300:Ã»ÓĞÄ¬ÈÏÖµ£¬4ÏîÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-A2.u16:mic_digital_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷:2:1::Ã»ÓĞ max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-A2.s8:aec_st_leakaget_decay[8]:FarEnd_Threshold ÖĞÎÄËµÃ÷:2200::3000:no min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-A2.u5:aec_st_leakage_decay:FarEnd_Threshold ÖĞÎÄËµÃ÷::::no Ä¬ÈÏÖµ no min,no max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-A2.u72:aec_stt_leakage_decay::2200:100:3000:no name Ó¦¸Ã±¨´í£¡ ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-B1.u126:FarEnd_Threshold:a FarEnd_ÖĞÎÄËµÃ÷a::10:300:ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-B1.A1.u1:dac_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷:100:10:300:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-B1.A1.escapes:escape_control:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:NEWLINE:::ÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ?beizhubei±¸×¢ 
-B1.A1.Weekday:workday_year_month:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:WED:::ÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;ÌáÊ¾Ä¬ÈÏÖµ²»¶Ôbeizhubei±¸×¢ 
-B1.A1.u32:mic_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷::10:300:Ã»ÓĞÄ¬ÈÏÖµ£¬4ÏîÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-B1.A1.u16:mic_digital_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷:2:1::Ã»ÓĞ max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-B1.A1.s8:aec_st_leakaget_decay[8]:FarEnd_Threshold ÖĞÎÄËµÃ÷:2200::3000:no min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-B1.A1.u5:aec_st_leakage_decay:FarEnd_Threshold ÖĞÎÄËµÃ÷::::no Ä¬ÈÏÖµ no min,no max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-B1.A1.u72:aec_st_leakage_decay::2200:100:3000:no name Ó¦¸Ã±¨´í£¡ ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-B1.u136:NearEnd_Threshold2:b FarEnd_Threshold ÖĞÎÄËµÃ÷:100::300:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-B1.u146:DT_max_gain:c FarEnd_Threshold ÖĞÎÄËµÃ÷:100:10::5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-B1.DAY:yesterday:d FarEnd_Threshold ÖĞÎÄËµÃ÷:2:10:300:FarEnd_Threshold ÖĞÎÄËµÃ÷;5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-B1.DAYq:tomorrow:10-300:100:1::00;e FarEnd_Threshold ÖĞÎÄËµÃ÷; 
-D1.u16:gain:ÔöÒæ0::4:31:±ê×¢ÕıÈ·; 
-D1.u36:FarEnd_Threshold:ÔöÒæ0::4:31:±ê×¢ÕıÈ·; 
-D1.u46:max_gain:ÔöÒæ0::4:31:±ê×¢ÕıÈ·; 
-D1.My_3.u1:dac_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷:100:10:300:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-D1.My_3.escapes:escape_control:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:NEWLINE:::ÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ?beizhubei±¸×¢ 
-D1.My_3.Weekday:workday_year_month:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:WED:::ÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;ÌáÊ¾Ä¬ÈÏÖµ²»¶Ôbeizhubei±¸×¢ 
-D1.My_3.u32:mic_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷::10:300:Ã»ÓĞÄ¬ÈÏÖµ£¬4ÏîÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-D1.My_3.u16:mic_digital_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷:2:1::Ã»ÓĞ max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-D1.My_3.s8:aec_st_leakage_decay[8]:FarEnd_Threshold ÖĞÎÄËµÃ÷:2200::3000:no min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-D1.My_3.u5:aec_st_leakage_decay2:FarEnd_Threshold ÖĞÎÄËµÃ÷::::no Ä¬ÈÏÖµ no min,no max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-D1.My_3.u72:aec_st_leakage_decay::2200:100:3000:no name Ó¦¸Ã±¨´í£¡ ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-D1.u56:min_gain:ÔöÒæ0::4:31:±ê×¢ÕıÈ·; 
-u26:max_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷3:11:3:300:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-u36:amplifer_sw:FarEnd_Threshold ÖĞÎÄËµÃ÷4:120:5:400:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+u8:FadeIn_Time[20]:FarEnd_Threshold ÖĞÎÄËµÃ÷1:10:0:100:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+s16:FadeIn_Threshold:FarEnd_Threshold ÖĞÎÄËµÃ÷2:20:1:200:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+A2.u16:dac_analog_gain[7]:FarEnd_Threshold ÖĞÎÄËµÃ÷:100:10:300:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+A2.escapes:escape_control:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:NEWLINE::1:¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;beizhubei±¸×¢ 
+A2.Weekday:workday_year_month:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:Sunday::4:Ú¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;ÌáÊ¾Ä¬ÈÏÖµ²»¶Ôbeizhubei±¸×¢ 
+A2.u32:mic_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷A:0:10:300:Ã»ÓĞÄ¬ÈÏÖµ£¬4ÏîÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+A2.s16:mic_digital_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷B:2:1:10:Ã»ÓĞ max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+A2.s8:aec_st_leakage_decay[8]:FarEnd_Threshold ÖĞÎÄËµÃ÷C:2200:2:3000:no min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+A2.u8:aec_st_leakage_u8:FarEnd_Threshold ÖĞÎÄËµÃ÷D:0:2:9:no Ä¬ÈÏÖµ no min,no max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+A2.s32:aec_st_leakage_s32:FarEnd_Threshold ÖĞÎÄËµÃ÷E:2200:6:3000:±¨´íno min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+A2.u32:aec_st_leakage_u32:ÔöÒæ:2200:100:3000:±¸×¢,È¡Öµ·¶Î§ 
+B1.u16:gain:Öéº££»lllo:64:3:199: 
+B1.s16:FarEnd_Threshold:a FarEnd_ÖĞÎÄËµÃ÷a:0:10:300:ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+B1.A1.u16:dac_analog_gain[7]:FarEnd_Threshold ÖĞÎÄËµÃ÷:100:10:300:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+B1.A1.escapes:escape_control:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:NEWLINE::1:¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;beizhubei±¸×¢ 
+B1.A1.Weekday:workday_year_month:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:Sunday::4:Ú¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;ÌáÊ¾Ä¬ÈÏÖµ²»¶Ôbeizhubei±¸×¢ 
+B1.A1.u32:mic_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷A:0:10:300:Ã»ÓĞÄ¬ÈÏÖµ£¬4ÏîÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+B1.A1.s16:mic_digital_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷B:2:1:10:Ã»ÓĞ max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+B1.A1.s8:aec_st_leakage_decay[8]:FarEnd_Threshold ÖĞÎÄËµÃ÷C:2200:2:3000:no min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+B1.A1.u8:aec_st_leakage_u8:FarEnd_Threshold ÖĞÎÄËµÃ÷D:0:2:9:no Ä¬ÈÏÖµ no min,no max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+B1.A1.s32:aec_st_leakage_s32:FarEnd_Threshold ÖĞÎÄËµÃ÷E:2200:6:3000:±¨´íno min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+B1.A1.u32:aec_st_leakage_u32:ÔöÒæ:2200:100:3000:±¸×¢,È¡Öµ·¶Î§ 
+B1.s32:NearEnd_Threshold2:b FarEnd_Threshold ÖĞÎÄËµÃ÷:100:1:300:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+B1.u16:DT_max_gain:c FarEnd_Threshold ÖĞÎÄËµÃ÷:100:10:2:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+B1.DAY:yesterday::SUN::2:arEnd_Threshold ÖĞÎÄËµÃ÷;5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+D1.u16:gain:ÔöÒæ0:0:4:33:±ê×¢ÕıÈ·; 
+D1.s32:FarEnd_Threshold:ÔöÒæ0:0:4:31:±ê×¢ÕıÈ·; 
+D1.s16:max_gain:ÔöÒæ0:0:2:31:±ê×¢ÕıÈ·; 
+D1.My_3.u16:dac_analog_gain[7]:FarEnd_Threshold ÖĞÎÄËµÃ÷:100:10:300:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+D1.My_3.escapes:escape_control:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:NEWLINE::1:¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;beizhubei±¸×¢ 
+D1.My_3.Weekday:workday_year_month:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:Sunday::4:Ú¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;ÌáÊ¾Ä¬ÈÏÖµ²»¶Ôbeizhubei±¸×¢ 
+D1.My_3.u32:mic_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷A:0:10:300:Ã»ÓĞÄ¬ÈÏÖµ£¬4ÏîÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+D1.My_3.s16:mic_digital_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷B:2:1:10:Ã»ÓĞ max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+D1.My_3.s8:aec_st_leakage_decay[8]:FarEnd_Threshold ÖĞÎÄËµÃ÷C:2200:2:3000:no min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+D1.My_3.u8:aec_st_leakage_u8:FarEnd_Threshold ÖĞÎÄËµÃ÷D:0:2:9:no Ä¬ÈÏÖµ no min,no max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+D1.My_3.s32:aec_st_leakage_s32:FarEnd_Threshold ÖĞÎÄËµÃ÷E:2200:6:3000:±¨´íno min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+D1.My_3.u32:aec_st_leakage_u32:ÔöÒæ:2200:100:3000:±¸×¢,È¡Öµ·¶Î§ 
+D1.u32:min_gain:ÔöÒæ0:0:1:30:±ê×¢ÕıÈ·; 
+u16:max_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷3:11:3:300:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+u16:amplifer_sw:FarEnd_Threshold ÖĞÎÄËµÃ÷4:120:5:400:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
 }
 
 :Struct:DDDAEC_Third_Amplifier_A_Var
 {
-u16:gain:ÔöÒæ0::4:31:±ê×¢ÕıÈ·; 
-u36:FarEnd_Threshold:ÔöÒæ0::4:31:±ê×¢ÕıÈ·; 
-u46:max_gain:ÔöÒæ0::4:31:±ê×¢ÕıÈ·; 
-My_3.u1:dac_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷:100:10:300:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-My_3.escapes:escape_control:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:NEWLINE:::ÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ?beizhubei±¸×¢ 
-My_3.Weekday:workday_year_month:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:WED:::ÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;ÌáÊ¾Ä¬ÈÏÖµ²»¶Ôbeizhubei±¸×¢ 
-My_3.u32:mic_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷::10:300:Ã»ÓĞÄ¬ÈÏÖµ£¬4ÏîÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-My_3.u16:mic_digital_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷:2:1::Ã»ÓĞ max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-My_3.s8:aec_st_leakage_decay[8]:FarEnd_Threshold ÖĞÎÄËµÃ÷:2200::3000:no min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-My_3.u5:aec_st_leakage_decay:FarEnd_Threshold ÖĞÎÄËµÃ÷::::no Ä¬ÈÏÖµ no min,no max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-My_3.u72:aec_st_leakage_decay::2200:100:3000:no name Ó¦¸Ã±¨´í£¡ ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-u56:min_gain:ÔöÒæ0::4:31:±ê×¢ÕıÈ·; 
+u16:gain:ÔöÒæ0:0:4:33:±ê×¢ÕıÈ·; 
+s32:FarEnd_Threshold:ÔöÒæ0:0:4:31:±ê×¢ÕıÈ·; 
+s16:max_gain:ÔöÒæ0:0:2:31:±ê×¢ÕıÈ·; 
+My_3.u16:dac_analog_gain[7]:FarEnd_Threshold ÖĞÎÄËµÃ÷:100:10:300:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+My_3.escapes:escape_control:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:NEWLINE::1:¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;beizhubei±¸×¢ 
+My_3.Weekday:workday_year_month:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:Sunday::4:Ú¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;ÌáÊ¾Ä¬ÈÏÖµ²»¶Ôbeizhubei±¸×¢ 
+My_3.u32:mic_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷A:0:10:300:Ã»ÓĞÄ¬ÈÏÖµ£¬4ÏîÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+My_3.s16:mic_digital_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷B:2:1:10:Ã»ÓĞ max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+My_3.s8:aec_st_leakage_decay[8]:FarEnd_Threshold ÖĞÎÄËµÃ÷C:2200:2:3000:no min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+My_3.u8:aec_st_leakage_u8:FarEnd_Threshold ÖĞÎÄËµÃ÷D:0:2:9:no Ä¬ÈÏÖµ no min,no max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+My_3.s32:aec_st_leakage_s32:FarEnd_Threshold ÖĞÎÄËµÃ÷E:2200:6:3000:±¨´íno min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+My_3.u32:aec_st_leakage_u32:ÔöÒæ:2200:100:3000:±¸×¢,È¡Öµ·¶Î§ 
+u32:min_gain:ÔöÒæ0:0:1:30:±ê×¢ÕıÈ·; 
 }
 
 :Struct:AEC_Fourth_Amplifier_A_Var
 {
-u16:FarEnd_Threshold:ÔöÒæ0::4:31:±ê×¢ÕıÈ·; 
-u1:NearEnd_Threshold:ÔöÒæ0:8::311:±ê×¢ÕıÈ· %2%#min:1,max=30#///%(log((x^4)*32767))/log2 * 65535%=:400; 
-u116:max_gain:ÔöÒæ0:6:2::±ê×¢ÕıÈ· %2%#min:1,max=30#///%(log((x^4)*32767))/log2 * 65535% 
-u6:min_gain:ÔöÒæa::::±ê×¢ÕıÈ·%2%#min:1,max=30#///%(log((x^4)*32767))/log2 * 65535% 
-My_2.u16:gain:ÔöÒæ0::4:31:±ê×¢ÕıÈ·; 
-My_2.u36:FarEnd_Threshold:ÔöÒæ0::4:31:±ê×¢ÕıÈ·; 
-My_2.u46:max_gain:ÔöÒæ0::4:31:±ê×¢ÕıÈ·; 
-My_2.My_3.u1:dac_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷:100:10:300:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-My_2.My_3.escapes:escape_control:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:NEWLINE:::ÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ?beizhubei±¸×¢ 
-My_2.My_3.Weekday:workday_year_month:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:WED:::ÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;ÌáÊ¾Ä¬ÈÏÖµ²»¶Ôbeizhubei±¸×¢ 
-My_2.My_3.u32:mic_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷::10:300:Ã»ÓĞÄ¬ÈÏÖµ£¬4ÏîÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-My_2.My_3.u16:mic_digital_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷:2:1::Ã»ÓĞ max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-My_2.My_3.s8:aec_st_leakagee_decay[8]:FarEnd_Threshold ÖĞÎÄËµÃ÷:2200::3000:no min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-My_2.My_3.u5:aec_st_leakage_decay:FarEnd_Threshold ÖĞÎÄËµÃ÷::::no Ä¬ÈÏÖµ no min,no max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-My_2.My_3.u72:aec_st_leakage_decay::2200:100:3000:no name Ó¦¸Ã±¨´í£¡ ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
-My_2.u56:min_gain:ÔöÒæ0::4:31:±ê×¢ÕıÈ·; 
-DAY:tomorrow:::4:31: 
+u16:FarEnd_Threshold:ÔöÒæ0:0:4:31:±ê×¢ÕıÈ·; 
+s8:NearEnd_Threshold:ÔöÒæ0:8:3:311:±ê×¢ÕıÈ· %2%#min:1,max=30#///%(log((x^4)*32767))/log2 * 65535%=:400; 
+u16:max_gain:ÔöÒæ0:6:2:9:±ê×¢ÕıÈ· %2%#min:1,max=30#///%(log((x^4)*32767))/log2 * 65535% 
+u16:min_gain:ÔöÒæa:0:1:2:±ê×¢ÕıÈ·%2%#min:1,max=30#///%(log((x^4)*32767))/log2 * 65535% 
+DAY:today::MON::2: 
+My_2.u16:gain:ÔöÒæ0:0:4:33:±ê×¢ÕıÈ·; 
+My_2.s32:FarEnd_Threshold:ÔöÒæ0:0:4:31:±ê×¢ÕıÈ·; 
+My_2.s16:max_gain:ÔöÒæ0:0:2:31:±ê×¢ÕıÈ·; 
+My_2.My_3.u16:dac_analog_gain[7]:FarEnd_Threshold ÖĞÎÄËµÃ÷:100:10:300:5ÏîÆëÈ«ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+My_2.My_3.escapes:escape_control:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:NEWLINE::1:¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;beizhubei±¸×¢ 
+My_2.My_3.Weekday:workday_year_month:ĞÇÆÚÈÕÆÚ¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷:Sunday::4:Ú¸ÃÃ¶¾Ù±äÁ¿ÖĞÎÄËµÃ÷;ÌáÊ¾Ä¬ÈÏÖµ²»¶Ôbeizhubei±¸×¢ 
+My_2.My_3.u32:mic_analog_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷A:0:10:300:Ã»ÓĞÄ¬ÈÏÖµ£¬4ÏîÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+My_2.My_3.s16:mic_digital_gain:FarEnd_Threshold ÖĞÎÄËµÃ÷B:2:1:10:Ã»ÓĞ max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+My_2.My_3.s8:aec_st_leakage_decay[8]:FarEnd_Threshold ÖĞÎÄËµÃ÷C:2200:2:3000:no min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+My_2.My_3.u8:aec_st_leakage_u8:FarEnd_Threshold ÖĞÎÄËµÃ÷D:0:2:9:no Ä¬ÈÏÖµ no min,no max ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+My_2.My_3.s32:aec_st_leakage_s32:FarEnd_Threshold ÖĞÎÄËµÃ÷E:2200:6:3000:±¨´íno min ÔöÒæ;±¸×¢,È¡Öµ·¶Î§ 
+My_2.My_3.u32:aec_st_leakage_u32:ÔöÒæ:2200:100:3000:±¸×¢,È¡Öµ·¶Î§ 
+My_2.u32:min_gain:ÔöÒæ0:0:1:30:±ê×¢ÕıÈ·; 
+DAY:tomorrow::MON::2: 
 }
