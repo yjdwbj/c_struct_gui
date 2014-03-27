@@ -168,40 +168,7 @@ struct _FactoryClassDialog{
 };
 
 
-typedef struct _FactoryClass FactoryClass;
 
-struct _FactoryClass{
-  Element element; /**< inheritance */
-
-  /** static connection point storage,  the mainpoint must be behind the dynamics in Element::connections */
-#ifdef STRUCT_MAINPOINT
-  ConnectionPoint connections[STRUCTCLASS_CONNECTIONPOINTS + 1];
-#else
-  ConnectionPoint connections[STRUCTCLASS_CONNECTIONPOINTS];
-#endif
-  DiaFont *normal_font;
-  DiaFont *abstract_font;
-  DiaFont *polymorphic_font;
-  DiaFont *classname_font;
-  DiaFont *abstract_classname_font;
-  DiaFont *comment_font;
-
-  char *name;
-
-    Color line_color;
-  Color fill_color;
-  Color text_color;
-
-   /* Dialog: */
-  FactoryClassDialog *properties_dialog;
-
-  /** Until GtkList replaced by something better, set this when being
-   * destroyed, and don't do structclass_calculate_data when it is set.
-   * This is to avoid a half-way destroyed list being updated.
-   */
-  gboolean destroyed;
-
-};
 
 typedef enum{
     ENUM,
@@ -274,49 +241,49 @@ struct _STRUCTClass {
   DiaFont *comment_font;
 
   char *name;
-  char *stereotype; /**< NULL if no stereotype */
-  char *comment; /**< Comments on the class */
-  int abstract;
-  int suppress_attributes;
-  int suppress_operations;
-  int visible_attributes; /**< ie. don't draw strings. */
-  int visible_operations;
-  int visible_comments;
+ // char *stereotype; /**< NULL if no stereotype */
+ // char *comment; /**< Comments on the class */
+//  int abstract;
+//  int suppress_attributes;
+//  int suppress_operations;
+//  int visible_attributes; /**< ie. don't draw strings. */
+//  int visible_operations;
+//  int visible_comments;
 
-  int wrap_operations; /**< wrap operations with many parameters */
-  int wrap_after_char;
-  int comment_line_length; /**< Maximum line length for comments */
-  int comment_tagging; /**< bool: if the {documentation = }  tag should be used */
+//  int wrap_operations; /**< wrap operations with many parameters */
+//  int wrap_after_char;
+//  int comment_line_length; /**< Maximum line length for comments */
+//  int comment_tagging; /**< bool: if the {documentation = }  tag should be used */
 
   Color line_color;
   Color fill_color;
   Color text_color;
 
   /** Attributes: aka member variables */
-  GList *attributes;
+//  GList *attributes;
 
   /** Operators: aka member functions */
-  GList *operations;
+//  GList *operations;
 
   /** Template: if it's a template class */
-  int template;
+//  int template;
   /** Template parameters */
-  GList *formal_params;
+//  GList *formal_params;
 
   /* Calculated variables: */
 
   real namebox_height;
-  char *stereotype_string;
+//  char *stereotype_string;
 
-  real attributesbox_height;
-
-  real operationsbox_height;
+//  real attributesbox_height;
+//
+//  real operationsbox_height;
 /*
   GList *operations_wrappos;*/
-  int max_wrapped_line_width;
+//  int max_wrapped_line_width;
 
-  real templates_height;
-  real templates_width;
+//  real templates_height;
+//  real templates_width;
 
   /* Dialog: */
   STRUCTClassDialog *properties_dialog;
