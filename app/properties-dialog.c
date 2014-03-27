@@ -218,14 +218,9 @@ object_list_properties_show(Diagram *dia, GList *objects)
 {
   GtkWidget *properties;
   DiaObject *one_obj;
-
-
-
-
     if (!dialog)
     create_dialog();
   clear_dialog_globals();
-
 
   if (!objects) {
     /* Hide dialog when no object is selected */

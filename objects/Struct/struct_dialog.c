@@ -3226,11 +3226,8 @@ static void factory_set_exist_widgets(STRUCTClass *class, FactoryStructItem *ite
                        gchar **ooo = g_strsplit_set (item->itemName,"[]",-1);
                        gdouble maxlen = g_strtod(ooo[1],NULL); // 得到文本框的大小。
                        g_strfreev(ooo);
-
                        columTwo = gtk_entry_new();
                        gtk_entry_set_max_length (GTK_ENTRY(columTwo),maxlen);
-//                       gtk_entry_ (GTK_ENTRY(columTwo),GTK_INPUT_PURPOSE_ALPHA|
-//                                                   GTK_INPUT_PURPOSE_DIGITS);
                        gtk_entry_set_text(GTK_ENTRY(columTwo),sss->value.text);  // set default value;
             }
             break;
@@ -3247,7 +3244,7 @@ static void factory_set_exist_widgets(STRUCTClass *class, FactoryStructItem *ite
         gtk_tooltips_set_tip(tool_tips,columTwo,_(item->itemComment),NULL);
         sss->widget = columTwo;
         factory_set_twoxtwo_table(class->properties_dialog->mainTable,itemName,sss->widget,row);
-        gtk_container_add(GTK_OBJECT(class->properties_dialog->dialog),class->properties_dialog->mainTable);
+
     }
 }
 
@@ -3268,11 +3265,7 @@ void factory_create_and_fill_dialog(STRUCTClass *class, gboolean is_default)
             {
                 factory_set_exist_widgets(class,item->data,row);
             }
-//            else
-//            for(;item != NULL ; item = item->next,row++)
-//            {
-//                factory_set_exist_widgets(class,item->data,row);
-//            }
+            gtk_container_add(GTK_OBJECT(class->properties_dialog->dialog),class->properties_dialog->mainTable);
     }
 
 

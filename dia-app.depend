@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1294401712 source:o:\tool\dvs50\lib\arrows.c
+1395918670 source:o:\tool\dvs50\lib\arrows.c
 	<config.h>
 	<math.h>
 	<stdio.h>
@@ -1023,7 +1023,7 @@
 	"dia_xml.h"
 	"diaerror.h"
 
-1395909996 source:o:\tool\dvs50\lib\propobject.c
+1395917719 source:o:\tool\dvs50\lib\propobject.c
 	<config.h>
 	<string.h>
 	<glib.h>
@@ -1969,7 +1969,7 @@
 	"persistence.h"
 	<io.h>
 
-1395452336 source:o:\tool\dvs50\app\properties-dialog.c
+1395918119 source:o:\tool\dvs50\app\properties-dialog.c
 	<config.h>
 	<gtk/gtk.h>
 	<gdk/gdkkeysyms.h>
@@ -2384,7 +2384,7 @@
 	"connectionpoint.h"
 	"dia_xml.h"
 
-1395913536 source:o:\tool\dvs50\objects\struct\struct_class.c
+1395917719 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2400,7 +2400,7 @@
 	"debug.h"
 	"sheet.h"
 
-1395911424 o:\tool\dvs50\objects\struct\struct_class.h
+1395917719 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2409,7 +2409,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1395913956 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1395918082 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
