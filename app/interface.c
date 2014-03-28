@@ -173,80 +173,80 @@ ToolButton tool_data[] =
     "ToolsScroll",
     { SCROLL_TOOL, NULL, NULL}
   },
-  { NULL,
-    N_("Text"),
-    "T",
-    "ToolsText",
-    { CREATE_OBJECT_TOOL, "Standard - Text", NULL }
-  },
-  { NULL,
-    N_("Box"),
-    "R",
-    "ToolsBox",
-    { CREATE_OBJECT_TOOL, "Standard - Box", NULL }
-  },
-  { NULL,
-    N_("Ellipse"),
-    "E",
-    "ToolsEllipse",
-    { CREATE_OBJECT_TOOL, "Standard - Ellipse", NULL }
-  },
-  { NULL,
-    N_("Polygon"),
-    "P",
-    "ToolsPolygon",
-    { CREATE_OBJECT_TOOL, "Standard - Polygon", NULL }
-  },
-  { NULL,
-    N_("Beziergon"),
-    "B",
-    "ToolsBeziergon",
-    { CREATE_OBJECT_TOOL, "Standard - Beziergon", NULL }
-  },
+//  { NULL,
+//    N_("Text"),
+//    "T",
+//    "ToolsText",
+//    { CREATE_OBJECT_TOOL, "Standard - Text", NULL }
+//  },
+//  { NULL,
+//    N_("Box"),
+//    "R",
+//    "ToolsBox",
+//    { CREATE_OBJECT_TOOL, "Standard - Box", NULL }
+//  },
+//  { NULL,
+//    N_("Ellipse"),
+//    "E",
+//    "ToolsEllipse",
+//    { CREATE_OBJECT_TOOL, "Standard - Ellipse", NULL }
+//  },
+//  { NULL,
+//    N_("Polygon"),
+//    "P",
+//    "ToolsPolygon",
+//    { CREATE_OBJECT_TOOL, "Standard - Polygon", NULL }
+//  },
+//  { NULL,
+//    N_("Beziergon"),
+//    "B",
+//    "ToolsBeziergon",
+//    { CREATE_OBJECT_TOOL, "Standard - Beziergon", NULL }
+//  },
   { NULL,
     N_("Line"),
     "L",
     "ToolsLine",
     { CREATE_OBJECT_TOOL, "Standard - Line", NULL }
   },
-  { NULL,
-    N_("Arc"),
-    "A",
-    "ToolsArc",
-    { CREATE_OBJECT_TOOL, "Standard - Arc", NULL }
-  },
-  { NULL,
-    N_("Zigzagline"),
-    "Z",
-    "ToolsZigzagline",
-    { CREATE_OBJECT_TOOL, "Standard - ZigZagLine", NULL }
-  },
-  { NULL,
-    N_("Polyline"),
-    NULL,
-    "ToolsPolyline",
-    { CREATE_OBJECT_TOOL, "Standard - PolyLine", NULL }
-  },
-  { NULL,
-    N_("Bezierline"),
-    "C",
-    "ToolsBezierline",
-    { CREATE_OBJECT_TOOL, "Standard - BezierLine", NULL }
-  },
-  { NULL,
-    N_("Image"),
-    "I",
-    "ToolsImage",
-    { CREATE_OBJECT_TOOL, "Standard - Image", NULL }
-#ifdef HAVE_CAIRO
-  },
-  { NULL,
-    N_("Outline"),
-    NULL,
-    "ToolsOutline",
-    { CREATE_OBJECT_TOOL, "Standard - Outline", NULL }
-#endif
-  }
+//  { NULL,
+//    N_("Arc"),
+//    "A",
+//    "ToolsArc",
+//    { CREATE_OBJECT_TOOL, "Standard - Arc", NULL }
+//  },
+//  { NULL,
+//    N_("Zigzagline"),
+//    "Z",
+//    "ToolsZigzagline",
+//    { CREATE_OBJECT_TOOL, "Standard - ZigZagLine", NULL }
+//  },
+//  { NULL,
+//    N_("Polyline"),
+//    NULL,
+//    "ToolsPolyline",
+//    { CREATE_OBJECT_TOOL, "Standard - PolyLine", NULL }
+//  },
+//  { NULL,
+//    N_("Bezierline"),
+//    "C",
+//    "ToolsBezierline",
+//    { CREATE_OBJECT_TOOL, "Standard - BezierLine", NULL }
+//  },
+//  { NULL,
+//    N_("Image"),
+//    "I",
+//    "ToolsImage",
+//    { CREATE_OBJECT_TOOL, "Standard - Image", NULL }
+//#ifdef HAVE_CAIRO
+//  },
+//  { NULL,
+//    N_("Outline"),
+//    NULL,
+//    "ToolsOutline",
+//    { CREATE_OBJECT_TOOL, "Standard - Outline", NULL }
+//#endif
+//  }
 };
 
 #define NUM_TOOLS (sizeof (tool_data) / sizeof (ToolButton))

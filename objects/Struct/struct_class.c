@@ -206,24 +206,24 @@ static PropDescription structclass_props[] = {
   { "template", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL | PROP_FLAG_NO_DEFAULTS,
   N_("Template"), NULL, NULL },
 
-  { "suppress_attributes", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Suppress Attributes"), NULL, NULL },
-  { "suppress_operations", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Suppress Operations"), NULL, NULL },
-  { "visible_attributes", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Visible Attributes"), NULL, NULL },
-  { "visible_operations", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Visible Operations"), NULL, NULL },
-  { "visible_comments", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Visible Comments"), NULL, NULL },
-  { "wrap_operations", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Wrap Operations"), NULL, NULL },
-  { "wrap_after_char", PROP_TYPE_INT, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Wrap after char"), NULL, NULL },
-  { "comment_line_length", PROP_TYPE_INT, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Comment line length"), NULL, NULL},
-  { "comment_tagging", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Comment tagging"), NULL, NULL},
+//  { "suppress_attributes", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Suppress Attributes"), NULL, NULL },
+//  { "suppress_operations", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Suppress Operations"), NULL, NULL },
+//  { "visible_attributes", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Visible Attributes"), NULL, NULL },
+//  { "visible_operations", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Visible Operations"), NULL, NULL },
+//  { "visible_comments", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Visible Comments"), NULL, NULL },
+//  { "wrap_operations", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Wrap Operations"), NULL, NULL },
+//  { "wrap_after_char", PROP_TYPE_INT, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Wrap after char"), NULL, NULL },
+//  { "comment_line_length", PROP_TYPE_INT, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Comment line length"), NULL, NULL},
+//  { "comment_tagging", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Comment tagging"), NULL, NULL},
 
   /* all this just to make the defaults selectable ... */
   PROP_NOTEBOOK_PAGE("font", PROP_FLAG_DONT_MERGE, N_("Font")),
@@ -260,13 +260,13 @@ static PropDescription structclass_props[] = {
   PROP_STD_NOTEBOOK_END,
 
   /* these are used during load, but currently not during save */
-  { "attributes", PROP_TYPE_DARRAY, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL | PROP_FLAG_DONT_MERGE | PROP_FLAG_NO_DEFAULTS,
-  N_("Attributes"), NULL, NULL /* structattribute_extra */ },
-  { "operations", PROP_TYPE_DARRAY, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL | PROP_FLAG_DONT_MERGE | PROP_FLAG_NO_DEFAULTS,
-  N_("Operations"), NULL, NULL /* structoperations_extra */ },
-  /* the naming is questionable, but kept for compatibility */
-  { "templates", PROP_TYPE_DARRAY, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL | PROP_FLAG_DONT_MERGE | PROP_FLAG_NO_DEFAULTS,
-  N_("Template Parameters"), NULL, NULL /* structformalparameters_extra */ },
+//  { "attributes", PROP_TYPE_DARRAY, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL | PROP_FLAG_DONT_MERGE | PROP_FLAG_NO_DEFAULTS,
+//  N_("Attributes"), NULL, NULL /* structattribute_extra */ },
+//  { "operations", PROP_TYPE_DARRAY, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL | PROP_FLAG_DONT_MERGE | PROP_FLAG_NO_DEFAULTS,
+//  N_("Operations"), NULL, NULL /* structoperations_extra */ },
+//  /* the naming is questionable, but kept for compatibility */
+//  { "templates", PROP_TYPE_DARRAY, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL | PROP_FLAG_DONT_MERGE | PROP_FLAG_NO_DEFAULTS,
+//  N_("Template Parameters"), NULL, NULL /* structformalparameters_extra */ },
 
   PROP_DESC_END
 };
@@ -2128,9 +2128,9 @@ void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
             xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
             if(key)
             {
-                if(0 == g_ascii_strncasecmp(key,fst->itemName,strlen(key)))
+                if(0 == g_ascii_strncasecmp(key,fst->Name,strlen(key)))
                 {
-                    sss->name = fst->itemName;
+                    sss->name = fst->Name;
                     break;
                 }
             }
@@ -2156,9 +2156,10 @@ void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
                     /* 2014-3-26 lcy 通过名字去哈希表里找链表*/
                     GList *targettable = g_hash_table_lookup(structclass->EnumsAndStructs->enumTable,split[section-1]);
                     g_strfreev(split);
+                    SaveEnum sen = sss->value.senum;
                     if(targettable)
                     {
-                        sss->value.senum.enumList = targettable;
+                        sen.enumList = targettable;
                         GList *t  = targettable;
                         key = xmlGetProp(attr_node,(xmlChar *)"value");
                         if(key)
@@ -2167,8 +2168,8 @@ void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
                             FactoryStructEnum *fse = t->data;
                             if(0 == g_ascii_strncasecmp(fse->value,key,strlen(key)))
                             {
-                                sss->value.senum.evalue = g_locale_to_utf8(key,-1,NULL,NULL,NULL);
-                                sss->value.senum.index = g_list_index(targettable,fse);
+                                sen.evalue = g_locale_to_utf8(key,-1,NULL,NULL,NULL);
+                                sen.index = g_list_index(targettable,fse);
                                 break;
                             }
                         }
@@ -2176,7 +2177,7 @@ void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
                         xmlFree(key);
                         key = xmlGetProp(attr_node,(xmlChar *)"width");
                         if(key)
-                            sss->value.senum.width = g_locale_to_utf8(key,-1,NULL,NULL,NULL);
+                            sen.width = g_locale_to_utf8(key,-1,NULL,NULL,NULL);
                         xmlFree(key);
                     }
 
@@ -2184,8 +2185,8 @@ void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
                 else if(0== g_ascii_strncasecmp(key,"ENTRY",5))
                 {
                     key = xmlGetProp(attr_node,(xmlChar *)"value");
-                    if(key)
-                        sss->value.text = g_locale_to_utf8(key,-1,NULL,NULL,NULL);
+//                    if(key)
+//                        sss->value.text = g_locale_to_utf8(key,-1,NULL,NULL,NULL);
                     xmlFree(key);
                     sss->celltype = ENTRY;
                 }
@@ -2198,7 +2199,7 @@ void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
                     sss->celltype = SPINBOX;
                 }
             }
-            g_hash_table_insert(structclass->widgetmap,g_strjoin("##",fst->itemType,fst->itemName,NULL),sss);
+            g_hash_table_insert(structclass->widgetmap,g_strjoin("##",fst->FType,fst->Name,NULL),sss);
         }
 
     }
@@ -2215,14 +2216,14 @@ void factory_read_initial_to_struct(STRUCTClass *structclass) /*2014-3-26 lcy 拖
         FactoryStructItem *fst = tlist->data;
         SaveStruct *sss = g_new0(SaveStruct,1);
         sss->widget = NULL;
-        sss->type = fst->itemType;
-        sss->name = fst->itemName;
+        sss->type = fst->FType;
+        sss->name = fst->Name;
 
-        gchar **split = g_strsplit(fst->itemType,".",-1);
-        int section = g_strv_length(split);
+//        gchar **split = g_strsplit(fst->FType,".",-1);
+//        int section = g_strv_length(split);
        /* 2014-3-26 lcy 通过名字去哈希表里找链表*/
-        GList *targettable = g_hash_table_lookup(structclass->EnumsAndStructs->enumTable,split[section-1]);
-        g_strfreev(split);
+        GList *targettable = g_hash_table_lookup(structclass->EnumsAndStructs->enumTable,fst->SType);
+//        g_strfreev(split);
         if(targettable)
         {
                   sss->celltype = ENUM;
@@ -2231,10 +2232,10 @@ void factory_read_initial_to_struct(STRUCTClass *structclass) /*2014-3-26 lcy 拖
                   for(; t != NULL ; t = t->next)
                   {
                       FactoryStructEnum *kvmap = t->data;
-                      if(!g_ascii_strncasecmp(fst->itemValue,kvmap->key,strlen(fst->itemValue)))
+                      if(!g_ascii_strncasecmp(fst->Value,kvmap->key,strlen(fst->Value)))
                       {
                          sss->value.senum.index = g_list_index(targettable,t->data);
-                         sss->value.senum.width = fst->itemMax;
+                         sss->value.senum.width = fst->Max;
                          sss->value.senum.evalue = kvmap->value;
                          break;
                       }
@@ -2242,22 +2243,56 @@ void factory_read_initial_to_struct(STRUCTClass *structclass) /*2014-3-26 lcy 拖
                 }
 
         }
-        else if( factory_find_array_flag(fst->itemName))
+        else if( factory_find_array_flag(fst->Name))
         {
-                           /* 2014-3-25 lcy 这里是字符串，需用文本框显示了*/
-                           sss->celltype = ENTRY;
-                           gchar **ooo = g_strsplit_set (fst->itemName,"[]",-1);
-                           gdouble maxlen = g_strtod(ooo[1],NULL); // 得到文本框的大小。
-                           g_strfreev(ooo);
-                           sss->value.text = g_locale_to_utf8(fst->itemValue,-1,NULL,NULL,NULL);
-        }else
+             /* 2014-3-25 lcy 这里是字符串，需用文本框显示了*/
+                    sss->celltype = ENTRY;
+                    factory_handle_entry_item(&sss->value.sentry,fst);
+        }
+        else
         {
                      sss->celltype = SPINBOX;
-                     sss->value.number = g_strtod(fst->itemValue,NULL);
+                     sss->value.number = g_strtod(fst->Value,NULL);
         }
-        g_hash_table_insert(structclass->widgetmap,g_strjoin("##",fst->itemType,fst->itemName,NULL),sss);
+        g_hash_table_insert(structclass->widgetmap,g_strjoin("##",fst->FType,fst->Name,NULL),sss);
     }
 }
+
+void
+factory_handle_entry_item(SaveEntry* sey,FactoryStructItem *fst)
+{
+                /* 2014-3-25 lcy 这里是字符串，需用文本框显示了*/
+                /* lcy  array[3][2]   ==>  ooo[0]="array", ooo[1]="3", ooo[2]="", ooo[3]="2" ,ooo[4]="" */
+                gchar **ooo = g_strsplit_set (fst->Name,"[]",-1);
+                int num = g_strv_length(ooo);
+
+
+                sey->width = g_strtod(&fst->SType[1],NULL) / 8; /* u32,u8, 这里取里面的数字*/
+                sey->row = 1;
+                if(num >= 5)
+                {
+                    sey->row = g_strtod(ooo[1],NULL); /* 如果是二维数组,这里是行 */
+                    sey->col = g_strtod(ooo[3],NULL);
+                }
+                else
+                {
+                    sey->col = g_strtod(ooo[1],NULL);
+                }
+                g_strfreev(ooo);
+                sey->isString =  !g_ascii_strncasecmp(fst->SType,"s8",2) ? TRUE : FALSE;
+                int strlength = sey->width * sey->row * sey->col; /**   u32[6][2] ==  (32/8) * 6 * 2    **/
+                if(sey->isString)
+                {
+                     sey->data.text = g_new0(gchar,strlength );
+                     sey->data.text =  g_locale_to_utf8(fst->Value,strlength,NULL,NULL,NULL);
+                }
+                else
+                {
+                    sey->data.arrstr = g_new0(unsigned char,strlength);
+                    memset(sey->data.arrstr,0xff,strlength);
+                }
+}
+
 
 static void
 structclass_destroy(STRUCTClass *structclass)
@@ -2514,7 +2549,7 @@ static void factory_struct_save_to_xml(gpointer key,gpointer value,gpointer user
         break;
      case ENTRY:
          xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"ENTRY");
-         xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.text);
+//         xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.text);
         break;
      case SPINBOX:
          xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"SPINBOX");
@@ -2649,7 +2684,7 @@ void factory_get_enum_values(GList* src,GList *dst)
                     {
                         SaveStruct *ss = g_new0(SaveStruct,1);
                         FactoryStructItem *item = thisstruct->data;
-                        gchar **split = g_strsplit(item->itemType,".",-1);
+                        gchar **split = g_strsplit(item->FType,".",-1);
                         int section = g_strv_length(split);
                         /* 查询枚举哈希表的值*/
                          GList *enumitem =  g_hash_table_lookup(structList.enumTable,(gpointer)split[section-1]);
@@ -2657,18 +2692,18 @@ void factory_get_enum_values(GList* src,GList *dst)
                          {
 //                             GList *tmp  = enumitem;
 //                             ss->celltype = ENUM;
-//                             FactoryStructEnum *cur =  factory_find_list_node(tmp,item->itemValue);
+//                             FactoryStructEnum *cur =  factory_find_list_node(tmp,item->Value);
 //                             ss->value.index = g_list_index(tmp,cur);
                          }
-                         else if(factory_find_array_flag(item->itemName))
+                         else if(factory_find_array_flag(item->Name))
                          {
                             ss->celltype = ENTRY;
                          }
                          else{
                             ss->celltype = SPINBOX;
                          }
-                         ss->name = item->itemName;
-                         ss->type = item->itemType;
+                         ss->name = item->Name;
+                         ss->type = item->FType;
                          g_strfreev(split);
                          dst = g_list_append(dst,ss);
                     }

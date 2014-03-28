@@ -4,9 +4,9 @@
 #pragma align 4 (arc_icon)
 #endif
 #ifdef __GNUC__
-static const guint8 arc_icon[] __attribute__ ((__aligned__ (4))) = 
+static const guint8 arc_icon[] __attribute__ ((__aligned__ (4))) =
 #else
-static const guint8 arc_icon[] = 
+static const guint8 arc_icon[] =
 #endif
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -86,9 +86,9 @@ static const guint8 arc_icon[] =
 #pragma align 4 (beziergon_icon)
 #endif
 #ifdef __GNUC__
-static const guint8 beziergon_icon[] __attribute__ ((__aligned__ (4))) = 
+static const guint8 beziergon_icon[] __attribute__ ((__aligned__ (4))) =
 #else
-static const guint8 beziergon_icon[] = 
+static const guint8 beziergon_icon[] =
 #endif
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -170,9 +170,9 @@ static const guint8 beziergon_icon[] =
 #pragma align 4 (bezierline_icon)
 #endif
 #ifdef __GNUC__
-static const guint8 bezierline_icon[] __attribute__ ((__aligned__ (4))) = 
+static const guint8 bezierline_icon[] __attribute__ ((__aligned__ (4))) =
 #else
-static const guint8 bezierline_icon[] = 
+static const guint8 bezierline_icon[] =
 #endif
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -254,9 +254,9 @@ static const guint8 bezierline_icon[] =
 #pragma align 4 (box_icon)
 #endif
 #ifdef __GNUC__
-static const guint8 box_icon[] __attribute__ ((__aligned__ (4))) = 
+static const guint8 box_icon[] __attribute__ ((__aligned__ (4))) =
 #else
-static const guint8 box_icon[] = 
+static const guint8 box_icon[] =
 #endif
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -343,9 +343,9 @@ static const guint8 box_icon[] =
 #pragma align 4 (ellipse_icon)
 #endif
 #ifdef __GNUC__
-static const guint8 ellipse_icon[] __attribute__ ((__aligned__ (4))) = 
+static const guint8 ellipse_icon[] __attribute__ ((__aligned__ (4))) =
 #else
-static const guint8 ellipse_icon[] = 
+static const guint8 ellipse_icon[] =
 #endif
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -431,9 +431,9 @@ static const guint8 ellipse_icon[] =
 #pragma align 4 (image_icon)
 #endif
 #ifdef __GNUC__
-static const guint8 image_icon[] __attribute__ ((__aligned__ (4))) = 
+static const guint8 image_icon[] __attribute__ ((__aligned__ (4))) =
 #else
-static const guint8 image_icon[] = 
+static const guint8 image_icon[] =
 #endif
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -531,9 +531,9 @@ static const guint8 image_icon[] =
 #pragma align 4 (line_icon)
 #endif
 #ifdef __GNUC__
-static const guint8 line_icon[] __attribute__ ((__aligned__ (4))) = 
+static const guint8 line_icon[] __attribute__ ((__aligned__ (4))) =
 #else
-static const guint8 line_icon[] = 
+static const guint8 line_icon[] =
 #endif
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -613,9 +613,9 @@ static const guint8 line_icon[] =
 #pragma align 4 (outline_icon)
 #endif
 #ifdef __GNUC__
-static const guint8 outline_icon[] __attribute__ ((__aligned__ (4))) = 
+static const guint8 outline_icon[] __attribute__ ((__aligned__ (4))) =
 #else
-static const guint8 outline_icon[] = 
+static const guint8 outline_icon[] =
 #endif
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -716,9 +716,9 @@ static const guint8 outline_icon[] =
 #pragma align 4 (polygon_icon)
 #endif
 #ifdef __GNUC__
-static const guint8 polygon_icon[] __attribute__ ((__aligned__ (4))) = 
+static const guint8 polygon_icon[] __attribute__ ((__aligned__ (4))) =
 #else
-static const guint8 polygon_icon[] = 
+static const guint8 polygon_icon[] =
 #endif
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -799,9 +799,9 @@ static const guint8 polygon_icon[] =
 #pragma align 4 (polyline_icon)
 #endif
 #ifdef __GNUC__
-static const guint8 polyline_icon[] __attribute__ ((__aligned__ (4))) = 
+static const guint8 polyline_icon[] __attribute__ ((__aligned__ (4))) =
 #else
-static const guint8 polyline_icon[] = 
+static const guint8 polyline_icon[] =
 #endif
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -882,9 +882,9 @@ static const guint8 polyline_icon[] =
 #pragma align 4 (text_icon)
 #endif
 #ifdef __GNUC__
-static const guint8 text_icon[] __attribute__ ((__aligned__ (4))) = 
+static const guint8 text_icon[] __attribute__ ((__aligned__ (4))) =
 #else
-static const guint8 text_icon[] = 
+static const guint8 text_icon[] =
 #endif
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -967,9 +967,9 @@ static const guint8 text_icon[] =
 #pragma align 4 (zigzagline_icon)
 #endif
 #ifdef __GNUC__
-static const guint8 zigzagline_icon[] __attribute__ ((__aligned__ (4))) = 
+static const guint8 zigzagline_icon[] __attribute__ ((__aligned__ (4))) =
 #else
-static const guint8 zigzagline_icon[] = 
+static const guint8 zigzagline_icon[] =
 #endif
 { ""
   /* Pixbuf magic (0x47646b50) */

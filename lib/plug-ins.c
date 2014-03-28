@@ -201,9 +201,7 @@ dia_plugin_load(PluginInfo *info)
     return;
   }
 
-//  GHashTable *t_table=NULL;
-//  g_module_symbol(info->module,"object_type_table",(gpointer)&t_table);
-//  t_table = g_list_copy(global_Table);
+
   if ((* info->init_func)(info) != DIA_PLUGIN_INIT_OK) {
     /* plugin displayed an error message */
     g_module_close(info->module);

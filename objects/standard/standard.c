@@ -49,17 +49,17 @@ dia_plugin_init(PluginInfo *info)
 			    NULL, NULL))
     return DIA_PLUGIN_INIT_ERROR;
 
-  object_register_type(_arc_type);
-  object_register_type(_box_type);
-  object_register_type(_ellipse_type);
+//  object_register_type(_arc_type);
+//  object_register_type(_box_type);
+//  object_register_type(_ellipse_type);
   object_register_type(_line_type);
-  object_register_type(_polyline_type);
-  object_register_type(_zigzagline_type);
-  object_register_type(_bezierline_type);
-  object_register_type(_textobj_type);
-  object_register_type(_image_type);
+//  object_register_type(_polyline_type);
+//  object_register_type(_zigzagline_type);
+//  object_register_type(_bezierline_type);
+//  object_register_type(_textobj_type);
+//  object_register_type(_image_type);
 #ifdef HAVE_CAIRO
-  object_register_type(_outline_type);
+//  object_register_type(_outline_type);
 #endif
 //  object_register_type(_polygon_type);
 //  object_register_type(_beziergon_type);

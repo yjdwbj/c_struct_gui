@@ -276,8 +276,8 @@ void factoryReadDataFromFile(FactoryStructItemAll *allstructlist)
                 fssl->name = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
                 fssl->list = NULL;
                 fssl->number = n++;
-                  datalist = NULL;
-                  hashKey = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
+                datalist = NULL;
+                hashKey = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
 
 
             }
@@ -339,13 +339,18 @@ void factoryReadDataFromFile(FactoryStructItemAll *allstructlist)
        if( g_strv_length(sbuf) <MAX_SECTION)
         continue;
 
-        item->itemType = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
-        item->itemName = g_locale_to_utf8(sbuf[1],-1,NULL,NULL,NULL);
-        item->itemCname = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
-        item->itemValue = g_locale_to_utf8(sbuf[3],-1,NULL,NULL,NULL);
-        item->itemMin = g_locale_to_utf8(sbuf[4],-1,NULL,NULL,NULL);
-        item->itemMax = g_locale_to_utf8(sbuf[5],-1,NULL,NULL,NULL);
-        item->itemComment = g_locale_to_utf8(sbuf[6],-1,NULL,NULL,NULL);
+        item->FType = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
+
+        gchar **p = g_strsplit(item->FType,".",-1);
+        int l = g_strv_length(p);
+        item->SType = g_locale_to_utf8(p[l-1],-1,NULL,NULL,NULL);
+        g_strfreev(p);
+        item->Name = g_locale_to_utf8(sbuf[1],-1,NULL,NULL,NULL);
+        item->Cname = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
+        item->Value = g_locale_to_utf8(sbuf[3],-1,NULL,NULL,NULL);
+        item->Min = g_locale_to_utf8(sbuf[4],-1,NULL,NULL,NULL);
+        item->Max = g_locale_to_utf8(sbuf[5],-1,NULL,NULL,NULL);
+        item->Comment = g_locale_to_utf8(sbuf[6],-1,NULL,NULL,NULL);
         datalist = g_list_append(datalist,item);
         g_strfreev(sbuf);
         }

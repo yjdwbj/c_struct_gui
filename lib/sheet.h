@@ -68,13 +68,14 @@ struct _FactoryStructEnum
 };
 
 struct _FactoryStructItem{  // 这里定义一个结构的每一项需要显示的东西, 这就相当于一个模子,通读取文件上的条目来生成多少个这种表项.
-    gchar  *itemType;  // 类型
-    gchar  *itemName;   // 英文名
-    gchar  *itemCname; // 中文注释名
-    gchar  *itemValue;  // 默认值
-    gchar  *itemMin;
-    gchar  *itemMax;
-    gchar *itemComment;   // 浮动注释
+    gchar  *FType;  // 完全类型名 Struct.u32
+    gchar  *SType;  // 短类型 u32
+    gchar  *Name;   // 英文名
+    gchar  *Cname; // 中文注释名
+    gchar  *Value;  // 默认值
+    gchar  *Min;
+    gchar  *Max;    // 极值
+    gchar  *Comment;   // 浮动注释
 };
 //struct _FactoryStructEnumList{
 //    gchar *name;

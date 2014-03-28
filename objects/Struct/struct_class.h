@@ -194,6 +194,22 @@ struct _SaveEnum{
     gchar* width;
 };
 
+
+
+typedef struct _SaveEntry SaveEntry;
+struct _SaveEntry
+{
+    gboolean isString;
+    int row;
+    int col;   /* default is 1 */
+    int width;
+    union{
+        gchar *text;   /* s8 type, is string */
+        unsigned char** arrstr;  /* u8,u16,u32  ascii code array */
+    }data;
+    GList *wlist;   /* GtkWidget List  */
+};
+
 typedef struct _SaveStruct SaveStruct;
 typedef struct _SaveStruct{
     gpointer *widget;
@@ -201,7 +217,7 @@ typedef struct _SaveStruct{
     gchar* name;
     CellType celltype;
      union{
-        gchar *text; // entry value
+        SaveEntry sentry; // entry value
         gint number; // spinbox value
         SaveEnum senum;  // enum value;
     }value;
@@ -321,7 +337,11 @@ static  void factory_calculate_data(STRUCTClass *structclass);
 GtkWidget *
 factory_get_properties(STRUCTClass *structclass, gboolean is_default);
 
+GtkWidget *factory_create_many_entry_box(SaveEntry *sey);
+
 void factory_create_and_fill_dialog(STRUCTClass *structclass, gboolean is_default);
+
+void factory_entry_check_callback(GtkEntry *entry,gchar    *preedit,gpointer  user_data);
 
 extern ObjectChange *
 factory_apple_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);

@@ -867,7 +867,7 @@
 	<gtk/gtk.h>
 	<libxml/tree.h>
 
-1394790124 source:o:\tool\dvs50\lib\plug-ins.c
+1395970835 source:o:\tool\dvs50\lib\plug-ins.c
 	<config.h>
 	<stdlib.h>
 	<string.h>
@@ -1051,7 +1051,7 @@
 	"message.h"
 	"diagdkrenderer.h"
 
-1395744908 source:o:\tool\dvs50\lib\sheet.c
+1395988281 source:o:\tool\dvs50\lib\sheet.c
 	<config.h>
 	<stdlib.h>
 	<string.h>
@@ -1070,7 +1070,7 @@
 	"object.h"
 	"dia_dirs.h"
 
-1395719457 o:\tool\dvs50\lib\sheet.h
+1395987533 o:\tool\dvs50\lib\sheet.h
 	<glib.h>
 	"diatypes.h"
 
@@ -1136,7 +1136,7 @@
 	<time.h>
 	<gdk/gdkkeysyms.h>
 
-1395307938 source:o:\tool\dvs50\app\app_procs.c
+1395971569 source:o:\tool\dvs50\app\app_procs.c
 	<config.h>
 	<stdio.h>
 	<stdlib.h>
@@ -1762,7 +1762,7 @@
 	"object_ops.h"
 	"group.h"
 
-1395651370 source:o:\tool\dvs50\app\interface.c
+1395971999 source:o:\tool\dvs50\app\interface.c
 	<config.h>
 	<gnome.h>
 	<gtk/gtk.h>
@@ -2175,7 +2175,7 @@
 	"properties.h"
 	"tool-icons.h"
 
-1257604266 o:\tool\dvs50\objects\standard\tool-icons.h
+1395970404 o:\tool\dvs50\objects\standard\tool-icons.h
 
 1257614034 source:o:\tool\dvs50\objects\standard\bezier.c
 	<config.h>
@@ -2324,7 +2324,7 @@
 	"create.h"
 	"tool-icons.h"
 
-1394692399 source:o:\tool\dvs50\objects\standard\standard.c
+1395971595 source:o:\tool\dvs50\objects\standard\standard.c
 	<config.h>
 	"object.h"
 	"sheet.h"
@@ -2384,7 +2384,7 @@
 	"connectionpoint.h"
 	"dia_xml.h"
 
-1395917719 source:o:\tool\dvs50\objects\struct\struct_class.c
+1395993547 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2400,7 +2400,7 @@
 	"debug.h"
 	"sheet.h"
 
-1395917719 o:\tool\dvs50\objects\struct\struct_class.h
+1396000596 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2409,7 +2409,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1395918082 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1396008597 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
