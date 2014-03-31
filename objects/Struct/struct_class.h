@@ -205,7 +205,7 @@ struct _SaveEntry
     int width;
     union{
         gchar *text;   /* s8 type, is string */
-        unsigned char** arrstr;  /* u8,u16,u32  ascii code array */
+        GSList *arrlist;  /* 2014-3-31 lcy 这里用单链表来保存所有控件的值. (etc. "0xffff" ) */
     }data;
     GList *wlist;   /* GtkWidget List  */
 };
@@ -338,10 +338,23 @@ GtkWidget *
 factory_get_properties(STRUCTClass *structclass, gboolean is_default);
 
 GtkWidget *factory_create_many_entry_box(SaveEntry *sey);
+void factoy_create_subdialog(GtkButton *buttun,gpointer data);
 
 void factory_create_and_fill_dialog(STRUCTClass *structclass, gboolean is_default);
 
-void factory_entry_check_callback(GtkEntry *entry,gchar    *preedit,gpointer  user_data);
+
+gchar* factory_entry_check(gchar* str);
+void factory_editable_insert_callback(GtkEntry *entry,
+                                      gchar* new_text,
+                   gint new_length,
+                   gpointer position,
+                   gpointer data);
+
+void factory_editable_delete_callback(GtkEditable *editable,
+                          gint start_pos,
+                          gint end_pos);
+
+
 
 extern ObjectChange *
 factory_apple_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);

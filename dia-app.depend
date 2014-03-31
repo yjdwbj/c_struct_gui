@@ -2384,7 +2384,7 @@
 	"connectionpoint.h"
 	"dia_xml.h"
 
-1395993547 source:o:\tool\dvs50\objects\struct\struct_class.c
+1396262836 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2400,7 +2400,7 @@
 	"debug.h"
 	"sheet.h"
 
-1396000596 o:\tool\dvs50\objects\struct\struct_class.h
+1396255461 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2409,7 +2409,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1396008597 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1396265022 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>

@@ -2288,8 +2288,9 @@ factory_handle_entry_item(SaveEntry* sey,FactoryStructItem *fst)
                 }
                 else
                 {
-                    sey->data.arrstr = g_new0(unsigned char,strlength);
-                    memset(sey->data.arrstr,0xff,strlength);
+                    ;
+//                    sey->data.arrstr = g_new0(unsigned char,strlength);
+//                    memset(sey->data.arrstr,0xff,strlength);
                 }
 }
 
@@ -2548,7 +2549,30 @@ static void factory_struct_save_to_xml(gpointer key,gpointer value,gpointer user
          xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.senum.evalue);
         break;
      case ENTRY:
-         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"ENTRY");
+         {
+             xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"ENTRY");
+             SaveEntry *sey = &sss->value.sentry;
+             if(sey->isString)
+             {
+                 xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sey->data.text);
+             }
+             else
+             {
+                 GSList *tlist = sey->data.arrlist;
+                 gchar *ret ="";
+                while(tlist)
+                 {
+                     gchar *p = g_strconcat(ret,tlist->data,",",NULL);
+                     g_free(ret);
+                     ret = p;
+                     tlist = g_slist_next(tlist);
+                 }
+                 xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)ret);
+                 g_free(ret);
+             }
+         }
+
+
 //         xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.text);
         break;
      case SPINBOX:

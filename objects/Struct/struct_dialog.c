@@ -45,7 +45,7 @@
 #include "struct_class.h"
 #include "sheet.h"
 
-const char *hexdata =" 0123456789abcdefx";
+const char *hexdata ="0123456789abcdefx";
 
 /* hide this functionality before rewrite;) */
 void
@@ -3007,6 +3007,19 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
          sss->value.senum.evalue = kmap->value;
         break;
     case ENTRY:
+        {
+                SaveEntry *sey = &sss->value.sentry;
+                gdouble maxlength = sey->col * sey->row; // 得到文本框的大小。
+                if(sey->isString)
+                {
+                     sey->data.text =  g_locale_to_utf8(gtk_entry_get_text(GTK_ENTRY (sss->widget)),-1,NULL,NULL,NULL);
+                }
+                else
+                {
+                    ;
+                }
+
+        }
 //        sss->value.text = g_locale_to_utf8(gtk_entry_get_text(GTK_ENTRY (sss->widget)),-1,NULL,NULL,NULL);
     break;
     case SPINBOX:
@@ -3026,6 +3039,17 @@ static void factory_write_props_to_widget(gpointer key,gpointer value ,gpointer 
         gtk_combo_box_set_active(GTK_COMBO_BOX(sss->widget),sss->value.senum.index);
         break;
     case ENTRY:
+        {
+                SaveEntry *sey = &sss->value.sentry;
+                if(sey->isString)
+                {
+                    gtk_entry_set_text(GTK_ENTRY (sss->widget),sey->data.text);
+                }
+                else
+                {
+                    ;
+                }
+        }
 //        gtk_entry_set_text(GTK_ENTRY (sss->widget),sss->value.text);
     break;
     case SPINBOX:
@@ -3192,14 +3216,14 @@ factory_get_properties(STRUCTClass *class, gboolean is_default)
 }
 
 
-static void factory_set_exist_widgets(STRUCTClass *class, FactoryStructItem *item,int row)
+static void factory_set_exist_widgets(STRUCTClass *fclass, FactoryStructItem *item,int row)
 {
     GtkWidget *Name;
     GtkWidget *columTwo;
     GtkTooltips *tool_tips = gtk_tooltips_new();
 
     /* 2014-3-26 lcy 用两个区间做键值。*/
-     SaveStruct *sss = g_hash_table_lookup(class->widgetmap,g_strjoin("##",item->FType,item->Name,NULL));
+     SaveStruct *sss = g_hash_table_lookup(fclass->widgetmap,g_strjoin("##",item->FType,item->Name,NULL));
 
     if(sss)
     {
@@ -3230,7 +3254,12 @@ static void factory_set_exist_widgets(STRUCTClass *class, FactoryStructItem *ite
                           gtk_entry_set_max_length(GTK_ENTRY(columTwo), maxlength);
                      }
                      else
-                        columTwo = factory_create_many_entry_box(sey);
+                     {
+                         /*2014-3-31 lcy  数组显示 */
+                         columTwo = gtk_button_new_with_label(item->Name);
+                        g_signal_connect (G_OBJECT (columTwo), "clicked",G_CALLBACK (factoy_create_subdialog), sss);
+                     }
+
 //                       gtk_entry_set_text(GTK_ENTRY(columTwo),sss->value.text);  // set default value;
             }
             break;
@@ -3246,9 +3275,84 @@ static void factory_set_exist_widgets(STRUCTClass *class, FactoryStructItem *ite
         }
         gtk_tooltips_set_tip(tool_tips,columTwo,_(item->Comment),NULL);
         sss->widget = columTwo;
-        factory_set_twoxtwo_table(class->properties_dialog->mainTable,Name,sss->widget,row);
+        factory_set_twoxtwo_table(fclass->properties_dialog->mainTable,Name,sss->widget,row);
     }
 }
+
+static gint
+factory_subdig_respond(GtkWidget *widget,
+                   gint       response_id,
+                   gpointer   data)
+{
+  ObjectChange *obj_change = NULL;
+  gboolean set_tp = TRUE;
+  GList *tmp;
+  GSList *vlist = NULL;
+ /* 2013-3-31 lcy 这里把每一个控件值保存到链表里*/
+  if (   response_id == GTK_RESPONSE_APPLY
+      || response_id == GTK_RESPONSE_OK) {
+            SaveEntry *sey = data;
+            int align = 2+sey->width*2;
+            tmp = sey->wlist;
+            for( ;tmp; tmp = tmp->next)
+            {
+                gchar *str = g_locale_to_utf8(gtk_entry_get_text(tmp->data),-1,NULL,NULL,NULL);
+                int n = align - strlen(str);
+                if(n)
+                {
+                    /* 0xf4 == 0x00f4  */
+                    gchar *p =  g_new(char,align);
+                    memset(p,'\0',align);
+                    p = strncpy(p,"0x",2);
+                    while(n--)
+                    {
+                        strncat(p,"0",1);
+                    }
+                    strncat(p,&str[2],strlen(&str[2]));
+                    g_free(str);
+                    str = p;
+                }
+                vlist =  g_slist_append(vlist,str);
+            }
+            sey->data.arrlist = vlist;
+      }
+      gtk_widget_destroy (widget);
+}
+
+void factoy_create_subdialog(GtkButton *buttun,gpointer data)
+{
+   SaveStruct *sss = data;
+
+   GtkWidget*  subdig = gtk_dialog_new_with_buttons(
+             _(sss->name),
+             GTK_WINDOW (NULL),
+             GTK_DIALOG_MODAL,
+             GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
+             GTK_STOCK_OK, GTK_RESPONSE_OK,
+             NULL);
+
+    gtk_dialog_set_default_response (GTK_DIALOG(subdig), GTK_RESPONSE_OK);
+    GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
+    gtk_window_set_resizable (subdig,FALSE);
+    gtk_window_set_position (subdig,GTK_WIN_POS_MOUSE);
+    gtk_window_present (subdig);
+    gtk_box_pack_start(GTK_HBOX(dialog_vbox),factory_create_many_entry_box(&sss->value.sentry),FALSE,FALSE,0);
+
+
+    g_signal_connect(G_OBJECT (subdig), "response",
+                   G_CALLBACK (factory_subdig_respond), &sss->value.sentry);
+//    g_signal_connect(G_OBJECT (subdig), "delete_event",
+//		   G_CALLBACK(properties_dialog_hide), NULL);
+    g_signal_connect(G_OBJECT (subdig), "destroy",
+		   G_CALLBACK(gtk_widget_destroyed), &subdig);
+    g_signal_connect(G_OBJECT (subdig), "destroy",
+		   G_CALLBACK(gtk_widget_destroyed), &dialog_vbox);
+//    g_signal_connect(G_OBJECT (subdig), "key-release-event",
+//		   G_CALLBACK(properties_key_event), NULL);
+
+    gtk_widget_show_all(subdig);
+}
+
 
 GtkWidget *factory_create_many_entry_box(SaveEntry *sey)
 {
@@ -3262,17 +3366,21 @@ GtkWidget *factory_create_many_entry_box(SaveEntry *sey)
         for(;c < sey->col ;c++)
         {
             GtkWidget *entry = gtk_entry_new();
-            int maxlength = 2+sey->width * 2;
+            int maxlength = 2+sey->width * 2; /* 2014-3-31 lcy  宽度为  0x + 宽度*2  */
             gtk_entry_set_max_length (GTK_ENTRY (entry), maxlength);
             gtk_entry_set_width_chars(GTK_ENTRY (entry), maxlength);
-            gtk_editable_select_region(entry,2,-1);
-            gtk_entry_set_text(GTK_ENTRY (entry),"0x");
-            gtk_editable_select_region (GTK_EDITABLE(entry),2,-1);
+            gchar *str = g_slist_nth_data(sey->data.arrlist,c);
+            if(str)
+                gtk_entry_set_text(GTK_ENTRY (entry),str);
+            else{
+                   gtk_entry_set_text(GTK_ENTRY (entry),"0x");
             int w  = 0;
-            for(w; w < sey->width;w++ ) /* 这里设置默认对齐的字符*/
+            for(w; w < sey->width;w++ ) /* 2014-3-31 lcy 这里设置默认对齐的字符*/
                 gtk_entry_append_text(GTK_ENTRY(entry),"ff");
-            g_signal_connect(GTK_OBJECT(entry), "changed", G_CALLBACK(factory_entry_check_callback), NULL);
+            }
 
+            g_signal_connect(entry, "delete_text", G_CALLBACK(factory_editable_delete_callback), NULL);
+            g_signal_connect(entry, "insert_text", G_CALLBACK(factory_editable_insert_callback), NULL);
             gtk_box_pack_start(GTK_HBOX(hbox),entry,FALSE,FALSE,0);
             wlist = g_list_append(wlist,entry);
         }
@@ -3282,21 +3390,62 @@ GtkWidget *factory_create_many_entry_box(SaveEntry *sey)
     return (GtkWidget *)vbox;
 }
 
-void factory_entry_check_callback(GtkEntry *entry,
-               gchar    *preedit,
-               gpointer  user_data)
+void factory_editable_insert_callback(GtkEntry *entry,
+                                      gchar* new_text,
+                   gint new_length,
+                   gpointer position,
+                   gpointer data)
 {
-    char *p = hexdata;
+   GtkEditable *edit = GTK_EDITABLE(entry);
+    gchar *tmp = new_text;
+   int i = 0,count = 0;
+   gchar *result = g_new(gchar,new_length);
+   memset(result,'\0',new_length);
+   gchar *ns = result;
+   while(*tmp)
+   {
+        if( *tmp == 'x' || g_ascii_isxdigit(*tmp))
+        {
+            *ns++ = *tmp++;
+        }
+        else
+            *tmp++;
+   }
 
-    while(*p)
-    {
-        if(*p++ == *preedit)
-            break;
-    }
-    if(*p)
-     gtk_entry_set_text(entry,preedit);
-
+   /* 2014-3-31 lcy 这里添加字符串跟其它框架不一样,必须按以下步骤操作*/
+     if(ns - result)
+     {
+        g_signal_handlers_block_by_func(G_OBJECT(edit),
+                                       G_CALLBACK(factory_editable_insert_callback),
+                                       data);
+       gtk_editable_insert_text(edit,result,ns-result,position);
+       g_signal_handlers_unblock_by_func (G_OBJECT (edit),
+                                       G_CALLBACK (factory_editable_insert_callback),
+                                       data);
+     }
+    g_signal_stop_emission_by_name (G_OBJECT (edit), "insert_text"); /* 2014-3-31 lcy 这里要停止发射信号,否则会进入无限循环*/
 }
+
+void factory_editable_delete_callback(GtkEditable *edit,
+                          gint start_pos,
+                          gint end_pos)
+{
+    gchar *txt = gtk_editable_get_chars (edit,0,-1);
+
+
+    if(  (2==strlen(txt)) && (0 == g_ascii_strncasecmp(txt,"0x",2)))
+    {
+        g_signal_stop_emission_by_name (G_OBJECT (edit), "delete_text");
+    }
+
+    if(start_pos < 2) /* 保证0x开始*/
+    {
+        g_signal_stop_emission_by_name (G_OBJECT (edit), "delete_text");
+        gtk_editable_select_region(edit,2,end_pos);
+        gtk_editable_delete_text (edit,2,end_pos);
+    }
+}
+
 
 void factory_create_and_fill_dialog(STRUCTClass *class, gboolean is_default)
 {
