@@ -39,19 +39,22 @@
 #include <math.h>
 #include <string.h>
 
+#include "diagram.h"
 #include "object.h"
 #include "objchange.h"
 #include "intl.h"
 #include "struct_class.h"
 #include "sheet.h"
+#include "diagramdata.h"
 
-const char *hexdata ="0123456789abcdefx";
+
+
 
 /* hide this functionality before rewrite;) */
 void
 structclass_dialog_free (STRUCTClassDialog *dialog)
 {
-  g_list_free(dialog->deleted_connections);
+//  g_list_free(dialog->deleted_connections);
   gtk_widget_destroy(dialog->dialog);
   dialog->dialog = NULL;
 //  gtk_widget_destroy(dialog->mainTable); // 2014-3-19 lcy 这里是回收内存.
@@ -160,8 +163,8 @@ structclass_store_disconnects(STRUCTClassDialog *prop_dialog,
 	dis->other_object = connected_obj;
 	dis->other_handle = connected_obj->handles[i];
 
-	prop_dialog->disconnected_connections =
-	  g_list_prepend(prop_dialog->disconnected_connections, dis);
+//	prop_dialog->disconnected_connections =
+//	  g_list_prepend(prop_dialog->disconnected_connections, dis);
       }
     }
     list = g_list_next(list);
@@ -2999,6 +3002,7 @@ gpointer factory_find_list_node(GList *list,gchar *data)
 static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer user_data)
 {
     SaveStruct *sss = (SaveStruct *)value;
+    STRUCTClass *fclass = user_data;
     switch(sss->celltype)
     {
     case ENUM:
@@ -3010,14 +3014,27 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
         {
                 SaveEntry *sey = &sss->value.sentry;
                 gdouble maxlength = sey->col * sey->row; // 得到文本框的大小。
-                if(sey->isString)
+                if(!g_ascii_strncasecmp("ACTIONID_",sss->name,9))
+                {
+                    Handle *handle1,*handle2;
+
+                  DiaObject *obj =  dia_object_default_create(object_get_type("Standard - Line"),
+                                              &fclass->element.object.position,0,&handle1,&handle2);
+                    Layer *curlay = fclass->element.object.parent_layer;
+                    DiagramData *dd = curlay->parent_diagram;
+
+                   // int n = g_slist_length(dia->displays);
+                    if ((handle1 != NULL) &&
+                    (handle1->connect_type != HANDLE_NONCONNECTABLE)) {
+                       // object_connect_display(ddisp, obj, handle1, FALSE);
+                    }
+ //                   line_create(fclass->element.object.position,0,NULL,NULL);
+                }
+                else if(sey->isString)
                 {
                      sey->data.text =  g_locale_to_utf8(gtk_entry_get_text(GTK_ENTRY (sss->widget)),-1,NULL,NULL,NULL);
                 }
-                else
-                {
-                    ;
-                }
+
 
         }
 //        sss->value.text = g_locale_to_utf8(gtk_entry_get_text(GTK_ENTRY (sss->widget)),-1,NULL,NULL,NULL);
@@ -3062,7 +3079,7 @@ static void factory_write_props_to_widget(gpointer key,gpointer value ,gpointer 
 
 /* 2014-3-25 lcy 这里是更新界面上的值*/
 ObjectChange *
-factory_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget)
+factory_apply_props_from_dialog(STRUCTClass *fclass, GtkWidget *widget)
 {
   STRUCTClassDialog *prop_dialog;
   DiaObject *obj;
@@ -3070,9 +3087,9 @@ factory_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget)
   int num_attrib, num_ops;
   GList *added, *deleted, *disconnected;
   STRUCTClassState *old_state = NULL;
-  prop_dialog = structclass->properties_dialog;
-  old_state = structclass_get_state(structclass);
-  g_hash_table_foreach(structclass->widgetmap,factory_read_props_from_widget,NULL);
+  prop_dialog = fclass->properties_dialog;
+  old_state = structclass_get_state(fclass);
+  g_hash_table_foreach(fclass->widgetmap,factory_read_props_from_widget,fclass);
 }
 
 
@@ -3194,13 +3211,13 @@ factory_get_properties(STRUCTClass *class, gboolean is_default)
     prop_dialog->dialog = vbox;
     gtk_widget_set_name(vbox,class->name); // 2014-3-21 lcy 设置名字，用于区分不同窗体。
 
-    prop_dialog->current_attr = NULL;
-    prop_dialog->current_op = NULL;
-    prop_dialog->current_param = NULL;
-    prop_dialog->current_templ = NULL;
-    prop_dialog->deleted_connections = NULL;
-    prop_dialog->added_connections = NULL;
-    prop_dialog->disconnected_connections = NULL;
+//    prop_dialog->current_attr = NULL;
+//    prop_dialog->current_op = NULL;
+//    prop_dialog->current_param = NULL;
+//    prop_dialog->current_templ = NULL;
+//    prop_dialog->deleted_connections = NULL;
+//    prop_dialog->added_connections = NULL;
+//    prop_dialog->disconnected_connections = NULL;
 
 
     gtk_signal_connect (GTK_OBJECT (prop_dialog->dialog),
@@ -3246,9 +3263,26 @@ static void factory_set_exist_widgets(STRUCTClass *fclass, FactoryStructItem *it
             break;
         case ENTRY:
             {
+
                       SaveEntry *sey = &sss->value.sentry;
                       gdouble maxlength = sey->col * sey->row; // 得到文本框的大小。
-                     if(sey->isString)
+                     if(!g_ascii_strncasecmp("ACTIONID_",item->Name,9))
+                     {
+                            columTwo = gtk_combo_box_new_text();
+                            gtk_combo_box_popdown(GTK_COMBO_BOX(columTwo));
+                            Layer *curlayer = fclass->element.object.parent_layer;
+                            GList *objlist = curlayer->objects;
+                            for(;objlist ;objlist =    objlist->next )
+                            {
+                                STRUCTClass *objclass = objlist->data;
+                                if(objclass != fclass)
+                                {
+                                    gtk_combo_box_append_text(GTK_COMBO_BOX(columTwo),objclass->name);
+                                }
+                            }
+                            gtk_combo_box_set_active(GTK_COMBO_BOX(columTwo),0);
+                     }
+                     else if(sey->isString)
                      {
                           columTwo = gtk_entry_new();
                           gtk_entry_set_max_length(GTK_ENTRY(columTwo), maxlength);
@@ -3256,8 +3290,14 @@ static void factory_set_exist_widgets(STRUCTClass *fclass, FactoryStructItem *it
                      else
                      {
                          /*2014-3-31 lcy  数组显示 */
-                         columTwo = gtk_button_new_with_label(item->Name);
-                        g_signal_connect (G_OBJECT (columTwo), "clicked",G_CALLBACK (factoy_create_subdialog), sss);
+
+
+                            columTwo = gtk_button_new_with_label(item->Name);
+                            g_signal_connect (G_OBJECT (columTwo), "clicked",G_CALLBACK (factoy_create_subdialog), sss);
+
+
+
+
                      }
 
 //                       gtk_entry_set_text(GTK_ENTRY(columTwo),sss->value.text);  // set default value;
@@ -3265,7 +3305,7 @@ static void factory_set_exist_widgets(STRUCTClass *fclass, FactoryStructItem *it
             break;
         case SPINBOX:
             {
-                GtkObject *adj =gtk_adjustment_new( sss->value.number , g_strtod(item->Min,NULL),
+                 GtkObject *adj =gtk_adjustment_new( sss->value.number , g_strtod(item->Min,NULL),
                                            g_strtod(item->Max,NULL), 1.0, 5.0, 0);
                  columTwo = GTK_SPIN_BUTTON(gtk_spin_button_new( GTK_ADJUSTMENT( adj), 0.1, 0));
                  gtk_spin_button_set_numeric( GTK_SPIN_BUTTON( columTwo), TRUE);
@@ -3319,10 +3359,8 @@ factory_subdig_respond(GtkWidget *widget,
       gtk_widget_destroy (widget);
 }
 
-void factoy_create_subdialog(GtkButton *buttun,gpointer data)
+void factoy_create_subdialog(GtkButton *buttun,SaveStruct *sss)
 {
-   SaveStruct *sss = data;
-
    GtkWidget*  subdig = gtk_dialog_new_with_buttons(
              _(sss->name),
              GTK_WINDOW (NULL),
@@ -3338,18 +3376,12 @@ void factoy_create_subdialog(GtkButton *buttun,gpointer data)
     gtk_window_present (subdig);
     gtk_box_pack_start(GTK_HBOX(dialog_vbox),factory_create_many_entry_box(&sss->value.sentry),FALSE,FALSE,0);
 
-
     g_signal_connect(G_OBJECT (subdig), "response",
                    G_CALLBACK (factory_subdig_respond), &sss->value.sentry);
-//    g_signal_connect(G_OBJECT (subdig), "delete_event",
-//		   G_CALLBACK(properties_dialog_hide), NULL);
     g_signal_connect(G_OBJECT (subdig), "destroy",
 		   G_CALLBACK(gtk_widget_destroyed), &subdig);
     g_signal_connect(G_OBJECT (subdig), "destroy",
 		   G_CALLBACK(gtk_widget_destroyed), &dialog_vbox);
-//    g_signal_connect(G_OBJECT (subdig), "key-release-event",
-//		   G_CALLBACK(properties_key_event), NULL);
-
     gtk_widget_show_all(subdig);
 }
 
@@ -3357,30 +3389,40 @@ void factoy_create_subdialog(GtkButton *buttun,gpointer data)
 GtkWidget *factory_create_many_entry_box(SaveEntry *sey)
 {
     GList *wlist = NULL;
+    int row = sey->row;
+    int col = sey->col;
+//    if( (row == 1) && (col > 8))
+//    {
+//        /* 2014-3-31 lcy 一维数组化成二维数组用来显示*/
+//        row = sey->width * 2;
+//        col = col / row;
+//    }
     int r = 0 ;
     GtkVBox *vbox  = gtk_vbox_new(TRUE,0);
-    for(;r < sey->row ; r++)
+    for(;r < row ; r++)
     {
         GtkHBox *hbox = gtk_hbox_new(TRUE,0);
         int c = 0;
-        for(;c < sey->col ;c++)
+        for(;c < col ;c++)
         {
             GtkWidget *entry = gtk_entry_new();
             int maxlength = 2+sey->width * 2; /* 2014-3-31 lcy  宽度为  0x + 宽度*2  */
             gtk_entry_set_max_length (GTK_ENTRY (entry), maxlength);
             gtk_entry_set_width_chars(GTK_ENTRY (entry), maxlength);
-            gchar *str = g_slist_nth_data(sey->data.arrlist,c);
+            gchar *str = g_slist_nth_data(sey->data.arrlist,r*col+c);
             if(str)
                 gtk_entry_set_text(GTK_ENTRY (entry),str);
             else{
-                   gtk_entry_set_text(GTK_ENTRY (entry),"0x");
-            int w  = 0;
-            for(w; w < sey->width;w++ ) /* 2014-3-31 lcy 这里设置默认对齐的字符*/
-                gtk_entry_append_text(GTK_ENTRY(entry),"ff");
+                gtk_entry_set_text(GTK_ENTRY (entry),"0x");
+                int w  = 0;
+                for(w; w < sey->width;w++ ) /* 2014-3-31 lcy 这里设置默认对齐的字符*/
+                    gtk_entry_append_text(GTK_ENTRY(entry),"ff");
             }
 
             g_signal_connect(entry, "delete_text", G_CALLBACK(factory_editable_delete_callback), NULL);
             g_signal_connect(entry, "insert_text", G_CALLBACK(factory_editable_insert_callback), NULL);
+            g_signal_connect(GTK_OBJECT(entry), "enter_notify_event", G_CALLBACK(factory_editable_active_callback), NULL);
+            g_signal_connect(GTK_OBJECT(entry), "selection_notify_event", G_CALLBACK(factory_editable_active_callback), NULL);
             gtk_box_pack_start(GTK_HBOX(hbox),entry,FALSE,FALSE,0);
             wlist = g_list_append(wlist,entry);
         }
@@ -3388,6 +3430,14 @@ GtkWidget *factory_create_many_entry_box(SaveEntry *sey)
     }
     sey->wlist = wlist;
     return (GtkWidget *)vbox;
+}
+
+
+void factory_editable_active_callback(GtkEditable *edit,gpointer data)
+{
+  gtk_editable_select_region(edit,2,-1);
+  g_signal_stop_emission_by_name (G_OBJECT (edit), "selection_clear_event");
+
 }
 
 void factory_editable_insert_callback(GtkEntry *entry,
@@ -3705,8 +3755,8 @@ structclass_update_connectionpoints(STRUCTClass *structclass)
 //    list = g_list_next(list);
 //  }
 
-  if (prop_dialog)
-    gtk_list_clear_items (GTK_LIST (prop_dialog->attributes_list), 0, -1);
+//  if (prop_dialog)
+//    gtk_list_clear_items (GTK_LIST (prop_dialog->attributes_list), 0, -1);
 
 //  list = structclass->operations;
 //  while (list != NULL) {
@@ -3722,8 +3772,8 @@ structclass_update_connectionpoints(STRUCTClass *structclass)
 //
 //    list = g_list_next(list);
 //  }
-  if (prop_dialog)
-    gtk_list_clear_items (GTK_LIST (prop_dialog->operations_list), 0, -1);
+//  if (prop_dialog)
+//    gtk_list_clear_items (GTK_LIST (prop_dialog->operations_list), 0, -1);
 
 #ifdef STRUCT_MAINPOINT
   obj->connections[connection_index++] = &structclass->connections[STRUCTCLASS_CONNECTIONPOINTS];

@@ -2279,6 +2279,8 @@ factory_handle_entry_item(SaveEntry* sey,FactoryStructItem *fst)
                     sey->col = g_strtod(ooo[1],NULL);
                 }
                 g_strfreev(ooo);
+
+
                 sey->isString =  !g_ascii_strncasecmp(fst->SType,"s8",2) ? TRUE : FALSE;
                 int strlength = sey->width * sey->row * sey->col; /**   u32[6][2] ==  (32/8) * 6 * 2    **/
                 if(sey->isString)
@@ -2288,7 +2290,12 @@ factory_handle_entry_item(SaveEntry* sey,FactoryStructItem *fst)
                 }
                 else
                 {
-                    ;
+                    if( (sey->row == 1) && (sey->col > 8))
+                    {
+                        /* 2014-3-31 lcy 一维数组化成二维数组用来显示*/
+                        sey->row = sey->width * 2;
+                        sey->col = sey->col / sey->row;
+                    }
 //                    sey->data.arrstr = g_new0(unsigned char,strlength);
 //                    memset(sey->data.arrstr,0xff,strlength);
                 }
@@ -2561,18 +2568,16 @@ static void factory_struct_save_to_xml(gpointer key,gpointer value,gpointer user
                  GSList *tlist = sey->data.arrlist;
                  gchar *ret ="";
                 while(tlist)
-                 {
+                 {   /* 2014-3-31 lcy 把链表里的数据用逗号连接 */
                      gchar *p = g_strconcat(ret,tlist->data,",",NULL);
                      g_free(ret);
                      ret = p;
                      tlist = g_slist_next(tlist);
                  }
                  xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)ret);
-                 g_free(ret);
+                 //g_free(ret);
              }
          }
-
-
 //         xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.text);
         break;
      case SPINBOX:

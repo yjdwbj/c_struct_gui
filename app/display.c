@@ -1170,7 +1170,7 @@ ddisplay_resize_canvas(DDisplay *ddisp,
   ddisplay_flush(ddisp);
 }
 
-DDisplay *
+DIAVAR DDisplay *
 ddisplay_active(void)
 {
   return active_display;

@@ -867,7 +867,7 @@
 	<gtk/gtk.h>
 	<libxml/tree.h>
 
-1395970835 source:o:\tool\dvs50\lib\plug-ins.c
+1396340110 source:o:\tool\dvs50\lib\plug-ins.c
 	<config.h>
 	<stdlib.h>
 	<string.h>
@@ -888,7 +888,7 @@
 	"object.h"
 	<pango/pangowin32.h>
 
-1394610218 o:\tool\dvs50\lib\plug-ins.h
+1396319594 o:\tool\dvs50\lib\plug-ins.h
 	<glib.h>
 	<gmodule.h>
 	"diatypes.h"
@@ -1051,7 +1051,7 @@
 	"message.h"
 	"diagdkrenderer.h"
 
-1395988281 source:o:\tool\dvs50\lib\sheet.c
+1396321970 source:o:\tool\dvs50\lib\sheet.c
 	<config.h>
 	<stdlib.h>
 	<string.h>
@@ -1069,8 +1069,9 @@
 	"message.h"
 	"object.h"
 	"dia_dirs.h"
+	"plug-ins.h"
 
-1395987533 o:\tool\dvs50\lib\sheet.h
+1396319067 o:\tool\dvs50\lib\sheet.h
 	<glib.h>
 	"diatypes.h"
 
@@ -1192,7 +1193,7 @@
 	<gdk/gdk.h>
 	"display.h"
 
-1394614163 o:\tool\dvs50\app\display.h
+1396353439 o:\tool\dvs50\app\display.h
 	<gtk/gtk.h>
 	<gtk/gtkimcontext.h>
 	"lib/geometry.h"
@@ -1630,7 +1631,7 @@
 	"geometry.h"
 	"tool.h"
 
-1395307842 source:o:\tool\dvs50\app\display.c
+1396353614 source:o:\tool\dvs50\app\display.c
 	<config.h>
 	<string.h>
 	<stdio.h>
@@ -2030,7 +2031,7 @@
 	"object_ops.h"
 	"textedit.h"
 
-1395308011 source:o:\tool\dvs50\app\sheets.c
+1396318645 source:o:\tool\dvs50\app\sheets.c
 	<string.h>
 	<gnome.h>
 	<gtk/gtk.h>
@@ -2384,7 +2385,7 @@
 	"connectionpoint.h"
 	"dia_xml.h"
 
-1396262836 source:o:\tool\dvs50\objects\struct\struct_class.c
+1396342700 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2400,26 +2401,30 @@
 	"debug.h"
 	"sheet.h"
 
-1396255461 o:\tool\dvs50\objects\struct\struct_class.h
+1396353748 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
 	"widgets.h"
 	"struct.h"
+	"display.h"
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1396265022 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1396353209 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
 	<math.h>
 	<string.h>
+	"diagram.h"
+	"display.h"
 	"object.h"
 	"objchange.h"
 	"intl.h"
 	"struct_class.h"
 	"sheet.h"
+	"diagramdata.h"
 
 1395487478 source:o:\tool\dvs50\objects\struct\structattribute.c
 	<config.h>

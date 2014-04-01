@@ -38,6 +38,7 @@
 #include "message.h"
 #include "object.h"
 #include "dia_dirs.h"
+#include "plug-ins.h"
 
 FactoryStructItemAll structList = {NULL,NULL};
 static GSList *sheets = NULL;
@@ -123,12 +124,20 @@ dia_sort_sheets(void)
   sheets = g_slist_sort(sheets, dia_sheet_sort_callback);
 }
 
+
+//static gboolean this_is_a_struct(const gchar *name)
+//{
+//    return !g_ascii_strncasecmp(name,".struct",strlen(name));
+//}
+
 void
 load_all_sheets(void)
 {
   char *sheet_path;
   char *home_dir;
-    factoryReadDataFromFile(&structList);
+  /* 2014-4-1 lcy 递归查找config 目录下所有以.struct 为后缀的文件名 */
+  for_each_in_dir(dia_get_lib_directory("config"),factoryReadDataFromFile,this_is_a_struct);
+ //   factoryReadDataFromFile(&structList);
 //  home_dir = dia_config_filename("sheets");
 //  if (home_dir) {
 //    dia_log_message ("sheets from '%s'", home_dir);
@@ -195,25 +204,25 @@ load_sheets_from_dir(const gchar *directory, SheetScope scope)
 }
 
 
-void factoryReadDataFromFile(FactoryStructItemAll *allstructlist)
+void factoryReadDataFromFile(const gchar* filename)
 {
 #define MAX_LINE 1024
 #define MAX_SECTION 7
-   allstructlist->structTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-   allstructlist->enumTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+   structList.structTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+   structList.enumTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
 
-    gchar *datafilepath;
-    const gchar* cfname = "test.data";
+//    gchar *datafilepath;
+//    const gchar* vaildposfix = ".struct";
     struct stat statbuf;
-    datafilepath = dia_get_lib_directory("config"); /// append /test.data
-    if ( stat(datafilepath, &statbuf) < 0)
-   {
-       message_error(_("Couldn't find config path "
-		  "object-libs; exiting...\n"));
-    }
-
-    char* filename = g_strconcat(datafilepath, G_DIR_SEPARATOR_S ,
-		     cfname, NULL);
+//    datafilepath = dia_get_lib_directory("config"); /// append /test.data
+//    if ( stat(datafilepath, &statbuf) < 0)
+//   {
+//       message_error(_("Couldn't find config path "
+//		  "object-libs; exiting...\n"));
+//    }
+//
+//    gchar* filename = g_strconcat(datafilepath, G_DIR_SEPARATOR_S ,
+//		     cfname, NULL);
     FILE *fd;
     if((fd =  fopen(filename,"r")) == NULL)
     {
@@ -259,7 +268,7 @@ void factoryReadDataFromFile(FactoryStructItemAll *allstructlist)
                     message_error(_("This Header format is error."
                     "object-libs; exiting...\n"));
             }
-            if(0 == strncmp("Enum",sbuf[1],4)) // 2014-3-20 lcy 这里匹配到枚举名字.
+            if(0 == g_ascii_strncasecmp("Enum",sbuf[1],4)) // 2014-3-20 lcy 这里匹配到枚举名字.
             {
                 isEmnu = TRUE;
                 zero = 0;
@@ -269,7 +278,7 @@ void factoryReadDataFromFile(FactoryStructItemAll *allstructlist)
                 //hashValue = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
 
             }
-            else if( 0 == strncmp("Struct",sbuf[1],6)) // 2014-3-20 lcy 这里匹配到结构体名字.
+            else if( 0 == g_ascii_strncasecmp("Struct",sbuf[1],6)) // 2014-3-20 lcy 这里匹配到结构体名字.
             {
                 isStruct = TRUE;
                 fssl = g_new0(FactoryStructItemList,1);
@@ -293,13 +302,13 @@ void factoryReadDataFromFile(FactoryStructItemAll *allstructlist)
             {
                 isStruct = FALSE;
                 fssl->list = datalist;
-                allstructlist->structList = g_list_append(allstructlist->structList,fssl);
-               g_hash_table_insert(allstructlist->structTable,hashKey,(gpointer*)datalist);
+                structList.structList = g_list_append(structList.structList,fssl);
+               g_hash_table_insert(structList.structTable,hashKey,(gpointer*)datalist);
             }
-            else{
+            else if(isEmnu){
                 isEmnu = FALSE;
                //allstructlist->enumList = g_list_append(allstructlist->enumList,fsel);
-               g_hash_table_insert(allstructlist->enumTable,hashKey,(gpointer*)enumlist);
+               g_hash_table_insert(structList.enumTable,hashKey,(gpointer*)enumlist);
             }
         }
         else if(isEmnu) // 2014-3-19 lcy 读取一个枚举.
@@ -327,7 +336,7 @@ void factoryReadDataFromFile(FactoryStructItemAll *allstructlist)
            // g_hash_table_insert(hashValue,(char*)kvmap->key,(char*)kvmap->value);
               g_strfreev(sbuf);
         }
-        else{   // 2013-3-20 lcy  这里把每一项结构体数据放进链表.
+        else if(isStruct){   // 2013-3-20 lcy  这里把每一项结构体数据放进链表.
 
          gchar ** sbuf=NULL;
         if(aline[0] == '/' || aline[0] == '#' || !strlen(aline))
@@ -357,6 +366,7 @@ void factoryReadDataFromFile(FactoryStructItemAll *allstructlist)
 
     }
     fclose(fd);
+  //  g_free(filename);
 }
 
 static void

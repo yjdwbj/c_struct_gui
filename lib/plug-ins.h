@@ -93,6 +93,12 @@ DIAVAR void dia_register_builtin_plugin (PluginInitFunc init_func);
 DIAVAR GList *dia_list_plugins(void);
 
 DIAVAR void dia_pluginrc_write(void);
+typedef void (*ForEachInDirDoFunc)(const gchar *name);
+typedef gboolean (*ForEachInDirFilterFunc)(const gchar *name);
+
+gboolean this_is_a_struct(const gchar *name);
+void for_each_in_dir(const gchar *directory, ForEachInDirDoFunc dofunc,
+                ForEachInDirFilterFunc filter);
 
 /* macro defining the version check that should be implemented by all
  * plugins. */

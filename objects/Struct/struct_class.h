@@ -30,7 +30,7 @@
 #include "widgets.h"
 
 #include "struct.h"
-
+#include "display.h"
 #define DIA_OBJECT(x) (DiaObject*)(x)
 
 /** The number of regular connectionpoints on the class (not cps for
@@ -73,85 +73,85 @@ struct _STRUCTClassDialog {
 //  GList *itemsData;   // 2014-3-19 lcy 这里是自定项,用存储从文件读到的条目.
 //  GList *enumList;    // 2014-3-19 lcy 这里用存储枚举的链表.
    GtkWidget *mainTable; // 2014-3-19 lcy 这里添一个表格,用来布局显示.
-  GtkEntry *classname;
-  GtkEntry *stereotype;
-  GtkTextView *comment;
-
-  GtkToggleButton *abstract_class;
-  GtkToggleButton *attr_vis;
-  GtkToggleButton *attr_supp;
-  GtkToggleButton *op_vis;
-  GtkToggleButton *op_supp;
-  GtkToggleButton *comments_vis;
-  GtkToggleButton *op_wrap;
-  DiaFontSelector *normal_font;
-  DiaFontSelector *abstract_font;
-  DiaFontSelector *polymorphic_font;
-  DiaFontSelector *classname_font;
-  DiaFontSelector *abstract_classname_font;
-  DiaFontSelector *comment_font;
-  GtkSpinButton *normal_font_height;
-  GtkSpinButton *abstract_font_height;
-  GtkSpinButton *polymorphic_font_height;
-  GtkSpinButton *classname_font_height;
-  GtkSpinButton *abstract_classname_font_height;
-  GtkSpinButton *comment_font_height;
-  GtkSpinButton *wrap_after_char;
-  GtkSpinButton *comment_line_length;
-  GtkToggleButton *comment_tagging;
-  GtkSpinButton *line_width;
-  DiaColorSelector *text_color;
-  DiaColorSelector *line_color;
-  DiaColorSelector *fill_color;
-  GtkLabel *max_length_label;
-  GtkLabel *Comment_length_label;
-
-  GList *disconnected_connections;
-  GList *added_connections;
-  GList *deleted_connections;
-
-  GtkList *attributes_list;
-  GtkListItem *current_attr;
-  GtkEntry *attr_name;
-  GtkEntry *attr_type;
-  GtkEntry *attr_value;
-  GtkTextView *attr_comment;
-  GtkMenu *attr_visible;
-  GtkOptionMenu *attr_visible_button;
-  GtkToggleButton *attr_class_scope;
-
-  GtkList *operations_list;
-  GtkListItem *current_op;
-  GtkEntry *op_name;
-  GtkEntry *op_type;
-  GtkEntry *op_stereotype;
-  GtkTextView *op_comment;
-
-  GtkMenu *op_visible;
-  GtkOptionMenu *op_visible_button;
-  GtkToggleButton *op_class_scope;
-  GtkMenu *op_inheritance_type;
-  GtkOptionMenu *op_inheritance_type_button;
-  GtkToggleButton *op_query;
-
-  GtkList *parameters_list;
-  GtkListItem *current_param;
-  GtkEntry *param_name;
-  GtkEntry *param_type;
-  GtkEntry *param_value;
-  GtkTextView *param_comment;
-  GtkMenu *param_kind;
-  GtkOptionMenu *param_kind_button;
-  GtkWidget *param_new_button;
-  GtkWidget *param_delete_button;
-  GtkWidget *param_up_button;
-  GtkWidget *param_down_button;
-
-  GtkList *templates_list;
-  GtkListItem *current_templ;
-  GtkToggleButton *templ_template;
-  GtkEntry *templ_name;
-  GtkEntry *templ_type;
+//  GtkEntry *classname;
+//  GtkEntry *stereotype;
+//  GtkTextView *comment;
+//
+//  GtkToggleButton *abstract_class;
+//  GtkToggleButton *attr_vis;
+//  GtkToggleButton *attr_supp;
+//  GtkToggleButton *op_vis;
+//  GtkToggleButton *op_supp;
+//  GtkToggleButton *comments_vis;
+//  GtkToggleButton *op_wrap;
+//  DiaFontSelector *normal_font;
+//  DiaFontSelector *abstract_font;
+//  DiaFontSelector *polymorphic_font;
+//  DiaFontSelector *classname_font;
+//  DiaFontSelector *abstract_classname_font;
+//  DiaFontSelector *comment_font;
+//  GtkSpinButton *normal_font_height;
+//  GtkSpinButton *abstract_font_height;
+//  GtkSpinButton *polymorphic_font_height;
+//  GtkSpinButton *classname_font_height;
+//  GtkSpinButton *abstract_classname_font_height;
+//  GtkSpinButton *comment_font_height;
+//  GtkSpinButton *wrap_after_char;
+//  GtkSpinButton *comment_line_length;
+//  GtkToggleButton *comment_tagging;
+//  GtkSpinButton *line_width;
+//  DiaColorSelector *text_color;
+//  DiaColorSelector *line_color;
+//  DiaColorSelector *fill_color;
+//  GtkLabel *max_length_label;
+//  GtkLabel *Comment_length_label;
+//
+//  GList *disconnected_connections;
+//  GList *added_connections;
+//  GList *deleted_connections;
+//
+//  GtkList *attributes_list;
+//  GtkListItem *current_attr;
+//  GtkEntry *attr_name;
+//  GtkEntry *attr_type;
+//  GtkEntry *attr_value;
+//  GtkTextView *attr_comment;
+//  GtkMenu *attr_visible;
+//  GtkOptionMenu *attr_visible_button;
+//  GtkToggleButton *attr_class_scope;
+//
+//  GtkList *operations_list;
+//  GtkListItem *current_op;
+//  GtkEntry *op_name;
+//  GtkEntry *op_type;
+//  GtkEntry *op_stereotype;
+//  GtkTextView *op_comment;
+//
+//  GtkMenu *op_visible;
+//  GtkOptionMenu *op_visible_button;
+//  GtkToggleButton *op_class_scope;
+//  GtkMenu *op_inheritance_type;
+//  GtkOptionMenu *op_inheritance_type_button;
+//  GtkToggleButton *op_query;
+//
+//  GtkList *parameters_list;
+//  GtkListItem *current_param;
+//  GtkEntry *param_name;
+//  GtkEntry *param_type;
+//  GtkEntry *param_value;
+//  GtkTextView *param_comment;
+//  GtkMenu *param_kind;
+//  GtkOptionMenu *param_kind_button;
+//  GtkWidget *param_new_button;
+//  GtkWidget *param_delete_button;
+//  GtkWidget *param_up_button;
+//  GtkWidget *param_down_button;
+//
+//  GtkList *templates_list;
+//  GtkListItem *current_templ;
+//  GtkToggleButton *templ_template;
+//  GtkEntry *templ_name;
+//  GtkEntry *templ_type;
 };
 
 
@@ -338,7 +338,7 @@ GtkWidget *
 factory_get_properties(STRUCTClass *structclass, gboolean is_default);
 
 GtkWidget *factory_create_many_entry_box(SaveEntry *sey);
-void factoy_create_subdialog(GtkButton *buttun,gpointer data);
+void factoy_create_subdialog(GtkButton *buttun,SaveStruct *sss);
 
 void factory_create_and_fill_dialog(STRUCTClass *structclass, gboolean is_default);
 
@@ -353,7 +353,7 @@ void factory_editable_insert_callback(GtkEntry *entry,
 void factory_editable_delete_callback(GtkEditable *editable,
                           gint start_pos,
                           gint end_pos);
-
+void factory_editable_active_callback(GtkEditable *edit,gpointer data);
 
 
 extern ObjectChange *
