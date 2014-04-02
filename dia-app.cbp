@@ -199,6 +199,7 @@
 				<Option projectLinkerOptionsRelation="2" />
 				<Linker>
 					<Add option="-ldia" />
+					<Add option="-ldia-app" />
 				</Linker>
 			</Target>
 		</Build>

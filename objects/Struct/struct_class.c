@@ -2067,7 +2067,7 @@ factory_struct_items_create(Point *startpoint,
           break;
       }
   }
-
+  obj->name = structclass->name;
   /* 2014-3-26 lcy  这里初始哈希表用存widget与它的值*/
  // structclass->widgetmap = g_hash_table_new(g_direct_hash,g_direct_equal);
   structclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);

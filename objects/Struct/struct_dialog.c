@@ -2999,6 +2999,7 @@ gpointer factory_find_list_node(GList *list,gchar *data)
     }
 }
 
+
 static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer user_data)
 {
     SaveStruct *sss = (SaveStruct *)value;
@@ -3014,21 +3015,40 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
         {
                 SaveEntry *sey = &sss->value.sentry;
                 gdouble maxlength = sey->col * sey->row; // 得到文本框的大小。
+
                 if(!g_ascii_strncasecmp("ACTIONID_",sss->name,9))
                 {
+                    gchar *connname =  gtk_combo_box_get_active_text(GTK_COMBO_BOX(sss->widget));
                     Handle *handle1,*handle2;
+                    DiaObjectType *otype= object_get_type("Standard - Line");
+                    Point curpos = fclass->connections[0].pos;
+                    DDisplay *ddisp = ddisplay_active();
+                    DiaObject *obj = ddisplay_drop_object(ddisp,(gint)curpos.x,(gint)curpos.y,otype,6);
 
-                  DiaObject *obj =  dia_object_default_create(object_get_type("Standard - Line"),
-                                              &fclass->element.object.position,0,&handle1,&handle2);
-                    Layer *curlay = fclass->element.object.parent_layer;
-                    DiagramData *dd = curlay->parent_diagram;
+                    handle1 = obj->handles[0];
+                    handle1->id = HANDLE_MOVE_STARTPOINT;
+                    handle1->connected_to = fclass;
+                    handle1->pos = fclass->connections[8].pos;
+                    handle2 = obj->handles[1];
+                    handle1->id = HANDLE_MOVE_ENDPOINT;
+                    GList *myglist = fclass->connections[8].connected;
+                    myglist = g_list_append(myglist,obj);
 
-                   // int n = g_slist_length(dia->displays);
-                    if ((handle1 != NULL) &&
-                    (handle1->connect_type != HANDLE_NONCONNECTABLE)) {
-                       // object_connect_display(ddisp, obj, handle1, FALSE);
+                    Layer *curlayer = fclass->element.object.parent_layer;
+                    GList *objlist = curlayer->objects;
+                    for(;objlist ;objlist =  objlist->next )
+                    {
+                            STRUCTClass *objclass = objlist->data;
+                            if(!g_ascii_strncasecmp(objclass->name,connname,strlen(connname)))
+                            {
+                                handle2->connected_to = objclass;
+                                handle2->pos = objclass->connections[8].pos;
+                                objclass->connections[8].connected = g_list_append(objclass->connections[8].connected,obj);
+                                break;
+                            }
+
                     }
- //                   line_create(fclass->element.object.position,0,NULL,NULL);
+                    obj->ops->update_data(obj);
                 }
                 else if(sey->isString)
                 {

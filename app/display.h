@@ -22,7 +22,7 @@
 #include <gtk/gtkimcontext.h>
 
 typedef struct _DDisplay DDisplay;
-
+#include "diatypes.h"
 #include "lib/geometry.h"
 #include "diagram.h"
 #include "grid.h"

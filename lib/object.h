@@ -341,6 +341,8 @@ typedef DiaMenu *(*ObjectMenuFunc) (DiaObject* obj, Point *position);
  */
 typedef gboolean (*TextEditFunc) (DiaObject *obj, Text *text, TextEditState state, gchar *textchange);
 
+typedef void  (*UpdateData)(DiaObject *obj);
+
 /*************************************
  **  The functions provided in object.c
  *************************************/
@@ -445,6 +447,7 @@ struct _ObjectOps {
     Then an older object will be binary compatible, because all new code
     checks if new ops are supported (!= NULL)
   */
+  UpdateData update_data;
   void      (*(unused[4]))(DiaObject *obj,...);
 };
 
@@ -507,7 +510,7 @@ struct _DiaObject {
   Rectangle         enclosing_box;
   /** Metainfo of the object, should not be manipulated directy */
   GHashTable       *meta;
-
+  gchar *name /* 2014-4-2 lcy 加一个名字做调试 */
 };
 
 /*!

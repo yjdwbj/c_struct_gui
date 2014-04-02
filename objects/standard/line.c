@@ -48,7 +48,7 @@ typedef struct _Line {
 
   Color line_color;
   real line_width;
-  LineStyle line_style;  
+  LineStyle line_style;
   Arrow start_arrow, end_arrow;
   real dashlength;
   real absolute_start_gap, absolute_end_gap;
@@ -62,7 +62,7 @@ static LineProperties default_properties;
 
 static ObjectChange* line_move_handle(Line *line, Handle *handle,
 				      Point *to, ConnectionPoint *cp,
-				      HandleMoveReason reason, 
+				      HandleMoveReason reason,
 			     ModifierKeys modifiers);
 static ObjectChange* line_move(Line *line, Point *to);
 static void line_select(Line *line, Point *clicked_point,
@@ -122,6 +122,7 @@ static ObjectOps line_ops = {
   (SetPropsFunc)        line_set_props,
   (TextEditFunc) 0,
   (ApplyPropertiesListFunc) object_apply_props,
+  (UpdateData) line_update_data
 };
 
 static PropNumData gap_range = { -G_MAXFLOAT, G_MAXFLOAT, 0.1};
@@ -139,14 +140,14 @@ static PropDescription line_props[] = {
     N_("Start point"), NULL },
   { "end_point", PROP_TYPE_POINT, 0,
     N_("End point"), NULL },
-  
+
   PROP_FRAME_BEGIN("gaps",0,N_("Line gaps")),
   { "absolute_start_gap", PROP_TYPE_REAL, PROP_FLAG_VISIBLE,
     N_("Absolute start gap"), NULL, &gap_range },
   { "absolute_end_gap", PROP_TYPE_REAL, PROP_FLAG_VISIBLE,
     N_("Absolute end gap"), NULL, &gap_range },
   PROP_FRAME_END("gaps",0),
- 
+
   PROP_DESC_END
 };
 
@@ -178,14 +179,14 @@ static PropOffset line_offsets[] = {
 static void
 line_get_props(Line *line, GPtrArray *props)
 {
-  object_get_props_from_offsets(&line->connection.object, 
+  object_get_props_from_offsets(&line->connection.object,
                                 line_offsets, props);
 }
 
 static void
 line_set_props(Line *line, GPtrArray *props)
 {
-  object_set_props_from_offsets(&line->connection.object, 
+  object_set_props_from_offsets(&line->connection.object,
                                 line_offsets, props);
   line_update_data(line);
 }
@@ -202,7 +203,7 @@ line_init_defaults() {
 }
 
 static ObjectChange *
-line_add_connpoint_callback(DiaObject *obj, Point *clicked, gpointer data) 
+line_add_connpoint_callback(DiaObject *obj, Point *clicked, gpointer data)
 {
   ObjectChange *oc;
   oc = connpointline_add_point(((Line *)obj)->cpl,clicked);
@@ -211,7 +212,7 @@ line_add_connpoint_callback(DiaObject *obj, Point *clicked, gpointer data)
 }
 
 static ObjectChange *
-line_remove_connpoint_callback(DiaObject *obj, Point *clicked, gpointer data) 
+line_remove_connpoint_callback(DiaObject *obj, Point *clicked, gpointer data)
 {
   ObjectChange *oc;
   oc = connpointline_remove_point(((Line *)obj)->cpl,clicked);
@@ -221,7 +222,7 @@ line_remove_connpoint_callback(DiaObject *obj, Point *clicked, gpointer data)
 
 static DiaMenuItem object_menu_items[] = {
   { N_("Add connection point"), line_add_connpoint_callback, NULL, 1 },
-  { N_("Delete connection point"), line_remove_connpoint_callback, 
+  { N_("Delete connection point"), line_remove_connpoint_callback,
     NULL, 1 },
 };
 
@@ -239,9 +240,9 @@ line_get_object_menu(Line *line, Point *clickedpoint)
 
   cpl = line->cpl;
   /* Set entries sensitive/selected etc here */
-  object_menu_items[0].active = 
+  object_menu_items[0].active =
     connpointline_can_add_point(cpl, clickedpoint);
-  object_menu_items[1].active = 
+  object_menu_items[1].active =
     connpointline_can_remove_point(cpl,clickedpoint);
   return &object_menu;
 }
@@ -277,7 +278,7 @@ line_distance_from(Line *line, Point *point)
 {
   Point *endpoints;
 
-  endpoints = &line->connection.endpoints[0]; 
+  endpoints = &line->connection.endpoints[0];
 
   if (line->absolute_start_gap || line->absolute_end_gap ) {
     Point gap_endpoints[2];  /* Visible endpoints of line */
@@ -318,7 +319,7 @@ static ObjectChange*
 line_move(Line *line, Point *to)
 {
   Point start_to_end;
-  Point *endpoints = &line->connection.endpoints[0]; 
+  Point *endpoints = &line->connection.endpoints[0];
 
   start_to_end = endpoints[1];
   point_sub(&start_to_end, &endpoints[0]);
@@ -337,7 +338,7 @@ line_draw(Line *line, DiaRenderer *renderer)
   Point gap_endpoints[2];
 
   DiaRendererClass *renderer_ops = DIA_RENDERER_GET_CLASS (renderer);
-  
+
   assert(line != NULL);
   assert(renderer != NULL);
 
@@ -357,7 +358,7 @@ line_draw(Line *line, DiaRenderer *renderer)
 					&line->end_arrow);
   } else {
         renderer_ops->draw_line_with_arrows(renderer,
-					    &line->connection.endpoints[0], 
+					    &line->connection.endpoints[0],
 					    &line->connection.endpoints[1],
 					    line->line_width,
 					    &line->line_color,
@@ -386,19 +387,19 @@ line_create(Point *startpoint,
   line->line_color = attributes_get_foreground();
   line->absolute_start_gap = default_properties.absolute_start_gap;
   line->absolute_end_gap = default_properties.absolute_end_gap;
-    
+
   conn = &line->connection;
   conn->endpoints[0] = *startpoint;
   conn->endpoints[1] = *startpoint;
   point_add(&conn->endpoints[1], &defaultlen);
- 
+
   obj = &conn->object;
-  
+
   obj->type = &line_type;
   obj->ops = &line_ops;
 
   connection_init(conn, 2, 0);
-  
+
   line->cpl = connpointline_create(obj,1);
 
   attributes_get_default_line_style(&line->line_style, &line->dashlength);
@@ -427,15 +428,15 @@ line_copy(Line *line)
   int rcc = 0;
 
   conn = &line->connection;
-  
+
   newline = g_malloc0(sizeof(Line));
   newconn = &newline->connection;
   newobj = &newconn->object;
-  
+
   connection_copy(conn, newconn);
 
   newline->cpl = connpointline_copy(newobj,line->cpl,&rcc);
-  
+
   newline->line_color = line->line_color;
   newline->line_width = line->line_width;
   newline->line_style = line->line_style;
@@ -513,7 +514,7 @@ line_update_data(Line *line)
 
   connpointline_update(line->cpl);
   connpointline_putonaline(line->cpl, &start, &end);
-  
+
   connection_update_handles(conn);
 }
 
@@ -532,25 +533,25 @@ line_save(Line *line, ObjectNode obj_node, const char *filename)
   if (!color_equals(&line->line_color, &color_black))
     data_add_color(new_attribute(obj_node, "line_color"),
 		   &line->line_color);
-  
+
   if (line->line_width != 0.1)
     data_add_real(new_attribute(obj_node, PROP_STDNAME_LINE_WIDTH),
 		  line->line_width);
-  
+
   if (line->line_style != LINESTYLE_SOLID)
     data_add_enum(new_attribute(obj_node, "line_style"),
 		  line->line_style);
-  
+
   if (line->start_arrow.type != ARROW_NONE) {
     save_arrow(obj_node, &line->start_arrow,
 	       "start_arrow", "start_arrow_length", "start_arrow_width");
   }
-  
+
   if (line->end_arrow.type != ARROW_NONE) {
     save_arrow(obj_node, &line->end_arrow,
 	       "end_arrow", "end_arrow_length", "end_arrow_width");
   }
- 
+
   if (line->absolute_start_gap)
     data_add_real(new_attribute(obj_node, "absolute_start_gap"),
                  line->absolute_start_gap);
@@ -596,10 +597,10 @@ line_load(ObjectNode obj_node, int version, const char *filename)
   if (attr != NULL)
     line->line_style = data_enum(attribute_first_data(attr));
 
-  load_arrow(obj_node, &line->start_arrow, 
+  load_arrow(obj_node, &line->start_arrow,
 	     "start_arrow", "start_arrow_length", "start_arrow_width");
 
-  load_arrow(obj_node, &line->end_arrow, 
+  load_arrow(obj_node, &line->end_arrow,
 	     "end_arrow", "end_arrow_length", "end_arrow_width");
 
   line->absolute_start_gap = 0.0;

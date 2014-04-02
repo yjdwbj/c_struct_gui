@@ -435,13 +435,13 @@ layout_col (GtkWrapBox    *wbox,
     }
 }
 
-typedef struct _Line Line;
+typedef struct _Line Line1;
 struct _Line
 {
   GSList  *children;
   guint16  min_size;
   guint    expand : 1;
-  Line     *next;
+  Line1     *next;
 };
 
 static void
@@ -452,7 +452,7 @@ layout_cols (GtkWrapBox    *wbox,
   guint min_width;
   gboolean hexpand;
   GSList *slist;
-  Line *line_list = NULL;
+  Line1 *line_list = NULL;
   guint total_width = 0, n_expand_lines = 0, n_lines = 0;
   gfloat shrink_width;
   guint children_per_line;
@@ -469,7 +469,7 @@ layout_cols (GtkWrapBox    *wbox,
   while (slist)
     {
 #if GLIB_CHECK_VERSION(2,10,0)
-      Line *line = g_slice_new (Line);
+      Line1 *line = g_slice_new (Line1);
 #else
       Line *line = g_new (Line, 1);
 #endif
@@ -499,16 +499,16 @@ layout_cols (GtkWrapBox    *wbox,
 
   if (1) /* reverse lines and shrink */
     {
-      Line *prev = NULL, *last = NULL;
+      Line1 *prev = NULL, *last = NULL;
       gfloat n_shrink_lines = n_lines;
 
       while (line_list)
         {
-          Line *tmp = line_list->next;
+          Line1 *tmp = line_list->next;
 
           if (shrink_width)
             {
-              Line *line = line_list;
+              Line1 *line = line_list;
               guint shrink_fract = shrink_width / n_shrink_lines + 0.5;
 
               if (line->min_size > shrink_fract)
@@ -534,7 +534,7 @@ layout_cols (GtkWrapBox    *wbox,
 
   if (n_lines)
     {
-      Line *line;
+      Line1 *line;
       gfloat x, width, extra = 0;
 
       width = area->width;
@@ -555,7 +555,7 @@ layout_cols (GtkWrapBox    *wbox,
       while (line)
         {
           GtkAllocation col_allocation;
-          Line *next_line = line->next;
+          Line1 *next_line = line->next;
 
           col_allocation.y = area->y;
           col_allocation.height = area->height;
@@ -586,7 +586,7 @@ layout_cols (GtkWrapBox    *wbox,
         }
 
 #if GLIB_CHECK_VERSION(2,10,0)
-      g_slice_free_chain (Line, line_list, next);
+      g_slice_free_chain (Line1, line_list, next);
 #endif
     }
 }

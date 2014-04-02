@@ -39,7 +39,7 @@ ConnectionPoint *object_find_connectpoint_display(DDisplay *ddisp,
 						  DiaObject *notthis,
 						  gboolean snap_to_objects);
 
-void object_connect_display(DDisplay *ddisp, DiaObject *obj,
+DIAVAR void object_connect_display(DDisplay *ddisp, DiaObject *obj,
 			    Handle *handle, gboolean snap_to_objects);
 /* Adds Undo info for connected objects. */
 

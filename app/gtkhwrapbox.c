@@ -435,13 +435,13 @@ layout_row (GtkWrapBox    *wbox,
     }
 }
 
-typedef struct _Line Line;
+typedef struct _Line Line1;
 struct _Line
 {
   GSList  *children;
   guint16  min_size;
   guint    expand : 1;
-  Line    *next;
+  Line1    *next;
 };
 
 static void
@@ -452,7 +452,7 @@ layout_rows (GtkWrapBox    *wbox,
   guint min_height;
   gboolean vexpand;
   GSList *slist;
-  Line *line_list = NULL;
+  Line1 *line_list = NULL;
   guint total_height = 0, n_expand_lines = 0, n_lines = 0;
   gfloat shrink_height;
   guint children_per_line;
@@ -469,7 +469,7 @@ layout_rows (GtkWrapBox    *wbox,
   while (slist)
     {
 #if GLIB_CHECK_VERSION(2,10,0)
-      Line *line = g_slice_new (Line);
+      Line1 *line = g_slice_new (Line1);
 #else
       Line *line = g_new (Line, 1);
 #endif
@@ -499,16 +499,16 @@ layout_rows (GtkWrapBox    *wbox,
 
   if (1) /* reverse lines and shrink */
     {
-      Line *prev = NULL, *last = NULL;
+      Line1 *prev = NULL, *last = NULL;
       gfloat n_shrink_lines = n_lines;
 
       while (line_list)
         {
-          Line *tmp = line_list->next;
+          Line1 *tmp = line_list->next;
 
           if (shrink_height)
             {
-              Line *line = line_list;
+              Line1 *line = line_list;
               guint shrink_fract = shrink_height / n_shrink_lines + 0.5;
 
               if (line->min_size > shrink_fract)
@@ -534,7 +534,7 @@ layout_rows (GtkWrapBox    *wbox,
 
   if (n_lines)
     {
-      Line *line;
+      Line1 *line;
       gfloat y, height, extra = 0;
 
       height = area->height;
@@ -555,7 +555,7 @@ layout_rows (GtkWrapBox    *wbox,
       while (line)
         {
           GtkAllocation row_allocation;
-          Line *next_line = line->next;
+          Line1 *next_line = line->next;
 
           row_allocation.x = area->x;
           row_allocation.width = area->width;
@@ -586,7 +586,7 @@ layout_rows (GtkWrapBox    *wbox,
         }
 
 #if GLIB_CHECK_VERSION(2,10,0)
-      g_slice_free_chain (Line, line_list, next);
+      g_slice_free_chain (Line1, line_list, next);
 #endif
     }
 }
