@@ -46,6 +46,7 @@
 #include "struct_class.h"
 #include "sheet.h"
 #include "diagramdata.h"
+#include "connpoint_line.h"
 
 
 
@@ -2999,6 +3000,32 @@ gpointer factory_find_list_node(GList *list,gchar *data)
     }
 }
 
+static void factory_connectionto_object(DDisplay *ddisp,DiaObject *obj,STRUCTClass *fclass,int num)
+{
+                    Diagram *diagram;
+                    Handle *handle;
+                    diagram = ddisp->diagram;
+                   // DiaObject *obj = ddisplay_drop_object(ddisp,2,2,otype,6);
+
+
+                    handle = obj->handles[num];
+                    handle->id = num == 0 ? HANDLE_MOVE_STARTPOINT : HANDLE_MOVE_ENDPOINT ;
+                    handle->connected_to = fclass;
+                    handle->pos = fclass->connections[8].pos;
+
+                    diagram_select(diagram, obj);
+                    ConnectionPoint *connectionpoint = object_find_connectpoint_display(ddisp, &fclass->connections[8].pos, obj, TRUE);
+                    if(connectionpoint != NULL)
+                    {
+                        handle->pos = connectionpoint->pos;
+                        connectionpoint->connected  = g_slist_append(connectionpoint->connected,obj);
+                    }
+                    obj->ops->connection_two_obj(obj,connectionpoint,num);
+
+                    GList *myglist = fclass->connections[8].connected;
+                    myglist = g_list_append(myglist,obj);
+}
+
 
 static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer user_data)
 {
@@ -3018,21 +3045,18 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
 
                 if(!g_ascii_strncasecmp("ACTIONID_",sss->name,9))
                 {
+                    /* 2014-4-3 lcy 找里下拉框里名字的对像 */
                     gchar *connname =  gtk_combo_box_get_active_text(GTK_COMBO_BOX(sss->widget));
-                    Handle *handle1,*handle2;
-                    DiaObjectType *otype= object_get_type("Standard - Line");
-                    Point curpos = fclass->connections[0].pos;
-                    DDisplay *ddisp = ddisplay_active();
-                    DiaObject *obj = ddisplay_drop_object(ddisp,(gint)curpos.x,(gint)curpos.y,otype,6);
 
-                    handle1 = obj->handles[0];
-                    handle1->id = HANDLE_MOVE_STARTPOINT;
-                    handle1->connected_to = fclass;
-                    handle1->pos = fclass->connections[8].pos;
-                    handle2 = obj->handles[1];
-                    handle1->id = HANDLE_MOVE_ENDPOINT;
-                    GList *myglist = fclass->connections[8].connected;
-                    myglist = g_list_append(myglist,obj);
+                    DDisplay *ddisp = ddisplay_active();
+                    /* 2014-4-3 lcy  在指定位置创建一条线的标准控件, 线条是标准控件,这里调用drop 回调函数 */
+                    DiaObject *obj = ddisplay_drop_object(ddisp,2,2,object_get_type("Standard - Line"),6);
+
+                    /* 把线条移动到对像中心点且启始端固定在这一个对像上.*/
+                    obj->ops->move(obj,&fclass->connections[8].pos);
+
+                    factory_connectionto_object(ddisp,obj,fclass,0);
+                    object_add_updates(obj, ddisp->diagram);
 
                     Layer *curlayer = fclass->element.object.parent_layer;
                     GList *objlist = curlayer->objects;
@@ -3041,14 +3065,11 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
                             STRUCTClass *objclass = objlist->data;
                             if(!g_ascii_strncasecmp(objclass->name,connname,strlen(connname)))
                             {
-                                handle2->connected_to = objclass;
-                                handle2->pos = objclass->connections[8].pos;
-                                objclass->connections[8].connected = g_list_append(objclass->connections[8].connected,obj);
+                                factory_connectionto_object(ddisp,obj,objclass,1);
                                 break;
                             }
-
                     }
-                    obj->ops->update_data(obj);
+                    object_add_updates(obj, ddisp->diagram);
                 }
                 else if(sey->isString)
                 {
@@ -3057,7 +3078,7 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
 
 
         }
-//        sss->value.text = g_locale_to_utf8(gtk_entry_get_text(GTK_ENTRY (sss->widget)),-1,NULL,NULL,NULL);
+
     break;
     case SPINBOX:
         sss->value.number =gtk_spin_button_get_value(GTK_SPIN_BUTTON(sss->widget));

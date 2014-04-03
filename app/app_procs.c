@@ -955,7 +955,7 @@ app_init (int argc, char **argv)
     g_timeout_add(5*60*1000, autosave_check_autosave, NULL);
 #endif
 
-    /* Create Diagram Tree Window */
+      /* Create Diagram Tree Window */
     create_tree_window();
 
     persistence_register_window_create("sheets_main_dialog",

@@ -256,6 +256,7 @@ const int num_tools = NUM_TOOLS;
 #define ROWS      3
 
 static GtkWidget *toolbox_shell = NULL;
+static GtkWidget *diagramtree = NULL; // 2014-4-3 lcy 把树结构集成进来显示.
 static GtkWidget *tool_widgets[NUM_TOOLS];
 
 static struct
@@ -1446,6 +1447,8 @@ create_sheets(GtkWidget *parent)
   }
   g_free(sheetname);
 }
+
+
 
 static void
 create_color_area (GtkWidget *parent)

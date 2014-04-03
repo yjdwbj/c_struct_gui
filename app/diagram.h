@@ -54,7 +54,7 @@ struct _Diagram {
   Color pagebreak_color; /*!< just to show page breaks */
   DiaGrid     grid;      /*!< the display grid */
 
-  /*! almost completely unused guides (load and save code is there) */  
+  /*! almost completely unused guides (load and save code is there) */
   struct {
     /* sorted arrays of the guides for the diagram */
     real *hguides, *vguides;
@@ -70,11 +70,11 @@ struct _Diagram {
 
 typedef struct _DiagramClass {
   DiagramDataClass parent_class;
-	
+
   /* signals */
   void (* removed)           (Diagram*);
   void (* selection_changed) (Diagram*, int);
-	
+
 } DiagramClass;
 
 GList *dia_open_diagrams(void); /* Read only! */
@@ -96,7 +96,7 @@ void diagram_selected_break_external(Diagram *dia);
 void diagram_remove_all_selected(Diagram *diagram, int delete_empty);
 void diagram_unselect_object(Diagram *dia, DiaObject *obj);
 void diagram_unselect_objects(Diagram *dia, GList *obj_list);
-void diagram_select(Diagram *diagram, DiaObject *obj);
+DIAVAR void diagram_select(Diagram *diagram, DiaObject *obj);
 void diagram_select_list(Diagram *diagram, GList *list);
 int diagram_is_selected(Diagram *diagram, DiaObject *obj);
 GList *diagram_get_sorted_selected(Diagram *dia);

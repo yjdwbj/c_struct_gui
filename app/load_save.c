@@ -123,7 +123,7 @@ read_objects(xmlNodePtr objects,
   ObjectNode obj_node;
   char *typestr;
   char *versionstr;
-  char *id;
+  char *idd;
   int version;
   xmlNodePtr child_node;
 
@@ -142,7 +142,7 @@ read_objects(xmlNodePtr objects,
     if (xmlStrcmp(obj_node->name, (const xmlChar *)"object")==0) {
       typestr = (char *) xmlGetProp(obj_node, (const xmlChar *)"type");
       versionstr = (char *) xmlGetProp(obj_node, (const xmlChar *)"version");
-      id = (char *) xmlGetProp(obj_node, (const xmlChar *)"id");
+      idd = (char *) xmlGetProp(obj_node, (const xmlChar *)"id");
 
       version = 0;
       if (versionstr != NULL) {
@@ -168,7 +168,7 @@ read_objects(xmlNodePtr objects,
           parent->children = g_list_append(parent->children, obj);
         }
 
-        g_hash_table_insert(objects_hash, g_strdup((char *)id), obj);
+        g_hash_table_insert(objects_hash, g_strdup((char *)idd), obj);
 
         child_node = obj_node->children;
 
@@ -184,7 +184,7 @@ read_objects(xmlNodePtr objects,
         }
       }
       if (typestr) xmlFree(typestr);
-      if (id) xmlFree (id);
+      if (idd) xmlFree (idd);
     } else if (xmlStrcmp(obj_node->name, (const xmlChar *)"group")==0
                && obj_node->children) {
       /* don't create empty groups */

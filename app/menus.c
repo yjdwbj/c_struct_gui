@@ -90,7 +90,8 @@ static const GtkActionEntry common_entries[] =
 /* Actions for toolbox menu */
 static const GtkActionEntry toolbox_entries[] =
 {
-    { "FileSheets", NULL, N_("Sheets and Objects..."), "F9", NULL, G_CALLBACK (sheets_dialog_show_callback) },
+   /* { "FileSheets", NULL, N_("Sheets and Objects..."), "F9", NULL, G_CALLBACK (sheets_dialog_show_callback) },*/
+    { "FileSheets", NULL, N_("Sheets and Objects..."), "F9", NULL, NULL },
     { "FilePrefs", GTK_STOCK_PREFERENCES, NULL, NULL, NULL, G_CALLBACK (file_preferences_callback) },
     { "FilePlugins", NULL, N_("Plugins..."), NULL, NULL, G_CALLBACK (file_plugins_callback) }
 };

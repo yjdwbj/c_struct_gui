@@ -26,7 +26,7 @@ void connectionpoint_draw(ConnectionPoint *conpoint,
 			  DDisplay *ddisp);
 void connectionpoint_add_update(ConnectionPoint *conpoint,
 				Diagram *dia);
-void diagram_update_connections_selection(Diagram *dia);
+DIAVAR void diagram_update_connections_selection(Diagram *dia);
 void diagram_update_connections_object(Diagram *dia, DiaObject *obj,
 				       int update_nonmoved);
 void ddisplay_connect_selected(DDisplay *ddisp);

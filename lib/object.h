@@ -342,6 +342,7 @@ typedef DiaMenu *(*ObjectMenuFunc) (DiaObject* obj, Point *position);
 typedef gboolean (*TextEditFunc) (DiaObject *obj, Text *text, TextEditState state, gchar *textchange);
 
 typedef void  (*UpdateData)(DiaObject *obj);
+typedef void  (*ConnectionTwoObject)(DiaObject *obj,gpointer data,int num);
 
 /*************************************
  **  The functions provided in object.c
@@ -448,6 +449,7 @@ struct _ObjectOps {
     checks if new ops are supported (!= NULL)
   */
   UpdateData update_data;
+  ConnectionTwoObject connection_two_obj;
   void      (*(unused[4]))(DiaObject *obj,...);
 };
 

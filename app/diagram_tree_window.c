@@ -3,21 +3,21 @@
  *
  * diagram_tree_window.c : a window showing open diagrams
  * Copyright (C) 2001 Jose A Ortega Ruiz
- *  
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- *  
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *  
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *  
+ *
  */
 
 #ifdef HAVE_CONFIG_H
@@ -43,7 +43,7 @@ static DiagramTreeConfig *config_ = NULL;
 static void
 diagram_tree_window_hide(GtkWidget *window)
 {
-  if (toggle_action_ && 
+  if (toggle_action_ &&
 	  gtk_toggle_action_get_active(toggle_action_)) {
 	gtk_toggle_action_set_active(toggle_action_, FALSE);
   }
@@ -58,25 +58,27 @@ diagram_tree_window_destroyed(GtkWidget *window)
   g_free(diagtree_);
   diagtree_ = NULL;
 
-  if (toggle_action_ && 
+  if (toggle_action_ &&
 	  gtk_toggle_action_get_active(toggle_action_)) {
 	gtk_toggle_action_set_active(toggle_action_, FALSE);
   }
 }
 
+
+
 /* create a diagram_tree_window window */
 static GtkWidget*
-diagram_tree_window_new(DiagramTreeConfig *config) 
+diagram_tree_window_new(DiagramTreeConfig *config)
 {
   GtkWidget *window;
   GtkWidget *scroll;
   GtkWidget *tree;
-  
+
   /* Create a new window */
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
   g_return_val_if_fail(window, NULL);
-  
+
   gtk_window_set_title(GTK_WINDOW(window), _("Diagram Tree"));
   gtk_window_set_role(GTK_WINDOW(window), "diagram_tree");
 

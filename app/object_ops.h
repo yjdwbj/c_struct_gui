@@ -32,9 +32,9 @@
 #define DIA_ALIGN_EQUAL 4
 #define DIA_ALIGN_ADJACENT 5
 
-void object_add_updates(DiaObject *obj, Diagram *dia);
+DIAVAR void object_add_updates(DiaObject *obj, Diagram *dia);
 void object_add_updates_list(GList *list, Diagram *dia);
-ConnectionPoint *object_find_connectpoint_display(DDisplay *ddisp,
+DIAVAR ConnectionPoint *object_find_connectpoint_display(DDisplay *ddisp,
 						  Point *pos,
 						  DiaObject *notthis,
 						  gboolean snap_to_objects);

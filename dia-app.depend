@@ -128,7 +128,7 @@
 	"orth_conn.h"
 	"autoroute.h"
 
-1396437306 o:\tool\dvs50\lib\object.h
+1396513079 o:\tool\dvs50\lib\object.h
 	"diatypes.h"
 	<gtk/gtk.h>
 	"geometry.h"
@@ -1137,7 +1137,7 @@
 	<time.h>
 	<gdk/gdkkeysyms.h>
 
-1395971569 source:o:\tool\dvs50\app\app_procs.c
+1396522103 source:o:\tool\dvs50\app\app_procs.c
 	<config.h>
 	<stdio.h>
 	<stdlib.h>
@@ -1203,7 +1203,7 @@
 	"menus.h"
 	"diarenderer.h"
 
-1257604114 o:\tool\dvs50\app\diagram.h
+1396491787 o:\tool\dvs50\app\diagram.h
 	<gtk/gtk.h>
 	"geometry.h"
 	"handle.h"
@@ -1376,7 +1376,7 @@
 	<gtk/gtk.h>
 	"diagram.h"
 
-1396403814 o:\tool\dvs50\app\object_ops.h
+1396495496 o:\tool\dvs50\app\object_ops.h
 	"object.h"
 	"display.h"
 	"diagram.h"
@@ -1389,7 +1389,7 @@
 	"object.h"
 	"diagram.h"
 
-1257604114 o:\tool\dvs50\app\connectionpoint_ops.h
+1396496873 o:\tool\dvs50\app\connectionpoint_ops.h
 	"connectionpoint.h"
 	"diagram.h"
 	"display.h"
@@ -1569,7 +1569,7 @@
 	"diagram_tree_window.h"
 	"preferences.h"
 
-1257604114 source:o:\tool\dvs50\app\diagram_tree_window.c
+1396522981 source:o:\tool\dvs50\app\diagram_tree_window.c
 	<config.h>
 	<string.h>
 	"intl.h"
@@ -1764,7 +1764,7 @@
 	"object_ops.h"
 	"group.h"
 
-1395971999 source:o:\tool\dvs50\app\interface.c
+1396522080 source:o:\tool\dvs50\app\interface.c
 	<config.h>
 	<gnome.h>
 	<gtk/gtk.h>
@@ -1829,7 +1829,7 @@
 	"intl.h"
 	<math.h>
 
-1395827302 source:o:\tool\dvs50\app\load_save.c
+1396517461 source:o:\tool\dvs50\app\load_save.c
 	<config.h>
 	<sys/stat.h>
 	<unistd.h>
@@ -1865,7 +1865,7 @@
 	"magnify.h"
 	"cursor.h"
 
-1395306259 source:o:\tool\dvs50\app\menus.c
+1396518526 source:o:\tool\dvs50\app\menus.c
 	<config.h>
 	<gtk/gtk.h>
 	<gdk/gdkkeysyms.h>
@@ -2265,7 +2265,7 @@
 	"properties.h"
 	"tool-icons.h"
 
-1396437239 source:o:\tool\dvs50\objects\standard\line.c
+1396513788 source:o:\tool\dvs50\objects\standard\line.c
 	<config.h>
 	<assert.h>
 	<math.h>
@@ -2412,7 +2412,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1396439161 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1396516390 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2425,6 +2425,7 @@
 	"struct_class.h"
 	"sheet.h"
 	"diagramdata.h"
+	"connpoint_line.h"
 
 1395487478 source:o:\tool\dvs50\objects\struct\structattribute.c
 	<config.h>
