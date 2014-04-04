@@ -49,7 +49,7 @@ struct _UndoStack {
 UndoStack *new_undo_stack(Diagram *dia);
 void undo_destroy(UndoStack *stack);
 void undo_push_change(UndoStack *stack, Change *change);
-void undo_set_transactionpoint(UndoStack *stack);
+DIAVAR void undo_set_transactionpoint(UndoStack *stack);
 void undo_revert_to_last_tp(UndoStack *stack);
 void undo_apply_to_next_tp(UndoStack *stack);
 void undo_clear(UndoStack *stack);

@@ -199,24 +199,9 @@ line_set_props(Line *line, GPtrArray *props)
 static void
 line_connection_two_object(Line *line,ConnectionPoint *cp,int num)
 {
-    ConnPointLine *cpl = line->cpl;
-    Handle **hd = line->connection.object.handles;
-
-    Handle *hd1 = hd[0];
-    Handle *hd2 = hd[1];
-    int n = g_slist_length(cpl->connections);
+    /* 2014-4-4 lcy 把连接点固定*/
     line->connection.endpoint_handles[num].connected_to = cp;
     line_update_data(line);
-    return;
-
-//    cpl->start = line->connection.endpoints[0];
-//    cpl->end = line->connection.endpoints[1];
-//    cpl->num_connections = 2;
-//    cpl->parent = line;
-//    gpointer  start = line->connection.endpoint_handles[0].connected_to->object;
-//    gpointer  end = line->connection.endpoint_handles[1].connected_to->object;
-//    cpl->connections = g_slist_append(cpl->connections,start);
-//    cpl->connections = g_slist_append(cpl->connections,end);
 }
 
 static void

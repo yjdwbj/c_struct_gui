@@ -1292,7 +1292,11 @@
 		<Extensions>
 			<code_completion />
 			<envvars />
-			<debugger />
+			<debugger>
+				<remote_debugging target="dia">
+					<options conn_type="0" serial_baud="115200" additional_cmds=" gdbserver localhost:9999" />
+				</remote_debugging>
+			</debugger>
 			<lib_finder disable_auto="1" />
 			<DoxyBlocks>
 				<comment_style block="0" line="0" />

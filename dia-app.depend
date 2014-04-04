@@ -128,7 +128,7 @@
 	"orth_conn.h"
 	"autoroute.h"
 
-1396513079 o:\tool\dvs50\lib\object.h
+1396587114 o:\tool\dvs50\lib\object.h
 	"diatypes.h"
 	<gtk/gtk.h>
 	"geometry.h"
@@ -1203,7 +1203,7 @@
 	"menus.h"
 	"diarenderer.h"
 
-1396491787 o:\tool\dvs50\app\diagram.h
+1396597549 o:\tool\dvs50\app\diagram.h
 	<gtk/gtk.h>
 	"geometry.h"
 	"handle.h"
@@ -1215,7 +1215,7 @@
 	"menus.h"
 	"diagrid.h"
 
-1257604114 o:\tool\dvs50\app\undo.h
+1396597549 o:\tool\dvs50\app\undo.h
 	"diagram.h"
 	"objchange.h"
 
@@ -1389,7 +1389,7 @@
 	"object.h"
 	"diagram.h"
 
-1396496873 o:\tool\dvs50\app\connectionpoint_ops.h
+1396597014 o:\tool\dvs50\app\connectionpoint_ops.h
 	"connectionpoint.h"
 	"diagram.h"
 	"display.h"
@@ -1598,7 +1598,7 @@
 
 1257604114 o:\tool\dvs50\app\pixmaps\landscape.xpm
 
-1396403592 source:o:\tool\dvs50\app\disp_callbacks.c
+1396588686 source:o:\tool\dvs50\app\disp_callbacks.c
 	<config.h>
 	<stdio.h>
 	<string.h>
@@ -1865,7 +1865,7 @@
 	"magnify.h"
 	"cursor.h"
 
-1396518526 source:o:\tool\dvs50\app\menus.c
+1396610506 source:o:\tool\dvs50\app\menus.c
 	<config.h>
 	<gtk/gtk.h>
 	<gdk/gdkkeysyms.h>
@@ -2140,7 +2140,7 @@
 	"interface.h"
 	"defaults.h"
 
-1257614033 source:o:\tool\dvs50\app\undo.c
+1396596467 source:o:\tool\dvs50\app\undo.c
 	<config.h>
 	"undo.h"
 	"object_ops.h"
@@ -2265,7 +2265,7 @@
 	"properties.h"
 	"tool-icons.h"
 
-1396513788 source:o:\tool\dvs50\objects\standard\line.c
+1396596164 source:o:\tool\dvs50\objects\standard\line.c
 	<config.h>
 	<assert.h>
 	<math.h>
@@ -2386,7 +2386,7 @@
 	"connectionpoint.h"
 	"dia_xml.h"
 
-1396419750 source:o:\tool\dvs50\objects\struct\struct_class.c
+1396609959 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2402,7 +2402,7 @@
 	"debug.h"
 	"sheet.h"
 
-1396353748 o:\tool\dvs50\objects\struct\struct_class.h
+1396586353 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2412,7 +2412,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1396516390 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1396611926 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>

@@ -98,6 +98,11 @@ static DiaObject * factory_struct_items_create(Point *startpoint,
   	       Handle **handle1,
 	       Handle **handle2);
 
+static void factory_select(STRUCTClass *structclass, Point *clicked_point,
+			    DiaRenderer *interactive_renderer);
+
+static void factory_update_index(STRUCTClass *fclass);
+
 static void fill_in_fontdata(STRUCTClass *structclass);
 static int structclass_num_dynamic_connectionpoints(STRUCTClass *class);
 
@@ -142,7 +147,7 @@ static ObjectOps structclass_ops = {
   (DestroyFunc)         structclass_destroy,
   (DrawFunc)            structclass_draw,
   (DistanceFunc)        structclass_distance_from,
-  (SelectFunc)          structclass_select,
+  (SelectFunc)          factory_select,
   (CopyFunc)            structclass_copy,
   (MoveFunc)            structclass_move,
   (MoveHandleFunc)      structclass_move_handle,
@@ -156,6 +161,9 @@ static ObjectOps structclass_ops = {
   (SetPropsFunc)        structclass_set_props,
   (TextEditFunc) 0,
   (ApplyPropertiesListFunc) object_apply_props,
+  (UpdateData) 0,
+  (ConnectionTwoObject) 0,
+  (UpdateObjectIndex)   factory_update_index
 };
 
 extern PropDescDArrayExtra structattribute_extra;
@@ -163,24 +171,6 @@ extern PropDescDArrayExtra structoperation_extra;
 extern PropDescDArrayExtra structparameter_extra;
 extern PropDescDArrayExtra structformalparameter_extra;
 
-//** 2013-3-13 define first struct widget */
-
-static PropDescription MyStruct_props[] ={
-     ELEMENT_COMMON_PROPERTIES,
-  PROP_STD_LINE_WIDTH_OPTIONAL,
-PROP_STD_TEXT_COLOUR_OPTIONS(PROP_FLAG_VISIBLE|PROP_FLAG_STANDARD|PROP_FLAG_OPTIONAL),
-  PROP_STD_LINE_COLOUR_OPTIONAL,
-  PROP_STD_FILL_COLOUR_OPTIONAL,
-   PROP_STD_NOTEBOOK_BEGIN,
-  PROP_NOTEBOOK_PAGE("class", PROP_FLAG_DONT_MERGE, N_("Class")),
-  { "name", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL | PROP_FLAG_NO_DEFAULTS,
-  N_("Name"), NULL, NULL },
-   PROP_MULTICOL_END("class"),
-  PROP_STD_NOTEBOOK_END,
-  { "attributes", PROP_TYPE_DARRAY, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL | PROP_FLAG_DONT_MERGE | PROP_FLAG_NO_DEFAULTS,
-  N_("Attributes"), NULL, NULL /* structattribute_extra */ },
-  PROP_DESC_END
-};
 
 
 
@@ -511,6 +501,31 @@ structclass_select(STRUCTClass *structclass, Point *clicked_point,
 	       DiaRenderer *interactive_renderer)
 {
   element_update_handles(&structclass->element);
+}
+
+/*  2014-4-4 lcy 更新界面上所有对像的ID号*/
+static void factory_update_index(STRUCTClass *fclass)
+{
+
+      DiaObject *obj = &fclass->element.object;
+      GList *list = obj->parent_layer->objects;
+      int n = g_list_index(list,obj);
+      gchar **tmp =  g_strsplit(fclass->name,"(",-1);
+      gchar *newname = g_strconcat(tmp[0],g_strdup_printf(_("(%03d)"), n),NULL);
+      g_strfreev(tmp);
+      g_free(fclass->name);
+      fclass->name =  g_strdup(newname);
+      g_free(newname);
+      obj->name = fclass->name;
+      structclass_calculate_data(fclass);
+}
+
+
+static void factory_select(STRUCTClass *fclass, Point *clicked_point,
+	       DiaRenderer *interactive_renderer)
+{
+    element_update_handles(&fclass->element);
+    factory_update_index(fclass);
 }
 
 static ObjectChange*
@@ -2063,11 +2078,11 @@ factory_struct_items_create(Point *startpoint,
       FactoryStructItemList *i = sstruct->data;
       if(i->number == index)
       {
-          structclass->name = g_strdup(_(i->name));
+          obj->name = g_strdup(_(i->name));
           break;
       }
   }
-  obj->name = structclass->name;
+  structclass->name = obj->name ;
   /* 2014-3-26 lcy  这里初始哈希表用存widget与它的值*/
  // structclass->widgetmap = g_hash_table_new(g_direct_hash,g_direct_equal);
   structclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);

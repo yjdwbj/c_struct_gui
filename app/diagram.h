@@ -86,7 +86,7 @@ Diagram *new_diagram(const char *filename); /*Note: filename is copied*/
 void diagram_set_current(Diagram *diagram);
 void diagram_destroy(Diagram *dia);
 gboolean diagram_is_modified(Diagram *dia);
-void diagram_modified(Diagram *dia);
+DIAVAR void diagram_modified(Diagram *dia);
 void diagram_set_modified(Diagram *dia, int modified);
 void diagram_add_ddisplay(Diagram *dia, DDisplay *ddisp);
 void diagram_remove_ddisplay(Diagram *dia, DDisplay *ddisp);
@@ -109,7 +109,7 @@ void diagram_add_update_all(Diagram *dia);
 void diagram_add_update_all_all_and_flush();
 void diagram_add_update_pixels(Diagram *dia, Point *point,
 			       int pixel_width, int pixel_height);
-void diagram_flush(Diagram *dia);
+DIAVAR void diagram_flush(Diagram *dia);
 DiaObject *diagram_find_clicked_object(Diagram *dia,
 				    Point *pos,
 				    real maxdist);
@@ -123,7 +123,7 @@ real diagram_find_closest_connectionpoint(Diagram *dia,
 					  ConnectionPoint **cp,
 					  Point *pos,
 					  DiaObject *notthis);
-void diagram_update_extents(Diagram *dia);
+DIAVAR void diagram_update_extents(Diagram *dia);
 
 void diagram_update_menu_sensitivity (Diagram *dia);
 

@@ -275,6 +275,7 @@ struct _STRUCTClass {
   Color fill_color;
   Color text_color;
 
+
   /** Attributes: aka member variables */
 //  GList *attributes;
 
@@ -309,6 +310,7 @@ struct _STRUCTClass {
    * This is to avoid a half-way destroyed list being updated.
    */
   gboolean destroyed;
+  gboolean indexed;
   GList *widgetmap; // 2014-3-22 lcy 这里用一个链表来保存界面上所有的值。
   FactoryStructItemAll *EnumsAndStructs ;// 2014-3-21 lcy 这里包含一个文件里的所有结构体.
 };

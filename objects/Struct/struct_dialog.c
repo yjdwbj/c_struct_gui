@@ -3005,15 +3005,13 @@ static void factory_connectionto_object(DDisplay *ddisp,DiaObject *obj,STRUCTCla
                     Diagram *diagram;
                     Handle *handle;
                     diagram = ddisp->diagram;
-                   // DiaObject *obj = ddisplay_drop_object(ddisp,2,2,otype,6);
-
 
                     handle = obj->handles[num];
                     handle->id = num == 0 ? HANDLE_MOVE_STARTPOINT : HANDLE_MOVE_ENDPOINT ;
                     handle->connected_to = fclass;
                     handle->pos = fclass->connections[8].pos;
 
-                    diagram_select(diagram, obj);
+                   // diagram_select(diagram,obj);
                     ConnectionPoint *connectionpoint = object_find_connectpoint_display(ddisp, &fclass->connections[8].pos, obj, TRUE);
                     if(connectionpoint != NULL)
                     {
@@ -3021,9 +3019,8 @@ static void factory_connectionto_object(DDisplay *ddisp,DiaObject *obj,STRUCTCla
                         connectionpoint->connected  = g_slist_append(connectionpoint->connected,obj);
                     }
                     obj->ops->connection_two_obj(obj,connectionpoint,num);
+                    object_add_updates(obj, ddisp->diagram);
 
-                    GList *myglist = fclass->connections[8].connected;
-                    myglist = g_list_append(myglist,obj);
 }
 
 
@@ -3050,26 +3047,41 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
 
                     DDisplay *ddisp = ddisplay_active();
                     /* 2014-4-3 lcy  在指定位置创建一条线的标准控件, 线条是标准控件,这里调用drop 回调函数 */
-                    DiaObject *obj = ddisplay_drop_object(ddisp,2,2,object_get_type("Standard - Line"),6);
+                    int x =0,y=0;
+                    x = fclass->connections[8].pos.x;
+                    y = fclass->connections[8].pos.y;
+                    DiaObject *obj = ddisplay_drop_object(ddisp,x,y,object_get_type("Standard - Line"),6);
 
                     /* 把线条移动到对像中心点且启始端固定在这一个对像上.*/
-                    obj->ops->move(obj,&fclass->connections[8].pos);
+                    //obj->ops->move(obj,&fclass->connections[8].pos);
 
                     factory_connectionto_object(ddisp,obj,fclass,0);
-                    object_add_updates(obj, ddisp->diagram);
+
+
+
+
 
                     Layer *curlayer = fclass->element.object.parent_layer;
                     GList *objlist = curlayer->objects;
                     for(;objlist ;objlist =  objlist->next )
                     {
                             STRUCTClass *objclass = objlist->data;
-                            if(!g_ascii_strncasecmp(objclass->name,connname,strlen(connname)))
+                            /* 2014-4-4 lcy 这里一定要检查不对像type */
+                            if( (objclass->element.object.type == object_get_type("STRUCT - Class")) &&
+                               !g_ascii_strncasecmp(objclass->name,connname,strlen(connname)))
                             {
                                 factory_connectionto_object(ddisp,obj,objclass,1);
                                 break;
                             }
                     }
-                    object_add_updates(obj, ddisp->diagram);
+
+                  //  object_add_updates(obj, ddisp->diagram);
+                    GList *myglist = fclass->connections[8].connected;
+                                    myglist = g_list_append(myglist,obj);
+
+
+
+
                 }
                 else if(sey->isString)
                 {
@@ -3307,16 +3319,20 @@ static void factory_set_exist_widgets(STRUCTClass *fclass, FactoryStructItem *it
 
                       SaveEntry *sey = &sss->value.sentry;
                       gdouble maxlength = sey->col * sey->row; // 得到文本框的大小。
+
+
                      if(!g_ascii_strncasecmp("ACTIONID_",item->Name,9))
                      {
                             columTwo = gtk_combo_box_new_text();
                             gtk_combo_box_popdown(GTK_COMBO_BOX(columTwo));
+
                             Layer *curlayer = fclass->element.object.parent_layer;
                             GList *objlist = curlayer->objects;
                             for(;objlist ;objlist =    objlist->next )
                             {
                                 STRUCTClass *objclass = objlist->data;
-                                if(objclass != fclass)
+                                if( objclass != fclass &&  (objclass->element.object.type == object_get_type("STRUCT - Class"))
+                                    && !objclass->connections[8].connected)
                                 {
                                     gtk_combo_box_append_text(GTK_COMBO_BOX(columTwo),objclass->name);
                                 }
@@ -3538,13 +3554,16 @@ void factory_editable_delete_callback(GtkEditable *edit,
 }
 
 
-void factory_create_and_fill_dialog(STRUCTClass *class, gboolean is_default)
+void factory_create_and_fill_dialog(STRUCTClass *fclass, gboolean is_default)
 {
-    STRUCTClassDialog *prop_dialog = class->properties_dialog;
+    STRUCTClassDialog *prop_dialog = fclass->properties_dialog;
     int row =0;
+    gchar **tname = g_strsplit(fclass->name,"(",-1);
 
-    GList *targetlist =  g_hash_table_lookup(class->EnumsAndStructs->structTable,(gpointer)class->name);
-    int mapsize = g_hash_table_size(class->widgetmap);
+    GList *targetlist =  g_hash_table_lookup(fclass->EnumsAndStructs->structTable,(gpointer)tname[0]);
+    g_strfreev(tname);
+
+    int mapsize = g_hash_table_size(fclass->widgetmap);
     if(targetlist)
     {
             GList *item = targetlist;
@@ -3553,9 +3572,9 @@ void factory_create_and_fill_dialog(STRUCTClass *class, gboolean is_default)
 
             for(;item != NULL ; item = item->next,row++)
             {
-                factory_set_exist_widgets(class,item->data,row);
+                factory_set_exist_widgets(fclass,item->data,row);
             }
-            gtk_container_add(GTK_OBJECT(class->properties_dialog->dialog),class->properties_dialog->mainTable);
+            gtk_container_add(GTK_OBJECT(fclass->properties_dialog->dialog),fclass->properties_dialog->mainTable);
     }
 
 

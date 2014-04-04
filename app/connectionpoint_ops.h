@@ -29,7 +29,7 @@ void connectionpoint_add_update(ConnectionPoint *conpoint,
 DIAVAR void diagram_update_connections_selection(Diagram *dia);
 void diagram_update_connections_object(Diagram *dia, DiaObject *obj,
 				       int update_nonmoved);
-void ddisplay_connect_selected(DDisplay *ddisp);
+DIAVAR void ddisplay_connect_selected(DDisplay *ddisp);
 void diagram_unconnect_selected(Diagram *dia);
 
 #endif /* CONNECTIONPOINT_OPS_H */

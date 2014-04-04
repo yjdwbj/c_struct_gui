@@ -344,6 +344,8 @@ typedef gboolean (*TextEditFunc) (DiaObject *obj, Text *text, TextEditState stat
 typedef void  (*UpdateData)(DiaObject *obj);
 typedef void  (*ConnectionTwoObject)(DiaObject *obj,gpointer data,int num);
 
+typedef void (*UpdateObjectIndex)(DiaObject *obj);
+
 /*************************************
  **  The functions provided in object.c
  *************************************/
@@ -450,6 +452,7 @@ struct _ObjectOps {
   */
   UpdateData update_data;
   ConnectionTwoObject connection_two_obj;
+  UpdateObjectIndex   update_index;
   void      (*(unused[4]))(DiaObject *obj,...);
 };
 

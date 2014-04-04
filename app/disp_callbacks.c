@@ -1091,6 +1091,7 @@ ddisplay_drop_object(DDisplay *ddisp, gint x, gint y, DiaObjectType *otype,
   diagram_remove_all_selected(ddisp->diagram, TRUE); /* unselect all */
   diagram_select(ddisp->diagram, obj);
   obj->ops->selectf(obj, &droppoint, ddisp->renderer);
+
   textedit_activate_object(ddisp, obj, NULL);
 
   /* Connect first handle if possible: */
