@@ -166,10 +166,10 @@ static ObjectOps structclass_ops = {
   (UpdateObjectIndex)   factory_update_index
 };
 
-extern PropDescDArrayExtra structattribute_extra;
-extern PropDescDArrayExtra structoperation_extra;
-extern PropDescDArrayExtra structparameter_extra;
-extern PropDescDArrayExtra structformalparameter_extra;
+//extern PropDescDArrayExtra structattribute_extra;
+//extern PropDescDArrayExtra structoperation_extra;
+//extern PropDescDArrayExtra structparameter_extra;
+//extern PropDescDArrayExtra structformalparameter_extra;
 
 
 
@@ -185,16 +185,16 @@ static PropDescription structclass_props[] = {
 
   PROP_STD_NOTEBOOK_BEGIN,
   PROP_NOTEBOOK_PAGE("class", PROP_FLAG_DONT_MERGE, N_("Class")),
-  { "name", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL | PROP_FLAG_NO_DEFAULTS,
-  N_("Name"), NULL, NULL },
-  { "stereotype", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Stereotype"), NULL, NULL },
-  { "comment", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Comment"), NULL, NULL },
-  { "abstract", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Abstract"), NULL, NULL },
-  { "template", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL | PROP_FLAG_NO_DEFAULTS,
-  N_("Template"), NULL, NULL },
+//  { "name", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL | PROP_FLAG_NO_DEFAULTS,
+//  N_("Name"), NULL, NULL },
+//  { "stereotype", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Stereotype"), NULL, NULL },
+//  { "comment", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Comment"), NULL, NULL },
+//  { "abstract", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Abstract"), NULL, NULL },
+//  { "template", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL | PROP_FLAG_NO_DEFAULTS,
+//  N_("Template"), NULL, NULL },
 
 //  { "suppress_attributes", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
 //  N_("Suppress Attributes"), NULL, NULL },
@@ -222,16 +222,16 @@ static PropDescription structclass_props[] = {
   /* FIXME: apparently multicol does not work correctly, this should be FIRST column */
   { "normal_font", PROP_TYPE_FONT, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
   N_("Normal"), NULL, NULL },
-  { "polymorphic_font", PROP_TYPE_FONT, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Polymorphic"), NULL, NULL },
-  { "abstract_font", PROP_TYPE_FONT, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Abstract"), NULL, NULL },
+//  { "polymorphic_font", PROP_TYPE_FONT, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Polymorphic"), NULL, NULL },
+//  { "abstract_font", PROP_TYPE_FONT, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Abstract"), NULL, NULL },
   { "classname_font", PROP_TYPE_FONT, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
   N_("Classname"), NULL, NULL },
-  { "abstract_classname_font", PROP_TYPE_FONT, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Abstract Classname"), NULL, NULL },
-  { "comment_font", PROP_TYPE_FONT, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Comment"), NULL, NULL },
+//  { "abstract_classname_font", PROP_TYPE_FONT, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Abstract Classname"), NULL, NULL },
+//  { "comment_font", PROP_TYPE_FONT, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Comment"), NULL, NULL },
 
   PROP_MULTICOL_COLUMN("height"),
   { "normal_font_height", PROP_TYPE_REAL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
@@ -284,21 +284,21 @@ structclass_describe_props(STRUCTClass *structclass)
       /* can't do this static, at least not on win32
        * due to relocation (initializer not a constant)
        */
-      if (0 == strcmp(structclass_props[i].name, "attributes"))
-        structclass_props[i].extra_data = &structattribute_extra;
-      else if (0 == strcmp(structclass_props[i].name, "operations")) {
-        PropDescription *records = structoperation_extra.common.record;
-        int j = 0;
-
-        structclass_props[i].extra_data = &structoperation_extra;
-	while (records[j].name != NULL) {
-          if (0 == strcmp(records[j].name, "parameters"))
-	    records[j].extra_data = &structparameter_extra;
-	  j++;
-	}
-      }
-      else if (0 == strcmp(structclass_props[i].name, "templates"))
-        structclass_props[i].extra_data = &structformalparameter_extra;
+//      if (0 == strcmp(structclass_props[i].name, "attributes"))
+//        structclass_props[i].extra_data = &structattribute_extra;
+//      else if (0 == strcmp(structclass_props[i].name, "operations")) {
+//        PropDescription *records = structoperation_extra.common.record;
+//        int j = 0;
+//
+//        structclass_props[i].extra_data = &structoperation_extra;
+//	while (records[j].name != NULL) {
+//          if (0 == strcmp(records[j].name, "parameters"))
+//	    records[j].extra_data = &structparameter_extra;
+//	  j++;
+//	}
+//      }
+//      else if (0 == strcmp(structclass_props[i].name, "templates"))
+//        structclass_props[i].extra_data = &structformalparameter_extra;
 
       i++;
     }
@@ -313,7 +313,7 @@ static PropOffset structclass_offsets[] = {
   { "text_colour", PROP_TYPE_COLOUR, offsetof(STRUCTClass, text_color) },
   { "line_colour", PROP_TYPE_COLOUR, offsetof(STRUCTClass, line_color) },
   { "fill_colour", PROP_TYPE_COLOUR, offsetof(STRUCTClass, fill_color) },
-  { "name", PROP_TYPE_STRING, offsetof(STRUCTClass, name) },
+//  { "name", PROP_TYPE_STRING, offsetof(STRUCTClass, name) },
 //  { "stereotype", PROP_TYPE_STRING, offsetof(STRUCTClass, stereotype) },
 //  { "comment", PROP_TYPE_STRING, offsetof(STRUCTClass, comment) },
 //  { "abstract", PROP_TYPE_BOOL, offsetof(STRUCTClass, abstract) },

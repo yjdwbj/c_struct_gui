@@ -39,17 +39,17 @@ static PropDescription structformalparameter_props[] = {
   PROP_DESC_END
 };
 
-static PropOffset structformalparameter_offsets[] = {
-//  { "name", PROP_TYPE_STRING, offsetof(STRUCTFormalParameter, name) },
-//  { "type", PROP_TYPE_STRING, offsetof(STRUCTFormalParameter, type) },
-  { NULL, 0, 0 },
-};
+//static PropOffset structformalparameter_offsets[] = {
+////  { "name", PROP_TYPE_STRING, offsetof(STRUCTFormalParameter, name) },
+////  { "type", PROP_TYPE_STRING, offsetof(STRUCTFormalParameter, type) },
+//  { NULL, 0, 0 },
+//};
 
-PropDescDArrayExtra structformalparameter_extra = {
-  { structformalparameter_props, structformalparameter_offsets, "structformalparameter" },
-//  (NewRecordFunc)struct_formalparameter_new,
-//  (FreeRecordFunc)struct_formalparameter_destroy
-};
+//PropDescDArrayExtra structformalparameter_extra = {
+//  { structformalparameter_props, structformalparameter_offsets, "structformalparameter" },
+////  (NewRecordFunc)struct_formalparameter_new,
+////  (FreeRecordFunc)struct_formalparameter_destroy
+//};
 
 //STRUCTFormalParameter *
 //struct_formalparameter_new(void)

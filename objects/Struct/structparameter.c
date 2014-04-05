@@ -53,20 +53,20 @@ static PropDescription structparameter_props[] = {
   PROP_DESC_END
 };
 
-static PropOffset structparameter_offsets[] = {
-//  { "name", PROP_TYPE_STRING, offsetof(STRUCTParameter, name) },
-//  { "type", PROP_TYPE_STRING, offsetof(STRUCTParameter, type) },
-//  { "value", PROP_TYPE_STRING, offsetof(STRUCTParameter, value) },
-//  { "comment", PROP_TYPE_STRING, offsetof(STRUCTParameter, comment) },
-//  { "kind", PROP_TYPE_ENUM, offsetof(STRUCTParameter, kind) },
-  { NULL, 0, 0 },
-};
+//static PropOffset structparameter_offsets[] = {
+////  { "name", PROP_TYPE_STRING, offsetof(STRUCTParameter, name) },
+////  { "type", PROP_TYPE_STRING, offsetof(STRUCTParameter, type) },
+////  { "value", PROP_TYPE_STRING, offsetof(STRUCTParameter, value) },
+////  { "comment", PROP_TYPE_STRING, offsetof(STRUCTParameter, comment) },
+////  { "kind", PROP_TYPE_ENUM, offsetof(STRUCTParameter, kind) },
+//  { NULL, 0, 0 },
+//};
 
-PropDescDArrayExtra structparameter_extra = {
-  { structparameter_props, structparameter_offsets, "structparameter" },
-//  (NewRecordFunc)struct_parameter_new,
-//  (FreeRecordFunc)struct_parameter_destroy
-};
+//PropDescDArrayExtra structparameter_extra = {
+//  { structparameter_props, structparameter_offsets, "structparameter" },
+////  (NewRecordFunc)struct_parameter_new,
+////  (FreeRecordFunc)struct_parameter_destroy
+//};
 
 //STRUCTParameter *
 //struct_parameter_new(void)

@@ -136,7 +136,8 @@ load_all_sheets(void)
   char *sheet_path;
   char *home_dir;
   /* 2014-4-1 lcy 递归查找config 目录下所有以.struct 为后缀的文件名 */
-  for_each_in_dir(dia_get_lib_directory("config"),factoryReadDataFromFile,this_is_a_struct);
+ // for_each_in_dir(dia_get_lib_directory("config"),factoryReadDataFromFile,this_is_a_struct);
+  for_each_in_dir(dia_get_lib_directory("config"),factory_read_native_c_file,this_is_a_struct);
  //   factoryReadDataFromFile(&structList);
 //  home_dir = dia_config_filename("sheets");
 //  if (home_dir) {
@@ -204,6 +205,94 @@ load_sheets_from_dir(const gchar *directory, SheetScope scope)
 }
 
 
+static gboolean test_last_char(gchar c)
+{
+   if( c == '{' ||  c == '}' || c == ';' )
+    return FALSE;
+   else
+    return TRUE;
+}
+
+static void figure_out_char(const gchar *str,const gchar c,int *count)
+{
+    gchar *tmp = str;
+    while(*tmp)
+    {
+        if(*tmp++ == c )
+        {
+            *count +=1;
+        }
+    }
+}
+
+void factory_read_native_c_file(const gchar* filename)
+{
+#define MAX_LINE 1024
+#define MAX_SECTION 7
+   structList.structTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+   structList.enumTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+    struct stat statbuf;
+
+    FILE *fd;
+    if((fd =  fopen(filename,"r")) == NULL)
+    {
+         message_error(_("Couldn't open filename "
+		  "object-libs; exiting...\n"));
+    }
+
+    if(stat(filename,&statbuf) <0 )
+    {
+        message_error(_("Couldn't read  filename stats"
+		  "object-libs; exiting...\n"));
+    }
+
+
+
+    char filetxt[MAX_LINE]={'\0'};
+    int zero = 0; // 2014-3-25 lcy  这里是初始化枚举值;
+    int  lcb = 0;
+    int  rcb = 0;             //  curly brackets or braces 大括号对数
+    gchar *blockbuf = NULL;
+    while(fgets(filetxt,MAX_LINE,fd)!=NULL)
+    {
+        gchar *strip = g_strstrip(filetxt);
+        gchar *aline =g_locale_to_utf8(strip,-1,NULL,NULL,NULL);;
+        g_free(strip);
+        if(!aline)
+            continue;
+        char lastchar = aline[strlen(aline)-1];
+//        if(test_last_char(lastchar))
+//        {
+//             message_error(_("格式错误,找不到结束字符,且不支持跨行"));
+//        }
+        figure_out_char(aline,'{',&lcb);
+        figure_out_char(aline,'}',&rcb);
+
+        if(!lcb && rcb )
+        {
+            message_error(_("格式错误,找不到相应的左括号"));
+        }
+
+        if( lcb && rcb && lcb == rcb)
+        {
+            gchar **mline = g_strsplit(blockbuf,"\n",-1);
+            int num = g_strv_length(mline);
+        }
+        gchar *p = g_strdup(blockbuf);
+        g_free(blockbuf);
+        if(p)
+        blockbuf = g_strconcat(p,aline,"\n",NULL);
+        else
+        {
+            blockbuf = g_strconcat(aline,"\n",NULL);
+        }
+        g_free(aline);
+        memset(filetxt,0x0,MAX_LINE);
+    }
+
+}
+
+
 void factoryReadDataFromFile(const gchar* filename)
 {
 #define MAX_LINE 1024
@@ -211,18 +300,9 @@ void factoryReadDataFromFile(const gchar* filename)
    structList.structTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
    structList.enumTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
 
-//    gchar *datafilepath;
-//    const gchar* vaildposfix = ".struct";
+
     struct stat statbuf;
-//    datafilepath = dia_get_lib_directory("config"); /// append /test.data
-//    if ( stat(datafilepath, &statbuf) < 0)
-//   {
-//       message_error(_("Couldn't find config path "
-//		  "object-libs; exiting...\n"));
-//    }
-//
-//    gchar* filename = g_strconcat(datafilepath, G_DIR_SEPARATOR_S ,
-//		     cfname, NULL);
+
     FILE *fd;
     if((fd =  fopen(filename,"r")) == NULL)
     {

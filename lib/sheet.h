@@ -107,6 +107,7 @@ DIAVAR void sheet_append_sheet_obj(Sheet *sheet, SheetObject *type);
 DIAVAR void register_sheet(Sheet *sheet);
 DIAVAR GSList *get_sheets_list(void);
 DIAVAR void factoryReadDataFromFile(const gchar* name);
+DIAVAR void factory_read_native_c_file(const gchar* name);
 
 DIAVAR void load_all_sheets(void);
 DIAVAR void dia_sort_sheets(void);

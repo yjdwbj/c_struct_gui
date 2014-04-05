@@ -81,11 +81,11 @@ struct _STRUCTClassState {
   real comment_font_height;
 
   DiaFont *normal_font;
-  DiaFont *abstract_font;
-  DiaFont *polymorphic_font;
+//  DiaFont *abstract_font;
+//  DiaFont *polymorphic_font;
   DiaFont *classname_font;
-  DiaFont *abstract_classname_font;
-  DiaFont *comment_font;
+//  DiaFont *abstract_classname_font;
+//  DiaFont *comment_font;
 
   char *name;
 //  char *stereotype;
@@ -117,6 +117,8 @@ struct _STRUCTClassState {
   /* Template: */
 //  int template;
 //  GList *formal_params;
+  GList *widgetmap; // 2014-3-22 lcy 这里用一个链表来保存界面上所有的值。
+  FactoryStructItemAll *EnumsAndStructs ;// 2014-3-21 lcy 这里包含一个文件里的所有结构体.
 };
 
 
@@ -127,9 +129,9 @@ struct _STRUCTClassChange {
 
   STRUCTClass *obj;
 
-  GList *added_cp;
-  GList *deleted_cp;
-  GList *disconnected;
+//  GList *added_cp;
+//  GList *deleted_cp;
+//  GList *disconnected;
 
   int applied;
 
@@ -137,6 +139,11 @@ struct _STRUCTClassChange {
 };
 
 static STRUCTClassState *structclass_get_state(STRUCTClass *structclass);
+
+static STRUCTClassState *factory_get_state(STRUCTClass *structclass);
+static ObjectChange *
+factory_new_change(STRUCTClass *obj, STRUCTClassState *saved_state);
+
 static ObjectChange *new_structclass_change(STRUCTClass *obj, STRUCTClassState *saved_state,
 					 GList *added, GList *deleted,
 					 GList *disconnected);
@@ -179,17 +186,17 @@ structclass_store_disconnects(STRUCTClassDialog *prop_dialog,
  * @param user_data Arbitrary data, here typically an integer indicating the
  * option internally.
  */
-static void
-add_option_menu_item(GtkMenu *menu, gchar *label, GtkSignalFunc update_func,
-		     STRUCTClass *structclass, gpointer user_data)
-{
-  GtkWidget *menuitem = gtk_menu_item_new_with_label (label);
-  gtk_signal_connect (GTK_OBJECT (menuitem), "activate",
-		      update_func, structclass);
-  gtk_object_set_user_data(GTK_OBJECT(menuitem), user_data);
-  gtk_menu_append (GTK_MENU (menu), menuitem);
-  gtk_widget_show (menuitem);
-}
+//static void
+//add_option_menu_item(GtkMenu *menu, gchar *label, GtkSignalFunc update_func,
+//		     STRUCTClass *structclass, gpointer user_data)
+//{
+//  GtkWidget *menuitem = gtk_menu_item_new_with_label (label);
+//  gtk_signal_connect (GTK_OBJECT (menuitem), "activate",
+//		      update_func, structclass);
+//  gtk_object_set_user_data(GTK_OBJECT(menuitem), user_data);
+//  gtk_menu_append (GTK_MENU (menu), menuitem);
+//  gtk_widget_show (menuitem);
+//}
 
 /********************************************************
  ******************** CLASS *****************************
@@ -304,30 +311,30 @@ add_option_menu_item(GtkMenu *menu, gchar *label, GtkSignalFunc update_func,
 //  gtk_spin_button_set_value (prop_dialog->comment_font_height, structclass->comment_font_height);
 //}
 
-static void
-create_font_props_row (GtkTable   *table,
-                       const char *kind,
-                       gint        row,
-                       DiaFont    *font,
-                       real        height,
-                       DiaFontSelector **fontsel,
-                       GtkSpinButton   **heightsel)
-{
-  GtkWidget *label;
-  GtkObject *adj;
-
-  label = gtk_label_new (kind);
-  gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
-  gtk_table_attach_defaults (table, label, 0, 1, row, row+1);
-  *fontsel = DIAFONTSELECTOR (dia_font_selector_new ());
-  dia_font_selector_set_font (DIAFONTSELECTOR (*fontsel), font);
-  gtk_table_attach_defaults (GTK_TABLE (table), GTK_WIDGET(*fontsel), 1, 2, row, row+1);
-
-  adj = gtk_adjustment_new (height, 0.1, 10.0, 0.1, 1.0, 0);
-  *heightsel = GTK_SPIN_BUTTON (gtk_spin_button_new (GTK_ADJUSTMENT(adj), 1.0, 2));
-  gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (*heightsel), TRUE);
-  gtk_table_attach_defaults (table, GTK_WIDGET (*heightsel), 2, 3, row, row+1);
-}
+//static void
+//create_font_props_row (GtkTable   *table,
+//                       const char *kind,
+//                       gint        row,
+//                       DiaFont    *font,
+//                       real        height,
+//                       DiaFontSelector **fontsel,
+//                       GtkSpinButton   **heightsel)
+//{
+//  GtkWidget *label;
+//  GtkObject *adj;
+//
+//  label = gtk_label_new (kind);
+//  gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+//  gtk_table_attach_defaults (table, label, 0, 1, row, row+1);
+//  *fontsel = DIAFONTSELECTOR (dia_font_selector_new ());
+//  dia_font_selector_set_font (DIAFONTSELECTOR (*fontsel), font);
+//  gtk_table_attach_defaults (GTK_TABLE (table), GTK_WIDGET(*fontsel), 1, 2, row, row+1);
+//
+//  adj = gtk_adjustment_new (height, 0.1, 10.0, 0.1, 1.0, 0);
+//  *heightsel = GTK_SPIN_BUTTON (gtk_spin_button_new (GTK_ADJUSTMENT(adj), 1.0, 2));
+//  gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (*heightsel), TRUE);
+//  gtk_table_attach_defaults (table, GTK_WIDGET (*heightsel), 2, 3, row, row+1);
+//}
 
 
 gboolean factory_find_array_flag(const gchar *data)
@@ -3131,15 +3138,10 @@ static void factory_write_props_to_widget(gpointer key,gpointer value ,gpointer 
 ObjectChange *
 factory_apply_props_from_dialog(STRUCTClass *fclass, GtkWidget *widget)
 {
-  STRUCTClassDialog *prop_dialog;
-  DiaObject *obj;
-  GList *list;
-  int num_attrib, num_ops;
-  GList *added, *deleted, *disconnected;
-  STRUCTClassState *old_state = NULL;
-  prop_dialog = fclass->properties_dialog;
-  old_state = structclass_get_state(fclass);
+
+
   g_hash_table_foreach(fclass->widgetmap,factory_read_props_from_widget,fclass);
+  return  NULL;
 }
 
 
@@ -3644,11 +3646,11 @@ structclass_free_state(STRUCTClassState *state)
   GList *list;
 
   g_object_unref (state->normal_font);
-  g_object_unref (state->abstract_font);
-  g_object_unref (state->polymorphic_font);
+//  g_object_unref (state->abstract_font);
+//  g_object_unref (state->polymorphic_font);
   g_object_unref (state->classname_font);
-  g_object_unref (state->abstract_classname_font);
-  g_object_unref (state->comment_font);
+//  g_object_unref (state->abstract_classname_font);
+//  g_object_unref (state->comment_font);
 
   g_free(state->name);
 //  g_free(state->stereotype);
@@ -3762,6 +3764,37 @@ structclass_get_state(STRUCTClass *structclass)
 
   return state;
 }
+
+
+static STRUCTClassState *
+factory_get_state(STRUCTClass *structclass)
+{
+  STRUCTClassState *state = g_new0(STRUCTClassState, 1);
+  GList *list;
+
+  state->font_height = structclass->font_height;
+  state->abstract_font_height = structclass->abstract_font_height;
+  state->polymorphic_font_height = structclass->polymorphic_font_height;
+  state->classname_font_height = structclass->classname_font_height;
+  state->abstract_classname_font_height = structclass->abstract_classname_font_height;
+  state->comment_font_height = structclass->comment_font_height;
+
+  state->normal_font = g_object_ref (structclass->normal_font);
+
+  state->classname_font = g_object_ref (structclass->classname_font);
+
+
+  state->name = g_strdup(structclass->name);
+
+  state->line_color = structclass->line_color;
+  state->fill_color = structclass->fill_color;
+  state->text_color = structclass->text_color;
+
+
+  return state;
+}
+
+
 
 static void
 structclass_update_connectionpoints(STRUCTClass *structclass)
@@ -3904,22 +3937,46 @@ structclass_change_apply(STRUCTClassChange *change, DiaObject *obj)
   old_state = structclass_get_state(change->obj);
 
   structclass_set_state(change->obj, change->saved_state);
-
-  list = change->disconnected;
-  while (list) {
-    Disconnect *dis = (Disconnect *)list->data;
-
-    object_unconnect(dis->other_object, dis->other_handle);
-
-    list = g_list_next(list);
-  }
+//
+//  list = change->disconnected;
+//  while (list) {
+//    Disconnect *dis = (Disconnect *)list->data;
+//
+//    object_unconnect(dis->other_object, dis->other_handle);
+//
+//    list = g_list_next(list);
+//  }
 
   change->saved_state = old_state;
   change->applied = 1;
 }
 
 static void
-structclass_change_revert(STRUCTClassChange *change, DiaObject *obj)
+factory_change_apply(STRUCTClassChange *change, DiaObject *obj)
+{
+  STRUCTClassState *old_state;
+  GList *list;
+
+  old_state = structclass_get_state(change->obj);
+
+  structclass_set_state(change->obj, change->saved_state);
+//
+//  list = change->disconnected;
+//  while (list) {
+//    Disconnect *dis = (Disconnect *)list->data;
+//
+//    object_unconnect(dis->other_object, dis->other_handle);
+//
+//    list = g_list_next(list);
+//  }
+
+  change->saved_state = old_state;
+  change->applied = 1;
+}
+
+
+static void
+factory_change_revert(STRUCTClassChange *change, DiaObject *obj)
 {
   STRUCTClassState *old_state;
   GList *list;
@@ -3928,21 +3985,21 @@ structclass_change_revert(STRUCTClassChange *change, DiaObject *obj)
 
   structclass_set_state(change->obj, change->saved_state);
 
-  list = change->disconnected;
-  while (list) {
-    Disconnect *dis = (Disconnect *)list->data;
-
-    object_connect(dis->other_object, dis->other_handle, dis->cp);
-
-    list = g_list_next(list);
-  }
+//  list = change->disconnected;
+//  while (list) {
+//    Disconnect *dis = (Disconnect *)list->data;
+//
+//    object_connect(dis->other_object, dis->other_handle, dis->cp);
+//
+//    list = g_list_next(list);
+//  }
 
   change->saved_state = old_state;
   change->applied = 0;
 }
 
 static void
-structclass_change_free(STRUCTClassChange *change)
+factory_change_free(STRUCTClassChange *change)
 {
   GList *list, *free_list;
 
@@ -3950,51 +4007,75 @@ structclass_change_free(STRUCTClassChange *change)
   g_free(change->saved_state);
 
   /* Doesn't this mean only one of add, delete can be done in each apply? */
-  if (change->applied)
-    free_list = change->deleted_cp;
-  else
-    free_list = change->added_cp;
+//  if (change->applied)
+//    free_list = change->deleted_cp;
+//  else
+//    free_list = change->added_cp;
+//
+//  list = free_list;
+//  while (list != NULL) {
+//    ConnectionPoint *connection = (ConnectionPoint *) list->data;
+//
+//    g_assert(connection->connected == NULL); /* Paranoid */
+//    object_remove_connections_to(connection); /* Shouldn't be needed */
+//    g_free(connection);
+//
+//    list = g_list_next(list);
+//  }
 
-  list = free_list;
-  while (list != NULL) {
-    ConnectionPoint *connection = (ConnectionPoint *) list->data;
-
-    g_assert(connection->connected == NULL); /* Paranoid */
-    object_remove_connections_to(connection); /* Shouldn't be needed */
-    g_free(connection);
-
-    list = g_list_next(list);
-  }
-
-  g_list_free(free_list);
+//  g_list_free(free_list);
 
 }
-
-static ObjectChange *
-new_structclass_change(STRUCTClass *obj, STRUCTClassState *saved_state,
-		    GList *added, GList *deleted, GList *disconnected)
+static ObjectChange *factory_new_change(STRUCTClass *obj, STRUCTClassState *saved_state)
 {
   STRUCTClassChange *change;
 
   change = g_new0(STRUCTClassChange, 1);
 
   change->obj_change.apply =
-    (ObjectChangeApplyFunc) structclass_change_apply;
+    (ObjectChangeApplyFunc) factory_change_apply;
   change->obj_change.revert =
-    (ObjectChangeRevertFunc) structclass_change_revert;
+    (ObjectChangeRevertFunc) factory_change_revert;
   change->obj_change.free =
-    (ObjectChangeFreeFunc) structclass_change_free;
+    (ObjectChangeFreeFunc) factory_change_free;
 
   change->obj = obj;
   change->saved_state = saved_state;
   change->applied = 1;
 
-  change->added_cp = added;
-  change->deleted_cp = deleted;
-  change->disconnected = disconnected;
+//  change->added_cp = added;
+//  change->deleted_cp = deleted;
+//  change->disconnected = disconnected;
 
   return (ObjectChange *)change;
 }
+
+
+//static ObjectChange *
+//new_structclass_change(STRUCTClass *obj, STRUCTClassState *saved_state,
+//		    GList *added, GList *deleted, GList *disconnected)
+//{
+//  STRUCTClassChange *change;
+//
+//  change = g_new0(STRUCTClassChange, 1);
+//
+//  change->obj_change.apply =
+//    (ObjectChangeApplyFunc) structclass_change_apply;
+//  change->obj_change.revert =
+//    (ObjectChangeRevertFunc) structclass_change_revert;
+//  change->obj_change.free =
+//    (ObjectChangeFreeFunc) structclass_change_free;
+//
+//  change->obj = obj;
+//  change->saved_state = saved_state;
+//  change->applied = 1;
+//
+//  change->added_cp = added;
+//  change->deleted_cp = deleted;
+//  change->disconnected = disconnected;
+//
+//  return (ObjectChange *)change;
+//}
 /*
         get the contents of a comment text view.
 */

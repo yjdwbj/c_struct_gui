@@ -202,9 +202,41 @@
 					<Add option="-ldia-app" />
 				</Linker>
 			</Target>
+			<Target title="cairo">
+				<Option output="dia/cairo" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Linker>
+					<Add option="-ldia" />
+					<Add option="-lgtk-win32-2.0" />
+					<Add option="-lgdk-win32-2.0" />
+					<Add option="-latk-1.0" />
+					<Add option="-lpixman-1" />
+					<Add option="-lcairo" />
+					<Add option="-lgdk_pixbuf-2.0" />
+					<Add option="-lpango-1.0" />
+					<Add option="-lpangocairo-1.0" />
+					<Add option="-lpangoft2-1.0" />
+					<Add option="-lpangowin32-1.0" />
+					<Add option="-lintl" />
+					<Add option="-lgobject-2.0" />
+					<Add option="-lglib-2.0" />
+					<Add option="-lfreetype" />
+					<Add option="-lgmodule-2.0" />
+					<Add option="-lgthread-2.0" />
+					<Add option="-lgettextpo" />
+					<Add option="-lpng" />
+					<Add option="-lxml2" />
+					<Add option="-lz" />
+					<Add option="-lgdi32" />
+				</Linker>
+			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="All" targets="lib;app;standard;UML;dia;Struct;" />
+			<Add alias="All" targets="lib;app;standard;dia;Struct;" />
 			<Add alias="objects" targets="standard;UML;Struct;" />
 			<Add alias="plug-ins" targets="svg;shape;" />
 		</VirtualTargets>
@@ -1189,22 +1221,6 @@
 			<Option compilerVar="CC" />
 			<Option target="Struct" />
 		</Unit>
-		<Unit filename="objects/Struct/structattribute.c">
-			<Option compilerVar="CC" />
-			<Option target="Struct" />
-		</Unit>
-		<Unit filename="objects/Struct/structformalparameter.c">
-			<Option compilerVar="CC" />
-			<Option target="Struct" />
-		</Unit>
-		<Unit filename="objects/Struct/structoperation.c">
-			<Option compilerVar="CC" />
-			<Option target="Struct" />
-		</Unit>
-		<Unit filename="objects/Struct/structparameter.c">
-			<Option compilerVar="CC" />
-			<Option target="Struct" />
-		</Unit>
 		<Unit filename="objects/standard/arc.c">
 			<Option compilerVar="CC" />
 			<Option target="standard" />
@@ -1259,6 +1275,28 @@
 		<Unit filename="objects/standard/zigzagline.c">
 			<Option compilerVar="CC" />
 			<Option target="standard" />
+		</Unit>
+		<Unit filename="plug-ins/cairo/diacairo-interactive.c">
+			<Option compilerVar="CC" />
+			<Option target="cairo" />
+		</Unit>
+		<Unit filename="plug-ins/cairo/diacairo-print.c">
+			<Option compilerVar="CC" />
+			<Option target="cairo" />
+		</Unit>
+		<Unit filename="plug-ins/cairo/diacairo-print.h">
+			<Option target="cairo" />
+		</Unit>
+		<Unit filename="plug-ins/cairo/diacairo-renderer.c">
+			<Option compilerVar="CC" />
+			<Option target="cairo" />
+		</Unit>
+		<Unit filename="plug-ins/cairo/diacairo.c">
+			<Option compilerVar="CC" />
+			<Option target="cairo" />
+		</Unit>
+		<Unit filename="plug-ins/cairo/diacairo.h">
+			<Option target="cairo" />
 		</Unit>
 		<Unit filename="plug-ins/shape/shape-export.c">
 			<Option compilerVar="CC" />
