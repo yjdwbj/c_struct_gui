@@ -31,100 +31,100 @@
 #include "properties.h"
 
 static PropDescription structformalparameter_props[] = {
-  { "name", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Name"), NULL, NULL },
-  { "type", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Type"), NULL, NULL },
+//  { "name", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Name"), NULL, NULL },
+//  { "type", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Type"), NULL, NULL },
 
   PROP_DESC_END
 };
 
 static PropOffset structformalparameter_offsets[] = {
-  { "name", PROP_TYPE_STRING, offsetof(STRUCTFormalParameter, name) },
-  { "type", PROP_TYPE_STRING, offsetof(STRUCTFormalParameter, type) },
+//  { "name", PROP_TYPE_STRING, offsetof(STRUCTFormalParameter, name) },
+//  { "type", PROP_TYPE_STRING, offsetof(STRUCTFormalParameter, type) },
   { NULL, 0, 0 },
 };
 
 PropDescDArrayExtra structformalparameter_extra = {
   { structformalparameter_props, structformalparameter_offsets, "structformalparameter" },
-  (NewRecordFunc)struct_formalparameter_new,
-  (FreeRecordFunc)struct_formalparameter_destroy
+//  (NewRecordFunc)struct_formalparameter_new,
+//  (FreeRecordFunc)struct_formalparameter_destroy
 };
 
-STRUCTFormalParameter *
-struct_formalparameter_new(void)
-{
-  STRUCTFormalParameter *param;
-
-  param = g_new0(STRUCTFormalParameter, 1);
-  param->name = g_strdup("");
-  param->type = NULL;
-
-  return param;
-}
-
-STRUCTFormalParameter *
-struct_formalparameter_copy(STRUCTFormalParameter *param)
-{
-  STRUCTFormalParameter *newparam;
-
-  newparam = g_new0(STRUCTFormalParameter, 1);
-
-  newparam->name = g_strdup(param->name);
-  if (param->type != NULL) {
-    newparam->type = g_strdup(param->type);
-  } else {
-    newparam->type = NULL;
-  }
-
-  return newparam;
-}
-
-void
-struct_formalparameter_destroy(STRUCTFormalParameter *param)
-{
-  g_free(param->name);
-  if (param->type != NULL)
-    g_free(param->type);
-  g_free(param);
-}
-
-void
-struct_formalparameter_write(AttributeNode attr_node, STRUCTFormalParameter *param)
-{
-  DataNode composite;
-
-  composite = data_add_composite(attr_node, "structformalparameter");
-
-  data_add_string(composite_add_attribute(composite, "name"),
-		  param->name);
-  data_add_string(composite_add_attribute(composite, "type"),
-		  param->type);
-}
-
-char *
-struct_get_formalparameter_string (STRUCTFormalParameter *parameter)
-{
-  int len;
-  char *str;
-
-  /* Calculate length: */
-  len = parameter->name ? strlen (parameter->name) : 0;
-
-  if (parameter->type != NULL) {
-    len += 1 + strlen (parameter->type);
-  }
-
-  /* Generate string: */
-  str = g_malloc (sizeof (char) * (len + 1));
-  strcpy (str, parameter->name ? parameter->name : "");
-  if (parameter->type != NULL) {
-    strcat (str, ":");
-    strcat (str, parameter->type);
-  }
-
-  g_assert (strlen (str) == len);
-
-  return str;
-}
+//STRUCTFormalParameter *
+//struct_formalparameter_new(void)
+//{
+//  STRUCTFormalParameter *param;
+//
+//  param = g_new0(STRUCTFormalParameter, 1);
+//  param->name = g_strdup("");
+//  param->type = NULL;
+//
+//  return param;
+//}
+//
+//STRUCTFormalParameter *
+//struct_formalparameter_copy(STRUCTFormalParameter *param)
+//{
+//  STRUCTFormalParameter *newparam;
+//
+//  newparam = g_new0(STRUCTFormalParameter, 1);
+//
+//  newparam->name = g_strdup(param->name);
+//  if (param->type != NULL) {
+//    newparam->type = g_strdup(param->type);
+//  } else {
+//    newparam->type = NULL;
+//  }
+//
+//  return newparam;
+//}
+//
+//void
+//struct_formalparameter_destroy(STRUCTFormalParameter *param)
+//{
+//  g_free(param->name);
+//  if (param->type != NULL)
+//    g_free(param->type);
+//  g_free(param);
+//}
+//
+//void
+//struct_formalparameter_write(AttributeNode attr_node, STRUCTFormalParameter *param)
+//{
+//  DataNode composite;
+//
+//  composite = data_add_composite(attr_node, "structformalparameter");
+//
+//  data_add_string(composite_add_attribute(composite, "name"),
+//		  param->name);
+//  data_add_string(composite_add_attribute(composite, "type"),
+//		  param->type);
+//}
+//
+//char *
+//struct_get_formalparameter_string (STRUCTFormalParameter *parameter)
+//{
+//  int len;
+//  char *str;
+//
+//  /* Calculate length: */
+//  len = parameter->name ? strlen (parameter->name) : 0;
+//
+//  if (parameter->type != NULL) {
+//    len += 1 + strlen (parameter->type);
+//  }
+//
+//  /* Generate string: */
+//  str = g_malloc (sizeof (char) * (len + 1));
+//  strcpy (str, parameter->name ? parameter->name : "");
+//  if (parameter->type != NULL) {
+//    strcat (str, ":");
+//    strcat (str, parameter->type);
+//  }
+//
+//  g_assert (strlen (str) == len);
+//
+//  return str;
+//}
 

@@ -60,392 +60,392 @@ extern PropEnumData _struct_inheritances[];
 static PropDescription structoperation_props[] = {
   { "name", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
   N_("Name"), NULL, NULL },
-  { "type", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Type"), NULL, NULL },
-  { "comment", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Comment"), NULL, NULL },
-  { "stereotype", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Stereotype"), NULL, NULL },
-  /* visibility: public, protected, private (other languages?) */
-  { "visibility", PROP_TYPE_ENUM, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Visibility"), NULL, _struct_visibilities },
-  { "inheritance_type", PROP_TYPE_ENUM, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Inheritance type"), NULL, _struct_inheritances },
-  { "query", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Query (const)"), NULL, NULL },
-  { "class_scope", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Class scope (static)"), NULL, NULL },
-  { "parameters", PROP_TYPE_DARRAY, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Parameters"), NULL, NULL },
+//  { "type", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Type"), NULL, NULL },
+//  { "comment", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Comment"), NULL, NULL },
+//  { "stereotype", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Stereotype"), NULL, NULL },
+//  /* visibility: public, protected, private (other languages?) */
+//  { "visibility", PROP_TYPE_ENUM, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Visibility"), NULL, _struct_visibilities },
+//  { "inheritance_type", PROP_TYPE_ENUM, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Inheritance type"), NULL, _struct_inheritances },
+//  { "query", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Query (const)"), NULL, NULL },
+//  { "class_scope", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Class scope (static)"), NULL, NULL },
+//  { "parameters", PROP_TYPE_DARRAY, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+//  N_("Parameters"), NULL, NULL },
 
   PROP_DESC_END
 };
 
 static PropOffset structoperation_offsets[] = {
-  { "name", PROP_TYPE_STRING, offsetof(STRUCTOperation, name) },
-  { "type", PROP_TYPE_STRING, offsetof(STRUCTOperation, type) },
-  { "comment", PROP_TYPE_STRING, offsetof(STRUCTOperation, comment) },
-  { "stereotype", PROP_TYPE_STRING, offsetof(STRUCTOperation, stereotype) },
-  { "visibility", PROP_TYPE_ENUM, offsetof(STRUCTOperation, visibility) },
-  { "inheritance_type", PROP_TYPE_ENUM, offsetof(STRUCTOperation, inheritance_type) },
-  { "query", PROP_TYPE_BOOL, offsetof(STRUCTOperation, query) },
-  { "class_scope", PROP_TYPE_BOOL, offsetof(STRUCTOperation, class_scope) },
-  { "parameters", PROP_TYPE_DARRAY, offsetof(STRUCTOperation, parameters) },
+//  { "name", PROP_TYPE_STRING, offsetof(STRUCTOperation, name) },
+//  { "type", PROP_TYPE_STRING, offsetof(STRUCTOperation, type) },
+//  { "comment", PROP_TYPE_STRING, offsetof(STRUCTOperation, comment) },
+//  { "stereotype", PROP_TYPE_STRING, offsetof(STRUCTOperation, stereotype) },
+//  { "visibility", PROP_TYPE_ENUM, offsetof(STRUCTOperation, visibility) },
+//  { "inheritance_type", PROP_TYPE_ENUM, offsetof(STRUCTOperation, inheritance_type) },
+//  { "query", PROP_TYPE_BOOL, offsetof(STRUCTOperation, query) },
+//  { "class_scope", PROP_TYPE_BOOL, offsetof(STRUCTOperation, class_scope) },
+//  { "parameters", PROP_TYPE_DARRAY, offsetof(STRUCTOperation, parameters) },
   { NULL, 0, 0 },
 };
 
 PropDescDArrayExtra structoperation_extra = {
   { structoperation_props, structoperation_offsets, "structoperation" },
-  (NewRecordFunc)struct_operation_new,
-  (FreeRecordFunc)struct_operation_destroy
+//  (NewRecordFunc)struct_operation_new,
+//  (FreeRecordFunc)struct_operation_destroy
 };
 
-STRUCTOperation *
-struct_operation_new(void)
-{
-  STRUCTOperation *op;
-  static gint next_id = 1;
+//STRUCTOperation *
+//struct_operation_new(void)
+//{
+//  STRUCTOperation *op;
+//  static gint next_id = 1;
+//
+//  op = g_new0(STRUCTOperation, 1);
+//  op->internal_id = next_id++;
+//  op->name = g_strdup("");
+//  op->comment = g_strdup("");
+//  op->visibility = STRUCT_PUBLIC;
+//  op->inheritance_type = STRUCT_LEAF;
+//
+//#if 0 /* setup elsewhere */
+//  op->left_connection = g_new0(ConnectionPoint, 1);
+//  op->right_connection = g_new0(ConnectionPoint, 1);
+//#endif
+//  return op;
+//}
 
-  op = g_new0(STRUCTOperation, 1);
-  op->internal_id = next_id++;
-  op->name = g_strdup("");
-  op->comment = g_strdup("");
-  op->visibility = STRUCT_PUBLIC;
-  op->inheritance_type = STRUCT_LEAF;
-
-#if 0 /* setup elsewhere */
-  op->left_connection = g_new0(ConnectionPoint, 1);
-  op->right_connection = g_new0(ConnectionPoint, 1);
-#endif
-  return op;
-}
-
-void
-struct_operation_copy_into(STRUCTOperation *srcop, STRUCTOperation *destop)
-{
-  STRUCTParameter *param;
-  STRUCTParameter *newparam;
-  GList *list;
-
-  destop->internal_id = srcop->internal_id;
-
-  if (destop->name != NULL) {
-    g_free(destop->name);
-  }
-  destop->name = g_strdup(srcop->name);
-
-  if (destop->type != NULL) {
-    g_free(destop->type);
-  }
-  if (srcop->type != NULL) {
-    destop->type = g_strdup(srcop->type);
-  } else {
-    destop->type = NULL;
-  }
-
-  if (destop->stereotype != NULL) {
-    g_free(destop->stereotype);
-  }
-  if(srcop->stereotype != NULL) {
-    destop->stereotype = g_strdup(srcop->stereotype);
-  } else {
-    destop->stereotype = NULL;
-  }
-
-  if (destop->comment != NULL) {
-    g_free(destop->comment);
-  }
-  if (srcop->comment != NULL) {
-    destop->comment = g_strdup(srcop->comment);
-  } else {
-    destop->comment = NULL;
-  }
-
-  destop->visibility = srcop->visibility;
-  destop->class_scope = srcop->class_scope;
-  destop->inheritance_type = srcop->inheritance_type;
-  destop->query = srcop->query;
-
-  list = destop->parameters;
-  while (list != NULL) {
-    param = (STRUCTParameter *)list->data;
-    struct_parameter_destroy(param);
-    list = g_list_next(list);
-  }
-  destop->parameters = NULL;
-  list = srcop->parameters;
-  while (list != NULL) {
-    param = (STRUCTParameter *)list->data;
-
-    newparam = g_new0(STRUCTParameter, 1);
-    newparam->name = g_strdup(param->name);
-    newparam->type = g_strdup(param->type);
-    newparam->comment = g_strdup(param->comment);
-
-    if (param->value != NULL)
-      newparam->value = g_strdup(param->value);
-    else
-      newparam->value = NULL;
-    newparam->kind = param->kind;
-
-    destop->parameters = g_list_append(destop->parameters, newparam);
-
-    list = g_list_next(list);
-  }
-}
-
-STRUCTOperation *
-struct_operation_copy(STRUCTOperation *op)
-{
-  STRUCTOperation *newop;
-
-  newop = g_new0(STRUCTOperation, 1);
-
-  struct_operation_copy_into(op, newop);
-#if 0 /* setup elsewhere */
-  newop->left_connection = g_new0(ConnectionPoint,1);
-  *newop->left_connection = *op->left_connection;
-  newop->left_connection->object = NULL; /* must be setup later */
-
-  newop->right_connection = g_new0(ConnectionPoint,1);
-  *newop->right_connection = *op->right_connection;
-  newop->right_connection->object = NULL; /* must be setup later */
-#endif
-  return newop;
-}
-
-void
-struct_operation_destroy(STRUCTOperation *op)
-{
-  GList *list;
-  STRUCTParameter *param;
-
-  g_free(op->name);
-  if (op->type != NULL)
-    g_free(op->type);
-  if (op->stereotype != NULL)
-    g_free(op->stereotype);
-
-  g_free(op->comment);
-
-  list = op->parameters;
-  while (list != NULL) {
-    param = (STRUCTParameter *)list->data;
-    struct_parameter_destroy(param);
-    list = g_list_next(list);
-  }
-  if (op->wrappos) {
-    g_list_free(op->wrappos);
-  }
-
-#if 0 /* freed elsewhere */
-  /* These are merely temporary reminders, don't need to unconnect */
-  g_free(op->left_connection);
-  g_free(op->right_connection);
-#endif
-  g_free(op);
-}
-
-void
-struct_operation_write(AttributeNode attr_node, STRUCTOperation *op)
-{
-  GList *list;
-  STRUCTParameter *param;
-  DataNode composite;
-  DataNode composite2;
-  AttributeNode attr_node2;
-
-  composite = data_add_composite(attr_node, "structoperation");
-
-  data_add_string(composite_add_attribute(composite, "name"),
-		  op->name);
-  data_add_string(composite_add_attribute(composite, "stereotype"),
-		  op->stereotype);
-  data_add_string(composite_add_attribute(composite, "type"),
-		  op->type);
-  data_add_enum(composite_add_attribute(composite, "visibility"),
-		op->visibility);
-  data_add_string(composite_add_attribute(composite, "comment"),
-		  op->comment);
-  /* Backward compatibility */
-  data_add_boolean(composite_add_attribute(composite, "abstract"),
-		   op->inheritance_type == STRUCT_ABSTRACT);
-  data_add_enum(composite_add_attribute(composite, "inheritance_type"),
-		op->inheritance_type);
-  data_add_boolean(composite_add_attribute(composite, "query"),
-		   op->query);
-  data_add_boolean(composite_add_attribute(composite, "class_scope"),
-		   op->class_scope);
-
-  attr_node2 = composite_add_attribute(composite, "parameters");
-
-  list = op->parameters;
-  while (list != NULL) {
-    param = (STRUCTParameter *) list->data;
-
-    composite2 = data_add_composite(attr_node2, "structparameter");
-
-    data_add_string(composite_add_attribute(composite2, "name"),
-		    param->name);
-    data_add_string(composite_add_attribute(composite2, "type"),
-		    param->type);
-    data_add_string(composite_add_attribute(composite2, "value"),
-		    param->value);
-    data_add_string(composite_add_attribute(composite2, "comment"),
-		    param->comment);
-    data_add_enum(composite_add_attribute(composite2, "kind"),
-		  param->kind);
-    list = g_list_next(list);
-  }
-}
-
-extern char visible_char[];
-
-char *
-struct_get_operation_string (STRUCTOperation *operation)
-{
-  int len;
-  char *str;
-  GList *list;
-  STRUCTParameter *param;
-
-  /* Calculate length: */
-  len = 1 + (operation->name ? strlen (operation->name) : 0) + 1;
-  if(operation->stereotype != NULL && operation->stereotype[0] != '\0') {
-    len += 5 + strlen (operation->stereotype);
-  }
-
-  list = operation->parameters;
-  while (list != NULL) {
-    param = (STRUCTParameter  *) list->data;
-    list = g_list_next (list);
-
-    switch(param->kind)
-      {
-      case STRUCT_UNDEF_KIND:
-	break;
-      case STRUCT_IN:
-	len += 3;
-	break;
-      case STRUCT_OUT:
-	len += 4;
-	break;
-      case STRUCT_INOUT:
-	len += 6;
-	break;
-      }
-    len += (param->name ? strlen (param->name) : 0);
-    if (param->type != NULL) {
-      len += strlen (param->type);
-      if (param->type[0] && param->name[0]) {
-        len += 1;
-      }
-    }
-    if (param->value != NULL && param->value[0] != '\0') {
-      len += 1 + strlen (param->value);
-    }
-
-    if (list != NULL) {
-      len += 1; /* ',' */
-    }
-  }
-
-  len += 1; /* ')' */
-  if (operation->type != NULL && operation->type[0]) {
-    len += 2 + strlen (operation->type);
-  }
-  if(operation->query != 0) {
-    len += 6;
-  }
-
-  /* generate string: */
-  str = g_malloc (sizeof (char) * (len + 1));
-
-  str[0] = visible_char[(int) operation->visibility];
-  str[1] = 0;
-
-  if(operation->stereotype != NULL && operation->stereotype[0] != '\0') {
-    strcat(str, STRUCT_STEREOTYPE_START);
-    strcat(str, operation->stereotype);
-    strcat(str, STRUCT_STEREOTYPE_END);
-    strcat(str, " ");
-  }
-
-  strcat (str, operation->name ? operation->name : "");
-  strcat (str, "(");
-
-  list = operation->parameters;
-  while (list != NULL) {
-    param = (STRUCTParameter  *) list->data;
-    list = g_list_next (list);
-
-    switch(param->kind)
-      {
-      case STRUCT_UNDEF_KIND:
-	break;
-      case STRUCT_IN:
-	strcat (str, "in ");
-	break;
-      case STRUCT_OUT:
-	strcat (str, "out ");
-	break;
-      case STRUCT_INOUT:
-	strcat (str, "inout ");
-	break;
-      }
-    strcat (str, param->name ? param->name : "");
-
-    if (param->type != NULL) {
-      if (param->type[0] && param->name[0]) {
-        strcat (str, ":");
-      }
-      strcat (str, param->type);
-    }
-
-    if (param->value != NULL && param->value[0] != '\0') {
-      strcat (str, "=");
-      strcat (str, param->value);
-    }
-
-    if (list != NULL) {
-      strcat (str, ",");
-    }
-  }
-  strcat (str, ")");
-
-  if (operation->type != NULL &&
-      operation->type[0]) {
-    strcat (str, ": ");
-    strcat (str, operation->type);
-  }
-
-  if (operation->query != 0) {
-    strcat(str, " const");
-  }
-
-  g_assert (strlen (str) == len);
-
-  return str;
-}
-
-/*!
- * The ownership of these connection points is quite complicated. Instead of being part of the STRUCTOperation as one may expect
-  * at first, they are somewhat in between the DiaObject (see: DiaObject::connections and the concrete user, here STRUCTClass)
-  * and the STRUCTOperation.
-  * But with taking undo state mangement into account it gets even worse. Deleted (to be restored connection points) live inside
-  * the STRUCTClassChange until they get reverted back to the object *or* get free'd by structclass_change_free()
-  * Since the implementation of attributes/operations being settable via StdProps there are more places to keep this stuff
-  * consitent. So here comes a tolerant helper.
-  *
-  * NOTE: Same function as struct_attribute_ensure_connection_points(), with C++ it would be a template function ;)
- */
-void
-struct_operation_ensure_connection_points (STRUCTOperation* op, DiaObject* obj)
-{
-  if (!op->left_connection)
-    op->left_connection = g_new0(ConnectionPoint,1);
-  op->left_connection->object = obj;
-  if (!op->right_connection)
-    op->right_connection = g_new0(ConnectionPoint,1);
-  op->right_connection->object = obj;
-}
+//void
+//struct_operation_copy_into(STRUCTOperation *srcop, STRUCTOperation *destop)
+//{
+//  STRUCTParameter *param;
+//  STRUCTParameter *newparam;
+//  GList *list;
+//
+//  destop->internal_id = srcop->internal_id;
+//
+//  if (destop->name != NULL) {
+//    g_free(destop->name);
+//  }
+//  destop->name = g_strdup(srcop->name);
+//
+//  if (destop->type != NULL) {
+//    g_free(destop->type);
+//  }
+//  if (srcop->type != NULL) {
+//    destop->type = g_strdup(srcop->type);
+//  } else {
+//    destop->type = NULL;
+//  }
+//
+//  if (destop->stereotype != NULL) {
+//    g_free(destop->stereotype);
+//  }
+//  if(srcop->stereotype != NULL) {
+//    destop->stereotype = g_strdup(srcop->stereotype);
+//  } else {
+//    destop->stereotype = NULL;
+//  }
+//
+//  if (destop->comment != NULL) {
+//    g_free(destop->comment);
+//  }
+//  if (srcop->comment != NULL) {
+//    destop->comment = g_strdup(srcop->comment);
+//  } else {
+//    destop->comment = NULL;
+//  }
+//
+//  destop->visibility = srcop->visibility;
+//  destop->class_scope = srcop->class_scope;
+//  destop->inheritance_type = srcop->inheritance_type;
+//  destop->query = srcop->query;
+//
+//  list = destop->parameters;
+//  while (list != NULL) {
+//    param = (STRUCTParameter *)list->data;
+//    struct_parameter_destroy(param);
+//    list = g_list_next(list);
+//  }
+//  destop->parameters = NULL;
+//  list = srcop->parameters;
+//  while (list != NULL) {
+//    param = (STRUCTParameter *)list->data;
+//
+//    newparam = g_new0(STRUCTParameter, 1);
+//    newparam->name = g_strdup(param->name);
+//    newparam->type = g_strdup(param->type);
+//    newparam->comment = g_strdup(param->comment);
+//
+//    if (param->value != NULL)
+//      newparam->value = g_strdup(param->value);
+//    else
+//      newparam->value = NULL;
+//    newparam->kind = param->kind;
+//
+//    destop->parameters = g_list_append(destop->parameters, newparam);
+//
+//    list = g_list_next(list);
+//  }
+//}
+//
+//STRUCTOperation *
+//struct_operation_copy(STRUCTOperation *op)
+//{
+//  STRUCTOperation *newop;
+//
+//  newop = g_new0(STRUCTOperation, 1);
+//
+//  struct_operation_copy_into(op, newop);
+//#if 0 /* setup elsewhere */
+//  newop->left_connection = g_new0(ConnectionPoint,1);
+//  *newop->left_connection = *op->left_connection;
+//  newop->left_connection->object = NULL; /* must be setup later */
+//
+//  newop->right_connection = g_new0(ConnectionPoint,1);
+//  *newop->right_connection = *op->right_connection;
+//  newop->right_connection->object = NULL; /* must be setup later */
+//#endif
+//  return newop;
+//}
+//
+//void
+//struct_operation_destroy(STRUCTOperation *op)
+//{
+//  GList *list;
+//  STRUCTParameter *param;
+//
+//  g_free(op->name);
+//  if (op->type != NULL)
+//    g_free(op->type);
+//  if (op->stereotype != NULL)
+//    g_free(op->stereotype);
+//
+//  g_free(op->comment);
+//
+//  list = op->parameters;
+//  while (list != NULL) {
+//    param = (STRUCTParameter *)list->data;
+//    struct_parameter_destroy(param);
+//    list = g_list_next(list);
+//  }
+//  if (op->wrappos) {
+//    g_list_free(op->wrappos);
+//  }
+//
+//#if 0 /* freed elsewhere */
+//  /* These are merely temporary reminders, don't need to unconnect */
+//  g_free(op->left_connection);
+//  g_free(op->right_connection);
+//#endif
+//  g_free(op);
+//}
+//
+//void
+//struct_operation_write(AttributeNode attr_node, STRUCTOperation *op)
+//{
+//  GList *list;
+//  STRUCTParameter *param;
+//  DataNode composite;
+//  DataNode composite2;
+//  AttributeNode attr_node2;
+//
+//  composite = data_add_composite(attr_node, "structoperation");
+//
+//  data_add_string(composite_add_attribute(composite, "name"),
+//		  op->name);
+//  data_add_string(composite_add_attribute(composite, "stereotype"),
+//		  op->stereotype);
+//  data_add_string(composite_add_attribute(composite, "type"),
+//		  op->type);
+//  data_add_enum(composite_add_attribute(composite, "visibility"),
+//		op->visibility);
+//  data_add_string(composite_add_attribute(composite, "comment"),
+//		  op->comment);
+//  /* Backward compatibility */
+//  data_add_boolean(composite_add_attribute(composite, "abstract"),
+//		   op->inheritance_type == STRUCT_ABSTRACT);
+//  data_add_enum(composite_add_attribute(composite, "inheritance_type"),
+//		op->inheritance_type);
+//  data_add_boolean(composite_add_attribute(composite, "query"),
+//		   op->query);
+//  data_add_boolean(composite_add_attribute(composite, "class_scope"),
+//		   op->class_scope);
+//
+//  attr_node2 = composite_add_attribute(composite, "parameters");
+//
+//  list = op->parameters;
+//  while (list != NULL) {
+//    param = (STRUCTParameter *) list->data;
+//
+//    composite2 = data_add_composite(attr_node2, "structparameter");
+//
+//    data_add_string(composite_add_attribute(composite2, "name"),
+//		    param->name);
+//    data_add_string(composite_add_attribute(composite2, "type"),
+//		    param->type);
+//    data_add_string(composite_add_attribute(composite2, "value"),
+//		    param->value);
+//    data_add_string(composite_add_attribute(composite2, "comment"),
+//		    param->comment);
+//    data_add_enum(composite_add_attribute(composite2, "kind"),
+//		  param->kind);
+//    list = g_list_next(list);
+//  }
+//}
+//
+//extern char visible_char[];
+//
+//char *
+//struct_get_operation_string (STRUCTOperation *operation)
+//{
+//  int len;
+//  char *str;
+//  GList *list;
+//  STRUCTParameter *param;
+//
+//  /* Calculate length: */
+//  len = 1 + (operation->name ? strlen (operation->name) : 0) + 1;
+//  if(operation->stereotype != NULL && operation->stereotype[0] != '\0') {
+//    len += 5 + strlen (operation->stereotype);
+//  }
+//
+//  list = operation->parameters;
+//  while (list != NULL) {
+//    param = (STRUCTParameter  *) list->data;
+//    list = g_list_next (list);
+//
+//    switch(param->kind)
+//      {
+//      case STRUCT_UNDEF_KIND:
+//	break;
+//      case STRUCT_IN:
+//	len += 3;
+//	break;
+//      case STRUCT_OUT:
+//	len += 4;
+//	break;
+//      case STRUCT_INOUT:
+//	len += 6;
+//	break;
+//      }
+//    len += (param->name ? strlen (param->name) : 0);
+//    if (param->type != NULL) {
+//      len += strlen (param->type);
+//      if (param->type[0] && param->name[0]) {
+//        len += 1;
+//      }
+//    }
+//    if (param->value != NULL && param->value[0] != '\0') {
+//      len += 1 + strlen (param->value);
+//    }
+//
+//    if (list != NULL) {
+//      len += 1; /* ',' */
+//    }
+//  }
+//
+//  len += 1; /* ')' */
+//  if (operation->type != NULL && operation->type[0]) {
+//    len += 2 + strlen (operation->type);
+//  }
+//  if(operation->query != 0) {
+//    len += 6;
+//  }
+//
+//  /* generate string: */
+//  str = g_malloc (sizeof (char) * (len + 1));
+//
+//  str[0] = visible_char[(int) operation->visibility];
+//  str[1] = 0;
+//
+//  if(operation->stereotype != NULL && operation->stereotype[0] != '\0') {
+//    strcat(str, STRUCT_STEREOTYPE_START);
+//    strcat(str, operation->stereotype);
+//    strcat(str, STRUCT_STEREOTYPE_END);
+//    strcat(str, " ");
+//  }
+//
+//  strcat (str, operation->name ? operation->name : "");
+//  strcat (str, "(");
+//
+//  list = operation->parameters;
+//  while (list != NULL) {
+//    param = (STRUCTParameter  *) list->data;
+//    list = g_list_next (list);
+//
+//    switch(param->kind)
+//      {
+//      case STRUCT_UNDEF_KIND:
+//	break;
+//      case STRUCT_IN:
+//	strcat (str, "in ");
+//	break;
+//      case STRUCT_OUT:
+//	strcat (str, "out ");
+//	break;
+//      case STRUCT_INOUT:
+//	strcat (str, "inout ");
+//	break;
+//      }
+//    strcat (str, param->name ? param->name : "");
+//
+//    if (param->type != NULL) {
+//      if (param->type[0] && param->name[0]) {
+//        strcat (str, ":");
+//      }
+//      strcat (str, param->type);
+//    }
+//
+//    if (param->value != NULL && param->value[0] != '\0') {
+//      strcat (str, "=");
+//      strcat (str, param->value);
+//    }
+//
+//    if (list != NULL) {
+//      strcat (str, ",");
+//    }
+//  }
+//  strcat (str, ")");
+//
+//  if (operation->type != NULL &&
+//      operation->type[0]) {
+//    strcat (str, ": ");
+//    strcat (str, operation->type);
+//  }
+//
+//  if (operation->query != 0) {
+//    strcat(str, " const");
+//  }
+//
+//  g_assert (strlen (str) == len);
+//
+//  return str;
+//}
+//
+///*!
+// * The ownership of these connection points is quite complicated. Instead of being part of the STRUCTOperation as one may expect
+//  * at first, they are somewhat in between the DiaObject (see: DiaObject::connections and the concrete user, here STRUCTClass)
+//  * and the STRUCTOperation.
+//  * But with taking undo state mangement into account it gets even worse. Deleted (to be restored connection points) live inside
+//  * the STRUCTClassChange until they get reverted back to the object *or* get free'd by structclass_change_free()
+//  * Since the implementation of attributes/operations being settable via StdProps there are more places to keep this stuff
+//  * consitent. So here comes a tolerant helper.
+//  *
+//  * NOTE: Same function as struct_attribute_ensure_connection_points(), with C++ it would be a template function ;)
+// */
+//void
+//struct_operation_ensure_connection_points (STRUCTOperation* op, DiaObject* obj)
+//{
+//  if (!op->left_connection)
+//    op->left_connection = g_new0(ConnectionPoint,1);
+//  op->left_connection->object = obj;
+//  if (!op->right_connection)
+//    op->right_connection = g_new0(ConnectionPoint,1);
+//  op->right_connection->object = obj;
+//}

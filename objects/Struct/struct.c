@@ -54,17 +54,17 @@ dia_plugin_init(PluginInfo *info)
 
 
 PropEnumData _struct_visibilities[] = {
-  { N_("Public"), STRUCT_PUBLIC },
-  { N_("Private"), STRUCT_PRIVATE },
-  { N_("Protected"), STRUCT_PROTECTED },
-  { N_("Implementation"), STRUCT_IMPLEMENTATION },
+//  { N_("Public"), STRUCT_PUBLIC },
+//  { N_("Private"), STRUCT_PRIVATE },
+//  { N_("Protected"), STRUCT_PROTECTED },
+//  { N_("Implementation"), STRUCT_IMPLEMENTATION },
   { NULL, 0 }
 };
 
 PropEnumData _struct_inheritances[] = {
-  { N_("Abstract"), STRUCT_ABSTRACT },
-  { N_("Polymorphic (virtual)"), STRUCT_POLYMORPHIC },
-  { N_("Leaf (final)"), STRUCT_LEAF },
+//  { N_("Abstract"), STRUCT_ABSTRACT },
+//  { N_("Polymorphic (virtual)"), STRUCT_POLYMORPHIC },
+//  { N_("Leaf (final)"), STRUCT_LEAF },
   { NULL, 0 }
 };
 

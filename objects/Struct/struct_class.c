@@ -333,11 +333,11 @@ static PropOffset structclass_offsets[] = {
   PROP_OFFSET_MULTICOL_BEGIN("class"),
   PROP_OFFSET_MULTICOL_COLUMN("font"),
   { "normal_font", PROP_TYPE_FONT, offsetof(STRUCTClass, normal_font) },
-  { "abstract_font", PROP_TYPE_FONT, offsetof(STRUCTClass, abstract_font) },
-  { "polymorphic_font", PROP_TYPE_FONT, offsetof(STRUCTClass, polymorphic_font) },
+//  { "abstract_font", PROP_TYPE_FONT, offsetof(STRUCTClass, abstract_font) },
+//  { "polymorphic_font", PROP_TYPE_FONT, offsetof(STRUCTClass, polymorphic_font) },
   { "classname_font", PROP_TYPE_FONT, offsetof(STRUCTClass, classname_font) },
-  { "abstract_classname_font", PROP_TYPE_FONT, offsetof(STRUCTClass, abstract_classname_font) },
-  { "comment_font", PROP_TYPE_FONT, offsetof(STRUCTClass, comment_font) },
+//  { "abstract_classname_font", PROP_TYPE_FONT, offsetof(STRUCTClass, abstract_classname_font) },
+//  { "comment_font", PROP_TYPE_FONT, offsetof(STRUCTClass, comment_font) },
 
   PROP_OFFSET_MULTICOL_COLUMN("height"),
   { "normal_font_height", PROP_TYPE_REAL, offsetof(STRUCTClass, font_height) },
@@ -1874,30 +1874,30 @@ fill_in_fontdata(STRUCTClass *structclass)
      structclass->font_height = 0.8;
      structclass->normal_font = dia_font_new_from_style(DIA_FONT_MONOSPACE, 0.8);
    }
-   if (structclass->abstract_font == NULL) {
-     structclass->abstract_font_height = 0.8;
-     structclass->abstract_font =
-       dia_font_new_from_style(DIA_FONT_MONOSPACE | DIA_FONT_ITALIC | DIA_FONT_BOLD, 0.8);
-   }
-   if (structclass->polymorphic_font == NULL) {
-     structclass->polymorphic_font_height = 0.8;
-     structclass->polymorphic_font =
-       dia_font_new_from_style(DIA_FONT_MONOSPACE | DIA_FONT_ITALIC, 0.8);
-   }
+//   if (structclass->abstract_font == NULL) {
+//     structclass->abstract_font_height = 0.8;
+//     structclass->abstract_font =
+//       dia_font_new_from_style(DIA_FONT_MONOSPACE | DIA_FONT_ITALIC | DIA_FONT_BOLD, 0.8);
+//   }
+//   if (structclass->polymorphic_font == NULL) {
+//     structclass->polymorphic_font_height = 0.8;
+//     structclass->polymorphic_font =
+//       dia_font_new_from_style(DIA_FONT_MONOSPACE | DIA_FONT_ITALIC, 0.8);
+//   }
    if (structclass->classname_font == NULL) {
      structclass->classname_font_height = 1.0;
      structclass->classname_font =
        dia_font_new_from_style(DIA_FONT_SANS | DIA_FONT_BOLD, 1.0);
    }
-   if (structclass->abstract_classname_font == NULL) {
-     structclass->abstract_classname_font_height = 1.0;
-     structclass->abstract_classname_font =
-       dia_font_new_from_style(DIA_FONT_SANS | DIA_FONT_BOLD | DIA_FONT_ITALIC, 1.0);
-   }
-   if (structclass->comment_font == NULL) {
-     structclass->comment_font_height = 0.7;
-     structclass->comment_font = dia_font_new_from_style(DIA_FONT_SANS | DIA_FONT_ITALIC, 0.7);
-   }
+//   if (structclass->abstract_classname_font == NULL) {
+//     structclass->abstract_classname_font_height = 1.0;
+//     structclass->abstract_classname_font =
+//       dia_font_new_from_style(DIA_FONT_SANS | DIA_FONT_BOLD | DIA_FONT_ITALIC, 1.0);
+//   }
+//   if (structclass->comment_font == NULL) {
+//     structclass->comment_font_height = 0.7;
+//     structclass->comment_font = dia_font_new_from_style(DIA_FONT_SANS | DIA_FONT_ITALIC, 0.7);
+//   }
 }
 /**
  * Create an object of type class
@@ -2321,9 +2321,9 @@ static void
 structclass_destroy(STRUCTClass *structclass)
 {
   GList *list;
-  STRUCTAttribute *attr;
-  STRUCTOperation *op;
-  STRUCTFormalParameter *param;
+//  STRUCTAttribute *attr;
+//  STRUCTOperation *op;
+//  STRUCTFormalParameter *param;
 
 #ifdef DEBUG
   structclass_sanity_check(structclass, "Destroying");
@@ -2332,11 +2332,11 @@ structclass_destroy(STRUCTClass *structclass)
   structclass->destroyed = TRUE;
 
   dia_font_unref(structclass->normal_font);
-  dia_font_unref(structclass->abstract_font);
-  dia_font_unref(structclass->polymorphic_font);
+//  dia_font_unref(structclass->abstract_font);
+//  dia_font_unref(structclass->polymorphic_font);
   dia_font_unref(structclass->classname_font);
-  dia_font_unref(structclass->abstract_classname_font);
-  dia_font_unref(structclass->comment_font);
+//  dia_font_unref(structclass->abstract_classname_font);
+//  dia_font_unref(structclass->comment_font);
 
   element_destroy(&structclass->element);
 
@@ -2395,7 +2395,7 @@ structclass_copy(STRUCTClass *structclass)
   Element *elem, *newelem;
   DiaObject *newobj;
   GList *list;
-  STRUCTFormalParameter *param;
+//  STRUCTFormalParameter *param;
 
   elem = &structclass->element;
 
@@ -2416,16 +2416,16 @@ structclass_copy(STRUCTClass *structclass)
 
   newstructclass->normal_font =
           dia_font_copy(structclass->normal_font);
-  newstructclass->abstract_font =
-          dia_font_copy(structclass->abstract_font);
-  newstructclass->polymorphic_font =
-          dia_font_copy(structclass->polymorphic_font);
+//  newstructclass->abstract_font =
+//          dia_font_copy(structclass->abstract_font);
+//  newstructclass->polymorphic_font =
+//          dia_font_copy(structclass->polymorphic_font);
   newstructclass->classname_font =
           dia_font_copy(structclass->classname_font);
-  newstructclass->abstract_classname_font =
-          dia_font_copy(structclass->abstract_classname_font);
-  newstructclass->comment_font =
-          dia_font_copy(structclass->comment_font);
+//  newstructclass->abstract_classname_font =
+//          dia_font_copy(structclass->abstract_classname_font);
+//  newstructclass->comment_font =
+//          dia_font_copy(structclass->comment_font);
 
   newstructclass->name = g_strdup(structclass->name);
 //  if (structclass->stereotype != NULL && structclass->stereotype[0] != '\0')
@@ -2695,9 +2695,9 @@ static void
 factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
 	      const char *filename)
 {
-  STRUCTAttribute *attr;
-  STRUCTOperation *op;
-  STRUCTFormalParameter *formal_param;
+//  STRUCTAttribute *attr;
+//  STRUCTOperation *op;
+//  STRUCTFormalParameter *formal_param;
   GList *list;
   AttributeNode attr_node;
 

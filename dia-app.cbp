@@ -1205,15 +1205,6 @@
 			<Option compilerVar="CC" />
 			<Option target="Struct" />
 		</Unit>
-		<Unit filename="objects/UML/class.h">
-			<Option target="UML" />
-		</Unit>
-		<Unit filename="objects/UML/stereotype.h">
-			<Option target="UML" />
-		</Unit>
-		<Unit filename="objects/UML/uml.h">
-			<Option target="UML" />
-		</Unit>
 		<Unit filename="objects/standard/arc.c">
 			<Option compilerVar="CC" />
 			<Option target="standard" />

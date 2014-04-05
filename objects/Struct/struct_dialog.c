@@ -3690,11 +3690,11 @@ structclass_get_state(STRUCTClass *structclass)
   state->comment_font_height = structclass->comment_font_height;
 
   state->normal_font = g_object_ref (structclass->normal_font);
-  state->abstract_font = g_object_ref (structclass->abstract_font);
-  state->polymorphic_font = g_object_ref (structclass->polymorphic_font);
+//  state->abstract_font = g_object_ref (structclass->abstract_font);
+//  state->polymorphic_font = g_object_ref (structclass->polymorphic_font);
   state->classname_font = g_object_ref (structclass->classname_font);
-  state->abstract_classname_font = g_object_ref (structclass->abstract_classname_font);
-  state->comment_font = g_object_ref (structclass->comment_font);
+//  state->abstract_classname_font = g_object_ref (structclass->abstract_classname_font);
+//  state->comment_font = g_object_ref (structclass->comment_font);
 
   state->name = g_strdup(structclass->name);
 //  state->stereotype = g_strdup(structclass->stereotype);
@@ -3851,16 +3851,16 @@ structclass_set_state(STRUCTClass *structclass, STRUCTClassState *state)
   /* transfer ownership, but don't leak the previous font */
   g_object_unref (structclass->normal_font);
   structclass->normal_font = state->normal_font;
-  g_object_unref (structclass->abstract_font);
-  structclass->abstract_font = state->abstract_font;
-  g_object_unref (structclass->polymorphic_font);
-  structclass->polymorphic_font = state->polymorphic_font;
+//  g_object_unref (structclass->abstract_font);
+//  structclass->abstract_font = state->abstract_font;
+//  g_object_unref (structclass->polymorphic_font);
+//  structclass->polymorphic_font = state->polymorphic_font;
   g_object_unref (structclass->classname_font);
   structclass->classname_font = state->classname_font;
-  g_object_unref (structclass->abstract_classname_font);
-  structclass->abstract_classname_font = state->abstract_classname_font;
-  g_object_unref (structclass->comment_font);
-  structclass->comment_font = state->comment_font;
+//  g_object_unref (structclass->abstract_classname_font);
+//  structclass->abstract_classname_font = state->abstract_classname_font;
+//  g_object_unref (structclass->comment_font);
+//  structclass->comment_font = state->comment_font;
 
   structclass->name = state->name;
 //  structclass->stereotype = state->stereotype;

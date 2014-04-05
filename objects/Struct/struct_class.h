@@ -250,11 +250,11 @@ struct _STRUCTClass {
   real comment_font_height;
 
   DiaFont *normal_font;
-  DiaFont *abstract_font;
-  DiaFont *polymorphic_font;
+//  DiaFont *abstract_font;
+//  DiaFont *polymorphic_font;
   DiaFont *classname_font;
-  DiaFont *abstract_classname_font;
-  DiaFont *comment_font;
+//  DiaFont *abstract_classname_font;
+//  DiaFont *comment_font;
 
   char *name;
  // char *stereotype; /**< NULL if no stereotype */
