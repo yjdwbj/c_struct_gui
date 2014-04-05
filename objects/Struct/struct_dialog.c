@@ -3012,13 +3012,21 @@ static void factory_connectionto_object(DDisplay *ddisp,DiaObject *obj,STRUCTCla
                     handle->pos = fclass->connections[8].pos;
 
                    // diagram_select(diagram,obj);
+
                     ConnectionPoint *connectionpoint = object_find_connectpoint_display(ddisp, &fclass->connections[8].pos, obj, TRUE);
                     if(connectionpoint != NULL)
                     {
                         handle->pos = connectionpoint->pos;
+                        if(connectionpoint->connected)
                         connectionpoint->connected  = g_slist_append(connectionpoint->connected,obj);
+                        else {
+                            GList *tmplist = NULL;
+                          tmplist=   g_slist_append(tmplist,obj);
+                          connectionpoint->connected = tmplist;
+                        }
+                        obj->ops->connection_two_obj(obj,connectionpoint,num);
                     }
-                    obj->ops->connection_two_obj(obj,connectionpoint,num);
+
                     object_add_updates(obj, ddisp->diagram);
 
 }
@@ -3039,11 +3047,11 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
         {
                 SaveEntry *sey = &sss->value.sentry;
                 gdouble maxlength = sey->col * sey->row; // 得到文本框的大小。
-
-                if(!g_ascii_strncasecmp("ACTIONID_",sss->name,9))
+                gchar *connname =  gtk_combo_box_get_active_text(GTK_COMBO_BOX(sss->widget));
+                if(!g_ascii_strncasecmp("ACTIONID_",sss->name,9) && connname )
                 {
                     /* 2014-4-3 lcy 找里下拉框里名字的对像 */
-                    gchar *connname =  gtk_combo_box_get_active_text(GTK_COMBO_BOX(sss->widget));
+
 
                     DDisplay *ddisp = ddisplay_active();
                     /* 2014-4-3 lcy  在指定位置创建一条线的标准控件, 线条是标准控件,这里调用drop 回调函数 */
@@ -3056,10 +3064,6 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
                     //obj->ops->move(obj,&fclass->connections[8].pos);
 
                     factory_connectionto_object(ddisp,obj,fclass,0);
-
-
-
-
 
                     Layer *curlayer = fclass->element.object.parent_layer;
                     GList *objlist = curlayer->objects;
@@ -3074,13 +3078,6 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
                                 break;
                             }
                     }
-
-                  //  object_add_updates(obj, ddisp->diagram);
-                    GList *myglist = fclass->connections[8].connected;
-                                    myglist = g_list_append(myglist,obj);
-
-
-
 
                 }
                 else if(sey->isString)

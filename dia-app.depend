@@ -2140,7 +2140,7 @@
 	"interface.h"
 	"defaults.h"
 
-1396596467 source:o:\tool\dvs50\app\undo.c
+1396612386 source:o:\tool\dvs50\app\undo.c
 	<config.h>
 	"undo.h"
 	"object_ops.h"
@@ -2386,7 +2386,7 @@
 	"connectionpoint.h"
 	"dia_xml.h"
 
-1396609959 source:o:\tool\dvs50\objects\struct\struct_class.c
+1396612026 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2412,7 +2412,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1396611926 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1396668886 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
