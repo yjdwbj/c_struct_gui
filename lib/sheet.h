@@ -67,6 +67,14 @@ struct _FactoryStructEnum
     gchar *value;
 };
 
+typedef enum{
+    BT, /* base type */
+    ET, /* enum type */
+    ST, /* struct type */
+    UT, /* union type */
+    NT  /* defult type unkown*/
+}ItemType;
+
 struct _FactoryStructItem{  // ÕâÀï¶¨ÒåÒ»¸ö½á¹¹µÄÃ¿Ò»ÏîĞèÒªÏÔÊ¾µÄ¶«Î÷, Õâ¾ÍÏàµ±ÓÚÒ»¸öÄ£×Ó,Í¨¶ÁÈ¡ÎÄ¼şÉÏµÄÌõÄ¿À´Éú³É¶àÉÙ¸öÕâÖÖ±íÏî.
     gchar  *FType;  // ÍêÈ«ÀàĞÍÃû Struct.u32
     gchar  *SType;  // ¶ÌÀàĞÍ u32
@@ -76,6 +84,8 @@ struct _FactoryStructItem{  // ÕâÀï¶¨ÒåÒ»¸ö½á¹¹µÄÃ¿Ò»ÏîĞèÒªÏÔÊ¾µÄ¶«Î÷, Õâ¾ÍÏàµ±Ó
     gchar  *Min;
     gchar  *Max;    // ¼«Öµ
     gchar  *Comment;   // ¸¡¶¯×¢ÊÍ
+    ItemType Itype;   // »ù±¾ÀàĞÎ
+    GList *datalist;
 };
 //struct _FactoryStructEnumList{
 //    gchar *name;
@@ -98,6 +108,11 @@ struct _FactoryCreateSheets{
     gchar *tmp;
 };
 
+typedef enum {
+    TYPEDEF,
+    STRUCT,
+    WRONG
+}DEFTYPE;
 
 
 Sheet *new_sheet(char *name, char *description, char *filename,
@@ -108,6 +123,7 @@ DIAVAR void register_sheet(Sheet *sheet);
 DIAVAR GSList *get_sheets_list(void);
 DIAVAR void factoryReadDataFromFile(const gchar* name);
 DIAVAR void factory_read_native_c_file(const gchar* name);
+static DEFTYPE factory_check_define(gchar *data);
 
 DIAVAR void load_all_sheets(void);
 DIAVAR void dia_sort_sheets(void);

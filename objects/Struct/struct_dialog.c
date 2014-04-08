@@ -3281,9 +3281,132 @@ factory_get_properties(STRUCTClass *class, gboolean is_default)
   gtk_widget_show_all (class->properties_dialog->dialog);
 
   return class->properties_dialog->dialog;
-
 }
 
+GtkWidget *factory_create_combo_widget(GList *datalist,gint activeid)
+{
+                  GtkWidget *widget;
+                  widget = gtk_combo_box_new_text();
+                  gtk_combo_box_popdown(GTK_COMBO_BOX(widget));
+                  GList *p = datalist;
+                  for(;p != NULL ; p= p->next)
+                  {
+
+                      gtk_combo_box_append_text(GTK_COMBO_BOX(widget),p->data);
+                  }
+                  gtk_combo_box_set_active(GTK_COMBO_BOX(widget),activeid);
+                  return  widget;
+}
+
+GtkWidget *factory_create_text_widget(gchar *str,gint maxlength)
+{
+      GtkWidget *widget;
+      widget = gtk_entry_new();
+      gtk_entry_set_max_length(GTK_ENTRY(widget), maxlength);
+      gtk_entry_set_text(GTK_ENTRY(widget),str);
+      return widget;
+}
+
+GtkWidget *factory_create_spbinbox_widget(gint value,gint minvalue,gint maxvalue)
+{
+                GtkWidget *widget;
+                GtkObject *adj =gtk_adjustment_new( value , minvalue,maxvalue, 1.0, 5.0, 0);
+                 widget = GTK_SPIN_BUTTON(gtk_spin_button_new( GTK_ADJUSTMENT( adj), 0.1, 0));
+                 gtk_spin_button_set_numeric( GTK_SPIN_BUTTON( widget), TRUE);
+                 gtk_spin_button_set_snap_to_ticks( GTK_SPIN_BUTTON(widget), TRUE);
+                return widget;
+}
+
+
+//GtkWidget *factory_create_specific_widget(SaveStruct *sss)
+//{
+//     GtkWidget *columTwo;
+//       switch(sss->celltype)
+//        {
+//        case ENUM:
+//            {
+//
+//                  GList *p = sss->value.senum.enumList;
+//                  GSList *datalist = NULL;
+//                  for(;p != NULL ; p= p->next)
+//                  {
+//                      FactoryStructEnum *kvmap = p->data;
+//                     datalist = g_slist_append(datalist,kvmap->key);
+//                  }
+//                  columTwo =  factory_create_combo_widget(datalist,sss->value.senum.index);
+//              }
+//            break;
+//        case ENTRY:
+//            {
+//
+//                      SaveEntry *sey = &sss->value.sentry;
+//                      gdouble maxlength = sey->col * sey->row; // 得到文本框的大小。
+//
+//
+//                     if(!g_ascii_strncasecmp("ACTIONID_",item->Name,9))
+//                     {
+//                            columTwo = gtk_combo_box_new_text();
+//                            gtk_combo_box_popdown(GTK_COMBO_BOX(columTwo));
+//
+//                            Layer *curlayer = fclass->element.object.parent_layer;
+//                            GList *objlist = curlayer->objects;
+//                            for(;objlist ;objlist =    objlist->next )
+//                            {
+//                                STRUCTClass *objclass = objlist->data;
+//                                if( objclass != fclass &&  (objclass->element.object.type == object_get_type("STRUCT - Class"))
+//                                    && !objclass->connections[8].connected)
+//                                {
+//                                    gtk_combo_box_append_text(GTK_COMBO_BOX(columTwo),objclass->name);
+//                                }
+//                            }
+//                            gtk_combo_box_set_active(GTK_COMBO_BOX(columTwo),0);
+//                     }
+//                     else if(sey->isString)
+//                     {
+//                          columTwo = gtk_entry_new();
+//                          gtk_entry_set_max_length(GTK_ENTRY(columTwo), maxlength);
+//                     }
+//                     else
+//                     {
+//                         /*2014-3-31 lcy  数组显示 */
+//                            columTwo = gtk_button_new_with_label(item->Name);
+//                            g_signal_connect (G_OBJECT (columTwo), "clicked",G_CALLBACK (factoy_create_subdialog), sss);
+//
+//                     }
+//
+////                       gtk_entry_set_text(GTK_ENTRY(columTwo),sss->value.text);  // set default value;
+//            }
+//            break;
+//        case SPINBOX:
+//            {
+//                 GtkObject *adj =gtk_adjustment_new( sss->value.number , g_strtod(item->Min,NULL),
+//                                           g_strtod(item->Max,NULL), 1.0, 5.0, 0);
+//                 columTwo = GTK_SPIN_BUTTON(gtk_spin_button_new( GTK_ADJUSTMENT( adj), 0.1, 0));
+//                 gtk_spin_button_set_numeric( GTK_SPIN_BUTTON( columTwo), TRUE);
+//                 gtk_spin_button_set_snap_to_ticks( GTK_SPIN_BUTTON(columTwo), TRUE);
+//            }
+//            break;
+//        case UNION:
+//            {
+//                  GtkVBox *vbox = gtk_vbox_new(TRUE,0); /*  这里插入一个VBOX*/
+//                  columTwo = gtk_combo_box_new_text();
+//                  gtk_combo_box_popdown(GTK_COMBO_BOX(columTwo));
+//                  GList *p = sss->value.senum.enumList;
+//                  FactoryStructItem *first = p->data;
+//                   SaveStruct *subss = factory_get_savestruct(first);
+//                  for(;p != NULL ; p= p->next)
+//                  {
+//                      FactoryStructItem *data = p->data;
+//                      gtk_combo_box_append_text(GTK_COMBO_BOX(columTwo),data->Name);
+//                  }
+//                  gtk_combo_box_set_active(GTK_COMBO_BOX(columTwo),sss->value.senum.index);
+//                  g_signal_connect (G_OBJECT (columTwo), "changed",G_CALLBACK (factoy_changed_item), sss);
+//
+//            }
+//        }
+//        return columTwo;
+//
+//}
 
 static void factory_set_exist_widgets(STRUCTClass *fclass, FactoryStructItem *item,int row)
 {
@@ -3302,15 +3425,14 @@ static void factory_set_exist_widgets(STRUCTClass *fclass, FactoryStructItem *it
         {
         case ENUM:
             {
-                  columTwo = gtk_combo_box_new_text();
-                  gtk_combo_box_popdown(GTK_COMBO_BOX(columTwo));
-                  GList *p = sss->value.senum.enumList;
+                 GSList *datalist = NULL;
+                  GList *p = item->datalist;
                   for(;p != NULL ; p= p->next)
                   {
                       FactoryStructEnum *kvmap = p->data;
-                      gtk_combo_box_append_text(GTK_COMBO_BOX(columTwo),kvmap->key);
+                     datalist = g_slist_append(datalist,kvmap->key);
                   }
-              gtk_combo_box_set_active(GTK_COMBO_BOX(columTwo),sss->value.senum.index);
+                  columTwo =  factory_create_combo_widget(datalist,sss->value.senum.index);
               }
             break;
         case ENTRY:
@@ -3340,34 +3462,45 @@ static void factory_set_exist_widgets(STRUCTClass *fclass, FactoryStructItem *it
                      }
                      else if(sey->isString)
                      {
-                          columTwo = gtk_entry_new();
-                          gtk_entry_set_max_length(GTK_ENTRY(columTwo), maxlength);
+                          columTwo = factory_create_text_widget(item->Value,maxlength);
                      }
                      else
                      {
                          /*2014-3-31 lcy  数组显示 */
-
-
                             columTwo = gtk_button_new_with_label(item->Name);
                             g_signal_connect (G_OBJECT (columTwo), "clicked",G_CALLBACK (factoy_create_subdialog), sss);
 
-
-
-
                      }
 
-//                       gtk_entry_set_text(GTK_ENTRY(columTwo),sss->value.text);  // set default value;
             }
             break;
         case SPINBOX:
             {
-                 GtkObject *adj =gtk_adjustment_new( sss->value.number , g_strtod(item->Min,NULL),
-                                           g_strtod(item->Max,NULL), 1.0, 5.0, 0);
-                 columTwo = GTK_SPIN_BUTTON(gtk_spin_button_new( GTK_ADJUSTMENT( adj), 0.1, 0));
-                 gtk_spin_button_set_numeric( GTK_SPIN_BUTTON( columTwo), TRUE);
-                 gtk_spin_button_set_snap_to_ticks( GTK_SPIN_BUTTON(columTwo), TRUE);
+                 columTwo = factory_create_spbinbox_widget(sss->value.number,g_strtod(item->Min,NULL),g_strtod(item->Max,NULL));
             }
             break;
+        case UNION:
+            {
+                  columTwo = gtk_vbox_new(TRUE,0); /*  这里插入一个VBOX*/
+                  GtkWidget *activeWidget = gtk_combo_box_new_text();
+                  gtk_combo_box_popdown(GTK_COMBO_BOX(activeWidget));
+                  GList *p = sss->value.senum.enumList;
+                  for(;p != NULL ; p= p->next)
+                  {
+                      FactoryStructItem *data = p->data;
+                      gtk_combo_box_append_text(GTK_COMBO_BOX(activeWidget),data->Name);
+                  }
+                  gtk_combo_box_set_active(GTK_COMBO_BOX(activeWidget),sss->value.senum.index);
+
+                  GtkWidget *undef = gtk_widget_new(GTK_TYPE_NONE,"visible");
+                  sss->widget = columTwo;
+                  gtk_widget_set_name(undef,"union_active");
+                  gtk_widget_set_visible(undef,FALSE);
+                  gtk_box_pack_start_defaults(GTK_VBOX(columTwo),activeWidget);
+                  gtk_box_pack_start_defaults(GTK_VBOX(columTwo),undef);
+                  gtk_widget_show_all(columTwo);
+                  g_signal_connect (G_OBJECT (activeWidget), "changed",G_CALLBACK (factoy_changed_item), sss);
+            }
         }
         gtk_tooltips_set_tip(tool_tips,columTwo,_(item->Comment),NULL);
         sss->widget = columTwo;
@@ -3439,6 +3572,67 @@ void factoy_create_subdialog(GtkButton *buttun,SaveStruct *sss)
     g_signal_connect(G_OBJECT (subdig), "destroy",
 		   G_CALLBACK(gtk_widget_destroyed), &dialog_vbox);
     gtk_widget_show_all(subdig);
+}
+
+void factoy_changed_item(gpointer *item,gpointer user_data)
+{
+    SaveStruct *sss  = user_data;
+
+    gchar *text = gtk_combo_box_get_active_text(item);
+    GList *t = sss->value.senum.enumList;
+    FactoryStructItem *fst=NULL;
+    GtkWidget *activeWidget = NULL;
+    while(t)
+    {
+        fst = t->data;
+        if(!g_ascii_strncasecmp(text,fst->Name,strlen(text)))
+        {
+
+            break;
+        }
+        t = t->next;
+    }
+    GList *widgetlist = gtk_container_children(sss->widget);
+    gtk_container_remove(sss->widget,g_list_first(widgetlist)->data);
+    if(fst)
+    {
+        switch(fst->Itype)
+        {
+        case BT:
+            {
+                        SaveEntry *sey = &sss->value.sentry;
+
+                        if(sey->isString)
+                        {
+                              activeWidget = factory_create_text_widget(fst->Name,sey->col * sey->row);
+                        }
+                        else
+                        {
+                                /*2014-3-31 lcy  数组显示 */
+                                activeWidget = gtk_button_new_with_label(fst->Name);
+                                g_signal_connect (G_OBJECT (activeWidget), "clicked",G_CALLBACK (factoy_create_subdialog), sss);
+                        }
+            }
+
+                        break;
+        case ET:
+            {
+                        GList *p = fst->datalist;
+                        GSList *datalist = NULL;
+                        for(;p != NULL ; p= p->next)
+                        {
+                            FactoryStructEnum *kvmap = p->data;
+                            datalist = g_slist_append(datalist,kvmap->key);
+                        }
+                        activeWidget =  factory_create_combo_widget(datalist,0);
+            }
+            break;
+        }
+        gtk_box_pack_start_defaults(GTK_VBOX(sss->widget),activeWidget);
+    }
+    gtk_container_resize_children (GTK_VBOX(sss->widget));
+    gtk_widget_show_all(sss->widget);
+
 }
 
 

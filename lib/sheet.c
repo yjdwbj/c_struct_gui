@@ -40,7 +40,7 @@
 #include "dia_dirs.h"
 #include "plug-ins.h"
 
-FactoryStructItemAll structList = {NULL,NULL};
+FactoryStructItemAll structList = {NULL,NULL,NULL,NULL};
 static GSList *sheets = NULL;
 
 Sheet *
@@ -136,8 +136,8 @@ load_all_sheets(void)
   char *sheet_path;
   char *home_dir;
   /* 2014-4-1 lcy 递归查找config 目录下所有以.struct 为后缀的文件名 */
- // for_each_in_dir(dia_get_lib_directory("config"),factoryReadDataFromFile,this_is_a_struct);
-  for_each_in_dir(dia_get_lib_directory("config"),factory_read_native_c_file,this_is_a_struct);
+   for_each_in_dir(dia_get_lib_directory("config"),factoryReadDataFromFile,this_is_a_struct);
+//  for_each_in_dir(dia_get_lib_directory("config"),factory_read_native_c_file,this_is_a_struct);
  //   factoryReadDataFromFile(&structList);
 //  home_dir = dia_config_filename("sheets");
 //  if (home_dir) {
@@ -225,12 +225,14 @@ static void figure_out_char(const gchar *str,const gchar c,int *count)
     }
 }
 
+
 void factory_read_native_c_file(const gchar* filename)
 {
 #define MAX_LINE 1024
 #define MAX_SECTION 7
    structList.structTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
    structList.enumTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+   structList.unionTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
     struct stat statbuf;
 
     FILE *fd;
@@ -255,11 +257,17 @@ void factory_read_native_c_file(const gchar* filename)
     gchar *blockbuf = NULL;
     while(fgets(filetxt,MAX_LINE,fd)!=NULL)
     {
-        gchar *strip = g_strstrip(filetxt);
-        gchar *aline =g_locale_to_utf8(strip,-1,NULL,NULL,NULL);;
-        g_free(strip);
-        if(!aline)
+
+        gchar *aline =g_strstrip(filetxt);
+        int n  = strlen(aline);
+        gchar *fmt = g_strdup_printf("%02x%02x%02x",aline[0]&0xff,aline[1]&0xff,aline[2]&0xff);
+        if(3==n && !g_strncasecmp(fmt,"efbbbf",strlen(fmt)) )
+        {
             continue;
+        }
+        if( !n || !aline )
+            continue;
+
         char lastchar = aline[strlen(aline)-1];
 //        if(test_last_char(lastchar))
 //        {
@@ -277,6 +285,8 @@ void factory_read_native_c_file(const gchar* filename)
         {
             gchar **mline = g_strsplit(blockbuf,"\n",-1);
             int num = g_strv_length(mline);
+            DEFTYPE deft =  factory_check_define(mline[0]);
+
         }
         gchar *p = g_strdup(blockbuf);
         g_free(blockbuf);
@@ -292,6 +302,96 @@ void factory_read_native_c_file(const gchar* filename)
 
 }
 
+static DEFTYPE factory_check_define(gchar *data)
+{
+    gchar **tmp = g_strsplit(data," ",-1);
+    DEFTYPE ret;
+    if(g_strv_length(tmp))
+    {
+        if(!g_strncasecmp(tmp[0],"struct",6))
+        {
+            ret = STRUCT;
+        }
+        else if(!g_strncasecmp(tmp[0],"typedef",7))
+        {
+            ret = TYPEDEF;
+        }
+    }
+    else
+    {
+        ret = WRONG;
+    }
+    g_strfreev(tmp);
+
+
+
+    return  ret;
+}
+
+static gboolean factory_is_base_type(const gchar *str)
+{
+    /* 2014-4-8 lcy 检查是不是基本类型*/
+    if( (str[0] == 'u'  || str[0] == 's')  && str[1] >= '0' && str[1] <= '9')
+        return TRUE;
+    else
+        return FALSE;
+}
+
+
+static void factory_check_items_valid(gpointer key, gpointer value, gpointer user_data)
+{
+    gchar *keystr = (gchar *)key;
+    GList *datalist = value;
+
+    while(datalist)
+    {
+        gpointer ret = NULL;
+        FactoryStructItem *item = datalist->data;
+        if(item->Itype != BT)
+        {
+            /* 2014-4-8 lcy 不是基本类型, 就用类型名为键值去结构体哈希与枚举哈希表内查找.*/
+            ret =  g_hash_table_lookup(structList.structTable,item->SType);
+            if(ret)
+            {
+                item->Itype = ST;
+                item->datalist = ret;
+
+            }
+
+            if(item->Itype != ST)
+            {
+                ret = g_hash_table_lookup(structList.enumTable,item->SType);
+                if(ret)
+                {
+                    item->Itype = ET;
+                    item->datalist = ret;
+                }
+
+            }
+
+            if(item->Itype != ET)
+            {
+                ret = g_hash_table_lookup(structList.unionTable,item->SType);
+                if(ret)
+                {
+                    item->Itype = UT;
+                    item->datalist = ret;
+                }
+            }
+
+            if(item->Itype == NT)
+            {
+                 message_error(_(g_strdup_printf("%s没有定义",item->SType)));
+            }
+
+        }
+
+        datalist = datalist->next;
+    }
+
+
+
+}
 
 void factoryReadDataFromFile(const gchar* filename)
 {
@@ -299,7 +399,7 @@ void factoryReadDataFromFile(const gchar* filename)
 #define MAX_SECTION 7
    structList.structTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
    structList.enumTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-
+   structList.unionTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
 
     struct stat statbuf;
 
@@ -327,12 +427,14 @@ void factoryReadDataFromFile(const gchar* filename)
 //     gchar *sbuf[MAX_SECTION];   // 2014-3-19 lcy 这里分几个段
     gboolean isEmnu = FALSE;
     gboolean isStruct = FALSE;
+    gboolean isUnion = FALSE;
 
   //  FactoryStructEnumList *fsel = NULL;
     FactoryStructItemList *fssl = NULL;
 
     gchar *hashKey = NULL;
     GHashTable *hashValue = NULL; // 2014-3-26 lcy 这里用HASH表来保存枚举结
+    GHashTable *unionValue = NULL;
     int n = 0;
     int zero = 0; // 2014-3-25 lcy  这里是初始化枚举值;
     while(fgets(filetxt,MAX_LINE,fd)!=NULL)
@@ -367,8 +469,12 @@ void factoryReadDataFromFile(const gchar* filename)
                 fssl->number = n++;
                 datalist = NULL;
                 hashKey = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
-
-
+            }
+            else if( 0 == g_ascii_strncasecmp("union",sbuf[1],5))
+            {
+                isUnion = TRUE;
+                datalist = NULL;
+                hashKey = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
             }
             g_strfreev(sbuf);
         }
@@ -389,6 +495,11 @@ void factoryReadDataFromFile(const gchar* filename)
                 isEmnu = FALSE;
                //allstructlist->enumList = g_list_append(allstructlist->enumList,fsel);
                g_hash_table_insert(structList.enumTable,hashKey,(gpointer*)enumlist);
+            }
+            else if(isUnion)
+            {
+                isUnion = FALSE;
+                g_hash_table_insert(structList.unionTable,hashKey,(gpointer*)datalist);
             }
         }
         else if(isEmnu) // 2014-3-19 lcy 读取一个枚举.
@@ -416,7 +527,7 @@ void factoryReadDataFromFile(const gchar* filename)
            // g_hash_table_insert(hashValue,(char*)kvmap->key,(char*)kvmap->value);
               g_strfreev(sbuf);
         }
-        else if(isStruct){   // 2013-3-20 lcy  这里把每一项结构体数据放进链表.
+        else if(isStruct || isUnion ){   // 2013-3-20 lcy  这里把每一项结构体数据放进链表.
 
          gchar ** sbuf=NULL;
         if(aline[0] == '/' || aline[0] == '#' || !strlen(aline))
@@ -434,6 +545,11 @@ void factoryReadDataFromFile(const gchar* filename)
         int l = g_strv_length(p);
         item->SType = g_locale_to_utf8(p[l-1],-1,NULL,NULL,NULL);
         g_strfreev(p);
+        item->Itype = NT;
+        if(factory_is_base_type(item->SType))
+        {
+            item->Itype = BT;
+        }
         item->Name = g_locale_to_utf8(sbuf[1],-1,NULL,NULL,NULL);
         item->Cname = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
         item->Value = g_locale_to_utf8(sbuf[3],-1,NULL,NULL,NULL);
@@ -443,9 +559,10 @@ void factoryReadDataFromFile(const gchar* filename)
         datalist = g_list_append(datalist,item);
         g_strfreev(sbuf);
         }
-
     }
     fclose(fd);
+    g_hash_table_foreach(structList.unionTable,factory_check_items_valid,NULL);
+    g_hash_table_foreach(structList.structTable,factory_check_items_valid,NULL);
   //  g_free(filename);
 }
 

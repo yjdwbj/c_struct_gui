@@ -173,7 +173,8 @@ struct _FactoryClassDialog{
 typedef enum{
     ENUM,
     ENTRY,
-    SPINBOX
+    SPINBOX,
+    UNION
 }CellType;
 
 //typedef struct _WidgetAndValue WidgetAndValue;
@@ -340,6 +341,7 @@ factory_get_properties(STRUCTClass *structclass, gboolean is_default);
 
 GtkWidget *factory_create_many_entry_box(SaveEntry *sey);
 void factoy_create_subdialog(GtkButton *buttun,SaveStruct *sss);
+void factoy_changed_item(gpointer *item,gpointer user_data);
 
 void factory_create_and_fill_dialog(STRUCTClass *structclass, gboolean is_default);
 

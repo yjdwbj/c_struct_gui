@@ -2221,14 +2221,8 @@ void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
 
 }
 
-void factory_read_initial_to_struct(STRUCTClass *structclass) /*2014-3-26 lcy 拖入控件时取得它的值*/
+SaveStruct* factory_get_savestruct(FactoryStructItem *fst)
 {
-    GList *tlist = g_hash_table_lookup(structclass->EnumsAndStructs->structTable,structclass->name);
-    int s = g_list_length(tlist);
-    if(tlist)
-    for(;tlist != NULL ; tlist = tlist->next)
-    {
-        FactoryStructItem *fst = tlist->data;
         SaveStruct *sss = g_new0(SaveStruct,1);
         sss->widget = NULL;
         sss->type = fst->FType;
@@ -2237,19 +2231,32 @@ void factory_read_initial_to_struct(STRUCTClass *structclass) /*2014-3-26 lcy 拖
 //        gchar **split = g_strsplit(fst->FType,".",-1);
 //        int section = g_strv_length(split);
        /* 2014-3-26 lcy 通过名字去哈希表里找链表*/
-        GList *targettable = g_hash_table_lookup(structclass->EnumsAndStructs->enumTable,fst->SType);
-//        g_strfreev(split);
-        if(targettable)
-        {
+       switch(fst->Itype)
+       {
+       case BT:
+                if( factory_find_array_flag(fst->Name))
+                {
+                    /* 2014-3-25 lcy 这里是字符串，需用文本框显示了*/
+                    sss->celltype = ENTRY;
+                    factory_handle_entry_item(&sss->value.sentry,fst);
+                }
+                else
+                {
+                     sss->celltype = SPINBOX;
+                     sss->value.number = g_strtod(fst->Value,NULL);
+                }
+        break;
+       case ET:
+           {
                   sss->celltype = ENUM;
-                  sss->value.senum.enumList = targettable;
-                  GList *t = targettable;
+                  sss->value.senum.enumList = fst->datalist;
+                  GList *t = fst->datalist;
                   for(; t != NULL ; t = t->next)
                   {
                       FactoryStructEnum *kvmap = t->data;
                       if(!g_ascii_strncasecmp(fst->Value,kvmap->key,strlen(fst->Value)))
                       {
-                         sss->value.senum.index = g_list_index(targettable,t->data);
+                         sss->value.senum.index = g_list_index(fst->datalist,t->data);
                          sss->value.senum.width = fst->Max;
                          sss->value.senum.evalue = kvmap->value;
                          break;
@@ -2257,19 +2264,35 @@ void factory_read_initial_to_struct(STRUCTClass *structclass) /*2014-3-26 lcy 拖
 
                 }
 
-        }
-        else if( factory_find_array_flag(fst->Name))
-        {
-             /* 2014-3-25 lcy 这里是字符串，需用文本框显示了*/
-                    sss->celltype = ENTRY;
-                    factory_handle_entry_item(&sss->value.sentry,fst);
-        }
-        else
-        {
-                     sss->celltype = SPINBOX;
-                     sss->value.number = g_strtod(fst->Value,NULL);
-        }
-        g_hash_table_insert(structclass->widgetmap,g_strjoin("##",fst->FType,fst->Name,NULL),sss);
+           }
+        break;
+       case ST:
+        break;
+       case UT:
+           {
+                  sss->celltype = UNION;
+                  sss->value.senum.enumList = fst->datalist;
+                  sss->value.senum.index = 0;
+                  sss->value.senum.width = fst->Max;
+                  sss->value.senum.evalue = NULL;
+           }
+        break;
+       default:
+            break;
+       }
+        return sss;
+}
+
+void factory_read_initial_to_struct(STRUCTClass *structclass) /*2014-3-26 lcy 拖入控件时取得它的值*/
+{
+    GList *tlist = g_hash_table_lookup(structclass->EnumsAndStructs->structTable,structclass->name);
+    int s = g_list_length(tlist);
+    if(tlist)
+    for(;tlist != NULL ; tlist = tlist->next)
+    {
+        FactoryStructItem *fst = tlist->data;
+        //factory_get_savestruct(fst);
+        g_hash_table_insert(structclass->widgetmap,g_strjoin("##",fst->FType,fst->Name,NULL),factory_get_savestruct(fst));
     }
 }
 

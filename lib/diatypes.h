@@ -208,6 +208,7 @@ typedef struct _FactoryStructItemAll  FactoryStructItemAll; // 2014-3-20 lcy ¥Ê∑
 struct _FactoryStructItemAll{
     GHashTable *enumTable;
     GHashTable *structTable; // 2014-3-25 lcy ’‚¿Ô¥Ê∑≈ FactoryStructItemList µƒπ˛œ£±Ì°£
+    GHashTable *unionTable;
     GList* structList; // 2014-3-25 lcy ’‚¿Ô¥Ê∑≈ FactoryStructItemList µƒ¡¥±Ì°£
 };
 
