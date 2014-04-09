@@ -533,6 +533,7 @@ void factoryReadDataFromFile(const gchar* filename)
         if(aline[0] == '/' || aline[0] == '#' || !strlen(aline))
            continue;
          FactoryStructItem *item = g_new0(FactoryStructItem,1);
+         item->savestruct = NULL;
       //  sscanf(&aline,"%[^:]:%[^:]:%[^:]:%[^:]:%[^:]:%[^:]",sbuf[0],sbuf[1],sbuf[2],sbuf[3],sbuf[4],sbuf[5]);
        sbuf=  g_strsplit_set (filetxt,":",-1);
 

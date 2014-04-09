@@ -1926,117 +1926,117 @@ static void factory_set_name(gpointer key,gpointer value,gpointer user_data)
 }
 
 
-static DiaObject *  // 2014-3-19 lcy 这里初始化结构
-structclass_create(Point *startpoint,
-	       void *user_data,
-  	       Handle **handle1,
-	       Handle **handle2)
-{
-  STRUCTClass *structclass;
-  STRUCTClassDialog *properties_dialog;
-  Element *elem;
-  DiaObject *obj;
-  int i;
-
-  structclass = g_malloc0(sizeof(STRUCTClass));
-  elem = &structclass->element;
-  obj = &elem->object;
-
-
-  elem->corner = *startpoint;
-
-#ifdef STRUCT_MAINPOINT
-  element_init(elem, 8, STRUCTCLASS_CONNECTIONPOINTS + 1); /* No attribs or ops => 0 extra connectionpoints. */
-#else
-  element_init(elem, 8, STRUCTCLASS_CONNECTIONPOINTS); /* No attribs or ops => 0 extra connectionpoints. */
-#endif
-
-    fill_in_fontdata(structclass);
-
-  /*
-   * The following block of code may need to be converted to a switch statement if more than
-   * two types of objects can be made - Dave Klotzbach
-   */
-  // structclass->template = (GPOINTER_TO_INT(user_data)==1);
-//  structclass->template = FALSE;
-  int index = GPOINTER_TO_INT(user_data);
-  GList *sstruct = structList.structList;
-  for(;sstruct !=NULL;sstruct = sstruct->next)
-  {
-      FactoryStructItemList *i = sstruct->data;
-      if(i->number == index)
-      {
-          structclass->name = g_strdup(_(i->name));
-          break;
-      }
-  }
-
-  /* 2014-3-26 lcy  这里初始哈希表用存widget与它的值*/
- // structclass->widgetmap = g_hash_table_new(g_direct_hash,g_direct_equal);
-  structclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
- // structclass->widgetmap = NULL;
-
-  obj->type = &structclass_type;
-  obj->ops = &structclass_ops;
-
-//  structclass->stereotype = NULL;
-//  structclass->comment = NULL;
+//static DiaObject *  // 2014-3-19 lcy 这里初始化结构
+//structclass_create(Point *startpoint,
+//	       void *user_data,
+//  	       Handle **handle1,
+//	       Handle **handle2)
+//{
+//  STRUCTClass *structclass;
+//  STRUCTClassDialog *properties_dialog;
+//  Element *elem;
+//  DiaObject *obj;
+//  int i;
 //
-//  structclass->abstract = FALSE;
+//  structclass = g_malloc0(sizeof(STRUCTClass));
+//  elem = &structclass->element;
+//  obj = &elem->object;
 //
-//  structclass->suppress_attributes = FALSE;
-//  structclass->suppress_operations = FALSE;
 //
-//  structclass->visible_attributes = TRUE;
-//  structclass->visible_operations = TRUE;
-//  structclass->visible_comments = FALSE;
+//  elem->corner = *startpoint;
 //
-//  structclass->wrap_operations = TRUE;
-//  structclass->wrap_after_char = STRUCTCLASS_WRAP_AFTER_CHAR;
+//#ifdef STRUCT_MAINPOINT
+//  element_init(elem, 8, STRUCTCLASS_CONNECTIONPOINTS + 1); /* No attribs or ops => 0 extra connectionpoints. */
+//#else
+//  element_init(elem, 8, STRUCTCLASS_CONNECTIONPOINTS); /* No attribs or ops => 0 extra connectionpoints. */
+//#endif
 //
-//  structclass->attributes = NULL;
+//    fill_in_fontdata(structclass);
 //
-//  structclass->operations = NULL;
+//  /*
+//   * The following block of code may need to be converted to a switch statement if more than
+//   * two types of objects can be made - Dave Klotzbach
+//   */
+//  // structclass->template = (GPOINTER_TO_INT(user_data)==1);
+////  structclass->template = FALSE;
+//  int index = GPOINTER_TO_INT(user_data);
+//  GList *sstruct = structList.structList;
+//  for(;sstruct !=NULL;sstruct = sstruct->next)
+//  {
+//      FactoryStructItemList *i = sstruct->data;
+//      if(i->number == index)
+//      {
+//          structclass->name = g_strdup(_(i->name));
+//          break;
+//      }
+//  }
 //
-//  structclass->formal_params = NULL;
+//  /* 2014-3-26 lcy  这里初始哈希表用存widget与它的值*/
+// // structclass->widgetmap = g_hash_table_new(g_direct_hash,g_direct_equal);
+//  structclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+// // structclass->widgetmap = NULL;
 //
-//  structclass->stereotype_string = NULL;
-
-  structclass->line_width = attributes_get_default_linewidth();
-  structclass->text_color = color_black;
-  structclass->line_color = attributes_get_foreground();
-  structclass->fill_color = attributes_get_background();
-
-  structclass_calculate_data(structclass);
-
-  for (i=0;i<STRUCTCLASS_CONNECTIONPOINTS;i++) {
-    obj->connections[i] = &structclass->connections[i];
-    structclass->connections[i].object = obj;
-    structclass->connections[i].connected = NULL;
-  }
-#ifdef STRUCT_MAINPOINT
-  /* Put mainpoint at the end, after conditional attr/oprn points,
-   * but store it in the local connectionpoint array. */
-  i += structclass_num_dynamic_connectionpoints(structclass);
-  obj->connections[i] = &structclass->connections[STRUCTCLASS_CONNECTIONPOINTS];
-  structclass->connections[STRUCTCLASS_CONNECTIONPOINTS].object = obj;
-  structclass->connections[STRUCTCLASS_CONNECTIONPOINTS].connected = NULL;
-#endif
-
-  elem->extra_spacing.border_trans = structclass->line_width/2.0;
-  structclass_update_data(structclass);
-
-  for (i=0;i<8;i++) {
-    obj->handles[i]->type = HANDLE_NON_MOVABLE;
-  }
-
-  *handle1 = NULL;
-  *handle2 = NULL;
-  structclass->EnumsAndStructs = NULL;
-  structclass->EnumsAndStructs = &structList;
-  factory_read_initial_to_struct(structclass);
-  return &structclass->element.object;
-}
+//  obj->type = &structclass_type;
+//  obj->ops = &structclass_ops;
+//
+////  structclass->stereotype = NULL;
+////  structclass->comment = NULL;
+////
+////  structclass->abstract = FALSE;
+////
+////  structclass->suppress_attributes = FALSE;
+////  structclass->suppress_operations = FALSE;
+////
+////  structclass->visible_attributes = TRUE;
+////  structclass->visible_operations = TRUE;
+////  structclass->visible_comments = FALSE;
+////
+////  structclass->wrap_operations = TRUE;
+////  structclass->wrap_after_char = STRUCTCLASS_WRAP_AFTER_CHAR;
+////
+////  structclass->attributes = NULL;
+////
+////  structclass->operations = NULL;
+////
+////  structclass->formal_params = NULL;
+////
+////  structclass->stereotype_string = NULL;
+//
+//  structclass->line_width = attributes_get_default_linewidth();
+//  structclass->text_color = color_black;
+//  structclass->line_color = attributes_get_foreground();
+//  structclass->fill_color = attributes_get_background();
+//
+//  structclass_calculate_data(structclass);
+//
+//  for (i=0;i<STRUCTCLASS_CONNECTIONPOINTS;i++) {
+//    obj->connections[i] = &structclass->connections[i];
+//    structclass->connections[i].object = obj;
+//    structclass->connections[i].connected = NULL;
+//  }
+//#ifdef STRUCT_MAINPOINT
+//  /* Put mainpoint at the end, after conditional attr/oprn points,
+//   * but store it in the local connectionpoint array. */
+//  i += structclass_num_dynamic_connectionpoints(structclass);
+//  obj->connections[i] = &structclass->connections[STRUCTCLASS_CONNECTIONPOINTS];
+//  structclass->connections[STRUCTCLASS_CONNECTIONPOINTS].object = obj;
+//  structclass->connections[STRUCTCLASS_CONNECTIONPOINTS].connected = NULL;
+//#endif
+//
+//  elem->extra_spacing.border_trans = structclass->line_width/2.0;
+//  structclass_update_data(structclass);
+//
+//  for (i=0;i<8;i++) {
+//    obj->handles[i]->type = HANDLE_NON_MOVABLE;
+//  }
+//
+//  *handle1 = NULL;
+//  *handle2 = NULL;
+//  structclass->EnumsAndStructs = NULL;
+//  structclass->EnumsAndStructs = &structList;
+//  factory_read_initial_to_struct(structclass);
+//  return &structclass->element.object;
+//}
 
 static DiaObject *  // 2014-3-19 lcy 这里初始化结构
 factory_struct_items_create(Point *startpoint,
@@ -2136,7 +2136,8 @@ void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
     {
         FactoryStructItem *fst = tlist->data;
         SaveStruct *sss = g_new0(SaveStruct,1);
-        sss->widget = NULL;
+        sss->widget1 = NULL;
+        sss->widget2 = NULL;
         AttributeNode attr_node = obj_node;
         while(attr_node = data_next(attr_node))
         {
@@ -2163,9 +2164,9 @@ void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
             key = xmlGetProp(attr_node,(xmlChar *)"wtype");
             if(key)
             {
-                if(0== g_ascii_strncasecmp(key,"ENUM",4))
+                if(0== g_ascii_strncasecmp(key,"COMBO",4))
                 {
-                    sss->celltype = ENUM;
+                    sss->celltype = COMBO;
                     gchar **split = g_strsplit(sss->type,".",-1);
                     int section = g_strv_length(split);
                     /* 2014-3-26 lcy 通过名字去哈希表里找链表*/
@@ -2221,10 +2222,11 @@ void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
 
 }
 
-SaveStruct* factory_get_savestruct(FactoryStructItem *fst)
+void factory_get_savestruct(FactoryStructItem *fst)
 {
         SaveStruct *sss = g_new0(SaveStruct,1);
-        sss->widget = NULL;
+        sss->widget1= NULL;
+        sss->widget2 = NULL;
         sss->type = fst->FType;
         sss->name = fst->Name;
 
@@ -2239,6 +2241,8 @@ SaveStruct* factory_get_savestruct(FactoryStructItem *fst)
                     /* 2014-3-25 lcy 这里是字符串，需用文本框显示了*/
                     sss->celltype = ENTRY;
                     factory_handle_entry_item(&sss->value.sentry,fst);
+                    if(!sss->value.sentry.isString)
+                        sss->celltype = BUTTON;
                 }
                 else
                 {
@@ -2248,7 +2252,7 @@ SaveStruct* factory_get_savestruct(FactoryStructItem *fst)
         break;
        case ET:
            {
-                  sss->celltype = ENUM;
+                  sss->celltype = COMBO;
                   sss->value.senum.enumList = fst->datalist;
                   GList *t = fst->datalist;
                   for(; t != NULL ; t = t->next)
@@ -2267,20 +2271,23 @@ SaveStruct* factory_get_savestruct(FactoryStructItem *fst)
            }
         break;
        case ST:
-        break;
+           {
+                sss->celltype = BUTTON;
+           }
+           break;
        case UT:
            {
-                  sss->celltype = UNION;
-                  sss->value.senum.enumList = fst->datalist;
+                  sss->celltype = COMBO;
+                  sss->value.senum.enumList = fst->datalist; // 这里共用.
                   sss->value.senum.index = 0;
-                  sss->value.senum.width = fst->Max;
+                  sss->value.senum.width =  fst->Max;
                   sss->value.senum.evalue = NULL;
            }
         break;
        default:
             break;
        }
-        return sss;
+        fst->savestruct = sss;
 }
 
 void factory_read_initial_to_struct(STRUCTClass *structclass) /*2014-3-26 lcy 拖入控件时取得它的值*/
@@ -2292,7 +2299,9 @@ void factory_read_initial_to_struct(STRUCTClass *structclass) /*2014-3-26 lcy 拖
     {
         FactoryStructItem *fst = tlist->data;
         //factory_get_savestruct(fst);
-        g_hash_table_insert(structclass->widgetmap,g_strjoin("##",fst->FType,fst->Name,NULL),factory_get_savestruct(fst));
+        if(!fst->savestruct)
+            factory_get_savestruct(fst);
+        g_hash_table_insert(structclass->widgetmap,g_strjoin("##",fst->FType,fst->Name,NULL),fst->savestruct);
     }
 }
 
@@ -2588,8 +2597,8 @@ static void factory_struct_save_to_xml(gpointer key,gpointer value,gpointer user
      xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
      switch(sss->celltype)
      {
-     case ENUM:
-         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"ENUM");
+     case COMBO:
+         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"COMBO");
          xmlSetProp(ccc, (const xmlChar *)"width", (xmlChar *)sss->value.senum.width);
          xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.senum.evalue);
         break;

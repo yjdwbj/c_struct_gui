@@ -171,21 +171,13 @@ struct _FactoryClassDialog{
 
 
 typedef enum{
-    ENUM,
-    ENTRY,
+    COMBO, /* 下拉框 */
+    ENTRY, /* 文本 */
     SPINBOX,
-    UNION
+    BUTTON
 }CellType;
 
-//typedef struct _WidgetAndValue WidgetAndValue;
-//
-//struct _WidgetAndValue{
-//    gpointer *widget;
-//
-//    gchar* name;
-//    CellType celltype;
-//    gchar *value;
-//};
+
 
 typedef struct _SaveEnum SaveEnum;
 struct _SaveEnum{
@@ -213,7 +205,8 @@ struct _SaveEntry
 
 typedef struct _SaveStruct SaveStruct;
 typedef struct _SaveStruct{
-    gpointer *widget;
+    GtkWidget *widget1;
+    GtkWidget *widget2;
     gchar* type;
     gchar* name;
     CellType celltype;
@@ -221,6 +214,7 @@ typedef struct _SaveStruct{
         SaveEntry sentry; // entry value
         gint number; // spinbox value
         SaveEnum senum;  // enum value;
+        SaveStruct *next; // union
     }value;
 
 };
@@ -341,6 +335,7 @@ factory_get_properties(STRUCTClass *structclass, gboolean is_default);
 
 GtkWidget *factory_create_many_entry_box(SaveEntry *sey);
 void factoy_create_subdialog(GtkButton *buttun,SaveStruct *sss);
+static void factory_create_subdialg_by_list(gpointer *item,FactoryStructItem *sss);
 void factoy_changed_item(gpointer *item,gpointer user_data);
 
 void factory_create_and_fill_dialog(STRUCTClass *structclass, gboolean is_default);
