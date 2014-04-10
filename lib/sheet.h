@@ -85,8 +85,9 @@ struct _FactoryStructItem{  // ÕâÀï¶¨ÒåÒ»¸ö½á¹¹µÄÃ¿Ò»ÏîĞèÒªÏÔÊ¾µÄ¶«Î÷, Õâ¾ÍÏàµ±Ó
     gchar  *Max;    // ¼«Öµ
     gchar  *Comment;   // ¸¡¶¯×¢ÊÍ
     ItemType Itype;   // »ù±¾ÀàĞÎ
-    GList *datalist;
-    gpointer savestruct //´æ´¢ÏÔÊ¾µÄ¿Ø¼şÖ¸Õë.
+    GList *datalist;  /* Èç¹û¸Ã³ÉÔ±ÊÇÈË½á¹¹Ìå»òÕßÊÇÁªºÏ,¸ÃÖ¸Õë¾Í²»ÎªNULL*/
+    gpointer savestruct ;//´æ´¢ÏÔÊ¾µÄ¿Ø¼şÖ¸Õë.
+    const FactoryStructItemAll *fsia;
 };
 //struct _FactoryStructEnumList{
 //    gchar *name;

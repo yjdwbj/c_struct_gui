@@ -518,6 +518,11 @@ static void factory_update_index(STRUCTClass *fclass)
       g_free(newname);
       obj->name = fclass->name;
       structclass_calculate_data(fclass);
+      if(!fclass->isInitial)
+      {
+           fclass->isInitial = TRUE;
+           factory_read_initial_to_struct(fclass);
+      }
 }
 
 
@@ -2051,6 +2056,7 @@ factory_struct_items_create(Point *startpoint,
   int i;
 
   structclass = g_malloc0(sizeof(STRUCTClass));
+  structclass->isInitial = FALSE;
   elem = &structclass->element;
   obj = &elem->object;
 
@@ -2122,7 +2128,7 @@ factory_struct_items_create(Point *startpoint,
   *handle2 = NULL;
   structclass->EnumsAndStructs = NULL;
   structclass->EnumsAndStructs = &structList;
-  factory_read_initial_to_struct(structclass);
+//  factory_read_initial_to_struct(structclass);
   return &structclass->element.object;
 }
 
@@ -2222,13 +2228,14 @@ void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
 
 }
 
-void factory_get_savestruct(FactoryStructItem *fst)
+SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
 {
         SaveStruct *sss = g_new0(SaveStruct,1);
         sss->widget1= NULL;
         sss->widget2 = NULL;
         sss->type = fst->FType;
         sss->name = fst->Name;
+
 
 //        gchar **split = g_strsplit(fst->FType,".",-1);
 //        int section = g_strv_length(split);
@@ -2242,7 +2249,7 @@ void factory_get_savestruct(FactoryStructItem *fst)
                     sss->celltype = ENTRY;
                     factory_handle_entry_item(&sss->value.sentry,fst);
                     if(!sss->value.sentry.isString)
-                        sss->celltype = BUTTON;
+                        sss->celltype = BTN;
                 }
                 else
                 {
@@ -2254,7 +2261,7 @@ void factory_get_savestruct(FactoryStructItem *fst)
            {
                   sss->celltype = COMBO;
                   sss->value.senum.enumList = fst->datalist;
-                  GList *t = fst->datalist;
+                  GList *t = sss->value.senum.enumList;
                   for(; t != NULL ; t = t->next)
                   {
                       FactoryStructEnum *kvmap = t->data;
@@ -2272,7 +2279,8 @@ void factory_get_savestruct(FactoryStructItem *fst)
         break;
        case ST:
            {
-                sss->celltype = BUTTON;
+                sss->celltype = BTN;
+                //fst->datalist = g_list_copy(fst->datalist);
            }
            break;
        case UT:
@@ -2284,24 +2292,34 @@ void factory_get_savestruct(FactoryStructItem *fst)
                   sss->value.senum.evalue = NULL;
            }
         break;
+       case NT:
+           {
+                if(!g_ascii_strncasecmp(sss->name,"ACTIONID_",9))
+                {
+                    sss->celltype = COMBO;
+                    sss->value.senum.enumList = NULL;
+                }
+           }
+        break;
        default:
             break;
        }
-        fst->savestruct = sss;
+        return  sss->org = fst;
 }
 
-void factory_read_initial_to_struct(STRUCTClass *structclass) /*2014-3-26 lcy 拖入控件时取得它的值*/
+void factory_read_initial_to_struct(STRUCTClass *fclass) /*2014-3-26 lcy 拖入控件时取得它的值*/
 {
-    GList *tlist = g_hash_table_lookup(structclass->EnumsAndStructs->structTable,structclass->name);
+    /* 这里从原哈希表复制一份出来 */
+    gchar **tmp =  g_strsplit(fclass->name,"(",-1);
+    GList *tlist = g_list_copy(g_hash_table_lookup(fclass->EnumsAndStructs->structTable,tmp[0]));
+    g_strfreev(tmp);
     int s = g_list_length(tlist);
     if(tlist)
     for(;tlist != NULL ; tlist = tlist->next)
     {
         FactoryStructItem *fst = tlist->data;
-        //factory_get_savestruct(fst);
-        if(!fst->savestruct)
-            factory_get_savestruct(fst);
-        g_hash_table_insert(structclass->widgetmap,g_strjoin("##",fst->FType,fst->Name,NULL),fst->savestruct);
+        SaveStruct *sst= factory_get_savestruct(fst);
+        g_hash_table_insert(fclass->widgetmap,g_strjoin("##",fst->FType,fst->Name,NULL),sst);
     }
 }
 
@@ -2332,8 +2350,10 @@ factory_handle_entry_item(SaveEntry* sey,FactoryStructItem *fst)
                 int strlength = sey->width * sey->row * sey->col; /**   u32[6][2] ==  (32/8) * 6 * 2    **/
                 if(sey->isString)
                 {
-                     sey->data.text = g_new0(gchar,strlength );
-                     sey->data.text =  g_locale_to_utf8(fst->Value,strlength,NULL,NULL,NULL);
+//                     sey->data.text = g_new0(gchar,strlength );
+//                     sey->data.text =  g_locale_to_utf8(fst->Value,strlength,NULL,NULL,NULL);
+                     sey->data = g_new0(gchar,strlength );
+                     sey->data =  g_locale_to_utf8(fst->Value,strlength,NULL,NULL,NULL);
                 }
                 else
                 {
@@ -2608,11 +2628,12 @@ static void factory_struct_save_to_xml(gpointer key,gpointer value,gpointer user
              SaveEntry *sey = &sss->value.sentry;
              if(sey->isString)
              {
-                 xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sey->data.text);
+             //    xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sey->data.text);
+                 xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sey->data);
              }
              else
              {
-                 GSList *tlist = sey->data.arrlist;
+                 GSList *tlist = sey->data;
                  gchar *ret ="";
                 while(tlist)
                  {   /* 2014-3-31 lcy 把链表里的数据用逗号连接 */

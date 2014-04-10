@@ -26,7 +26,7 @@
 
 #include "intl.h"
 #include "object.h"
-#include "struct.h"
+//#include "struct.h"
 #include "plug-ins.h"
 #include "sheets.h"
 

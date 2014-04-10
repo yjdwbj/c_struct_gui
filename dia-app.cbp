@@ -1207,9 +1207,6 @@
 			<Option compilerVar="CC" />
 			<Option target="Struct" />
 		</Unit>
-		<Unit filename="objects/Struct/struct.h">
-			<Option target="Struct" />
-		</Unit>
 		<Unit filename="objects/Struct/struct_class.c">
 			<Option compilerVar="CC" />
 			<Option target="Struct" />

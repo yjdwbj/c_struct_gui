@@ -69,89 +69,7 @@ typedef struct _STRUCTClassDialog STRUCTClassDialog;
  */
 struct _STRUCTClassDialog {
   GtkWidget *dialog;
-
-//  GList *itemsData;   // 2014-3-19 lcy 这里是自定项,用存储从文件读到的条目.
-//  GList *enumList;    // 2014-3-19 lcy 这里用存储枚举的链表.
-   GtkWidget *mainTable; // 2014-3-19 lcy 这里添一个表格,用来布局显示.
-//  GtkEntry *classname;
-//  GtkEntry *stereotype;
-//  GtkTextView *comment;
-//
-//  GtkToggleButton *abstract_class;
-//  GtkToggleButton *attr_vis;
-//  GtkToggleButton *attr_supp;
-//  GtkToggleButton *op_vis;
-//  GtkToggleButton *op_supp;
-//  GtkToggleButton *comments_vis;
-//  GtkToggleButton *op_wrap;
-//  DiaFontSelector *normal_font;
-//  DiaFontSelector *abstract_font;
-//  DiaFontSelector *polymorphic_font;
-//  DiaFontSelector *classname_font;
-//  DiaFontSelector *abstract_classname_font;
-//  DiaFontSelector *comment_font;
-//  GtkSpinButton *normal_font_height;
-//  GtkSpinButton *abstract_font_height;
-//  GtkSpinButton *polymorphic_font_height;
-//  GtkSpinButton *classname_font_height;
-//  GtkSpinButton *abstract_classname_font_height;
-//  GtkSpinButton *comment_font_height;
-//  GtkSpinButton *wrap_after_char;
-//  GtkSpinButton *comment_line_length;
-//  GtkToggleButton *comment_tagging;
-//  GtkSpinButton *line_width;
-//  DiaColorSelector *text_color;
-//  DiaColorSelector *line_color;
-//  DiaColorSelector *fill_color;
-//  GtkLabel *max_length_label;
-//  GtkLabel *Comment_length_label;
-//
-//  GList *disconnected_connections;
-//  GList *added_connections;
-//  GList *deleted_connections;
-//
-//  GtkList *attributes_list;
-//  GtkListItem *current_attr;
-//  GtkEntry *attr_name;
-//  GtkEntry *attr_type;
-//  GtkEntry *attr_value;
-//  GtkTextView *attr_comment;
-//  GtkMenu *attr_visible;
-//  GtkOptionMenu *attr_visible_button;
-//  GtkToggleButton *attr_class_scope;
-//
-//  GtkList *operations_list;
-//  GtkListItem *current_op;
-//  GtkEntry *op_name;
-//  GtkEntry *op_type;
-//  GtkEntry *op_stereotype;
-//  GtkTextView *op_comment;
-//
-//  GtkMenu *op_visible;
-//  GtkOptionMenu *op_visible_button;
-//  GtkToggleButton *op_class_scope;
-//  GtkMenu *op_inheritance_type;
-//  GtkOptionMenu *op_inheritance_type_button;
-//  GtkToggleButton *op_query;
-//
-//  GtkList *parameters_list;
-//  GtkListItem *current_param;
-//  GtkEntry *param_name;
-//  GtkEntry *param_type;
-//  GtkEntry *param_value;
-//  GtkTextView *param_comment;
-//  GtkMenu *param_kind;
-//  GtkOptionMenu *param_kind_button;
-//  GtkWidget *param_new_button;
-//  GtkWidget *param_delete_button;
-//  GtkWidget *param_up_button;
-//  GtkWidget *param_down_button;
-//
-//  GtkList *templates_list;
-//  GtkListItem *current_templ;
-//  GtkToggleButton *templ_template;
-//  GtkEntry *templ_name;
-//  GtkEntry *templ_type;
+  GtkWidget *mainTable; // 2014-3-19 lcy 这里添一个表格,用来布局显示.
 };
 
 
@@ -174,7 +92,7 @@ typedef enum{
     COMBO, /* 下拉框 */
     ENTRY, /* 文本 */
     SPINBOX,
-    BUTTON
+    BTN
 }CellType;
 
 
@@ -196,11 +114,18 @@ struct _SaveEntry
     int row;
     int col;   /* default is 1 */
     int width;
-    union{
-        gchar *text;   /* s8 type, is string */
-        GSList *arrlist;  /* 2014-3-31 lcy 这里用单链表来保存所有控件的值. (etc. "0xffff" ) */
-    }data;
+//    union{
+//        gchar *text;   /* s8 type, is string */
+//        GSList *arrlist;  /* 2014-3-31 lcy 这里用单链表来保存所有控件的值. (etc. "0xffff" ) */
+//    }data;
+    gpointer data;
     GList *wlist;   /* GtkWidget List  */
+};
+
+typedef struct _ActionId ActionID;
+struct _ActionId{
+    gint maxitems;
+
 };
 
 typedef struct _SaveStruct SaveStruct;
@@ -212,11 +137,11 @@ typedef struct _SaveStruct{
     CellType celltype;
      union{
         SaveEntry sentry; // entry value
-        gint number; // spinbox value
+        gint number; // spinbox value or actionid max items
         SaveEnum senum;  // enum value;
-        SaveStruct *next; // union
+        gpointer next; // union
     }value;
-
+    FactoryStructItem *org;
 };
 
 /**
@@ -304,6 +229,7 @@ struct _STRUCTClass {
    * destroyed, and don't do structclass_calculate_data when it is set.
    * This is to avoid a half-way destroyed list being updated.
    */
+  gboolean isInitial; /* 初始化属性对话框*/
   gboolean destroyed;
   GList *widgetmap; // 2014-3-22 lcy 这里用一个链表来保存界面上所有的值。
   FactoryStructItemAll *EnumsAndStructs ;// 2014-3-21 lcy 这里包含一个文件里的所有结构体.

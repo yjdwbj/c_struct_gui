@@ -341,12 +341,12 @@ static gboolean factory_is_base_type(const gchar *str)
 static void factory_check_items_valid(gpointer key, gpointer value, gpointer user_data)
 {
     gchar *keystr = (gchar *)key;
-    GList *datalist = value;
+    GList *vallist = value;
 
-    while(datalist)
+    for(;vallist; vallist = vallist->next)
     {
         gpointer ret = NULL;
-        FactoryStructItem *item = datalist->data;
+        FactoryStructItem *item = vallist->data;
         if(item->Itype != BT)
         {
             /* 2014-4-8 lcy 不是基本类型, 就用类型名为键值去结构体哈希与枚举哈希表内查找.*/
@@ -385,8 +385,12 @@ static void factory_check_items_valid(gpointer key, gpointer value, gpointer use
             }
 
         }
+        else if (!g_ascii_strncasecmp("ACTIONID_",item->Name,9))
+        {
+            item->Itype == NT;
+        }
 
-        datalist = datalist->next;
+
     }
 
 
@@ -420,7 +424,7 @@ void factoryReadDataFromFile(const gchar* filename)
 
     char filetxt[MAX_LINE]={'\0'};
     gchar* aline = NULL;
-    GList *datalist = NULL;
+    GList *dlist = NULL;
 //    GList  *structlist = NULL;
     GList *enumlist = NULL;
 
@@ -429,7 +433,6 @@ void factoryReadDataFromFile(const gchar* filename)
     gboolean isStruct = FALSE;
     gboolean isUnion = FALSE;
 
-  //  FactoryStructEnumList *fsel = NULL;
     FactoryStructItemList *fssl = NULL;
 
     gchar *hashKey = NULL;
@@ -467,13 +470,13 @@ void factoryReadDataFromFile(const gchar* filename)
                 fssl->name = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
                 fssl->list = NULL;
                 fssl->number = n++;
-                datalist = NULL;
+                dlist = NULL;
                 hashKey = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
             }
             else if( 0 == g_ascii_strncasecmp("union",sbuf[1],5))
             {
                 isUnion = TRUE;
-                datalist = NULL;
+                dlist = NULL;
                 hashKey = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
             }
             g_strfreev(sbuf);
@@ -487,9 +490,9 @@ void factoryReadDataFromFile(const gchar* filename)
             if(isStruct)
             {
                 isStruct = FALSE;
-                fssl->list = datalist;
+                fssl->list = dlist;
                 structList.structList = g_list_append(structList.structList,fssl);
-               g_hash_table_insert(structList.structTable,hashKey,(gpointer*)datalist);
+               g_hash_table_insert(structList.structTable,hashKey,(gpointer*)dlist);
             }
             else if(isEmnu){
                 isEmnu = FALSE;
@@ -499,7 +502,7 @@ void factoryReadDataFromFile(const gchar* filename)
             else if(isUnion)
             {
                 isUnion = FALSE;
-                g_hash_table_insert(structList.unionTable,hashKey,(gpointer*)datalist);
+                g_hash_table_insert(structList.unionTable,hashKey,(gpointer*)dlist);
             }
         }
         else if(isEmnu) // 2014-3-19 lcy 读取一个枚举.
@@ -534,6 +537,7 @@ void factoryReadDataFromFile(const gchar* filename)
            continue;
          FactoryStructItem *item = g_new0(FactoryStructItem,1);
          item->savestruct = NULL;
+         item->fsia = &structList;
       //  sscanf(&aline,"%[^:]:%[^:]:%[^:]:%[^:]:%[^:]:%[^:]",sbuf[0],sbuf[1],sbuf[2],sbuf[3],sbuf[4],sbuf[5]);
        sbuf=  g_strsplit_set (filetxt,":",-1);
 
@@ -557,11 +561,12 @@ void factoryReadDataFromFile(const gchar* filename)
         item->Min = g_locale_to_utf8(sbuf[4],-1,NULL,NULL,NULL);
         item->Max = g_locale_to_utf8(sbuf[5],-1,NULL,NULL,NULL);
         item->Comment = g_locale_to_utf8(sbuf[6],-1,NULL,NULL,NULL);
-        datalist = g_list_append(datalist,item);
+        dlist = g_list_append(dlist,item);
         g_strfreev(sbuf);
         }
     }
     fclose(fd);
+    /* 检查每一个块里面的成员有效性 */
     g_hash_table_foreach(structList.unionTable,factory_check_items_valid,NULL);
     g_hash_table_foreach(structList.structTable,factory_check_items_valid,NULL);
   //  g_free(filename);
