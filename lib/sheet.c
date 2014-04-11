@@ -537,7 +537,7 @@ void factoryReadDataFromFile(const gchar* filename)
            continue;
          FactoryStructItem *item = g_new0(FactoryStructItem,1);
          item->savestruct = NULL;
-         item->fsia = &structList;
+         item->orgclass = NULL;
       //  sscanf(&aline,"%[^:]:%[^:]:%[^:]:%[^:]:%[^:]:%[^:]",sbuf[0],sbuf[1],sbuf[2],sbuf[3],sbuf[4],sbuf[5]);
        sbuf=  g_strsplit_set (filetxt,":",-1);
 

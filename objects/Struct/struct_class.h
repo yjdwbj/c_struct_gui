@@ -89,10 +89,13 @@ struct _FactoryClassDialog{
 
 
 typedef enum{
-    COMBO, /* 下拉框 */
+    ECOMBO, /* 下拉框  enum comobox */
+    UCOMBO, /* union comobox */
+    OCOMBO, /* object combox*/
     ENTRY, /* 文本 */
     SPINBOX,
-    BTN
+    BBTN,
+    UBTN,
 }CellType;
 
 
@@ -105,7 +108,20 @@ struct _SaveEnum{
     gchar* width;
 };
 
+typedef struct _SaveUnion SaveUnion;
+struct _SaveUnion
+{
+    int index;
+    GtkWidget *vbox;
+    GtkWidget *comobox;
+//    GSList *uitemsave; /* 所有成员的存储结构指针 */
+    GList *structlist;
+    GList *widgetlist;
+//    gpointer *sdata; /* 当前的存储结构指针 */
 
+//    gpointer SVal; // 基本类型. SaveStruct pointer;
+    gpointer saveVal; //
+};
 
 typedef struct _SaveEntry SaveEntry;
 struct _SaveEntry
@@ -125,8 +141,8 @@ struct _SaveEntry
 typedef struct _ActionId ActionID;
 struct _ActionId{
     gint maxitems;
-
 };
+
 
 typedef struct _SaveStruct SaveStruct;
 typedef struct _SaveStruct{
@@ -135,13 +151,15 @@ typedef struct _SaveStruct{
     gchar* type;
     gchar* name;
     CellType celltype;
+    gboolean isPointer; /* FALSE == pointer , TRUE = single*/
      union{
         SaveEntry sentry; // entry value
         gint number; // spinbox value or actionid max items
         SaveEnum senum;  // enum value;
-        gpointer next; // union
+        SaveUnion sunion; // 第二个值,指针类
     }value;
     FactoryStructItem *org;
+    STRUCTClass *sclass;
 };
 
 /**
@@ -261,7 +279,7 @@ factory_get_properties(STRUCTClass *structclass, gboolean is_default);
 
 GtkWidget *factory_create_many_entry_box(SaveEntry *sey);
 void factoy_create_subdialog(GtkButton *buttun,SaveStruct *sss);
-static void factory_create_subdialg_by_list(gpointer *item,FactoryStructItem *sss);
+static void factory_create_subdialg_by_list(gpointer *item,SaveStruct *sst);
 void factoy_changed_item(gpointer *item,gpointer user_data);
 
 void factory_create_and_fill_dialog(STRUCTClass *structclass, gboolean is_default);

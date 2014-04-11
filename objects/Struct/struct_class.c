@@ -118,7 +118,8 @@ static ObjectTypeOps structclass_type_ops =
 //  (LoadFunc)   structclass_load,
  // (SaveFunc)   structclass_save
   (LoadFunc)  factory_struct_items_load,
-  (SaveFunc)  factory_struct_items_save
+ // (SaveFunc)  factory_struct_items_save
+  (SaveFunc)  0
 };
 
 /**
@@ -2172,7 +2173,7 @@ void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
             {
                 if(0== g_ascii_strncasecmp(key,"COMBO",4))
                 {
-                    sss->celltype = COMBO;
+                    sss->celltype = ECOMBO;
                     gchar **split = g_strsplit(sss->type,".",-1);
                     int section = g_strv_length(split);
                     /* 2014-3-26 lcy 通过名字去哈希表里找链表*/
@@ -2235,6 +2236,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
         sss->widget2 = NULL;
         sss->type = fst->FType;
         sss->name = fst->Name;
+        sss->sclass = fst->orgclass;
 
 
 //        gchar **split = g_strsplit(fst->FType,".",-1);
@@ -2249,7 +2251,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
                     sss->celltype = ENTRY;
                     factory_handle_entry_item(&sss->value.sentry,fst);
                     if(!sss->value.sentry.isString)
-                        sss->celltype = BTN;
+                        sss->celltype = BBTN;
                 }
                 else
                 {
@@ -2259,7 +2261,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
         break;
        case ET:
            {
-                  sss->celltype = COMBO;
+                  sss->celltype = ECOMBO;
                   sss->value.senum.enumList = fst->datalist;
                   GList *t = sss->value.senum.enumList;
                   for(; t != NULL ; t = t->next)
@@ -2279,24 +2281,39 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
         break;
        case ST:
            {
-                sss->celltype = BTN;
+                sss->celltype = UBTN;
+                SaveUnion *suptr = &sss->value.sunion;
+//                suptr->saveTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+//                GList *slist = fst->datalist;
+//                for(;slist ; slist = slist->next)
+//                {
+//                    FactoryStructItem *o = slist->data;
+//                    SaveStruct *subss= factory_get_savestruct(o);
+//                    g_hash_table_insert(suptr->saveTable,g_strjoin("##",o->FType,o->Name,NULL),subss);
+//
+//                }
+                suptr->structlist = fst->datalist;
                 //fst->datalist = g_list_copy(fst->datalist);
            }
            break;
        case UT:
            {
-                  sss->celltype = COMBO;
-                  sss->value.senum.enumList = fst->datalist; // 这里共用.
-                  sss->value.senum.index = 0;
-                  sss->value.senum.width =  fst->Max;
-                  sss->value.senum.evalue = NULL;
+                  SaveUnion *suptr = &sss->value.sunion;
+                  sss->celltype = UCOMBO;
+                  suptr->vbox = NULL;
+//                  suptr->sdata = NULL;
+//                  suptr->uitemsave = NULL;
+//                  suptr->key = NULL;
+                  suptr->saveVal = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+                  suptr->comobox = NULL;
+                  suptr->structlist = fst->datalist;
            }
         break;
        case NT:
            {
                 if(!g_ascii_strncasecmp(sss->name,"ACTIONID_",9))
                 {
-                    sss->celltype = COMBO;
+                    sss->celltype = OCOMBO;
                     sss->value.senum.enumList = NULL;
                 }
            }
@@ -2304,23 +2321,45 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
        default:
             break;
        }
-        return  sss->org = fst;
+        sss->org = fst;
+        return sss;
+}
+
+void factory_initial_origin_struct(GHashTable *savetable,GList *srclist,const gchar *key)
+{
+     /* srclist is FactoryStructItem GList */
+    GHashTable *structtable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+    if(srclist)
+    for(;srclist != NULL ; srclist = srclist->next)
+    {
+        FactoryStructItem *fst = srclist->data;
+        SaveStruct *sst= factory_get_savestruct(fst);
+        g_hash_table_insert(structtable,g_strjoin("##",fst->FType,fst->Name,NULL),sst);
+    }
+    g_hash_table_insert(savetable,key,structtable);
 }
 
 void factory_read_initial_to_struct(STRUCTClass *fclass) /*2014-3-26 lcy 拖入控件时取得它的值*/
 {
     /* 这里从原哈希表复制一份出来 */
     gchar **tmp =  g_strsplit(fclass->name,"(",-1);
-    GList *tlist = g_list_copy(g_hash_table_lookup(fclass->EnumsAndStructs->structTable,tmp[0]));
+    GList *tlist = g_hash_table_lookup(fclass->EnumsAndStructs->structTable,tmp[0]);
+    GList *tttt = tlist;
     g_strfreev(tmp);
-    int s = g_list_length(tlist);
-    if(tlist)
-    for(;tlist != NULL ; tlist = tlist->next)
+    for(;tlist;tlist = tlist->next)
     {
         FactoryStructItem *fst = tlist->data;
-        SaveStruct *sst= factory_get_savestruct(fst);
-        g_hash_table_insert(fclass->widgetmap,g_strjoin("##",fst->FType,fst->Name,NULL),sst);
+        fst->orgclass = fclass;
     }
+    factory_initial_origin_struct(fclass->widgetmap,tttt,fclass->name);
+//    int s = g_list_length(tlist);
+//    if(tlist)
+//    for(;tlist != NULL ; tlist = tlist->next)
+//    {
+//        FactoryStructItem *fst = tlist->data;
+//        SaveStruct *sst= factory_get_savestruct(fst);
+//        g_hash_table_insert(fclass->widgetmap,g_strjoin("##",fst->FType,fst->Name,NULL),sst);
+//    }
 }
 
 void
@@ -2617,7 +2656,7 @@ static void factory_struct_save_to_xml(gpointer key,gpointer value,gpointer user
      xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
      switch(sss->celltype)
      {
-     case COMBO:
+     case ECOMBO:
          xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"COMBO");
          xmlSetProp(ccc, (const xmlChar *)"width", (xmlChar *)sss->value.senum.width);
          xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.senum.evalue);
