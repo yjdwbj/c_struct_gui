@@ -53,6 +53,9 @@
  */
 #define STRUCT_MAINPOINT 1
 
+#define ACTION_ID  "NextID_"
+
+#define ACT_SIZE  7
 
 
 
@@ -98,6 +101,17 @@ typedef enum{
     UBTN,
 }CellType;
 
+typedef struct _ActionId ActionID;
+struct _ActionId
+{
+    int index; // comobox index
+    int maxitem;
+    int row;
+    int col;   /* default is 1 */
+    gchar *pot_name;
+    GList *itemlist;
+};
+
 
 
 typedef struct _SaveEnum SaveEnum;
@@ -108,15 +122,25 @@ struct _SaveEnum{
     gchar* width;
 };
 
+typedef struct _SaveUbtn SaveUbtn;
+struct _SaveUbtn
+{
+    GList *structlist;
+    GHashTable *htoflist;
+};
+
+
 typedef struct _SaveUnion SaveUnion;
 struct _SaveUnion
 {
     int index;
+    gchar *curtext;
+    gchar *curkey;
     GtkWidget *vbox;
     GtkWidget *comobox;
 //    GSList *uitemsave; /* 所有成员的存储结构指针 */
     GList *structlist;
-    GList *widgetlist;
+//    GList *widgetlist;
 //    gpointer *sdata; /* 当前的存储结构指针 */
 
 //    gpointer SVal; // 基本类型. SaveStruct pointer;
@@ -138,10 +162,7 @@ struct _SaveEntry
     GList *wlist;   /* GtkWidget List  */
 };
 
-typedef struct _ActionId ActionID;
-struct _ActionId{
-    gint maxitems;
-};
+
 
 
 typedef struct _SaveStruct SaveStruct;
@@ -150,13 +171,16 @@ typedef struct _SaveStruct{
     GtkWidget *widget2;
     gchar* type;
     gchar* name;
+//    gchar* pname;  /* 上一级名字, NULL 就是最上级 */
     CellType celltype;
     gboolean isPointer; /* FALSE == pointer , TRUE = single*/
-     union{
+    union{
         SaveEntry sentry; // entry value
         gint number; // spinbox value or actionid max items
         SaveEnum senum;  // enum value;
         SaveUnion sunion; // 第二个值,指针类
+        ActionID sactid;  // 保存连线的
+        SaveUbtn ssubtn;
     }value;
     FactoryStructItem *org;
     STRUCTClass *sclass;
@@ -280,6 +304,7 @@ factory_get_properties(STRUCTClass *structclass, gboolean is_default);
 GtkWidget *factory_create_many_entry_box(SaveEntry *sey);
 void factoy_create_subdialog(GtkButton *buttun,SaveStruct *sss);
 static void factory_create_subdialg_by_list(gpointer *item,SaveStruct *sst);
+static void factory_strjoin(const gchar **dst,const gchar *prefix,const gchar *sep);
 void factoy_changed_item(gpointer *item,gpointer user_data);
 
 void factory_create_and_fill_dialog(STRUCTClass *structclass, gboolean is_default);

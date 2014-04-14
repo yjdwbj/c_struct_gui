@@ -2379,7 +2379,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1397222460 source:o:\tool\dvs50\objects\struct\struct_class.c
+1397477201 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2395,7 +2395,7 @@
 	"debug.h"
 	"sheet.h"
 
-1397222446 o:\tool\dvs50\objects\struct\struct_class.h
+1397476976 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2411,7 +2411,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1397222524 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1397477378 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>

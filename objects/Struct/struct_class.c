@@ -118,8 +118,8 @@ static ObjectTypeOps structclass_type_ops =
 //  (LoadFunc)   structclass_load,
  // (SaveFunc)   structclass_save
   (LoadFunc)  factory_struct_items_load,
- // (SaveFunc)  factory_struct_items_save
-  (SaveFunc)  0
+  (SaveFunc)  factory_struct_items_save
+
 };
 
 /**
@@ -2153,7 +2153,7 @@ void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
             {
                 if(0 == g_ascii_strncasecmp(key,fst->Name,strlen(key)))
                 {
-                    sss->name = fst->Name;
+                    sss->name = g_strdup(fst->Name);
                     break;
                 }
             }
@@ -2234,14 +2234,26 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
         SaveStruct *sss = g_new0(SaveStruct,1);
         sss->widget1= NULL;
         sss->widget2 = NULL;
-        sss->type = fst->FType;
-        sss->name = fst->Name;
+        sss->type = g_strdup(fst->FType);
+        sss->name = g_strdup(fst->Name);
         sss->sclass = fst->orgclass;
 
 
 //        gchar **split = g_strsplit(fst->FType,".",-1);
 //        int section = g_strv_length(split);
        /* 2014-3-26 lcy Í¨¹ýÃû×ÖÈ¥¹þÏ£±íÀïÕÒÁ´±í*/
+       if(!g_ascii_strncasecmp(sss->name,ACTION_ID,ACT_SIZE))
+       {
+            sss->celltype = OCOMBO;
+            ActionID *actid = &sss->value.sactid;
+            actid->itemlist = NULL;
+            actid->index = -1;
+            SaveEntry tmp;
+            factory_handle_entry_item(&tmp,fst);
+            actid->col = tmp.col;
+            actid->row = tmp.row;
+            actid->maxitem = tmp.col * tmp.row;
+       }else
        switch(fst->Itype)
        {
        case BT:
@@ -2282,40 +2294,22 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
        case ST:
            {
                 sss->celltype = UBTN;
-                SaveUnion *suptr = &sss->value.sunion;
-//                suptr->saveTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-//                GList *slist = fst->datalist;
-//                for(;slist ; slist = slist->next)
-//                {
-//                    FactoryStructItem *o = slist->data;
-//                    SaveStruct *subss= factory_get_savestruct(o);
-//                    g_hash_table_insert(suptr->saveTable,g_strjoin("##",o->FType,o->Name,NULL),subss);
-//
-//                }
-                suptr->structlist = fst->datalist;
+//                sss->isPointer = TRUE; /* ÕâÀïÊÇÒ»¸ö°´¼ü*/
+                SaveUbtn *sbtn = &sss->value.ssubtn;
+                sbtn->structlist = fst->datalist;
+                sbtn->htoflist = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
                 //fst->datalist = g_list_copy(fst->datalist);
            }
            break;
        case UT:
            {
+                  /*  ÕâÖÖ³ÉÔ±×îÉÙÓÐÁ½¸ö gtk_widget */
                   SaveUnion *suptr = &sss->value.sunion;
                   sss->celltype = UCOMBO;
                   suptr->vbox = NULL;
-//                  suptr->sdata = NULL;
-//                  suptr->uitemsave = NULL;
-//                  suptr->key = NULL;
                   suptr->saveVal = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
                   suptr->comobox = NULL;
                   suptr->structlist = fst->datalist;
-           }
-        break;
-       case NT:
-           {
-                if(!g_ascii_strncasecmp(sss->name,"ACTIONID_",9))
-                {
-                    sss->celltype = OCOMBO;
-                    sss->value.senum.enumList = NULL;
-                }
            }
         break;
        default:
@@ -2325,19 +2319,19 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
         return sss;
 }
 
-void factory_initial_origin_struct(GHashTable *savetable,GList *srclist,const gchar *key)
-{
-     /* srclist is FactoryStructItem GList */
-    GHashTable *structtable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-    if(srclist)
-    for(;srclist != NULL ; srclist = srclist->next)
-    {
-        FactoryStructItem *fst = srclist->data;
-        SaveStruct *sst= factory_get_savestruct(fst);
-        g_hash_table_insert(structtable,g_strjoin("##",fst->FType,fst->Name,NULL),sst);
-    }
-    g_hash_table_insert(savetable,key,structtable);
-}
+//void factory_initial_origin_struct(GHashTable *savetable,GList *srclist,const gchar *key)
+//{
+//     /* srclist is FactoryStructItem GList */
+//    GHashTable *structtable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+//    if(srclist)
+//    for(;srclist != NULL ; srclist = srclist->next)
+//    {
+//        FactoryStructItem *fst = srclist->data;
+//        SaveStruct *sst= factory_get_savestruct(fst);
+//        g_hash_table_insert(structtable,g_strjoin("##",fst->FType,fst->Name,NULL),sst);
+//    }
+//    g_hash_table_insert(savetable,key,structtable);
+//}
 
 void factory_read_initial_to_struct(STRUCTClass *fclass) /*2014-3-26 lcy ÍÏÈë¿Ø¼þÊ±È¡µÃËüµÄÖµ*/
 {
@@ -2351,7 +2345,14 @@ void factory_read_initial_to_struct(STRUCTClass *fclass) /*2014-3-26 lcy ÍÏÈë¿Ø¼
         FactoryStructItem *fst = tlist->data;
         fst->orgclass = fclass;
     }
-    factory_initial_origin_struct(fclass->widgetmap,tttt,fclass->name);
+
+    for(;tttt != NULL ; tttt = tttt->next)
+    {
+        FactoryStructItem *fst = tttt->data;
+        SaveStruct *sst= factory_get_savestruct(fst);
+        g_hash_table_insert(fclass->widgetmap,g_strjoin("##",fst->FType,fst->Name,NULL),sst);
+    }
+//    factory_initial_origin_struct(fclass->widgetmap,tttt,fclass->name);
 //    int s = g_list_length(tlist);
 //    if(tlist)
 //    for(;tlist != NULL ; tlist = tlist->next)
@@ -2646,15 +2647,14 @@ structclass_copy(STRUCTClass *structclass)
   return &newstructclass->element.object;
 }
 
-static void factory_struct_save_to_xml(gpointer key,gpointer value,gpointer user_data)
+
+static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node)
 {
-    /* 2014-3-27 lcy ÕâÀïÃ¿ÐÐÓëXMLµÄÐÐ¶ÔÓ¦ÓÃ ,²ÉÓÃ¶à¸öÊôÐÔÖµ´æ´¢*/
-    SaveStruct *sss = (SaveStruct*)value;
-    ObjectNode obj_node = (ObjectNode)user_data;
-    ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+
+     ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
      xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
      xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
-     switch(sss->celltype)
+    switch(sss->celltype)
      {
      case ECOMBO:
          xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"COMBO");
@@ -2670,10 +2670,14 @@ static void factory_struct_save_to_xml(gpointer key,gpointer value,gpointer user
              //    xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sey->data.text);
                  xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sey->data);
              }
-             else
-             {
-                 GSList *tlist = sey->data;
-                 gchar *ret ="";
+         }
+//         xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.text);
+        break;
+    case BBTN:
+         {
+               SaveEntry *sey = &sss->value.sentry;
+               GList *tlist = sey->data;
+                gchar *ret ="";
                 while(tlist)
                  {   /* 2014-3-31 lcy °ÑÁ´±íÀïµÄÊý¾ÝÓÃ¶ººÅÁ¬½Ó */
                      gchar *p = g_strconcat(ret,tlist->data,",",NULL);
@@ -2681,11 +2685,8 @@ static void factory_struct_save_to_xml(gpointer key,gpointer value,gpointer user
                      ret = p;
                      tlist = g_slist_next(tlist);
                  }
-                 xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)ret);
-                 //g_free(ret);
-             }
+                xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)ret);
          }
-//         xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.text);
         break;
      case SPINBOX:
          xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"SPINBOX");
@@ -2693,8 +2694,61 @@ static void factory_struct_save_to_xml(gpointer key,gpointer value,gpointer user
         g_snprintf(buffer, 20, "%d", sss->value.number);
         xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)buffer);
         break;
+     case UCOMBO:
+         {
+            SaveUnion *suptr = &sss->value.sunion;
+            if(sss->isPointer)
+            {
+                GList *slist = g_hash_table_get_values(suptr->saveVal);
+                for(;slist;slist = slist->next)
+                {
+                    SaveStruct *s = slist->data;
+                    factory_base_struct_save_to_file(s,ccc);
+                }
+            }
+            else
+            {
+                SaveStruct *tsst  =  g_hash_table_lookup(suptr->saveVal,suptr->curkey);
+                if(tsst)
+                {
+                    factory_base_struct_save_to_file(tsst,ccc);
+                }
+            }
+         }
+        break;
+     case UBTN:
+        {
+//             SaveUnion *suptr = &sss->value.sunion;
+//            if(sss->isPointer)
+//            {
+//                GList *slist = g_hash_table_get_values(suptr->saveVal);
+//                for(;slist;slist = slist->next)
+//                {
+//                    SaveStruct *s = slist->data;
+//                    factory_base_struct_save_to_file(s,ccc);
+//                }
+//            }
+            SaveUbtn *sbtn = &sss->value.ssubtn;
+            GList *slist = g_hash_table_get_values(sbtn->htoflist);
+            for(;slist;slist = slist->next)
+            {
+                    SaveStruct *s = slist->data;
+                    factory_base_struct_save_to_file(s,ccc);
+            }
+        }
+        break;
      }
+}
 
+static void factory_struct_save_to_xml(gpointer key,gpointer value,gpointer user_data)
+{
+    /* 2014-3-27 lcy ÕâÀïÃ¿ÐÐÓëXMLµÄÐÐ¶ÔÓ¦ÓÃ ,²ÉÓÃ¶à¸öÊôÐÔÖµ´æ´¢*/
+     SaveStruct *sss = (SaveStruct*)value;
+//     ObjectNode obj_node = (ObjectNode)user_data;
+//     ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+//     xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
+//     xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
+     factory_base_struct_save_to_file(sss,user_data);
 }
 
 
@@ -2803,12 +2857,8 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
   /* 2014-3-25 lcy ÕâÀïÌí¼ÓÒ»¸ö×Ô¶¨Òå½ÚµãÃûÀ´°²ÖÃÕâ¸ö½á¹¹ÌåµÄ³ÉÔ±*/
   obj_node = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_struct", NULL);
   xmlSetProp(obj_node, (const xmlChar *)"name", (xmlChar *)structclass->name);
-
   int mapsize = g_hash_table_size(structclass->widgetmap);
-
-
   g_hash_table_foreach(structclass->widgetmap,factory_struct_save_to_xml,(gpointer)obj_node);
-
 
 }
 
