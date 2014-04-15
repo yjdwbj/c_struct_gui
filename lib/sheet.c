@@ -385,10 +385,10 @@ static void factory_check_items_valid(gpointer key, gpointer value, gpointer use
             }
 
         }
-        else if (!g_ascii_strncasecmp("ACTIONID_",item->Name,9))
-        {
-            item->Itype == NT;
-        }
+//        else if (!g_ascii_strncasecmp("ACTIONID_",item->Name,9))
+//        {
+//            item->Itype == NT;
+//        }
 
 
     }

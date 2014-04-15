@@ -53,9 +53,9 @@
  */
 #define STRUCT_MAINPOINT 1
 
-#define ACTION_ID  "NextID_"
+#define ACTION_ID  "NextID"
 
-#define ACT_SIZE  7
+#define ACT_SIZE  6
 
 
 
@@ -99,6 +99,7 @@ typedef enum{
     SPINBOX,
     BBTN,
     UBTN,
+    OBTN /* 这里是按键按钮 */
 }CellType;
 
 typedef struct _ActionId ActionID;
@@ -109,6 +110,7 @@ struct _ActionId
     int row;
     int col;   /* default is 1 */
     gchar *pot_name;
+    GList *wlist; /* widget list */
     GList *itemlist;
 };
 
@@ -154,10 +156,6 @@ struct _SaveEntry
     int row;
     int col;   /* default is 1 */
     int width;
-//    union{
-//        gchar *text;   /* s8 type, is string */
-//        GSList *arrlist;  /* 2014-3-31 lcy 这里用单链表来保存所有控件的值. (etc. "0xffff" ) */
-//    }data;
     gpointer data;
     GList *wlist;   /* GtkWidget List  */
 };
@@ -287,6 +285,8 @@ attributes_update_event(GtkWidget *widget, GdkEventFocus *ev, STRUCTClass *struc
 static void
 attributes_update(GtkWidget *widget, STRUCTClass *structclass);
 
+static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc);
+
 static void
 attributes_list_selection_changed_callback(GtkWidget *gtklist,
 					   STRUCTClass *structclass);
@@ -301,9 +301,11 @@ static  void factory_calculate_data(STRUCTClass *structclass);
 GtkWidget *
 factory_get_properties(STRUCTClass *structclass, gboolean is_default);
 
-GtkWidget *factory_create_many_entry_box(SaveEntry *sey);
+GtkWidget *factory_create_many_entry_box(SaveStruct *sss);
+GtkWidget *factory_create_many_checkbox(SaveStruct *sss);
 void factoy_create_subdialog(GtkButton *buttun,SaveStruct *sss);
 static void factory_create_subdialg_by_list(gpointer *item,SaveStruct *sst);
+static void factory_create_checkbuttons_by_list(gpointer *item,SaveStruct *sst);
 static void factory_strjoin(const gchar **dst,const gchar *prefix,const gchar *sep);
 void factoy_changed_item(gpointer *item,gpointer user_data);
 

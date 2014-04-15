@@ -2171,7 +2171,7 @@ void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
             key = xmlGetProp(attr_node,(xmlChar *)"wtype");
             if(key)
             {
-                if(0== g_ascii_strncasecmp(key,"COMBO",4))
+                if(0== g_ascii_strncasecmp(key,"ECOMBO",4))
                 {
                     sss->celltype = ECOMBO;
                     gchar **split = g_strsplit(sss->type,".",-1);
@@ -2247,12 +2247,15 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             sss->celltype = OCOMBO;
             ActionID *actid = &sss->value.sactid;
             actid->itemlist = NULL;
-            actid->index = -1;
+            actid->index = 0;
             SaveEntry tmp;
             factory_handle_entry_item(&tmp,fst);
             actid->col = tmp.col;
             actid->row = tmp.row;
+
             actid->maxitem = tmp.col * tmp.row;
+            if(actid->maxitem > 1)
+                sss->celltype = OBTN; /* ÕâÀïÊÇÊý×éÁË,ÐèÒª°´¼ü´´½¨ÐÂ´°¿ÚÀ´ÉèÖÃ */
        }else
        switch(fst->Itype)
        {
@@ -2294,7 +2297,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
        case ST:
            {
                 sss->celltype = UBTN;
-//                sss->isPointer = TRUE; /* ÕâÀïÊÇÒ»¸ö°´¼ü*/
+                sss->isPointer = TRUE; /* ÕâÀïÊÇÒ»¸ö°´¼ü*/
                 SaveUbtn *sbtn = &sss->value.ssubtn;
                 sbtn->structlist = fst->datalist;
                 sbtn->htoflist = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
@@ -2363,6 +2366,8 @@ void factory_read_initial_to_struct(STRUCTClass *fclass) /*2014-3-26 lcy ÍÏÈë¿Ø¼
 //    }
 }
 
+
+
 void
 factory_handle_entry_item(SaveEntry* sey,FactoryStructItem *fst)
 {
@@ -2373,6 +2378,8 @@ factory_handle_entry_item(SaveEntry* sey,FactoryStructItem *fst)
 
 
                 sey->width = g_strtod(&fst->SType[1],NULL) / 8; /* u32,u8, ÕâÀïÈ¡ÀïÃæµÄÊý×Ö*/
+                if(!g_ascii_strncasecmp(fst->SType,"u1",2))
+                    sey->width = 1;
                 sey->row = 1;
                 if(num >= 5)
                 {
@@ -2397,6 +2404,7 @@ factory_handle_entry_item(SaveEntry* sey,FactoryStructItem *fst)
                 }
                 else
                 {
+//                    if(!g_ascii_strncasecmp(fst->SType,"u1",2))
                     if( (sey->row == 1) && (sey->col > 8))
                     {
                         /* 2014-3-31 lcy Ò»Î¬Êý×é»¯³É¶þÎ¬Êý×éÓÃÀ´ÏÔÊ¾*/
@@ -2647,14 +2655,12 @@ structclass_copy(STRUCTClass *structclass)
   return &newstructclass->element.object;
 }
 
-
-static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node)
+static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
 {
-
-     ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
-     xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
+    /* ÕâÀï»áµÝ¹éµ÷ÓÃ */
+       xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
      xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
-    switch(sss->celltype)
+       switch(sss->celltype)
      {
      case ECOMBO:
          xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"COMBO");
@@ -2665,13 +2671,8 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
          {
              xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"ENTRY");
              SaveEntry *sey = &sss->value.sentry;
-             if(sey->isString)
-             {
-             //    xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sey->data.text);
-                 xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sey->data);
-             }
+             xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sey->data);
          }
-//         xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.text);
         break;
     case BBTN:
          {
@@ -2680,7 +2681,7 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
                 gchar *ret ="";
                 while(tlist)
                  {   /* 2014-3-31 lcy °ÑÁ´±íÀïµÄÊý¾ÝÓÃ¶ººÅÁ¬½Ó */
-                     gchar *p = g_strconcat(ret,tlist->data,",",NULL);
+                     gchar *p = g_strconcat(g_strdup(ret),tlist->data,",",NULL);
                      g_free(ret);
                      ret = p;
                      tlist = g_slist_next(tlist);
@@ -2694,47 +2695,64 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
         g_snprintf(buffer, 20, "%d", sss->value.number);
         xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)buffer);
         break;
+     }
+}
+
+
+static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node)
+{
+    switch(sss->celltype)
+     {
+     case ECOMBO:
+     case ENTRY:
+     case BBTN:
+     case SPINBOX:
+         {
+             ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+             factory_base_item_save(sss,ccc);
+         }
+        break;
      case UCOMBO:
          {
-            SaveUnion *suptr = &sss->value.sunion;
-            if(sss->isPointer)
-            {
-                GList *slist = g_hash_table_get_values(suptr->saveVal);
-                for(;slist;slist = slist->next)
-                {
-                    SaveStruct *s = slist->data;
-                    factory_base_struct_save_to_file(s,ccc);
-                }
-            }
-            else
-            {
+                SaveUnion *suptr = &sss->value.sunion;
                 SaveStruct *tsst  =  g_hash_table_lookup(suptr->saveVal,suptr->curkey);
                 if(tsst)
                 {
-                    factory_base_struct_save_to_file(tsst,ccc);
+                    ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_union", NULL);
+                    xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
+
+                    if(tsst->isPointer)
+                    {
+                        xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"UBTN");
+                        factory_base_struct_save_to_file(tsst,ccc);
+                    }
+
+                    else
+                    {
+//                        xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)tsst->type);
+                        factory_base_item_save(tsst,ccc);
+                    }
+
                 }
-            }
          }
         break;
      case UBTN:
         {
-//             SaveUnion *suptr = &sss->value.sunion;
-//            if(sss->isPointer)
-//            {
-//                GList *slist = g_hash_table_get_values(suptr->saveVal);
-//                for(;slist;slist = slist->next)
-//                {
-//                    SaveStruct *s = slist->data;
-//                    factory_base_struct_save_to_file(s,ccc);
-//                }
-//            }
+
             SaveUbtn *sbtn = &sss->value.ssubtn;
             GList *slist = g_hash_table_get_values(sbtn->htoflist);
-            for(;slist;slist = slist->next)
+            if(slist)
             {
-                    SaveStruct *s = slist->data;
-                    factory_base_struct_save_to_file(s,ccc);
+//                ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_union", NULL);
+//                xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
+                for(;slist;slist = slist->next)
+                {
+                        SaveStruct *s = slist->data;
+//                        ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+                        factory_base_struct_save_to_file(s,obj_node);
+                }
             }
+
         }
         break;
      }
@@ -2744,10 +2762,6 @@ static void factory_struct_save_to_xml(gpointer key,gpointer value,gpointer user
 {
     /* 2014-3-27 lcy ÕâÀïÃ¿ÐÐÓëXMLµÄÐÐ¶ÔÓ¦ÓÃ ,²ÉÓÃ¶à¸öÊôÐÔÖµ´æ´¢*/
      SaveStruct *sss = (SaveStruct*)value;
-//     ObjectNode obj_node = (ObjectNode)user_data;
-//     ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
-//     xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
-//     xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
      factory_base_struct_save_to_file(sss,user_data);
 }
 
