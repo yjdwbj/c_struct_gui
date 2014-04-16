@@ -654,8 +654,8 @@ create_tool_actions (void)
   name = NULL;
   cnt++;
 
-  gtk_action_group_add_actions (actions, tool_entries,
-				G_N_ELEMENTS (tool_entries), NULL);
+//  gtk_action_group_add_actions (actions, tool_entries,
+//				G_N_ELEMENTS (tool_entries), NULL);
 
   for (i = 0; i < num_tools; i++) {
     action = gtk_action_group_get_action (actions, tool_data[i].action_name);

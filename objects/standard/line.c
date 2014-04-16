@@ -536,7 +536,7 @@ static void
 line_save(Line *line, ObjectNode obj_node, const char *filename)
 {
 #ifdef DEBUG
-  dia_object_sanity_check((DiaObject*)line, "Saving line");
+//  dia_object_sanity_check((DiaObject*)line, "Saving line");
 #endif
 
   connection_save(&line->connection, obj_node);

@@ -97,10 +97,10 @@ struct _FactoryStructItem{  // ÕâÀï¶¨ÒåÒ»¸ö½á¹¹µÄÃ¿Ò»ÏîĞèÒªÏÔÊ¾µÄ¶«Î÷, Õâ¾ÍÏàµ±Ó
 
 
 /* 2014-3-26 lcy ÕâÀïÓÃ¹şÏ£±íµÄ±éÀúº¯Êı£¬ÔÙ½áºÏ½á¹¹Ìå´«²Î¸ø callback º¯ÊıÀ´Ìí¼Ó¿Ø¼ş£¬Ô­À´ÊÇÓÃÁ´±íÀ´´æ´¢ÏÖÔÚ¸ÄÎª¹şÏ£±í*/
-static void factory_create_obj_from_hashtable(gpointer key,
-                gpointer value,
-                gpointer user_data);
-static void factory_add_sheet_obj(Sheet *sheet,SheetObject *sheet_obj,DiaObjectType *otype,gchar *tmp,gchar *sheet_name);
+//static void factory_create_obj_from_hashtable(gpointer key,
+//                gpointer value,
+//                gpointer user_data);
+//static void factory_add_sheet_obj(Sheet *sheet,SheetObject *sheet_obj,DiaObjectType *otype,gchar *tmp,gchar *sheet_name);
 typedef void (*Factor_callback_fun)(Sheet *sheet,SheetObject *sheet_obj,DiaObjectType *otype,gchar *tmp,gchar *sheet_name);
 typedef struct _FactoryCreateSheets  FactoryCreateSheets;
 struct _FactoryCreateSheets{
@@ -125,8 +125,9 @@ DIAVAR void sheet_append_sheet_obj(Sheet *sheet, SheetObject *type);
 DIAVAR void register_sheet(Sheet *sheet);
 DIAVAR GSList *get_sheets_list(void);
 DIAVAR void factoryReadDataFromFile(const gchar* name);
-DIAVAR void factory_read_native_c_file(const gchar* name);
 static DEFTYPE factory_check_define(gchar *data);
+DIAVAR void factory_read_native_c_file(const gchar* name);
+
 
 DIAVAR void load_all_sheets(void);
 DIAVAR void dia_sort_sheets(void);

@@ -109,8 +109,8 @@ struct _ActionId
     int maxitem;
     int row;
     int col;   /* default is 1 */
-    gchar *pot_name;
-    GList *wlist; /* widget list */
+//    GList *wlist; /* widget list */
+    const GHashTable **vtable; /* key = gchar , values = Gtkwidget */
     GList *itemlist;
 };
 
@@ -181,7 +181,7 @@ typedef struct _SaveStruct{
         SaveUbtn ssubtn;
     }value;
     FactoryStructItem *org;
-    STRUCTClass *sclass;
+    STRUCTClass *sclass; /* 它的最上层的对像 */
 };
 
 /**
@@ -271,7 +271,7 @@ struct _STRUCTClass {
    */
   gboolean isInitial; /* 初始化属性对话框*/
   gboolean destroyed;
-  GList *widgetmap; // 2014-3-22 lcy 这里用一个链表来保存界面上所有的值。
+  GHashTable *widgetmap; // 2014-3-22 lcy 这里用一个链表来保存界面上所有的值。
   FactoryStructItemAll *EnumsAndStructs ;// 2014-3-21 lcy 这里包含一个文件里的所有结构体.
 };
 
@@ -290,6 +290,8 @@ static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc);
 static void
 attributes_list_selection_changed_callback(GtkWidget *gtklist,
 					   STRUCTClass *structclass);
+static void factory_connection_two_object(STRUCTClass *fclass, /* start pointer*/
+                                          gchar *objname /* end pointer */);
 
 extern void structclass_sanity_check(STRUCTClass *c, gchar *msg);
 

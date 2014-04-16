@@ -540,55 +540,55 @@ diagram_update_menu_sensitivity (Diagram *dia)
     gtk_action_set_sensitive (action, focus_active);
 
   /* Objects menu */
-  if ((action = menus_get_action ("ObjectsSendtoback")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active && selected_count > 0);
-  if ((action = menus_get_action ("ObjectsBringtofront")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active && selected_count > 0);
-  if ((action = menus_get_action ("ObjectsSendbackwards")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active && selected_count > 0);
-  if ((action = menus_get_action ("ObjectsBringforwards")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active && selected_count > 0);
-
-  if ((action = menus_get_action ("ObjectsLayerAbove")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active && selected_count > 0);
-  if ((action = menus_get_action ("ObjectsLayerBelow")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active && selected_count > 0);
-
-  if ((action = menus_get_action ("ObjectsGroup")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
-  if ((action = menus_get_action ("ObjectsUngroup")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active && diagram_selected_any_groups (dia));
-  if ((action = menus_get_action ("ObjectsParent")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active && diagram_selected_can_parent (dia));
-  if ((action = menus_get_action ("ObjectsUnparent")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active && diagram_selected_any_children (dia));
-  if ((action = menus_get_action ("ObjectsUnparentchildren")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active && diagram_selected_any_parents (dia));
-
-  if ((action = menus_get_action ("ObjectsProperties")) != NULL)
-    gtk_action_set_sensitive (action, selected_count > 0);
-
-  /* Objects->Align menu */
-  if ((action = menus_get_action ("ObjectsAlignLeft")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
-  if ((action = menus_get_action ("ObjectsAlignCenter")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
-  if ((action = menus_get_action ("ObjectsAlignRight")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
-  if ((action = menus_get_action ("ObjectsAlignSpreadouthorizontally")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
-  if ((action = menus_get_action ("ObjectsAlignAdjacent")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
-  if ((action = menus_get_action ("ObjectsAlignTop")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
-  if ((action = menus_get_action ("ObjectsAlignMiddle")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
-  if ((action = menus_get_action ("ObjectsAlignBottom")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
-  if ((action = menus_get_action ("ObjectsAlignSpreadoutvertically")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
-  if ((action = menus_get_action ("ObjectsAlignStacked")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
+//  if ((action = menus_get_action ("ObjectsSendtoback")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active && selected_count > 0);
+//  if ((action = menus_get_action ("ObjectsBringtofront")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active && selected_count > 0);
+//  if ((action = menus_get_action ("ObjectsSendbackwards")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active && selected_count > 0);
+//  if ((action = menus_get_action ("ObjectsBringforwards")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active && selected_count > 0);
+//
+//  if ((action = menus_get_action ("ObjectsLayerAbove")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active && selected_count > 0);
+//  if ((action = menus_get_action ("ObjectsLayerBelow")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active && selected_count > 0);
+//
+//  if ((action = menus_get_action ("ObjectsGroup")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
+//  if ((action = menus_get_action ("ObjectsUngroup")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active && diagram_selected_any_groups (dia));
+//  if ((action = menus_get_action ("ObjectsParent")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active && diagram_selected_can_parent (dia));
+//  if ((action = menus_get_action ("ObjectsUnparent")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active && diagram_selected_any_children (dia));
+//  if ((action = menus_get_action ("ObjectsUnparentchildren")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active && diagram_selected_any_parents (dia));
+//
+//  if ((action = menus_get_action ("ObjectsProperties")) != NULL)
+//    gtk_action_set_sensitive (action, selected_count > 0);
+//
+//  /* Objects->Align menu */
+//  if ((action = menus_get_action ("ObjectsAlignLeft")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
+//  if ((action = menus_get_action ("ObjectsAlignCenter")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
+//  if ((action = menus_get_action ("ObjectsAlignRight")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
+//  if ((action = menus_get_action ("ObjectsAlignSpreadouthorizontally")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
+//  if ((action = menus_get_action ("ObjectsAlignAdjacent")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
+//  if ((action = menus_get_action ("ObjectsAlignTop")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
+//  if ((action = menus_get_action ("ObjectsAlignMiddle")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
+//  if ((action = menus_get_action ("ObjectsAlignBottom")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
+//  if ((action = menus_get_action ("ObjectsAlignSpreadoutvertically")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
+//  if ((action = menus_get_action ("ObjectsAlignStacked")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
 
   /* Select menu */
   if ((action = menus_get_action ("SelectAll")) != NULL)

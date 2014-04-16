@@ -492,17 +492,16 @@ void factoryReadDataFromFile(const gchar* filename)
                 isStruct = FALSE;
                 fssl->list = dlist;
                 structList.structList = g_list_append(structList.structList,fssl);
-               g_hash_table_insert(structList.structTable,hashKey,(gpointer*)dlist);
+               g_hash_table_insert(structList.structTable,hashKey,dlist);
             }
             else if(isEmnu){
                 isEmnu = FALSE;
-               //allstructlist->enumList = g_list_append(allstructlist->enumList,fsel);
-               g_hash_table_insert(structList.enumTable,hashKey,(gpointer*)enumlist);
+               g_hash_table_insert(structList.enumTable,hashKey,enumlist);
             }
             else if(isUnion)
             {
                 isUnion = FALSE;
-                g_hash_table_insert(structList.unionTable,hashKey,(gpointer*)dlist);
+                g_hash_table_insert(structList.unionTable,hashKey,dlist);
             }
         }
         else if(isEmnu) // 2014-3-19 lcy 读取一个枚举.
@@ -674,9 +673,6 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
 
   /* Notify the user when we load a sheet that appears to be an updated
      version of a sheet loaded previously (i.e. from ~/.dia/sheets). */
-#ifdef DEBUG
-    int n = g_list_length(sheets);
-#endif
 
   sheetp = get_sheets_list();
   while (sheetp)

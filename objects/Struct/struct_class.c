@@ -58,21 +58,21 @@ static ObjectChange* structclass_move_handle(STRUCTClass *structclass, Handle *h
 				 Point *to, ConnectionPoint *cp, HandleMoveReason reason, ModifierKeys modifiers);
 static ObjectChange* structclass_move(STRUCTClass *structclass, Point *to);
 static void structclass_draw(STRUCTClass *structclass, DiaRenderer *renderer);
-static DiaObject *structclass_create(Point *startpoint,
-			       void *user_data,
-			       Handle **handle1,
-			       Handle **handle2);
+//static DiaObject *structclass_create(Point *startpoint,
+//			       void *user_data,
+//			       Handle **handle1,
+//			       Handle **handle2);
 static void structclass_destroy(STRUCTClass *structclass);
 static DiaObject *structclass_copy(STRUCTClass *structclass);
+void factory_handle_entry_item(SaveEntry* sey,FactoryStructItem *fst);
+//static void structclass_save(STRUCTClass *structclass, ObjectNode obj_node,
+//			  const char *filename);
 
-static void structclass_save(STRUCTClass *structclass, ObjectNode obj_node,
-			  const char *filename);
 
 
-
-static DiaObject *structclass_load(ObjectNode obj_node, int version,
-			     const char *filename);
-
+//static DiaObject *structclass_load(ObjectNode obj_node, int version,
+//			     const char *filename);
+void factory_read_initial_to_struct(STRUCTClass *fclass);
 static DiaMenu * structclass_object_menu(DiaObject *obj, Point *p);
 static ObjectChange *structclass_show_comments_callback(DiaObject *obj, Point *pos, gpointer data);
 
@@ -426,7 +426,7 @@ structclass_set_props(STRUCTClass *structclass, GPtrArray *props)
    * the normal connection points are set up.
    */
   DiaObject *obj = &structclass->element.object;
-  GList *list;
+//  GList *list;
   int num;
 
   object_set_props_from_offsets(&structclass->element.object, structclass_offsets,
@@ -887,15 +887,15 @@ static real
 structclass_draw_attributebox(STRUCTClass *structclass, DiaRenderer *renderer, Element *elem, real Yoffset)
 {
   DiaRendererClass *renderer_ops = DIA_RENDERER_GET_CLASS (renderer);
-  real     font_height;
-  real     ascent;
+//  real     font_height;
+//  real     ascent;
   Point    StartPoint;
   Point    LowerRight;
-  DiaFont *font;
+//  DiaFont *font;
   Color   *fill_color = &structclass->fill_color;
   Color   *line_color = &structclass->line_color;
-  Color   *text_color = &structclass->text_color;
-  GList   *list;
+//  Color   *text_color = &structclass->text_color;
+//  GList   *list;
 
   StartPoint.x = elem->corner.x;
   StartPoint.y = Yoffset;
@@ -1192,7 +1192,6 @@ static void
 structclass_draw(STRUCTClass *structclass, DiaRenderer *renderer)
 {
   DiaRendererClass *renderer_ops = DIA_RENDERER_GET_CLASS (renderer);
-  real     y  = 0.0;
   Element *elem;
 
   assert(structclass != NULL);
@@ -1204,7 +1203,7 @@ structclass_draw(STRUCTClass *structclass, DiaRenderer *renderer)
 
   elem = &structclass->element;
 
-  y = structclass_draw_namebox(structclass, renderer, elem);
+  structclass_draw_namebox(structclass, renderer, elem);
 //  if (structclass->visible_attributes) {
 //    y = structclass_draw_attributebox(structclass, renderer, elem, y);
 //  }
@@ -1222,7 +1221,7 @@ structclass_update_data(STRUCTClass *structclass)
   Element *elem = &structclass->element;
   DiaObject *obj = &elem->object;
   real x,y;
-  GList *list;
+//  GList *list;
   int i;
   int pointswide;
   int lowerleftcorner;
@@ -1443,7 +1442,7 @@ static real
 structclass_calculate_name_data(STRUCTClass *structclass)
 {
   real   maxwidth = 0.0;
-  real   width = 0.0;
+//  real   width = 0.0;
   /* name box: */
 
   if (structclass->name != NULL && structclass->name[0] != '\0') {
@@ -1766,8 +1765,8 @@ structclass_calculate_data(STRUCTClass *structclass)
   int    i;
   int    num_templates;
   real   maxwidth = 0.0;
-  real   width;
-  GList *list;
+//  real   width;
+//  GList *list;
 
   if (!structclass->destroyed)
   {
@@ -1925,11 +1924,11 @@ fill_in_fontdata(STRUCTClass *structclass)
  *      handling global STRUCT functionallity at some point.
  */
 
-static void factory_set_name(gpointer key,gpointer value,gpointer user_data)
-{
-    STRUCTClass *structclass = (STRUCTClass *)user_data;
-    structclass->name = (gchar*)key;
-}
+//static void factory_set_name(gpointer key,gpointer value,gpointer user_data)
+//{
+//    STRUCTClass *structclass = (STRUCTClass *)user_data;
+//    structclass->name = (gchar*)key;
+//}
 
 
 //static DiaObject *  // 2014-3-19 lcy 这里初始化结构
@@ -2051,7 +2050,7 @@ factory_struct_items_create(Point *startpoint,
 	       Handle **handle2)
 {
   STRUCTClass *structclass;
-  STRUCTClassDialog *properties_dialog;
+//  STRUCTClassDialog *properties_dialog;
   Element *elem;
   DiaObject *obj;
   int i;
@@ -2137,7 +2136,7 @@ factory_struct_items_create(Point *startpoint,
 void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
 {
     GList *tlist = g_hash_table_lookup(structclass->EnumsAndStructs->structTable,structclass->name);
-    int s = g_list_length(tlist);
+
     if(tlist)
     for(;tlist != NULL ; tlist = tlist->next)
     {
@@ -2151,7 +2150,7 @@ void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
             xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
             if(key)
             {
-                if(0 == g_ascii_strncasecmp(key,fst->Name,strlen(key)))
+                if(0 == g_ascii_strncasecmp((gchar*)key,fst->Name,strlen((gchar*)key)))
                 {
                     sss->name = g_strdup(fst->Name);
                     break;
@@ -2164,14 +2163,14 @@ void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
         {
             xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"type");
             if (key) {
-               sss->type  =  g_locale_to_utf8(key,-1,NULL,NULL,NULL);
+               sss->type  =  g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);
                 xmlFree (key);
             }
 
             key = xmlGetProp(attr_node,(xmlChar *)"wtype");
             if(key)
             {
-                if(0== g_ascii_strncasecmp(key,"ECOMBO",4))
+                if(0== g_ascii_strncasecmp((gchar*)key,"ECOMBO",4))
                 {
                     sss->celltype = ECOMBO;
                     gchar **split = g_strsplit(sss->type,".",-1);
@@ -2185,13 +2184,13 @@ void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
                         sen.enumList = targettable;
                         GList *t  = targettable;
                         key = xmlGetProp(attr_node,(xmlChar *)"value");
-                        if(key)
+                        if((gchar*)key)
                         for(; t != NULL ; t = t->next)
                         {
                             FactoryStructEnum *fse = t->data;
-                            if(0 == g_ascii_strncasecmp(fse->value,key,strlen(key)))
+                            if(0 == g_ascii_strncasecmp(fse->value,(gchar*)key,strlen(key)))
                             {
-                                sen.evalue = g_locale_to_utf8(key,-1,NULL,NULL,NULL);
+                                sen.evalue = g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);
                                 sen.index = g_list_index(targettable,fse);
                                 break;
                             }
@@ -2200,12 +2199,12 @@ void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
                         xmlFree(key);
                         key = xmlGetProp(attr_node,(xmlChar *)"width");
                         if(key)
-                            sen.width = g_locale_to_utf8(key,-1,NULL,NULL,NULL);
+                            sen.width = g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);
                         xmlFree(key);
                     }
 
                 }
-                else if(0== g_ascii_strncasecmp(key,"ENTRY",5))
+                else if(0== g_ascii_strncasecmp((gchar*)key,"ENTRY",5))
                 {
                     key = xmlGetProp(attr_node,(xmlChar *)"value");
 //                    if(key)
@@ -2217,7 +2216,7 @@ void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
                 {
                     key = xmlGetProp(attr_node,(xmlChar *)"value");
                     if(key)
-                        sss->value.number = g_strtod(key,NULL);
+                        sss->value.number = g_strtod((gchar*)key,NULL);
                     xmlFree(key);
                     sss->celltype = SPINBOX;
                 }
@@ -2238,9 +2237,6 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
         sss->name = g_strdup(fst->Name);
         sss->sclass = fst->orgclass;
 
-
-//        gchar **split = g_strsplit(fst->FType,".",-1);
-//        int section = g_strv_length(split);
        /* 2014-3-26 lcy 通过名字去哈希表里找链表*/
        if(!g_ascii_strncasecmp(sss->name,ACTION_ID,ACT_SIZE))
        {
@@ -2255,7 +2251,12 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
 
             actid->maxitem = tmp.col * tmp.row;
             if(actid->maxitem > 1)
+            {
                 sss->celltype = OBTN; /* 这里是数组了,需要按键创建新窗口来设置 */
+                GHashTable *t = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+                actid->vtable = &t;
+            }
+
        }else
        switch(fst->Itype)
        {
@@ -2420,7 +2421,7 @@ factory_handle_entry_item(SaveEntry* sey,FactoryStructItem *fst)
 static void
 structclass_destroy(STRUCTClass *structclass)
 {
-  GList *list;
+//  GList *list;
 //  STRUCTAttribute *attr;
 //  STRUCTOperation *op;
 //  STRUCTFormalParameter *param;
@@ -2684,7 +2685,7 @@ static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
                      gchar *p = g_strconcat(g_strdup(ret),tlist->data,",",NULL);
                      g_free(ret);
                      ret = p;
-                     tlist = g_slist_next(tlist);
+                     tlist = g_list_next(tlist);
                  }
                 xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)ret);
          }
@@ -2774,7 +2775,7 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename 
   DiaObject *obj;
   AttributeNode attr_node;
   int i;
-  GList *list;
+//  GList *list;
 
 
 
@@ -2823,7 +2824,7 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename 
   {
       xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
       if (key) {
-           structclass->name =  g_locale_to_utf8(key,-1,NULL,NULL,NULL);
+           structclass->name =  g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);
             xmlFree (key);
         }
   }
@@ -2859,7 +2860,7 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
 //  STRUCTOperation *op;
 //  STRUCTFormalParameter *formal_param;
   GList *list;
-  AttributeNode attr_node;
+//  AttributeNode attr_node;
 
 
 
@@ -2871,7 +2872,7 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
   /* 2014-3-25 lcy 这里添加一个自定义节点名来安置这个结构体的成员*/
   obj_node = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_struct", NULL);
   xmlSetProp(obj_node, (const xmlChar *)"name", (xmlChar *)structclass->name);
-  int mapsize = g_hash_table_size(structclass->widgetmap);
+//  int mapsize = g_hash_table_size(structclass->widgetmap);
   g_hash_table_foreach(structclass->widgetmap,factory_struct_save_to_xml,(gpointer)obj_node);
 
 }
@@ -3203,10 +3204,10 @@ structclass_sanity_check(STRUCTClass *c, gchar *msg)
   int num_fixed_connections = STRUCTCLASS_CONNECTIONPOINTS;
 #endif
   DiaObject *obj = (DiaObject*)c;
-  GList *attrs;
+//  GList *attrs;
   int i;
 
-  dia_object_sanity_check((DiaObject *)c, msg);
+//  dia_object_sanity_check((DiaObject *)c, msg);
 
   /* Check that num_connections is correct */
   dia_assert_true(num_fixed_connections + structclass_num_dynamic_connectionpoints(c)

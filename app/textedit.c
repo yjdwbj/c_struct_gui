@@ -119,13 +119,13 @@ textedit_exit(DDisplay *ddisp)
  * textedit_enter if necessary.  By return from this function, we will
  * be in textedit mode.
  * @param ddisp The display in use
- * @param focus The text focus to edit 
+ * @param focus The text focus to edit
  */
 static void
 textedit_begin_edit(DDisplay *ddisp, Focus *focus)
 {
   Color *focus_col = color_new_rgb(1.0, 1.0, 0.0);
-  
+
   g_assert(dia_object_is_selected(focus_get_object(focus)));
   if (!textedit_mode(ddisp)) {
     textedit_enter(ddisp);
@@ -145,9 +145,9 @@ textedit_begin_edit(DDisplay *ddisp, Focus *focus)
  * @param focus The text focus to stop editing
  */
 static void
-textedit_end_edit(DDisplay *ddisp, Focus *focus) 
+textedit_end_edit(DDisplay *ddisp, Focus *focus)
 {
-  TextEditChange *change;
+//  TextEditChange *change;
   /* During destruction of the diagram the display may already be gone */
   if (!ddisp)
     return;
@@ -178,10 +178,10 @@ textedit_move_focus(DDisplay *ddisp, Focus *focus, gboolean forwards)
   }
   if (forwards) {
     Focus *new_focus = focus_next_on_diagram((DiagramData *) ddisp->diagram);
-    if (new_focus != NULL) give_focus(new_focus);    
+    if (new_focus != NULL) give_focus(new_focus);
   } else {
     Focus *new_focus = focus_previous_on_diagram((DiagramData *) ddisp->diagram);
-    if (new_focus != NULL) give_focus(new_focus);    
+    if (new_focus != NULL) give_focus(new_focus);
   }
   focus = get_active_focus((DiagramData *) ddisp->diagram);
 
@@ -227,7 +227,7 @@ textedit_activate_object(DDisplay *ddisp, DiaObject *obj, Point *clicked)
     if (focus != NULL) {
       textedit_end_edit(ddisp, focus);
     }
-    give_focus(new_focus); 
+    give_focus(new_focus);
     if (clicked) {
       text_set_cursor((Text*)new_focus->user_data, clicked, ddisp->renderer);
     }
@@ -263,7 +263,7 @@ textedit_activate_first(DDisplay *ddisp)
   }
   g_list_free (selected);
   if (new_focus != NULL) {
-    give_focus(new_focus); 
+    give_focus(new_focus);
     textedit_begin_edit(ddisp, new_focus);
     diagram_flush(ddisp->diagram);
   } else {
@@ -298,7 +298,7 @@ textedit_deactivate_focus(void)
 void
 textedit_remove_focus(DiaObject *obj, Diagram *diagram)
 {
-  Focus *old_focus = get_active_focus((DiagramData *) diagram);
+//  Focus *old_focus = get_active_focus((DiagramData *) diagram);
   if (remove_focus_object(obj)) {
     /* TODO: make sure the focus is deactivated */
   }
@@ -368,7 +368,7 @@ static Change *
 text_edit_create_change(Text *text)
 {
   TextEditChange *change;
-  
+
   change = g_new0(TextEditChange, 1);
 
   change->obj_change.apply = (UndoApplyFunc) text_edit_apply;

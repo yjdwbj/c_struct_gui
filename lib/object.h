@@ -515,7 +515,7 @@ struct _DiaObject {
   Rectangle         enclosing_box;
   /** Metainfo of the object, should not be manipulated directy */
   GHashTable       *meta;
-  gchar *name /* 2014-4-2 lcy 加一个名字做调试 */
+  gchar *name; /* 2014-4-2 lcy 加一个名字做调试 */
 };
 
 /*!
