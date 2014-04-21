@@ -106,14 +106,20 @@ typedef struct _ActionId ActionID;
 struct _ActionId
 {
     int index; // comobox index
+    gchar *pre_name;
     int maxitem;
     int row;
     int col;   /* default is 1 */
-//    GList *wlist; /* widget list */
-    const GHashTable **vtable; /* key = gchar , values = Gtkwidget */
+    GList *wlist; /* widget list */
     GList *itemlist;
 };
 
+typedef struct _CheckSave CheckSave;
+struct _CheckSave
+{
+    gchar *ObjName;
+    gboolean isChecked;
+};
 
 
 typedef struct _SaveEnum SaveEnum;
@@ -292,6 +298,9 @@ attributes_list_selection_changed_callback(GtkWidget *gtklist,
 					   STRUCTClass *structclass);
 static void factory_connection_two_object(STRUCTClass *fclass, /* start pointer*/
                                           gchar *objname /* end pointer */);
+static void factory_delete_connection(STRUCTClass *fclass, /* start pointer*/
+                                          gchar *objname /* end pointer */);
+
 
 extern void structclass_sanity_check(STRUCTClass *c, gchar *msg);
 
@@ -305,13 +314,17 @@ factory_get_properties(STRUCTClass *structclass, gboolean is_default);
 
 GtkWidget *factory_create_many_entry_box(SaveStruct *sss);
 GtkWidget *factory_create_many_checkbox(SaveStruct *sss);
-void factoy_create_subdialog(GtkButton *buttun,SaveStruct *sss);
+void factoy_create_subdialog(GtkWidget *buttun,SaveStruct *sss);
 static void factory_create_subdialg_by_list(gpointer *item,SaveStruct *sst);
 static void factory_create_checkbuttons_by_list(gpointer *item,SaveStruct *sst);
 static void factory_strjoin(const gchar **dst,const gchar *prefix,const gchar *sep);
 void factoy_changed_item(gpointer *item,gpointer user_data);
+STRUCTClass *factory_find_diaobject_by_name(Layer *curlayer,const gchar *name);
+DiaObject *factory_find_same_diaobject_via_glist(GList *flist,GList *comprelist);
 
 void factory_create_and_fill_dialog(STRUCTClass *structclass, gboolean is_default);
+
+gboolean factory_is_connected(ConnectionPoint *cpend,ConnectionPoint *cpstart);
 
 
 gchar* factory_entry_check(gchar* str);

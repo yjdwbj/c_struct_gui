@@ -152,6 +152,7 @@ static ObjectChange *new_structclass_change(STRUCTClass *obj, STRUCTClassState *
         GList *disconnected);
 static  const gchar *get_comment(GtkTextView *);
 static void set_comment(GtkTextView *, gchar *);
+void factory_save_value_from_widget(SaveStruct *sss);
 
 /**** Utility functions ******/
 //static void
@@ -2984,8 +2985,6 @@ destroy_properties_dialog (GtkWidget* widget,
 }
 
 
-
-
 /* 2014-3-26 lcy 这里查找含有这个关键字的链表节点*/
 gpointer factory_find_list_node(GList *list,gchar *data)
 {
@@ -3031,9 +3030,66 @@ static void factory_connectionto_object(DDisplay *ddisp,DiaObject *obj,STRUCTCla
 
 }
 
+DiaObject *factory_find_same_diaobject_via_glist(GList *flist,GList *comprelist)
+{
+    GList *samelist = NULL; // 找出相同的一个连接线对像
+    DiaObject *obj = NULL;
+    for(; flist; flist = flist->next)
+    {
+        samelist = g_list_find(comprelist,flist->data);
+        if(samelist)
+        {
+            obj = samelist->data;
+            break;
+        }
+
+    }
+    return obj;
+}
+
+
+static void factory_delete_connection(STRUCTClass *fclass, /* start pointer*/
+                                      gchar *objname /* end pointer */)
+{
+    Layer *curlayer = fclass->element.object.parent_layer;
+    GList *objlist = curlayer->objects;
+    STRUCTClass *objclass = factory_find_diaobject_by_name(curlayer,objname);
+    if(objclass)
+    {
+        DDisplay *ddisp = ddisplay_active();
+        Diagram *diagram;
+
+        diagram = ddisp->diagram;
+        ConnectionPoint *cpstart = &fclass->connections[8];
+        ConnectionPoint *cpend = &objclass->connections[8];
+        DiaObject *obj =  factory_find_same_diaobject_via_glist(cpend->connected,cpstart->connected);
+        if(obj)
+        {
+            diagram_select(diagram,obj);
+            cpstart->connected  = g_list_remove(cpstart->connected,obj); /* 删掉对方链表里的对像.*/
+            cpend->connected = g_list_remove(cpend->connected,obj);
+            g_list_free(obj->connections[0]->connected);
+            obj->connections[0]->connected = NULL;
+            obj->connections[0]->object = NULL;
+            layer_remove_object(curlayer,obj); // 在当前的画布里面删除连线对像.
+            diagram_flush(diagram);
+        }
+    }
+}
+
+
+
+
 static void factory_connection_two_object(STRUCTClass *fclass, /* start pointer*/
         gchar *objname /* end pointer */)
 {
+    Layer *curlayer = fclass->element.object.parent_layer;
+    STRUCTClass *objclass = factory_find_diaobject_by_name(curlayer,objname);
+    if(!objclass)
+        return;
+    if(factory_is_connected(&objclass->connections[8],&fclass->connections[8])) /* 已经有连线了 */
+        return;
+
     DDisplay *ddisp = ddisplay_active();
     int x =0,y=0;
     x = fclass->connections[8].pos.x;
@@ -3045,19 +3101,9 @@ static void factory_connection_two_object(STRUCTClass *fclass, /* start pointer*
 
     factory_connectionto_object(ddisp,obj,fclass,0);
 
-
-    Layer *curlayer = fclass->element.object.parent_layer;
-    GList *objlist = curlayer->objects;
-    for(; objlist ; objlist =  objlist->next )
+    if(objclass)
     {
-        STRUCTClass *objclass = objlist->data;
-        /* 2014-4-4 lcy 这里一定要检查不对像type */
-        if( (objclass->element.object.type == object_get_type("STRUCT - Class")) &&
-                !g_ascii_strncasecmp(objclass->name,objname,strlen(objname)))
-        {
-            factory_connectionto_object(ddisp,obj,objclass,1);
-            break;
-        }
+        factory_connectionto_object(ddisp,obj,objclass,1);
     }
     diagram_select(ddisp->diagram,obj);
 }
@@ -3069,7 +3115,7 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
     switch(sss->celltype)
     {
     case ECOMBO:
-        if(gtk_container_child_type(sss->widget2) != GTK_TYPE_NONE)
+        if(gtk_container_child_type(GTK_CONTAINER(sss->widget2)) != GTK_TYPE_NONE)
         {
             GList *p = gtk_container_children(GTK_CONTAINER(sss->widget2));
             if(p)
@@ -3100,8 +3146,41 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
     case OCOMBO:
     {
         ActionID *aid = &sss->value.sactid;
+        gchar *pname = gtk_combo_box_get_active_text(GTK_COMBO_BOX(sss->widget2));
+        if(!g_ascii_strncasecmp(pname,fclass->name,strlen(pname)))
+            return;
+
+        if( aid->pre_name)
+        {
+            if(!g_ascii_strncasecmp(pname,aid->pre_name,strlen(pname))) /*  没有更改就返回 */
+            return;
+
+            DDisplay *ddisp =  ddisplay_active();
+            Layer *curlayer = fclass->element.object.parent_layer;
+            STRUCTClass *objclass = factory_find_diaobject_by_name(curlayer,aid->pre_name);
+            if(objclass)
+            {
+                ConnectionPoint *cpstart = &fclass->connections[8];
+                ConnectionPoint *cpend = &objclass->connections[8];
+                DiaObject *line =  factory_find_same_diaobject_via_glist(cpend->connected,cpstart->connected);
+                if(line && factory_is_connected(cpend,cpstart))
+                {
+                    /* 上次的连线,到此要删掉它,重新连线 */
+                    diagram_select(ddisp->diagram,line);
+                    cpstart->connected  = g_list_remove(cpstart->connected,line); /* 删掉对方链表里的对像.*/
+                    cpend->connected = g_list_remove(cpend->connected,line);
+                    g_list_free(line->connections[0]->connected);
+                    line->connections[0]->connected = NULL;
+                    line->connections[0]->object = NULL;
+                    layer_remove_object(curlayer,line); // 在当前的画布里面删除连线对像.
+                    diagram_flush(ddisp->diagram);
+                }
+
+            }
+        }
         /* 2014-4-3 lcy 找里下拉框里名字的对像 */
-        gchar *pname = gtk_combo_box_get_active_text(sss->widget2);
+
+        aid->pre_name = pname;
         factory_connection_two_object(fclass,pname);
         /* 2014-4-3 lcy  在指定位置创建一条线的标准控件, 线条是标准控件,这里调用drop 回调函数 */
     }
@@ -3229,7 +3308,7 @@ factory_get_properties(STRUCTClass *fclass, gboolean is_default)
 
     STRUCTClassDialog *prop_dialog;
     GtkWidget *vbox;
-    GtkTable *mainTable;
+//    GtkTable *mainTable;
     if (fclass->properties_dialog == NULL)
     {
         prop_dialog = g_new(STRUCTClassDialog, 1);
@@ -3289,12 +3368,12 @@ GtkWidget *factory_create_spbinbox_widget(gint value,gint minvalue,gint maxvalue
 GtkWidget *factory_create_enum_widget(GList *list,int index)
 {
     GtkWidget *columTwo = NULL;
-    GSList *datalist = NULL;
+    GList *datalist = NULL;
     GList *p = list;
     for(; p != NULL ; p= p->next)
     {
         FactoryStructEnum *kvmap = p->data;
-        datalist = g_slist_append(datalist,kvmap->key);
+        datalist = g_list_append(datalist,kvmap->key);
     }
     columTwo =  factory_create_combo_widget(datalist,index);
 
@@ -3360,7 +3439,7 @@ static GtkWidget *factory_create_variant_object(SaveStruct *sss)
             gtk_combo_box_append_text(GTK_COMBO_BOX(suptr->comobox),data->Name);
         }
         gtk_combo_box_set_active(GTK_COMBO_BOX(suptr->comobox),suptr->index);
-        gtk_box_pack_start_defaults(GTK_VBOX(columTwo),suptr->comobox);
+        gtk_box_pack_start_defaults(GTK_BOX(columTwo),suptr->comobox);
         SaveStruct *tsst = NULL;
         suptr->curkey = g_strjoin("##",nextobj->FType,nextobj->Name,NULL);
         suptr->curtext = g_strdup(nextobj->Name);
@@ -3406,9 +3485,16 @@ FIRST:
         Layer *curlayer = orgclass->element.object.parent_layer;
         GList *objlist = curlayer->objects;
         g_list_free(sactionid->itemlist);
+        sactionid->itemlist = NULL;
         for(; objlist ; objlist =  objlist->next )
         {
+            if(factory_is_valid_type(objlist->data))
+                continue;
+
             STRUCTClass *objclass = objlist->data;
+//            if(sactionid->pre_name && !g_ascii_strncasecmp(objclass->name,sactionid->pre_name,
+//                                                           strlen(sactionid->pre_name)))
+//                continue;/* 把上一次连接过的名字清掉 */
             sactionid->itemlist = g_list_append(sactionid->itemlist,objclass->name);
         }
 
@@ -3429,6 +3515,14 @@ FIRST:
     return columTwo;
 }
 
+gboolean factory_is_valid_type(gpointer data)
+{
+      DiaObject *otype = (DiaObject *)data;
+      char *n1 = g_strdup("STRUCT - Class");
+      gboolean ftype = g_ascii_strncasecmp(otype->type->name,n1,strlen(n1));
+      g_free(n1);
+      return ftype;
+}
 static void factory_set_savestruct_widgets(SaveStruct *sss)
 {
     GtkWidget *Name ;
@@ -3471,30 +3565,43 @@ static void factory_draw_many_lines_dialog(GtkWidget *widget,
 {
     SaveStruct *sst = (SaveStruct *)user_data;
     ActionID *aid = &sst->value.sactid;
-    GList *wlist = g_hash_table_get_values(*aid->vtable);
+    GList *wlist = aid->wlist;
     if (   response_id == GTK_RESPONSE_APPLY
             || response_id == GTK_RESPONSE_OK)
     {
         /* 保存整个结构 */
+
+        GList *newvlist = NULL;
         for(; wlist; wlist = wlist->next)
         {
             GtkWidget *chkbtn = wlist->data; /* 检查那些对像被选上了,逐个保存 */
-            if(gtk_toggle_button_get_active(chkbtn))
-            {
-                gchar *objname = gtk_button_get_label(GTK_BUTTON(chkbtn));
-                factory_connection_two_object(sst->sclass,objname);
-            }
+            gboolean curbool = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkbtn));
+            gchar *objname = gtk_button_get_label(GTK_BUTTON(chkbtn));
+            if(!g_ascii_strncasecmp(sst->sclass->name,objname,strlen(objname)))
+                continue; /* 这里显示如果本对像没有选上,就跳过,如果按下面流程就会删除一条连线,调试很难发现 */
+            /* 画连接线 */
 
+
+
+
+
+            curbool ? factory_connection_two_object(sst->sclass,objname) :
+            /* 删除连接线 */
+            factory_delete_connection(sst->sclass,objname);
+
+            g_free(objname);
         }
-
     }
     gtk_widget_hide_all(widget);
 
-   wlist = g_hash_table_get_values(*aid->vtable);
-    for(;wlist;wlist = wlist->next)
+    wlist = aid->wlist;
+    for(; wlist; wlist = wlist->next)
     {
         gtk_container_remove(GTK_CONTAINER(widget),wlist->data);
+
     }
+    g_list_free(aid->wlist);
+    aid->wlist = NULL;
 }
 
 
@@ -3673,16 +3780,16 @@ void factoy_changed_item(gpointer *widget,gpointer user_data)
         GtkWidget *rwidget = wlist->data;
         if(rwidget != suptr->comobox)
         {
-            gtk_container_remove(suptr->vbox,rwidget);
+            gtk_container_remove(GTK_CONTAINER(suptr->vbox),rwidget);
             gtk_widget_destroy (rwidget);
         }
     }
 
 
-    gchar *text = gtk_combo_box_get_active_text(widget);
+    gchar *text = gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget));
     suptr->curtext = g_strdup(text);
     g_free(text);
-    suptr->index = gtk_combo_box_get_active(widget);
+    suptr->index = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
     // GList *t = sss->value.senum.enumList;
 
 
@@ -3716,8 +3823,8 @@ CFIRST:
 
         activeWidget = factory_create_variant_object(existS);
 //            suptr->widgetlist = g_list_append(suptr->widgetlist,activeWidget);
-        gtk_box_pack_start_defaults(GTK_VBOX(suptr->vbox),activeWidget);
-        gtk_container_resize_children (GTK_VBOX(suptr->vbox));
+        gtk_box_pack_start_defaults(GTK_BOX(suptr->vbox),activeWidget);
+        gtk_container_resize_children (GTK_BOX(suptr->vbox));
     }
 
     gtk_widget_show_all(suptr->vbox);
@@ -3735,7 +3842,7 @@ static void factory_strjoin(const gchar **dst,const gchar *prefix,const gchar *s
 
 
 /* 这里数组显示  */
-void factoy_create_subdialog(GtkButton *buttun,SaveStruct *sss)
+void factoy_create_subdialog(GtkWidget *buttun,SaveStruct *sss)
 {
     GtkWidget *parent = gtk_widget_get_ancestor(buttun,GTK_TYPE_WINDOW);
     GtkWidget*  subdig = gtk_dialog_new_with_buttons(
@@ -3754,12 +3861,12 @@ void factoy_create_subdialog(GtkButton *buttun,SaveStruct *sss)
     gtk_window_present (subdig);
     if(!g_ascii_strncasecmp(sss->type,"u1",8))
     {
-        gtk_box_pack_start(GTK_VBOX(dialog_vbox),factory_create_many_checkbox(sss),FALSE,FALSE,0);
+        gtk_box_pack_start(GTK_BOX(dialog_vbox),factory_create_many_checkbox(sss),FALSE,FALSE,0);
         g_signal_connect(G_OBJECT (subdig), "response",G_CALLBACK (factory_subdig_checkbtns_respond), &sss->value.sentry);
     }
     else
     {
-        gtk_box_pack_start(GTK_VBOX(dialog_vbox),factory_create_many_entry_box(sss),FALSE,FALSE,0);
+        gtk_box_pack_start(GTK_BOX(dialog_vbox),factory_create_many_entry_box(sss),FALSE,FALSE,0);
         g_signal_connect(G_OBJECT (subdig), "response",G_CALLBACK (factory_subdig_respond), &sss->value.sentry);
     }
 
@@ -3789,7 +3896,7 @@ static void factory_create_selectall_and_reverse(GtkWidget *parent,GtkWidget **s
 static void factory_handle_select_all(GtkWidget *widget,GList *user_data)
 {
     GList *wlist = user_data;
-    for(;wlist;wlist = wlist->next)
+    for(; wlist; wlist = wlist->next)
     {
         gtk_toggle_button_set_active(wlist->data,TRUE);
     }
@@ -3797,12 +3904,45 @@ static void factory_handle_select_all(GtkWidget *widget,GList *user_data)
 
 static void factory_handle_reverse_select(GtkWidget *widget,GList *user_data)
 {
-      GList *wlist = user_data;
-    for(;wlist;wlist = wlist->next)
+    GList *wlist = user_data;
+    for(; wlist; wlist = wlist->next)
     {
         gboolean  b= gtk_toggle_button_get_active(wlist->data);
         gtk_toggle_button_set_active(wlist->data,!b);
     }
+}
+
+
+STRUCTClass *factory_find_diaobject_by_name(Layer *curlayer,const gchar *name)
+{
+    /* 通过名字在画布上找对像 */
+    GList *objlist = curlayer->objects;
+    STRUCTClass *objclass = NULL;
+    for(; objlist ; objlist =  objlist->next )
+    {
+        if(factory_is_valid_type(objlist->data))
+            continue;
+        objclass = objlist->data;
+        if(!g_ascii_strncasecmp(objclass->name,name,strlen(name)))
+        {
+            break;
+        }
+
+    }
+    return objclass;
+}
+
+gboolean factory_is_connected(ConnectionPoint *cpend,ConnectionPoint *cpstart)
+{
+    gboolean isconnected = FALSE;
+    DiaObject *obj = factory_find_same_diaobject_via_glist(cpend->connected,cpstart->connected);
+    if(obj)
+    {
+        if((obj->handles[0]->connected_to == cpstart) &&
+                (obj->handles[1]->connected_to == cpend))
+            isconnected = TRUE;
+    }
+    return isconnected;
 }
 
 
@@ -3827,8 +3967,8 @@ static void factory_create_checkbuttons_by_list(gpointer *item,SaveStruct *sst)
 
     gtk_window_set_resizable (subdig,FALSE);
     gtk_window_set_position (subdig,GTK_WIN_POS_MOUSE);
-    gtk_window_present (subdig);
-    GtkHBox *hbox = gtk_hbox_new(FALSE,0);
+    gtk_window_present(GTK_WINDOW(subdig));
+    GtkWidget *hbox = gtk_hbox_new(FALSE,0);
     gtk_box_pack_start(GTK_BOX(sdialog),hbox,FALSE,FALSE,0);
     if(!aid->itemlist)
     {
@@ -3838,55 +3978,58 @@ static void factory_create_checkbuttons_by_list(gpointer *item,SaveStruct *sst)
         GList *objlist = curlayer->objects;
         for(; objlist ; objlist =  objlist->next )
         {
-            STRUCTClass *objclass = objlist->data;
-            if(objclass->element.object.type == object_get_type("STRUCT - Class"))
-                aid->itemlist = g_list_append(aid->itemlist,objclass->name);
+            if(factory_is_valid_type(objlist->data))
+                continue;
+            STRUCTClass* objclass = objlist->data;
+            aid->itemlist = g_list_append(aid->itemlist,objclass->name);
         }
     }
 
     int n = 0;
     GList *ilist = aid->itemlist;
-    GHashTable *otable = *aid->vtable;
-    GHashTable *newtable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+
     for(; ilist; ilist = ilist->next,n++)
     {
         gchar *key = ilist->data;
-        GtkWidget *w1 = NULL;
-        if(g_hash_table_size(otable))
-            w1 = g_hash_table_lookup(otable,key);
-
-        if(!w1)
+        GtkWidget *wid = gtk_check_button_new_with_label(key);
+        STRUCTClass *orgclass = sst->sclass;
+        Layer *curlayer = orgclass->element.object.parent_layer;
+        STRUCTClass *endclass =  factory_find_diaobject_by_name(curlayer,key);
+        if(endclass)
         {
-            w1 = gtk_check_button_new_with_label(key);
+            ConnectionPoint *cpstart = &orgclass->connections[8];
+            ConnectionPoint *cpend = &endclass->connections[8];
+            gboolean isConected = factory_is_connected(cpend,cpstart);
+            gtk_toggle_button_set_active(wid,isConected);
         }
 
-        g_hash_table_insert(newtable,g_strdup(key), w1);
         if( n &&  !(n % 2) )
         {
             hbox = gtk_hbox_new(FALSE,0);
             gtk_box_pack_start(GTK_BOX(sdialog),hbox,FALSE,FALSE,0);
-            gtk_box_pack_start(GTK_BOX(hbox),w1,FALSE,FALSE,0);
+            gtk_box_pack_start(GTK_BOX(hbox),wid,FALSE,FALSE,0);
         }
         else
-            gtk_box_pack_start(GTK_BOX(hbox),w1,FALSE,FALSE,0);
+            gtk_box_pack_start(GTK_BOX(hbox),wid,FALSE,FALSE,0);
+
+        aid->wlist = g_list_append(aid->wlist,wid);
     }
 
-    aid->vtable = &newtable;
-
     g_list_free(aid->itemlist);
-    GList *wlist = g_hash_table_get_values(otable);
+    aid->itemlist = NULL;
+
     GtkWidget *sall = NULL;
     GtkWidget *rall = NULL;
     factory_create_selectall_and_reverse(sdialog,&sall,&rall);
-    g_signal_connect(G_OBJECT (sall), "clicked",G_CALLBACK (factory_handle_select_all), wlist);
-    g_signal_connect(G_OBJECT (rall), "clicked",G_CALLBACK (factory_handle_reverse_select), wlist);
+    g_signal_connect(G_OBJECT (sall), "clicked",G_CALLBACK (factory_handle_select_all), aid->wlist);
+    g_signal_connect(G_OBJECT (rall), "clicked",G_CALLBACK (factory_handle_reverse_select), aid->wlist);
 
     g_signal_connect(G_OBJECT (subdig), "response",
                      G_CALLBACK (factory_draw_many_lines_dialog), sst); /* 保存关闭 */
     g_signal_connect(G_OBJECT (subdig), "destroy",
                      G_CALLBACK(gtk_widget_destroyed), &subdig);
     g_signal_connect(G_OBJECT (sdialog), "destroy",
-		   G_CALLBACK(gtk_widget_destroyed),&dialog_vbox);
+                     G_CALLBACK(gtk_widget_destroyed),&dialog_vbox);
     gtk_widget_show_all(subdig);
 }
 
@@ -3978,7 +4121,7 @@ GtkWidget *factory_create_many_checkbox(SaveStruct *sss)
 //        col = col / row;
 //    }
     int r = 0 ;
-    GtkVBox *vbox  = gtk_vbox_new(FALSE,0);
+    GtkWidget *vbox  = gtk_vbox_new(FALSE,0);
     gtk_tooltips_set_tip(tips,vbox,sss->org->Comment,NULL);
     gtk_container_set_border_width (GTK_CONTAINER (vbox), 1);
     for(; r < row ; r++)
@@ -3989,13 +4132,13 @@ GtkWidget *factory_create_many_checkbox(SaveStruct *sss)
         for(; c < col ; c++)
         {
             GtkCheckButton *checkbtn = gtk_check_button_new_with_label(g_strdup_printf("p%d",7-c));
-            gtk_box_pack_start(GTK_BOX(hbox),checkbtn,TRUE,TRUE,1);
+            gtk_box_pack_start(GTK_BOX(hbox),GTK_WIDGET(checkbtn),TRUE,TRUE,1);
             wlist = g_list_append(wlist,checkbtn);
         }
 
     }
     sey->wlist = wlist;
-    return (GtkWidget *)vbox;
+    return vbox;
 }
 
 GtkWidget *factory_create_many_entry_box(SaveStruct *sss)
@@ -4043,10 +4186,10 @@ GtkWidget *factory_create_many_entry_box(SaveStruct *sss)
             g_signal_connect(entry, "insert_text", G_CALLBACK(factory_editable_insert_callback), NULL);
             g_signal_connect(GTK_OBJECT(entry), "enter_notify_event", G_CALLBACK(factory_editable_active_callback), NULL);
             g_signal_connect(GTK_OBJECT(entry), "selection_notify_event", G_CALLBACK(factory_editable_active_callback), NULL);
-            gtk_box_pack_start(GTK_HBOX(hbox),entry,FALSE,FALSE,0);
+            gtk_box_pack_start(GTK_BOX(hbox),entry,FALSE,FALSE,0);
             wlist = g_list_append(wlist,entry);
         }
-        gtk_box_pack_start(GTK_VBOX(vbox),hbox,FALSE,FALSE,0);
+        gtk_box_pack_start(GTK_BOX(vbox),hbox,FALSE,FALSE,0);
     }
     sey->wlist = wlist;
     return (GtkWidget *)vbox;
@@ -4219,7 +4362,7 @@ void factory_create_and_fill_dialog(STRUCTClass *fclass, gboolean is_default)
 static void
 structclass_free_state(STRUCTClassState *state)
 {
-    GList *list;
+//    GList *list;
 
     g_object_unref (state->normal_font);
 //  g_object_unref (state->abstract_font);
@@ -4258,7 +4401,7 @@ static STRUCTClassState *
 structclass_get_state(STRUCTClass *structclass)
 {
     STRUCTClassState *state = g_new0(STRUCTClassState, 1);
-    GList *list;
+//    GList *list;
 
     state->font_height = structclass->font_height;
     state->abstract_font_height = structclass->abstract_font_height;
@@ -4346,7 +4489,7 @@ static STRUCTClassState *
 factory_get_state(STRUCTClass *structclass)
 {
     STRUCTClassState *state = g_new0(STRUCTClassState, 1);
-    GList *list;
+//    GList *list;
 
     state->font_height = structclass->font_height;
     state->abstract_font_height = structclass->abstract_font_height;
@@ -4377,7 +4520,7 @@ structclass_update_connectionpoints(STRUCTClass *structclass)
 {
     int num_attrib, num_ops;
     DiaObject *obj;
-    GList *list;
+//    GList *list;
     int connection_index;
     STRUCTClassDialog *prop_dialog;
 
@@ -4508,7 +4651,7 @@ static void
 structclass_change_apply(STRUCTClassChange *change, DiaObject *obj)
 {
     STRUCTClassState *old_state;
-    GList *list;
+//    GList *list;
 
     old_state = structclass_get_state(change->obj);
 
@@ -4531,7 +4674,7 @@ static void
 factory_change_apply(STRUCTClassChange *change, DiaObject *obj)
 {
     STRUCTClassState *old_state;
-    GList *list;
+//    GList *list;
 
     old_state = structclass_get_state(change->obj);
 
@@ -4555,7 +4698,7 @@ static void
 factory_change_revert(STRUCTClassChange *change, DiaObject *obj)
 {
     STRUCTClassState *old_state;
-    GList *list;
+//    GList *list;
 
     old_state = structclass_get_state(change->obj);
 
@@ -4577,7 +4720,7 @@ factory_change_revert(STRUCTClassChange *change, DiaObject *obj)
 static void
 factory_change_free(STRUCTClassChange *change)
 {
-    GList *list, *free_list;
+//    GList *list, *free_list;
 
     structclass_free_state(change->saved_state);
     g_free(change->saved_state);

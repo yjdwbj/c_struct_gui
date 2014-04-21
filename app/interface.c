@@ -203,12 +203,12 @@ ToolButton tool_data[] =
 //    "ToolsBeziergon",
 //    { CREATE_OBJECT_TOOL, "Standard - Beziergon", NULL }
 //  },
-  { NULL,
-    N_("Line"),
-    "L",
-    "ToolsLine",
-    { CREATE_OBJECT_TOOL, "Standard - Line", NULL }
-  },
+//  { NULL,
+//    N_("Line"),
+//    "L",
+//    "ToolsLine",
+//    { CREATE_OBJECT_TOOL, "Standard - Line", NULL }
+//  },
 //  { NULL,
 //    N_("Arc"),
 //    "A",

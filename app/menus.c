@@ -116,93 +116,93 @@ static const GtkActionEntry display_entries[] =
     { "FileSave", GTK_STOCK_SAVE, NULL, "<control>S", NULL, G_CALLBACK (file_save_callback) },
     { "FileSaveas", GTK_STOCK_SAVE_AS, NULL, "<control><shift>S", NULL, G_CALLBACK (file_save_as_callback) },
     { "FileExport", GTK_STOCK_CONVERT, N_("_Export ..."), NULL, NULL, G_CALLBACK (file_export_callback) },
-    { "DiagramProperties", GTK_STOCK_PROPERTIES, N_("_Diagram Properties"), "<shift><alt>Return", NULL, G_CALLBACK (view_diagram_properties_callback) },
-    { "FilePagesetup", NULL, N_("Page Set_up..."), NULL, NULL, G_CALLBACK (file_pagesetup_callback) },
+//    { "DiagramProperties", GTK_STOCK_PROPERTIES, N_("_Diagram Properties"), "<shift><alt>Return", NULL,G_CALLBACK (view_diagram_properties_callback)},
+//    { "FilePagesetup", NULL, N_("Page Set_up..."), NULL, NULL, G_CALLBACK (file_pagesetup_callback) },
     { "FilePrint", GTK_STOCK_PRINT, NULL, "<control>P", NULL, G_CALLBACK (file_print_callback) },
     { "FileClose", GTK_STOCK_CLOSE, NULL, "<control>W", NULL, G_CALLBACK (file_close_callback) },
 
-  { "Edit", NULL, N_("_Edit"), NULL, NULL, NULL },
-     /* lcy 关闭撤消与重*/
-    { "EditUndo", GTK_STOCK_UNDO, NULL, "<control>Z", NULL, NULL },
-   /* { "EditUndo", GTK_STOCK_UNDO, NULL, "<control>Z", NULL, G_CALLBACK (edit_undo_callback) },*/
-    { "EditRedo", GTK_STOCK_REDO, NULL, "<control><shift>Z", NULL, NULL },
+//  { "Edit", NULL, N_("_Edit"), NULL, NULL, NULL },
+//     /* lcy 关闭撤消与重*/
+//    { "EditUndo", GTK_STOCK_UNDO, NULL, "<control>Z", NULL, NULL },
+//   /* { "EditUndo", GTK_STOCK_UNDO, NULL, "<control>Z", NULL, G_CALLBACK (edit_undo_callback) },*/
+//    { "EditRedo", GTK_STOCK_REDO, NULL, "<control><shift>Z", NULL, NULL },
+//
+//    { "EditCopy", GTK_STOCK_COPY, NULL, "<control>C", NULL, G_CALLBACK (edit_copy_callback) },
+//    { "EditCut", GTK_STOCK_CUT, NULL, "<control>X", NULL, G_CALLBACK (edit_cut_callback) },
+//    { "EditPaste", GTK_STOCK_PASTE, NULL, "<control>V", NULL, G_CALLBACK (edit_paste_callback) },
+//    { "EditDuplicate", NULL, N_("_Duplicate"), "<control>D", NULL, G_CALLBACK (edit_duplicate_callback) },
+//    { "EditDelete", GTK_STOCK_DELETE, NULL, "Delete", NULL, G_CALLBACK (edit_delete_callback) },
+//
+//    { "EditFind", GTK_STOCK_FIND, NULL, "<control>F", NULL, G_CALLBACK (edit_find_callback) },
+//    { "EditReplace", GTK_STOCK_FIND_AND_REPLACE, NULL, "<control>H", NULL, G_CALLBACK (edit_replace_callback) },
+//
+//    /* the following used to bind to <control><shift>C which collides with Unicode input.
+//     * <control>>alt> doesn't work either */
+//    { "EditCopytext", NULL, N_("Copy Text"), NULL, NULL, G_CALLBACK (edit_copy_text_callback) },
+//    { "EditCuttext", NULL, N_("Cut Text"), "<control><shift>X", NULL, G_CALLBACK (edit_cut_text_callback) },
+//    { "EditPastetext", NULL, N_("Paste _Text"), "<control><shift>V", NULL, G_CALLBACK (edit_paste_text_callback) },
 
-    { "EditCopy", GTK_STOCK_COPY, NULL, "<control>C", NULL, G_CALLBACK (edit_copy_callback) },
-    { "EditCut", GTK_STOCK_CUT, NULL, "<control>X", NULL, G_CALLBACK (edit_cut_callback) },
-    { "EditPaste", GTK_STOCK_PASTE, NULL, "<control>V", NULL, G_CALLBACK (edit_paste_callback) },
-    { "EditDuplicate", NULL, N_("_Duplicate"), "<control>D", NULL, G_CALLBACK (edit_duplicate_callback) },
-    { "EditDelete", GTK_STOCK_DELETE, NULL, "Delete", NULL, G_CALLBACK (edit_delete_callback) },
+//  { "Layers", NULL, N_("_Layers"), NULL, NULL, NULL },
+//    { "LayerAdd", DIA_STOCK_LAYER_ADD, N_("Add Layer..."), NULL, NULL, G_CALLBACK (layers_add_layer_callback) },
+//    { "LayerRename", DIA_STOCK_LAYER_RENAME, N_("Rename Layer..."), NULL, NULL, G_CALLBACK (layers_rename_layer_callback) },
+//    { "ObjectsLayerAbove", DIA_STOCK_OBJECTS_LAYER_ABOVE, N_("Move selection to layer above"), NULL, NULL, G_CALLBACK (objects_move_up_layer) },
+//    { "ObjectsLayerBelow", DIA_STOCK_OBJECTS_LAYER_BELOW, N_("Move selection to layer below"), NULL, NULL, G_CALLBACK (objects_move_down_layer) },
+//    { "DiagramLayers", DIA_STOCK_LAYERS, N_("_Layers..."), "<control>L", NULL, G_CALLBACK (dialogs_layers_callback) },
 
-    { "EditFind", GTK_STOCK_FIND, NULL, "<control>F", NULL, G_CALLBACK (edit_find_callback) },
-    { "EditReplace", GTK_STOCK_FIND_AND_REPLACE, NULL, "<control>H", NULL, G_CALLBACK (edit_replace_callback) },
+//  { "View", NULL, N_("_View"), NULL, NULL, NULL },
+//    { "ViewZoomin", GTK_STOCK_ZOOM_IN, NULL, "<control>plus", NULL, G_CALLBACK (view_zoom_in_callback) },
+//    { "ViewZoomout", GTK_STOCK_ZOOM_OUT, NULL, "<control>minus", NULL, G_CALLBACK (view_zoom_out_callback) },
+//    { "ViewZoom", NULL, N_("_Zoom"), NULL, NULL, NULL },
+//      { "ViewZoom16000", NULL, N_("1600%"), NULL, NULL, G_CALLBACK (view_zoom_set_callback) },
+//      { "ViewZoom8000", NULL, N_("800%"), NULL, NULL, G_CALLBACK (view_zoom_set_callback) },
+//      { "ViewZoom4000", NULL, N_("400%"), "<alt>4", NULL, G_CALLBACK (view_zoom_set_callback) },
+//      { "ViewZoom2830", NULL, N_("283"), NULL, NULL, G_CALLBACK (view_zoom_set_callback) },
+//      { "ViewZoom2000", NULL, N_("200"), "<alt>2", NULL, G_CALLBACK (view_zoom_set_callback) },
+//      { "ViewZoom1410", NULL, N_("141"), NULL, NULL, G_CALLBACK (view_zoom_set_callback) },
+//      { "ViewZoom1000", GTK_STOCK_ZOOM_100, NULL, "<alt>1", NULL, G_CALLBACK (view_zoom_set_callback) },
+//      { "ViewZoom850", NULL, N_("85"), NULL, NULL, G_CALLBACK (view_zoom_set_callback) },
+//      { "ViewZoom707", NULL, N_("70.7"), NULL, NULL, G_CALLBACK (view_zoom_set_callback) },
+//      { "ViewZoom500", NULL, N_("50"), "<alt>5", NULL, G_CALLBACK (view_zoom_set_callback) },
+//      { "ViewZoom354", NULL, N_("35.4"), NULL, NULL, G_CALLBACK (view_zoom_set_callback) },
+//      { "ViewZoom250", NULL, N_("25"), NULL, NULL, G_CALLBACK (view_zoom_set_callback) },
+//    /* Show All, Best Fit.  Same as the Gimp, Ctrl+E */
+//    { "ViewShowall", GTK_STOCK_ZOOM_FIT, NULL, "<control>E", NULL, G_CALLBACK (view_show_all_callback) },
+//
+//  /* "display_toggle_entries" items go here */
+//
+//    { "ViewNewview", NULL, N_("New _View"), NULL, NULL, G_CALLBACK (view_new_view_callback) },
+//    { "ViewCloneview", NULL, N_("C_lone View"), NULL, NULL, G_CALLBACK (view_clone_view_callback) },
+//    { "ViewRedraw", GTK_STOCK_REFRESH, NULL, NULL, NULL, G_CALLBACK (view_redraw_callback) },
 
-    /* the following used to bind to <control><shift>C which collides with Unicode input.
-     * <control>>alt> doesn't work either */
-    { "EditCopytext", NULL, N_("Copy Text"), NULL, NULL, G_CALLBACK (edit_copy_text_callback) },
-    { "EditCuttext", NULL, N_("Cut Text"), "<control><shift>X", NULL, G_CALLBACK (edit_cut_text_callback) },
-    { "EditPastetext", NULL, N_("Paste _Text"), "<control><shift>V", NULL, G_CALLBACK (edit_paste_text_callback) },
-
-  { "Layers", NULL, N_("_Layers"), NULL, NULL, NULL },
-    { "LayerAdd", DIA_STOCK_LAYER_ADD, N_("Add Layer..."), NULL, NULL, G_CALLBACK (layers_add_layer_callback) },
-    { "LayerRename", DIA_STOCK_LAYER_RENAME, N_("Rename Layer..."), NULL, NULL, G_CALLBACK (layers_rename_layer_callback) },
-    { "ObjectsLayerAbove", DIA_STOCK_OBJECTS_LAYER_ABOVE, N_("Move selection to layer above"), NULL, NULL, G_CALLBACK (objects_move_up_layer) },
-    { "ObjectsLayerBelow", DIA_STOCK_OBJECTS_LAYER_BELOW, N_("Move selection to layer below"), NULL, NULL, G_CALLBACK (objects_move_down_layer) },
-    { "DiagramLayers", DIA_STOCK_LAYERS, N_("_Layers..."), "<control>L", NULL, G_CALLBACK (dialogs_layers_callback) },
-
-  { "View", NULL, N_("_View"), NULL, NULL, NULL },
-    { "ViewZoomin", GTK_STOCK_ZOOM_IN, NULL, "<control>plus", NULL, G_CALLBACK (view_zoom_in_callback) },
-    { "ViewZoomout", GTK_STOCK_ZOOM_OUT, NULL, "<control>minus", NULL, G_CALLBACK (view_zoom_out_callback) },
-    { "ViewZoom", NULL, N_("_Zoom"), NULL, NULL, NULL },
-      { "ViewZoom16000", NULL, N_("1600%"), NULL, NULL, G_CALLBACK (view_zoom_set_callback) },
-      { "ViewZoom8000", NULL, N_("800%"), NULL, NULL, G_CALLBACK (view_zoom_set_callback) },
-      { "ViewZoom4000", NULL, N_("400%"), "<alt>4", NULL, G_CALLBACK (view_zoom_set_callback) },
-      { "ViewZoom2830", NULL, N_("283"), NULL, NULL, G_CALLBACK (view_zoom_set_callback) },
-      { "ViewZoom2000", NULL, N_("200"), "<alt>2", NULL, G_CALLBACK (view_zoom_set_callback) },
-      { "ViewZoom1410", NULL, N_("141"), NULL, NULL, G_CALLBACK (view_zoom_set_callback) },
-      { "ViewZoom1000", GTK_STOCK_ZOOM_100, NULL, "<alt>1", NULL, G_CALLBACK (view_zoom_set_callback) },
-      { "ViewZoom850", NULL, N_("85"), NULL, NULL, G_CALLBACK (view_zoom_set_callback) },
-      { "ViewZoom707", NULL, N_("70.7"), NULL, NULL, G_CALLBACK (view_zoom_set_callback) },
-      { "ViewZoom500", NULL, N_("50"), "<alt>5", NULL, G_CALLBACK (view_zoom_set_callback) },
-      { "ViewZoom354", NULL, N_("35.4"), NULL, NULL, G_CALLBACK (view_zoom_set_callback) },
-      { "ViewZoom250", NULL, N_("25"), NULL, NULL, G_CALLBACK (view_zoom_set_callback) },
-    /* Show All, Best Fit.  Same as the Gimp, Ctrl+E */
-    { "ViewShowall", GTK_STOCK_ZOOM_FIT, NULL, "<control>E", NULL, G_CALLBACK (view_show_all_callback) },
-
-  /* "display_toggle_entries" items go here */
-
-    { "ViewNewview", NULL, N_("New _View"), NULL, NULL, G_CALLBACK (view_new_view_callback) },
-    { "ViewCloneview", NULL, N_("C_lone View"), NULL, NULL, G_CALLBACK (view_clone_view_callback) },
-    { "ViewRedraw", GTK_STOCK_REFRESH, NULL, NULL, NULL, G_CALLBACK (view_redraw_callback) },
-
-  { "Objects", NULL, N_("_Objects"), NULL, NULL },
-    { "ObjectsSendtoback", GTK_STOCK_GOTO_BOTTOM, N_("Send to _Back"), "<control><shift>B", NULL, G_CALLBACK (objects_place_under_callback) },
-    { "ObjectsBringtofront", GTK_STOCK_GOTO_TOP, N_("Bring to _Front"), "<control><shift>F", NULL, G_CALLBACK (objects_place_over_callback) },
-    { "ObjectsSendbackwards", GTK_STOCK_GO_DOWN, N_("Send Backwards"), NULL, NULL, G_CALLBACK (objects_place_down_callback) },
-    { "ObjectsBringforwards", GTK_STOCK_GO_UP, N_("Bring Forwards"), NULL, NULL, G_CALLBACK (objects_place_up_callback) },
-
-    { "ObjectsGroup", DIA_STOCK_GROUP, N_("_Group"), "<control>G", NULL, G_CALLBACK (objects_group_callback) },
-    /* deliberately not using Ctrl+U for Ungroup */
-    { "ObjectsUngroup", DIA_STOCK_UNGROUP, N_("_Ungroup"), "<control><shift>G", NULL, G_CALLBACK (objects_ungroup_callback) },
-
-    { "ObjectsParent", NULL, N_("_Parent"), "<control>K", NULL, G_CALLBACK (objects_parent_callback) },
-    { "ObjectsUnparent", NULL, N_("_Unparent"), "<control><shift>K", NULL, G_CALLBACK (objects_unparent_callback) },
-    { "ObjectsUnparentchildren", NULL, N_("_Unparent Children"), NULL, NULL, G_CALLBACK (objects_unparent_children_callback) },
-
-    { "ObjectsAlign", NULL, N_("Align"), NULL, NULL, NULL },
-      { "ObjectsAlignLeft", GTK_STOCK_JUSTIFY_LEFT, NULL, "<alt><shift>L", NULL, G_CALLBACK (objects_align_h_callback) },
-      { "ObjectsAlignCenter", GTK_STOCK_JUSTIFY_CENTER, NULL, "<alt><shift>C", NULL, G_CALLBACK (objects_align_h_callback) },
-      { "ObjectsAlignRight", GTK_STOCK_JUSTIFY_RIGHT, NULL, "<alt><shift>R", NULL, G_CALLBACK (objects_align_h_callback) },
-
-      { "ObjectsAlignTop", NULL, N_("Top"), "<alt><shift>T", NULL, G_CALLBACK (objects_align_v_callback) },
-      { "ObjectsAlignMiddle", NULL, N_("Middle"), "<alt><shift>M", NULL, G_CALLBACK (objects_align_v_callback) },
-      { "ObjectsAlignBottom", NULL, N_("Bottom"), "<alt><shift>B", NULL, G_CALLBACK (objects_align_v_callback) },
-
-      { "ObjectsAlignSpreadouthorizontally", NULL, N_("Spread Out Horizontally"), "<alt><shift>H", NULL, G_CALLBACK (objects_align_h_callback) },
-      { "ObjectsAlignSpreadoutvertically", NULL, N_("Spread Out Vertically"), "<alt><shift>V", NULL, G_CALLBACK (objects_align_v_callback) },
-      { "ObjectsAlignAdjacent", NULL, N_("Adjacent"), "<alt><shift>A", NULL, G_CALLBACK (objects_align_h_callback) },
-      { "ObjectsAlignStacked", NULL, N_("Stacked"), "<alt><shift>S", NULL, G_CALLBACK (objects_align_v_callback) },
-
-      { "ObjectsProperties", GTK_STOCK_PROPERTIES, NULL, "<alt>Return", NULL, G_CALLBACK (dialogs_properties_callback) },
+//  { "Objects", NULL, N_("_Objects"), NULL, NULL },
+//    { "ObjectsSendtoback", GTK_STOCK_GOTO_BOTTOM, N_("Send to _Back"), "<control><shift>B", NULL, G_CALLBACK (objects_place_under_callback) },
+//    { "ObjectsBringtofront", GTK_STOCK_GOTO_TOP, N_("Bring to _Front"), "<control><shift>F", NULL, G_CALLBACK (objects_place_over_callback) },
+//    { "ObjectsSendbackwards", GTK_STOCK_GO_DOWN, N_("Send Backwards"), NULL, NULL, G_CALLBACK (objects_place_down_callback) },
+//    { "ObjectsBringforwards", GTK_STOCK_GO_UP, N_("Bring Forwards"), NULL, NULL, G_CALLBACK (objects_place_up_callback) },
+//
+//    { "ObjectsGroup", DIA_STOCK_GROUP, N_("_Group"), "<control>G", NULL, G_CALLBACK (objects_group_callback) },
+//    /* deliberately not using Ctrl+U for Ungroup */
+//    { "ObjectsUngroup", DIA_STOCK_UNGROUP, N_("_Ungroup"), "<control><shift>G", NULL, G_CALLBACK (objects_ungroup_callback) },
+//
+//    { "ObjectsParent", NULL, N_("_Parent"), "<control>K", NULL, G_CALLBACK (objects_parent_callback) },
+//    { "ObjectsUnparent", NULL, N_("_Unparent"), "<control><shift>K", NULL, G_CALLBACK (objects_unparent_callback) },
+//    { "ObjectsUnparentchildren", NULL, N_("_Unparent Children"), NULL, NULL, G_CALLBACK (objects_unparent_children_callback) },
+//
+//    { "ObjectsAlign", NULL, N_("Align"), NULL, NULL, NULL },
+//      { "ObjectsAlignLeft", GTK_STOCK_JUSTIFY_LEFT, NULL, "<alt><shift>L", NULL, G_CALLBACK (objects_align_h_callback) },
+//      { "ObjectsAlignCenter", GTK_STOCK_JUSTIFY_CENTER, NULL, "<alt><shift>C", NULL, G_CALLBACK (objects_align_h_callback) },
+//      { "ObjectsAlignRight", GTK_STOCK_JUSTIFY_RIGHT, NULL, "<alt><shift>R", NULL, G_CALLBACK (objects_align_h_callback) },
+//
+//      { "ObjectsAlignTop", NULL, N_("Top"), "<alt><shift>T", NULL, G_CALLBACK (objects_align_v_callback) },
+//      { "ObjectsAlignMiddle", NULL, N_("Middle"), "<alt><shift>M", NULL, G_CALLBACK (objects_align_v_callback) },
+//      { "ObjectsAlignBottom", NULL, N_("Bottom"), "<alt><shift>B", NULL, G_CALLBACK (objects_align_v_callback) },
+//
+//      { "ObjectsAlignSpreadouthorizontally", NULL, N_("Spread Out Horizontally"), "<alt><shift>H", NULL, G_CALLBACK (objects_align_h_callback) },
+//      { "ObjectsAlignSpreadoutvertically", NULL, N_("Spread Out Vertically"), "<alt><shift>V", NULL, G_CALLBACK (objects_align_v_callback) },
+//      { "ObjectsAlignAdjacent", NULL, N_("Adjacent"), "<alt><shift>A", NULL, G_CALLBACK (objects_align_h_callback) },
+//      { "ObjectsAlignStacked", NULL, N_("Stacked"), "<alt><shift>S", NULL, G_CALLBACK (objects_align_v_callback) },
+//
+//      { "ObjectsProperties", GTK_STOCK_PROPERTIES, NULL, "<alt>Return", NULL, G_CALLBACK (dialogs_properties_callback) },
 
   { "Select", NULL, N_("_Select"), NULL, NULL, NULL },
     { "SelectAll", NULL, N_("All"), "<control>A", NULL, G_CALLBACK (select_all_callback) },

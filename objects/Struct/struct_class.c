@@ -2253,8 +2253,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             if(actid->maxitem > 1)
             {
                 sss->celltype = OBTN; /* 这里是数组了,需要按键创建新窗口来设置 */
-                GHashTable *t = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-                actid->vtable = &t;
+                actid->wlist  = NULL;
             }
 
        }else

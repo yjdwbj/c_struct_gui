@@ -629,13 +629,16 @@ static void update_objects_index(GList *olist, Diagram *dia)
    while(olist)
    {
        DiaObject *obj = olist->data;
-       if(obj->type == object_get_type("STRUCT - Class"))
+       char *n1;
+       n1 = g_strdup("STRUCT - Class");
+       if(!g_ascii_strncasecmp(obj->type->name,n1,strlen(n1)))
        {
+
 
              obj->ops->update_index(obj);
              object_add_updates(obj, dia);
        }
-
+        g_free(n1);
        olist = olist->next;
    }
 }
