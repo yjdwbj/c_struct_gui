@@ -210,6 +210,7 @@ struct _FactoryStructItemAll{
     GHashTable *structTable; // 2014-3-25 lcy 这里存放 FactoryStructItemList 的哈希表。
     GHashTable *unionTable;
     GList* structList; // 2014-3-25 lcy 这里存放 FactoryStructItemList 的链表。
+    gchar *file_version;
 };
 
 

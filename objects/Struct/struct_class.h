@@ -107,11 +107,18 @@ struct _ActionId
 {
     int index; // comobox index
     gchar *pre_name;
-    int maxitem;
+    gchar *title_name;
+};
+
+typedef struct _NextId NextID;
+struct _NextId
+{
+    GList *itemlist;
+    GList *actlist;
+    GList *wlist; /* widget list */
     int row;
     int col;   /* default is 1 */
-    GList *wlist; /* widget list */
-    GList *itemlist;
+    int maxlength;
 };
 
 typedef struct _CheckSave CheckSave;
@@ -162,7 +169,7 @@ struct _SaveEntry
     int row;
     int col;   /* default is 1 */
     int width;
-    gpointer data;
+    GList* data;
     GList *wlist;   /* GtkWidget List  */
 };
 
@@ -183,7 +190,7 @@ typedef struct _SaveStruct{
         gint number; // spinbox value or actionid max items
         SaveEnum senum;  // enum value;
         SaveUnion sunion; // 第二个值,指针类
-        ActionID sactid;  // 保存连线的
+        NextID nextid;  // 保存连线的 comobox;
         SaveUbtn ssubtn;
     }value;
     FactoryStructItem *org;
@@ -298,8 +305,7 @@ attributes_list_selection_changed_callback(GtkWidget *gtklist,
 					   STRUCTClass *structclass);
 static void factory_connection_two_object(STRUCTClass *fclass, /* start pointer*/
                                           gchar *objname /* end pointer */);
-static void factory_delete_connection(STRUCTClass *fclass, /* start pointer*/
-                                          gchar *objname /* end pointer */);
+
 
 
 extern void structclass_sanity_check(STRUCTClass *c, gchar *msg);
@@ -314,11 +320,15 @@ factory_get_properties(STRUCTClass *structclass, gboolean is_default);
 
 GtkWidget *factory_create_many_entry_box(SaveStruct *sss);
 GtkWidget *factory_create_many_checkbox(SaveStruct *sss);
-void factoy_create_subdialog(GtkWidget *buttun,SaveStruct *sss);
-static void factory_create_subdialg_by_list(gpointer *item,SaveStruct *sst);
-static void factory_create_checkbuttons_by_list(gpointer *item,SaveStruct *sst);
+void factoy_create_subdialog(gpointer item,SaveStruct *sss);
+static void factory_create_subdialg_by_list(gpointer item,SaveStruct *sst);
+static void factory_create_checkbuttons_by_list(gpointer item,SaveStruct *sst);
+static void factory_create_combobox_by_list(gpointer item,SaveStruct *sst);
+static GList* factory_get_objects_from_layer(Layer *layer);
+static void factory_get_value_from_comobox(STRUCTClass *startclass,GtkWidget *comobox,ActionID *aid);
+
 static void factory_strjoin(const gchar **dst,const gchar *prefix,const gchar *sep);
-void factoy_changed_item(gpointer *item,gpointer user_data);
+void factoy_changed_item(gpointer item,gpointer user_data);
 STRUCTClass *factory_find_diaobject_by_name(Layer *curlayer,const gchar *name);
 DiaObject *factory_find_same_diaobject_via_glist(GList *flist,GList *comprelist);
 

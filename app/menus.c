@@ -121,26 +121,26 @@ static const GtkActionEntry display_entries[] =
     { "FilePrint", GTK_STOCK_PRINT, NULL, "<control>P", NULL, G_CALLBACK (file_print_callback) },
     { "FileClose", GTK_STOCK_CLOSE, NULL, "<control>W", NULL, G_CALLBACK (file_close_callback) },
 
-//  { "Edit", NULL, N_("_Edit"), NULL, NULL, NULL },
-//     /* lcy 关闭撤消与重*/
-//    { "EditUndo", GTK_STOCK_UNDO, NULL, "<control>Z", NULL, NULL },
-//   /* { "EditUndo", GTK_STOCK_UNDO, NULL, "<control>Z", NULL, G_CALLBACK (edit_undo_callback) },*/
-//    { "EditRedo", GTK_STOCK_REDO, NULL, "<control><shift>Z", NULL, NULL },
-//
-//    { "EditCopy", GTK_STOCK_COPY, NULL, "<control>C", NULL, G_CALLBACK (edit_copy_callback) },
-//    { "EditCut", GTK_STOCK_CUT, NULL, "<control>X", NULL, G_CALLBACK (edit_cut_callback) },
-//    { "EditPaste", GTK_STOCK_PASTE, NULL, "<control>V", NULL, G_CALLBACK (edit_paste_callback) },
-//    { "EditDuplicate", NULL, N_("_Duplicate"), "<control>D", NULL, G_CALLBACK (edit_duplicate_callback) },
-//    { "EditDelete", GTK_STOCK_DELETE, NULL, "Delete", NULL, G_CALLBACK (edit_delete_callback) },
-//
-//    { "EditFind", GTK_STOCK_FIND, NULL, "<control>F", NULL, G_CALLBACK (edit_find_callback) },
-//    { "EditReplace", GTK_STOCK_FIND_AND_REPLACE, NULL, "<control>H", NULL, G_CALLBACK (edit_replace_callback) },
-//
-//    /* the following used to bind to <control><shift>C which collides with Unicode input.
-//     * <control>>alt> doesn't work either */
-//    { "EditCopytext", NULL, N_("Copy Text"), NULL, NULL, G_CALLBACK (edit_copy_text_callback) },
-//    { "EditCuttext", NULL, N_("Cut Text"), "<control><shift>X", NULL, G_CALLBACK (edit_cut_text_callback) },
-//    { "EditPastetext", NULL, N_("Paste _Text"), "<control><shift>V", NULL, G_CALLBACK (edit_paste_text_callback) },
+  { "Edit", NULL, N_("_Edit"), NULL, NULL, NULL },
+     /* lcy 关闭撤消与重*/
+    { "EditUndo", GTK_STOCK_UNDO, NULL, "<control>Z", NULL, NULL },
+   /* { "EditUndo", GTK_STOCK_UNDO, NULL, "<control>Z", NULL, G_CALLBACK (edit_undo_callback) },*/
+    { "EditRedo", GTK_STOCK_REDO, NULL, "<control><shift>Z", NULL, NULL },
+
+    { "EditCopy", GTK_STOCK_COPY, NULL, "<control>C", NULL, G_CALLBACK (edit_copy_callback) },
+    { "EditCut", GTK_STOCK_CUT, NULL, "<control>X", NULL, G_CALLBACK (edit_cut_callback) },
+    { "EditPaste", GTK_STOCK_PASTE, NULL, "<control>V", NULL, G_CALLBACK (edit_paste_callback) },
+    { "EditDuplicate", NULL, N_("_Duplicate"), "<control>D", NULL, G_CALLBACK (edit_duplicate_callback) },
+    { "EditDelete", GTK_STOCK_DELETE, NULL, "Delete", NULL, G_CALLBACK (edit_delete_callback) },
+
+    { "EditFind", GTK_STOCK_FIND, NULL, "<control>F", NULL, G_CALLBACK (edit_find_callback) },
+    { "EditReplace", GTK_STOCK_FIND_AND_REPLACE, NULL, "<control>H", NULL, G_CALLBACK (edit_replace_callback) },
+
+    /* the following used to bind to <control><shift>C which collides with Unicode input.
+     * <control>>alt> doesn't work either */
+    { "EditCopytext", NULL, N_("Copy Text"), NULL, NULL, G_CALLBACK (edit_copy_text_callback) },
+    { "EditCuttext", NULL, N_("Cut Text"), "<control><shift>X", NULL, G_CALLBACK (edit_cut_text_callback) },
+    { "EditPastetext", NULL, N_("Paste _Text"), "<control><shift>V", NULL, G_CALLBACK (edit_paste_text_callback) },
 
 //  { "Layers", NULL, N_("_Layers"), NULL, NULL, NULL },
 //    { "LayerAdd", DIA_STOCK_LAYER_ADD, N_("Add Layer..."), NULL, NULL, G_CALLBACK (layers_add_layer_callback) },

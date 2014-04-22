@@ -591,45 +591,45 @@ diagram_update_menu_sensitivity (Diagram *dia)
 //    gtk_action_set_sensitive (action, !textedit_active && selected_count > 1);
 
   /* Select menu */
-  if ((action = menus_get_action ("SelectAll")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active);
-  if ((action = menus_get_action ("SelectNone")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active);
-  if ((action = menus_get_action ("SelectInvert")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active);
-  if ((action = menus_get_action ("SelectTransitive")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active);
-  if ((action = menus_get_action ("SelectConnected")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active);
-  if ((action = menus_get_action ("SelectSametype")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active);
-
-  if ((action = menus_get_action ("SelectReplace")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active);
-  if ((action = menus_get_action ("SelectUnion")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active);
-  if ((action = menus_get_action ("SelectIntersection")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active);
-  if ((action = menus_get_action ("SelectRemove")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active);
-  if ((action = menus_get_action ("SelectInverse")) != NULL)
-    gtk_action_set_sensitive (action, !textedit_active);
+//  if ((action = menus_get_action ("SelectAll")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active);
+//  if ((action = menus_get_action ("SelectNone")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active);
+//  if ((action = menus_get_action ("SelectInvert")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active);
+//  if ((action = menus_get_action ("SelectTransitive")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active);
+//  if ((action = menus_get_action ("SelectConnected")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active);
+//  if ((action = menus_get_action ("SelectSametype")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active);
+//
+//  if ((action = menus_get_action ("SelectReplace")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active);
+//  if ((action = menus_get_action ("SelectUnion")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active);
+//  if ((action = menus_get_action ("SelectIntersection")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active);
+//  if ((action = menus_get_action ("SelectRemove")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active);
+//  if ((action = menus_get_action ("SelectInverse")) != NULL)
+//    gtk_action_set_sensitive (action, !textedit_active);
 
   /* Tools menu */
-  {
-    /* Keep in sync with menus.c(tool_entries) */
-    static gchar * action_names[] = {
-      "ToolsModify", "ToolsMagnify",  "ToolsTextedit",  "ToolsScroll",
-      "ToolsText", "ToolsBox", "ToolsEllipse", "ToolsPolygon", "ToolsBeziergon",
-      "ToolsLine", "ToolsArc", "ToolsZigzagline", "ToolsPolyline","ToolsBezierline",
-      "ToolsImage", "ToolsOutline", NULL
-    };
-    int i;
-    for (i = 0; action_names[i] != NULL; ++i) {
-      if ((action = menus_get_action (action_names[i])) != NULL)
-        gtk_action_set_sensitive (action, !textedit_active);
-    }
-  }
+//  {
+//    /* Keep in sync with menus.c(tool_entries) */
+//    static gchar * action_names[] = {
+//      "ToolsModify", "ToolsMagnify",  "ToolsTextedit",  "ToolsScroll",
+//      "ToolsText", "ToolsBox", "ToolsEllipse", "ToolsPolygon", "ToolsBeziergon",
+//      "ToolsLine", "ToolsArc", "ToolsZigzagline", "ToolsPolyline","ToolsBezierline",
+//      "ToolsImage", "ToolsOutline", NULL
+//    };
+//    int i;
+//    for (i = 0; action_names[i] != NULL; ++i) {
+//      if ((action = menus_get_action (action_names[i])) != NULL)
+//        gtk_action_set_sensitive (action, !textedit_active);
+//    }
+//  }
   /* View menu - should not need disabling yet */
 }
 

@@ -111,6 +111,7 @@ static int structclass_num_dynamic_connectionpoints(STRUCTClass *class);
 static ObjectChange *_structclass_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
 ObjectChange *
 factory_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
+void factory_delete_line_between_two_objects(STRUCTClass *startc,const gchar *endc);
 
 static ObjectTypeOps structclass_type_ops =
 {
@@ -2241,20 +2242,52 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
        if(!g_ascii_strncasecmp(sss->name,ACTION_ID,ACT_SIZE))
        {
             sss->celltype = OCOMBO;
-            ActionID *actid = &sss->value.sactid;
-            actid->itemlist = NULL;
-            actid->index = 0;
-            SaveEntry tmp;
-            factory_handle_entry_item(&tmp,fst);
-            actid->col = tmp.col;
-            actid->row = tmp.row;
+            NextID *nid = &sss->value.nextid;
+            nid->itemlist = NULL;
+            nid->actlist = NULL;
+            nid->wlist = NULL;
 
-            actid->maxitem = tmp.col * tmp.row;
-            if(actid->maxitem > 1)
+            if(g_str_has_suffix(sss->name,"]"))
             {
-                sss->celltype = OBTN; /* 这里是数组了,需要按键创建新窗口来设置 */
-                actid->wlist  = NULL;
+                  sss->celltype = OBTN; /* 这里是数组了,需要按键创建新窗口来设置 */
+                  SaveEntry tmp;
+                  factory_handle_entry_item(&tmp,fst);
+                  nid->col = tmp.col;
+                  nid->row = tmp.row;
+                nid->maxlength = nid->col * nid->row;
+                if(!nid->maxlength && !nid->col)
+                {
+                    nid->maxlength = nid->row;
+                }
+
+                 gchar **title = g_strsplit(sss->name,"[",NULL);
+                 gchar *name =  g_strconcat(title[0],"(%d)",NULL);
+                g_strfreev(title);
+
+
+                int n = 0;
+                for(;n < nid->maxlength; n++ )
+                {
+                    ActionID *aid = g_new0(ActionID,1);
+                    aid->index = 0;
+                    aid->pre_name = g_strdup("");
+                    aid->title_name = g_strdup_printf(name,n);
+                    nid->actlist = g_list_append(nid->actlist,aid);
+                }
+                g_free(name);
             }
+            else
+            {
+                    ActionID *aid = g_new0(ActionID,1);
+                    aid->index = 0;
+                    aid->pre_name = g_strdup("");
+                    aid->title_name = g_strdup(sss->name);
+                    nid->actlist = g_list_append(nid->actlist,aid);
+            }
+
+
+
+
 
        }else
        switch(fst->Itype)
@@ -2264,9 +2297,25 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
                 {
                     /* 2014-3-25 lcy 这里是字符串，需用文本框显示了*/
                     sss->celltype = ENTRY;
-                    factory_handle_entry_item(&sss->value.sentry,fst);
-                    if(!sss->value.sentry.isString)
-                        sss->celltype = BBTN;
+
+                    SaveEntry *sey = &sss->value.sentry;
+                    factory_handle_entry_item(sey,fst);
+                    if(!sey->isString)
+                    {
+                         sss->celltype = BBTN;
+                         if( 2 == strlen(fst->SType) && !g_ascii_strncasecmp(fst->SType,"u1",2))
+                         {
+                             int n = 0 ;
+                             int maxi = sey->col * sey->row;
+                             for( ; n < maxi; n++)
+                             {
+                                 /* 初如值 */
+                                sey->data =  g_slist_append(sey->data,g_strdup_printf("%d",0));
+                             }
+                         }
+
+                    }
+
                 }
                 else
                 {
@@ -2378,7 +2427,7 @@ factory_handle_entry_item(SaveEntry* sey,FactoryStructItem *fst)
 
 
                 sey->width = g_strtod(&fst->SType[1],NULL) / 8; /* u32,u8, 这里取里面的数字*/
-                if(!g_ascii_strncasecmp(fst->SType,"u1",2))
+                if(2== strlen(fst->SType) && !g_ascii_strncasecmp(fst->SType,"u1",2))
                     sey->width = 1;
                 sey->row = 1;
                 if(num >= 5)
@@ -2655,15 +2704,20 @@ structclass_copy(STRUCTClass *structclass)
   return &newstructclass->element.object;
 }
 
+
+
 static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
 {
+
+
     /* 这里会递归调用 */
-       xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
-     xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
-       switch(sss->celltype)
+
+    switch(sss->celltype)
      {
      case ECOMBO:
-         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"COMBO");
+         xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
+         xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
+         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"ECOMBO");
          xmlSetProp(ccc, (const xmlChar *)"width", (xmlChar *)sss->value.senum.width);
          xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.senum.evalue);
         break;
@@ -2678,12 +2732,13 @@ static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
          {
                SaveEntry *sey = &sss->value.sentry;
                GList *tlist = sey->data;
-                gchar *ret ="";
+                gchar *ret =g_strdup("");
                 while(tlist)
                  {   /* 2014-3-31 lcy 把链表里的数据用逗号连接 */
-                     gchar *p = g_strconcat(g_strdup(ret),tlist->data,",",NULL);
+                     gchar *p = g_strconcat(g_strdup(ret),tlist->data,g_strdup(","),NULL);
                      g_free(ret);
-                     ret = p;
+                     ret = g_strdup(p);
+                     g_free(p);
                      tlist = g_list_next(tlist);
                  }
                 xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)ret);
@@ -2706,10 +2761,28 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
      case ECOMBO:
      case ENTRY:
      case BBTN:
+
      case SPINBOX:
          {
              ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
              factory_base_item_save(sss,ccc);
+         }
+        break;
+     case OCOMBO:
+     case OBTN:
+         {
+             NextID *nid  = &sss->value.nextid;
+             GList *tlist = nid->actlist;
+             for(;tlist;tlist = tlist->next)
+             {
+                    ActionID *aid = tlist->data;
+                    ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+                    xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)aid->title_name);
+                    xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
+                    xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
+                    xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf(_("%d"),aid->index));
+                    xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)aid->pre_name);
+             }
          }
         break;
      case UCOMBO:
