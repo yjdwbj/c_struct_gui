@@ -48,13 +48,13 @@ enum _Valign {
 typedef struct _Textobj Textobj;
 struct _Textobj {
   DiaObject object;
-  
+
   Handle text_handle;
 
   Text *text;
   TextAttributes attrs;
   Valign vert_align;
-  
+
   Color fill_color;
   gboolean show_background;
 };
@@ -94,7 +94,7 @@ static ObjectTypeOps textobj_type_ops =
   (CreateFunc) textobj_create,
   (LoadFunc)   textobj_load,
   (SaveFunc)   textobj_save,
-  (GetDefaultsFunc)   NULL, 
+  (GetDefaultsFunc)   NULL,
   (ApplyDefaultsFunc) NULL
 };
 
@@ -192,7 +192,7 @@ textobj_set_props(Textobj *textobj, GPtrArray *props)
 static real
 textobj_distance_from(Textobj *textobj, Point *point)
 {
-  return text_distance_from(textobj->text, point); 
+  return text_distance_from(textobj->text, point);
 }
 
 static void
@@ -220,7 +220,7 @@ textobj_move_handle(Textobj *textobj, Handle *handle,
           point_sub(&to2,&textobj->text_handle.pos);
           textobj_move(textobj, &to2);*/
           textobj_move(textobj, to);
-          
+
   }
 
   return NULL;
@@ -258,20 +258,20 @@ textobj_draw(Textobj *textobj, DiaRenderer *renderer)
 static void textobj_valign_point(Textobj *textobj, Point* p, real factor)
         /* factor should be 1 or -1 */
 {
-    Rectangle *bb  = &(textobj->object.bounding_box); 
+    Rectangle *bb  = &(textobj->object.bounding_box);
     real offset ;
     switch (textobj->vert_align){
         case VALIGN_BOTTOM:
             offset = bb->bottom - textobj->object.position.y;
-            p->y -= offset * factor; 
+            p->y -= offset * factor;
             break;
         case VALIGN_TOP:
             offset = bb->top - textobj->object.position.y;
-            p->y -= offset * factor; 
+            p->y -= offset * factor;
             break;
         case VALIGN_CENTER:
             offset = (bb->bottom + bb->top)/2 - textobj->object.position.y;
-            p->y -= offset * factor; 
+            p->y -= offset * factor;
             break;
         case VALIGN_FIRST_LINE:
             break;
@@ -282,7 +282,7 @@ textobj_update_data(Textobj *textobj)
 {
   Point to2;
   DiaObject *obj = &textobj->object;
-  
+
   text_set_position(textobj->text, &obj->position);
   text_calc_boundingbox(textobj->text, &obj->bounding_box);
 
@@ -290,7 +290,7 @@ textobj_update_data(Textobj *textobj)
   textobj_valign_point(textobj, &to2, 1);
   text_set_position(textobj->text, &to2);
   text_calc_boundingbox(textobj->text, &obj->bounding_box);
-  
+
   textobj->text_handle.pos = obj->position;
 }
 
@@ -305,10 +305,10 @@ textobj_create(Point *startpoint,
   Color col;
   DiaFont *font = NULL;
   real font_height;
-  
+
   textobj = g_malloc0(sizeof(Textobj));
   obj = &textobj->object;
-  
+
   obj->type = &textobj_type;
 
   obj->ops = &textobj_ops;
@@ -323,11 +323,11 @@ textobj_create(Point *startpoint,
   text_get_attributes(textobj->text,&textobj->attrs);
   dia_font_unref(font);
   textobj->vert_align = default_properties.vert_align;
-  
+
   /* default visibility must be off to keep compatibility */
   textobj->fill_color = attributes_get_background();
   textobj->show_background = FALSE;
-  
+
   object_init(obj, 1, 0);
 
   obj->handles[0] = &textobj->text_handle;
@@ -377,7 +377,7 @@ textobj_load(ObjectNode obj_node, int version, const char *filename)
 
   textobj = g_malloc0(sizeof(Textobj));
   obj = &textobj->object;
-  
+
   obj->type = &textobj_type;
   obj->ops = &textobj_ops;
 

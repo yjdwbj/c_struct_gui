@@ -159,7 +159,7 @@ struct _SaveUnion
 //    gpointer *sdata; /* 当前的存储结构指针 */
 
 //    gpointer SVal; // 基本类型. SaveStruct pointer;
-    gpointer saveVal; //
+    GHashTable* saveVal; //保存值的哈希表
 };
 
 typedef struct _SaveEntry SaveEntry;
@@ -169,7 +169,7 @@ struct _SaveEntry
     int row;
     int col;   /* default is 1 */
     int width;
-    GList* data;
+    gpointer data;
     GList *wlist;   /* GtkWidget List  */
 };
 
@@ -327,12 +327,13 @@ static void factory_create_combobox_by_list(gpointer item,SaveStruct *sst);
 static GList* factory_get_objects_from_layer(Layer *layer);
 static void factory_get_value_from_comobox(STRUCTClass *startclass,GtkWidget *comobox,ActionID *aid);
 
-static void factory_strjoin(const gchar **dst,const gchar *prefix,const gchar *sep);
+static void factory_strjoin(gchar **dst,const gchar *prefix,const gchar *sep);
 void factoy_changed_item(gpointer item,gpointer user_data);
 STRUCTClass *factory_find_diaobject_by_name(Layer *curlayer,const gchar *name);
 DiaObject *factory_find_same_diaobject_via_glist(GList *flist,GList *comprelist);
 
 void factory_create_and_fill_dialog(STRUCTClass *structclass, gboolean is_default);
+void factory_create_struct_dialog(GtkWidget *dialog,GList *datalist);
 
 gboolean factory_is_connected(ConnectionPoint *cpend,ConnectionPoint *cpstart);
 

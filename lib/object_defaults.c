@@ -160,7 +160,7 @@ dia_object_defaults_load (const gchar *filename, gboolean create_lazy)
 			      if (type)
 			        obj = type->ops->load (
 					obj_node,
-					version ? atoi(version) : 0,
+					0,
 					filename);
 			      if (obj)
 			        g_hash_table_insert (defaults_hash,
@@ -175,7 +175,7 @@ dia_object_defaults_load (const gchar *filename, gboolean create_lazy)
 			  DiaObject *def_obj;
 			  def_obj = obj->type->ops->load (
 					obj_node,
-			                version ? atoi(version) : 0,
+			                /*version ? atoi(version) : 0,*/0,
 					filename);
 			  if (def_obj->ops->set_props)
 			    {
@@ -353,8 +353,8 @@ _obj_store (gpointer key,
   obj_node = xmlNewChild(li->node, NULL, (const xmlChar *)"object", NULL);
   xmlSetProp(obj_node, (const xmlChar *)"type", (xmlChar *) obj->type->name);
 
-  g_snprintf(buffer, 30, "%d", obj->type->version);
-  xmlSetProp(obj_node, (const xmlChar *)"version", (xmlChar *)buffer);
+//  g_snprintf(buffer, 30, "%d", obj->type->version);
+  xmlSetProp(obj_node, (const xmlChar *)"version", (xmlChar *)g_strdup(obj->type->version));
 
   g_snprintf(buffer, 30, "O%d", ri->obj_nr++);
   xmlSetProp(obj_node, (const xmlChar *)"id", (xmlChar *)buffer);

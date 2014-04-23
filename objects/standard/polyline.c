@@ -95,7 +95,7 @@ static DiaObjectType polyline_type =
   "Standard - PolyLine",   /* name */
   0,                         /* version */
   (char **) polyline_icon,      /* pixmap */
-  
+
   &polyline_type_ops,       /* ops */
   NULL, /* pixmap_file */
   0 /* default_user_data */
@@ -254,7 +254,7 @@ polyline_calculate_gap_endpoints(Polyline *polyline, Point *gap_endpoints)
 					   &polyline->poly.points[1],
 					   start_cp->object);
   }
-  if (connpoint_is_autogap(end_cp)) {    
+  if (connpoint_is_autogap(end_cp)) {
       gap_endpoints[1] = calculate_object_edge(&gap_endpoints[1],
 					   &polyline->poly.points[n-2],
 					   end_cp->object);
@@ -267,7 +267,7 @@ polyline_calculate_gap_endpoints(Polyline *polyline, Point *gap_endpoints)
   end_vec = gap_endpoints[1];
   point_sub(&end_vec, &polyline->poly.points[n-1]);
   point_normalize(&end_vec);
-  
+
   /* add absolute gap */
   point_add_scaled(&gap_endpoints[0], &start_vec, polyline->absolute_start_gap);
   point_add_scaled(&gap_endpoints[1], &end_vec, polyline->absolute_end_gap);
@@ -285,7 +285,7 @@ polyline_exchange_gap_points(Polyline *polyline,  Point *gap_points)
         polyline->poly.points[n-1] = tmp[1];
 }
 
-        
+
 static void
 polyline_draw(Polyline *polyline, DiaRenderer *renderer)
 {
@@ -294,7 +294,7 @@ polyline_draw(Polyline *polyline, DiaRenderer *renderer)
   PolyConn *poly = &polyline->poly;
   Point *points;
   int n;
-  
+
   points = &poly->points[0];
   n = poly->numpoints;
   renderer_ops->set_linewidth(renderer, polyline->line_width);
@@ -318,7 +318,7 @@ polyline_draw(Polyline *polyline, DiaRenderer *renderer)
   polyline_exchange_gap_points(polyline, gap_endpoints);
 }
 
-/** user_data is a struct polyline_create_data, containing an array of 
+/** user_data is a struct polyline_create_data, containing an array of
     points and a count.
     If user_data is NULL, the startpoint is used and a 1x1 line is created.
     Otherwise, the startpoint is ignored.
@@ -338,7 +338,7 @@ polyline_create(Point *startpoint,
   polyline = g_malloc0(sizeof(Polyline));
   poly = &polyline->poly;
   obj = &poly->object;
-  
+
   obj->type = &polyline_type;
   obj->ops = &polyline_ops;
 
@@ -390,9 +390,9 @@ polyline_copy(Polyline *polyline)
   Polyline *newpolyline;
   PolyConn *poly, *newpoly;
   DiaObject *newobj;
-  
+
   poly = &polyline->poly;
- 
+
   newpolyline = g_malloc0(sizeof(Polyline));
   newpoly = &newpolyline->poly;
   newobj = &newpoly->object;
@@ -479,11 +479,11 @@ polyline_save(Polyline *polyline, ObjectNode obj_node,
   if (!color_equals(&polyline->line_color, &color_black))
     data_add_color(new_attribute(obj_node, "line_color"),
 		   &polyline->line_color);
-  
+
   if (polyline->line_width != 0.1)
     data_add_real(new_attribute(obj_node, PROP_STDNAME_LINE_WIDTH),
 		  polyline->line_width);
-  
+
   if (polyline->line_style != LINESTYLE_SOLID)
     data_add_enum(new_attribute(obj_node, "line_style"),
 		  polyline->line_style);
@@ -492,7 +492,7 @@ polyline_save(Polyline *polyline, ObjectNode obj_node,
       polyline->dashlength != DEFAULT_LINESTYLE_DASHLEN)
     data_add_real(new_attribute(obj_node, "dashlength"),
 		  polyline->dashlength);
-  
+
   if (polyline->start_arrow.type != ARROW_NONE) {
     save_arrow(obj_node, &polyline->start_arrow, "start_arrow",
 	     "start_arrow_length", "start_arrow_width");
@@ -527,7 +527,7 @@ polyline_load(ObjectNode obj_node, int version, const char *filename)
 
   poly = &polyline->poly;
   obj = &poly->object;
-  
+
   obj->type = &polyline_type;
   obj->ops = &polyline_ops;
 
@@ -599,7 +599,7 @@ polyline_delete_corner_callback (DiaObject *obj, Point *clicked, gpointer data)
   int handle_nr, i;
   Polyline *poly = (Polyline*) obj;
   ObjectChange *change;
-  
+
   handle = polyline_closest_handle(poly, clicked);
 
   for (i = 0; i < obj->num_handles; i++) {

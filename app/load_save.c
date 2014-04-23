@@ -58,7 +58,7 @@
 #ifdef G_OS_WIN32
 #include <io.h>
 #endif
-
+extern FactoryStructItemAll structList;
 static void read_connections(GList *objects, xmlNodePtr layer_node,
 			     GHashTable *objects_hash);
 static void GHFuncUnknownObjects(gpointer key,
@@ -145,9 +145,11 @@ read_objects(xmlNodePtr objects,
       idd = (char *) xmlGetProp(obj_node, (const xmlChar *)"id");
 
       version = 0;
-      if (versionstr != NULL) {
-	version = atoi(versionstr);
-	xmlFree(versionstr);
+      if (versionstr != NULL && g_ascii_strncasecmp(versionstr,structList.file_version,strlen(versionstr))) {
+        //	version = atoi(versionstr);
+        message_error(_("结构体文件的版本错误!无法打开."));
+        xmlFree(versionstr);
+        return NULL;
       }
 
       type = object_get_type((char *)typestr);
@@ -721,8 +723,13 @@ write_objects(GList *objects, xmlNodePtr objects_node,
       obj_node = xmlNewChild(objects_node, NULL, (const xmlChar *)"object", NULL);
 
       xmlSetProp(obj_node, (const xmlChar *)"type", (xmlChar *)obj->type->name);
-      g_snprintf(buffer, 30, "%d", obj->type->version);
-      xmlSetProp(obj_node, (const xmlChar *)"version", (xmlChar *)buffer);
+
+
+//      g_snprintf(buffer, 30, "%d", obj->type->version);
+        /* 写入自定义的唯一长串版本号 */
+      xmlSetProp(obj_node, (const xmlChar *)"version", (xmlChar *)g_strdup(structList.file_version));
+
+
 
       g_snprintf(buffer, 30, "O%d", *obj_nr);
       xmlSetProp(obj_node, (const xmlChar *)"id", (xmlChar *)buffer);

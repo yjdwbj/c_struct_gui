@@ -545,7 +545,9 @@ struct _ObjectTypeOps {
 struct _DiaObjectType {
 
   char *name; /*!< The type name should follow a pattern of '<module> - <class>' like "UML - Class" */
-  int version; /*!< DiaObjects must be backward compatible, i.e. support possibly older versions formats */
+//  int version; /*!< DiaObjects must be backward compatible, i.e. support possibly older versions formats */
+  int version;
+
 
   char **pixmap; /* Also put a pixmap in the sheet_object.
 		    This one is used if not in sheet but in toolbar.
@@ -555,7 +557,7 @@ struct _DiaObjectType {
 
   char *pixmap_file; /* fallback if pixmap is NULL */
   void *default_user_data; /* use this if no user data is specified in
-			      the .sheet file */
+                the .sheet file */
 };
 
 /* base property stuff ... */

@@ -37,7 +37,7 @@
 #ifdef HAVE_CAIRO
 #include <cairo.h>
 
-#ifdef CAIRO_HAS_SVG_SURFACE 
+#ifdef CAIRO_HAS_SVG_SURFACE
 #include <cairo-svg.h>
 #endif
 
@@ -45,7 +45,7 @@
 /* Object definition */
 typedef struct _Outline {
   DiaObject object;
-  
+
   char *name;
   real rotation;
 
@@ -56,7 +56,7 @@ typedef struct _Outline {
   Color fill_color;
   gboolean show_background;
   real line_width;
-  
+
   Handle handles[NUM_HANDLES];
   /* calculated data */
   Point ink_rect[4];
@@ -92,7 +92,7 @@ static DiaObjectType outline_type =
   "Standard - Outline",   /* name */
   0,                      /* version */
   (char **) outline_icon, /* pixmap */
-  
+
   &outline_type_ops,      /* ops */
   NULL,                   /* pixmap_file */
   0                       /* default_user_data */
@@ -144,7 +144,7 @@ outline_init_handles (Outline *outline)
 {
   DiaObject *obj = &outline->object;
   int i;
-  
+
   for (i = 0; i < NUM_HANDLES; ++i) {
     obj->handles[i] = &outline->handles[i];
     obj->handles[i]->type = HANDLE_MAJOR_CONTROL;
@@ -162,7 +162,7 @@ outline_create (Point *startpoint,
 {
   Outline *outline;
   DiaObject *obj;
-  
+
   outline = g_new0 (Outline,1);
   obj = &outline->object;
   obj->type = &outline_type;
@@ -172,7 +172,7 @@ outline_create (Point *startpoint,
   obj->position = *startpoint;
 
   outline_init_handles (outline);
-  
+
   attributes_get_default_font (&outline->font, &outline->font_height);
 
   outline->line_width = 0; /* Not: attributes_get_default_linewidth(); it looks ugly */
@@ -200,7 +200,7 @@ outline_load(ObjectNode obj_node, int version, const char *filename)
 static PropNumData _rotation_range = { 0.0f, 360.0f, 1.0f };
 static PropDescription outline_props[] = {
   OBJECT_COMMON_PROPERTIES,
-  { "name", PROP_TYPE_STRING,PROP_FLAG_VISIBLE|PROP_FLAG_DONT_MERGE, 
+  { "name", PROP_TYPE_STRING,PROP_FLAG_VISIBLE|PROP_FLAG_DONT_MERGE,
     N_("Text content"),NULL },
   { "rotation", PROP_TYPE_REAL,PROP_FLAG_VISIBLE,
     N_("Rotation"), N_("Angle to rotate the outline"), &_rotation_range},
@@ -273,7 +273,7 @@ outline_update_data (Outline *outline)
   cairo_surface_destroy (surface); /* in fact: unref() */
   style = dia_font_get_style (outline->font);
   /* not exact matching but almost the best we can do with the toy api */
-  cairo_select_font_face (cr, dia_font_get_family (outline->font), 
+  cairo_select_font_face (cr, dia_font_get_family (outline->font),
                           DIA_FONT_STYLE_GET_SLANT (style) == DIA_FONT_NORMAL ? CAIRO_FONT_SLANT_NORMAL : CAIRO_FONT_SLANT_ITALIC,
                           DIA_FONT_STYLE_GET_WEIGHT (style) < DIA_FONT_MEDIUM ? CAIRO_FONT_SLANT_NORMAL : CAIRO_FONT_WEIGHT_BOLD);
   cairo_set_font_size (cr, outline->font_height);
@@ -289,7 +289,7 @@ outline_update_data (Outline *outline)
 
   /* fix point */
   outline->ink_rect[0].x = x = obj->position.x;
-  outline->ink_rect[0].y = y = obj->position.y;  
+  outline->ink_rect[0].y = y = obj->position.y;
   /* handle rotation */
   outline->ink_rect[1].x = x + extents.width * outline->mat.xx;
   outline->ink_rect[1].y = y + extents.width * outline->mat.yx;
@@ -323,7 +323,7 @@ outline_update_data (Outline *outline)
   /* the cairo context is only used in this fuinction */
   cairo_destroy (cr);
 }
-static void 
+static void
 outline_draw(Outline *outline, DiaRenderer *renderer)
 {
   DiaObject *obj = &outline->object;
@@ -331,7 +331,7 @@ outline_draw(Outline *outline, DiaRenderer *renderer)
   BezPoint *pts;
   real x, y;
   Point ps = {0, 0}; /* silence gcc */
-  
+
   if (!outline->path)
     return;
   DIA_RENDERER_GET_CLASS (renderer)->set_linewidth (renderer, outline->line_width);
@@ -386,9 +386,9 @@ outline_draw(Outline *outline, DiaRenderer *renderer)
     int s2 = 0;
     for (i = 1; i < total; ++i) {
       if (BEZ_MOVE_TO == pts[i].type) {
-        /* check whether the start point of the second outline is within the first outline. 
+        /* check whether the start point of the second outline is within the first outline.
 	 * If so it need to be subtracted - currently blanked. */
-	real dist = distance_bez_shape_point (&pts[s1], 
+	real dist = distance_bez_shape_point (&pts[s1],
 	  n1 > 0 ? n1 : i - s1, 0, &pts[i].p1);
 	if (s2 > s1) { /* blanking the previous one */
 	  n = i - s2 - 1;
@@ -441,12 +441,12 @@ outline_describe_props (Outline *outline)
     prop_desc_list_calculate_quarks(outline_props);
   return outline_props;
 }
-static void 
+static void
 outline_get_props (Outline *outline, GPtrArray *props)
 {
   object_get_props_from_offsets(&outline->object, outline_offsets, props);
 }
-static void 
+static void
 outline_set_props (Outline *outline, GPtrArray *props)
 {
   object_set_props_from_offsets(&outline->object, outline_offsets, props);
@@ -457,7 +457,7 @@ outline_distance_from (Outline *outline, Point *point)
 {
   return distance_polygon_point (&outline->ink_rect[0], 4, outline->line_width, point);
 }
-static ObjectChange* 
+static ObjectChange*
 outline_move_handle (Outline *outline,
                      Handle *handle,
 		     Point *to, ConnectionPoint *cp,
@@ -485,14 +485,14 @@ outline_move_handle (Outline *outline,
   /* disallow everything below a certain level, otherwise the font-size could become invalid */
   if (dist > 0.1) {
     obj->position = start;
-    
+
     outline->font_height *= (dist / old_dist);
-  
+
     outline_update_data (outline);
   }
   return NULL;
 }
-static ObjectChange* 
+static ObjectChange*
 outline_move (Outline *outline, Point *to)
 {
   DiaObject *obj = &outline->object;
@@ -506,7 +506,7 @@ static DiaObject *
 outline_copy (Outline *from)
 {
   Outline *to;
-  
+
   to = g_new0 (Outline, 1);
   object_copy (&from->object, &to->object);
   outline_init_handles (to);
@@ -523,7 +523,7 @@ outline_copy (Outline *from)
 
   return &to->object;
 }
-static void 
+static void
 outline_destroy (Outline *outline)
 {
   if (outline->path)
@@ -532,7 +532,7 @@ outline_destroy (Outline *outline)
   object_destroy(&outline->object);
   /* but not the object itself? */
 }
-static void 
+static void
 outline_select (Outline *outline, Point *clicked_point,
 		DiaRenderer *interactive_renderer)
 {

@@ -94,7 +94,7 @@ static DiaObjectType zigzagline_type =
   /* Version 0 had no autorouting and so shouldn't have it set by default. */
   1,                      /* version */
   (char **) zigzagline_icon,      /* pixmap */
-  
+
   &zigzagline_type_ops       /* ops */
 };
 
@@ -192,7 +192,7 @@ zigzagline_move_handle(Zigzagline *zigzagline, Handle *handle,
   assert(handle!=NULL);
   assert(to!=NULL);
 
-  change = orthconn_move_handle((OrthConn*)zigzagline, handle, to, cp, 
+  change = orthconn_move_handle((OrthConn*)zigzagline, handle, to, cp,
 				reason, modifiers);
 
   zigzagline_update_data(zigzagline);
@@ -217,10 +217,10 @@ zigzagline_draw(Zigzagline *zigzagline, DiaRenderer *renderer)
   OrthConn *orth = &zigzagline->orth;
   Point *points;
   int n;
-  
+
   points = &orth->points[0];
   n = orth->numpoints;
-  
+
   renderer_ops->set_linewidth(renderer, zigzagline->line_width);
   renderer_ops->set_linestyle(renderer, zigzagline->line_style);
   renderer_ops->set_dashlength(renderer, zigzagline->dashlength);
@@ -254,10 +254,10 @@ zigzagline_create(Point *startpoint,
   zigzagline = g_malloc0(sizeof(Zigzagline));
   orth = &zigzagline->orth;
   obj = &orth->object;
-  
+
   obj->type = &zigzagline_type;
   obj->ops = &zigzagline_ops;
-  
+
   orthconn_init(orth, startpoint);
 
   zigzagline->line_width =  attributes_get_default_linewidth();
@@ -267,7 +267,7 @@ zigzagline_create(Point *startpoint,
   zigzagline->start_arrow = attributes_get_default_start_arrow();
   zigzagline->end_arrow = attributes_get_default_end_arrow();
   zigzagline->corner_radius = 0.0;
-  
+
   *handle1 = orth->handles[0];
   *handle2 = orth->handles[orth->numpoints-2];
 
@@ -288,9 +288,9 @@ zigzagline_copy(Zigzagline *zigzagline)
   Zigzagline *newzigzagline;
   OrthConn *orth, *neworth;
   DiaObject *newobj;
-  
+
   orth = &zigzagline->orth;
- 
+
   newzigzagline = g_malloc0(sizeof(Zigzagline));
   neworth = &newzigzagline->orth;
   newobj = &neworth->object;
@@ -318,10 +318,10 @@ zigzagline_update_data(Zigzagline *zigzagline)
   PolyBBExtras *extra = &orth->extra_spacing;
 
   orthconn_update_data(&zigzagline->orth);
-    
-  extra->start_long = 
-    extra->end_long = 
-    extra->middle_trans = 
+
+  extra->start_long =
+    extra->end_long =
+    extra->middle_trans =
     extra->start_trans =
     extra->end_trans = (zigzagline->line_width / 2.0);
 
@@ -413,15 +413,15 @@ zigzagline_save(Zigzagline *zigzagline, ObjectNode obj_node,
   if (!color_equals(&zigzagline->line_color, &color_black))
     data_add_color(new_attribute(obj_node, "line_color"),
 		   &zigzagline->line_color);
-  
+
   if (zigzagline->line_width != 0.1)
     data_add_real(new_attribute(obj_node, PROP_STDNAME_LINE_WIDTH),
 		  zigzagline->line_width);
-  
+
   if (zigzagline->line_style != LINESTYLE_SOLID)
     data_add_enum(new_attribute(obj_node, "line_style"),
 		  zigzagline->line_style);
-  
+
   if (zigzagline->start_arrow.type != ARROW_NONE) {
     save_arrow(obj_node, &zigzagline->start_arrow, "start_arrow",
 	     "start_arrow_length", "start_arrow_width");
@@ -432,7 +432,7 @@ zigzagline_save(Zigzagline *zigzagline, ObjectNode obj_node,
 	     "end_arrow_length", "end_arrow_width");
   }
 
-  if (zigzagline->line_style != LINESTYLE_SOLID && 
+  if (zigzagline->line_style != LINESTYLE_SOLID &&
       zigzagline->dashlength != DEFAULT_LINESTYLE_DASHLEN)
     data_add_real(new_attribute(obj_node, "dashlength"),
                   zigzagline->dashlength);
@@ -454,7 +454,7 @@ zigzagline_load(ObjectNode obj_node, int version, const char *filename)
 
   orth = &zigzagline->orth;
   obj = &orth->object;
-  
+
   obj->type = &zigzagline_type;
   obj->ops = &zigzagline_ops;
 

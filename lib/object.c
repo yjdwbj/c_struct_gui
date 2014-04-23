@@ -759,6 +759,7 @@ object_registry_init(void)
 void
 object_register_type(DiaObjectType *type)
 {
+
   if (g_hash_table_lookup(object_type_table, type->name) != NULL) {
     message_warning("Several object-types were named %s.\n"
 		    "Only first one will be used.\n"

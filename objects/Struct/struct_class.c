@@ -53,9 +53,9 @@ extern FactoryStructItemAll structList;
 
 static real structclass_distance_from(STRUCTClass *structclass, Point *point);
 static void structclass_select(STRUCTClass *structclass, Point *clicked_point,
-			    DiaRenderer *interactive_renderer);
+                               DiaRenderer *interactive_renderer);
 static ObjectChange* structclass_move_handle(STRUCTClass *structclass, Handle *handle,
-				 Point *to, ConnectionPoint *cp, HandleMoveReason reason, ModifierKeys modifiers);
+        Point *to, ConnectionPoint *cp, HandleMoveReason reason, ModifierKeys modifiers);
 static ObjectChange* structclass_move(STRUCTClass *structclass, Point *to);
 static void structclass_draw(STRUCTClass *structclass, DiaRenderer *renderer);
 //static DiaObject *structclass_create(Point *startpoint,
@@ -73,6 +73,7 @@ void factory_handle_entry_item(SaveEntry* sey,FactoryStructItem *fst);
 //static DiaObject *structclass_load(ObjectNode obj_node, int version,
 //			     const char *filename);
 void factory_read_initial_to_struct(STRUCTClass *fclass);
+gpointer *factory_read_object_comobox_value_from_file(AttributeNode attr_node);
 static DiaMenu * structclass_object_menu(DiaObject *obj, Point *p);
 static ObjectChange *structclass_show_comments_callback(DiaObject *obj, Point *pos, gpointer data);
 
@@ -87,39 +88,38 @@ static PropDescription *factory_describe_props(STRUCTClass *structclass);
 static void factory_get_props(STRUCTClass *structclass, GPtrArray *props);
 static void factory_set_props(STRUCTClass *structclass, GPtrArray *props);
 static void factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
-			  const char *filename);
+                                      const char *filename);
 
 static DiaObject * factory_struct_items_load(ObjectNode obj_node, int version,
-			  const char *filename);
+        const char *filename);
 
 
 static DiaObject * factory_struct_items_create(Point *startpoint,
-	       void *user_data,
-  	       Handle **handle1,
-	       Handle **handle2);
+        void *user_data,
+        Handle **handle1,
+        Handle **handle2);
 
 static void factory_select(STRUCTClass *structclass, Point *clicked_point,
-			    DiaRenderer *interactive_renderer);
+                           DiaRenderer *interactive_renderer);
 
 static void factory_update_index(STRUCTClass *fclass);
 
 static void fill_in_fontdata(STRUCTClass *structclass);
 static int structclass_num_dynamic_connectionpoints(STRUCTClass *class);
-
+void factory_delete_line_between_two_objects(STRUCTClass *startc,const gchar *endc);
 
 
 static ObjectChange *_structclass_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
-ObjectChange *
-factory_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
+ObjectChange *factory_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
 void factory_delete_line_between_two_objects(STRUCTClass *startc,const gchar *endc);
 
 static ObjectTypeOps structclass_type_ops =
 {
-  (CreateFunc) factory_struct_items_create,
+    (CreateFunc) factory_struct_items_create,
 //  (LoadFunc)   structclass_load,
- // (SaveFunc)   structclass_save
-  (LoadFunc)  factory_struct_items_load,
-  (SaveFunc)  factory_struct_items_save
+// (SaveFunc)   structclass_save
+    (LoadFunc)  factory_struct_items_load,
+    (SaveFunc)  factory_struct_items_save
 
 };
 
@@ -135,37 +135,38 @@ static ObjectTypeOps structclass_type_ops =
 
 DiaObjectType structclass_type =
 {
-  "STRUCT - Class",   /* name */
-  0,                      /* version */
-  (char **) structclass_xpm,  /* pixmap */
+    "STRUCT - Class",   /* name */
+    NULL,                      /* version */
+    (char **) structclass_xpm,  /* pixmap */
 
-  &structclass_type_ops,       /* ops */
-  NULL,
-  (void*)0
+    &structclass_type_ops,       /* ops */
+    NULL,
+    (void*)0
 };
 
 /** \brief vtable for STRUCTClass */
-static ObjectOps structclass_ops = {
-  (DestroyFunc)         structclass_destroy,
-  (DrawFunc)            structclass_draw,
-  (DistanceFunc)        structclass_distance_from,
-  (SelectFunc)          factory_select,
-  (CopyFunc)            structclass_copy,
-  (MoveFunc)            structclass_move,
-  (MoveHandleFunc)      structclass_move_handle,
- // (GetPropertiesFunc)   structclass_get_properties,
-  (GetPropertiesFunc)   factory_get_properties,
+static ObjectOps structclass_ops =
+{
+    (DestroyFunc)         structclass_destroy,
+    (DrawFunc)            structclass_draw,
+    (DistanceFunc)        structclass_distance_from,
+    (SelectFunc)          factory_select,
+    (CopyFunc)            structclass_copy,
+    (MoveFunc)            structclass_move,
+    (MoveHandleFunc)      structclass_move_handle,
+// (GetPropertiesFunc)   structclass_get_properties,
+    (GetPropertiesFunc)   factory_get_properties,
 //  (ApplyPropertiesDialogFunc) _structclass_apply_props_from_dialog,
-  (ApplyPropertiesDialogFunc)   factory_apply_props_from_dialog,
-  (ObjectMenuFunc)      structclass_object_menu,
-  (DescribePropsFunc)   structclass_describe_props,
-  (GetPropsFunc)        structclass_get_props,
-  (SetPropsFunc)        structclass_set_props,
-  (TextEditFunc) 0,
-  (ApplyPropertiesListFunc) object_apply_props,
-  (UpdateData) 0,
-  (ConnectionTwoObject) 0,
-  (UpdateObjectIndex)   factory_update_index
+    (ApplyPropertiesDialogFunc)   factory_apply_props_from_dialog,
+    (ObjectMenuFunc)      structclass_object_menu,
+    (DescribePropsFunc)   structclass_describe_props,
+    (GetPropsFunc)        structclass_get_props,
+    (SetPropsFunc)        structclass_set_props,
+    (TextEditFunc) 0,
+    (ApplyPropertiesListFunc) object_apply_props,
+    (UpdateData) 0,
+    (ConnectionTwoObject) 0,
+    (UpdateObjectIndex)   factory_update_index
 };
 
 //extern PropDescDArrayExtra structattribute_extra;
@@ -177,16 +178,17 @@ static ObjectOps structclass_ops = {
 
 
 /** Properties of STRUCTClass */
-static PropDescription structclass_props[] = {
-  ELEMENT_COMMON_PROPERTIES,
-  PROP_STD_LINE_WIDTH_OPTIONAL,
-  /* can't use PROP_STD_TEXT_COLOUR_OPTIONAL cause it has PROP_FLAG_DONT_SAVE. It is designed to fill the Text object - not some subset */
-  PROP_STD_TEXT_COLOUR_OPTIONS(PROP_FLAG_VISIBLE|PROP_FLAG_STANDARD|PROP_FLAG_OPTIONAL),
-  PROP_STD_LINE_COLOUR_OPTIONAL,
-  PROP_STD_FILL_COLOUR_OPTIONAL,
+static PropDescription structclass_props[] =
+{
+    ELEMENT_COMMON_PROPERTIES,
+    PROP_STD_LINE_WIDTH_OPTIONAL,
+    /* can't use PROP_STD_TEXT_COLOUR_OPTIONAL cause it has PROP_FLAG_DONT_SAVE. It is designed to fill the Text object - not some subset */
+    PROP_STD_TEXT_COLOUR_OPTIONS(PROP_FLAG_VISIBLE|PROP_FLAG_STANDARD|PROP_FLAG_OPTIONAL),
+    PROP_STD_LINE_COLOUR_OPTIONAL,
+    PROP_STD_FILL_COLOUR_OPTIONAL,
 
-  PROP_STD_NOTEBOOK_BEGIN,
-  PROP_NOTEBOOK_PAGE("class", PROP_FLAG_DONT_MERGE, N_("Class")),
+    PROP_STD_NOTEBOOK_BEGIN,
+    PROP_NOTEBOOK_PAGE("class", PROP_FLAG_DONT_MERGE, N_("Class")),
 //  { "name", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL | PROP_FLAG_NO_DEFAULTS,
 //  N_("Name"), NULL, NULL },
 //  { "stereotype", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
@@ -217,41 +219,57 @@ static PropDescription structclass_props[] = {
 //  { "comment_tagging", PROP_TYPE_BOOL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
 //  N_("Comment tagging"), NULL, NULL},
 
-  /* all this just to make the defaults selectable ... */
-  PROP_NOTEBOOK_PAGE("font", PROP_FLAG_DONT_MERGE, N_("Font")),
-  PROP_MULTICOL_BEGIN("class"),
-  PROP_MULTICOL_COLUMN("font"),
-  /* FIXME: apparently multicol does not work correctly, this should be FIRST column */
-  { "normal_font", PROP_TYPE_FONT, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Normal"), NULL, NULL },
+    /* all this just to make the defaults selectable ... */
+    PROP_NOTEBOOK_PAGE("font", PROP_FLAG_DONT_MERGE, N_("Font")),
+    PROP_MULTICOL_BEGIN("class"),
+    PROP_MULTICOL_COLUMN("font"),
+    /* FIXME: apparently multicol does not work correctly, this should be FIRST column */
+    {
+        "normal_font", PROP_TYPE_FONT, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+        N_("Normal"), NULL, NULL
+    },
 //  { "polymorphic_font", PROP_TYPE_FONT, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
 //  N_("Polymorphic"), NULL, NULL },
 //  { "abstract_font", PROP_TYPE_FONT, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
 //  N_("Abstract"), NULL, NULL },
-  { "classname_font", PROP_TYPE_FONT, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_("Classname"), NULL, NULL },
+    {
+        "classname_font", PROP_TYPE_FONT, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+        N_("Classname"), NULL, NULL
+    },
 //  { "abstract_classname_font", PROP_TYPE_FONT, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
 //  N_("Abstract Classname"), NULL, NULL },
 //  { "comment_font", PROP_TYPE_FONT, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
 //  N_("Comment"), NULL, NULL },
 
-  PROP_MULTICOL_COLUMN("height"),
-  { "normal_font_height", PROP_TYPE_REAL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_(" "), NULL, NULL },
-  { "polymorphic_font_height", PROP_TYPE_REAL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_(" "), NULL, NULL },
-  { "abstract_font_height", PROP_TYPE_REAL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_(" "), NULL, NULL },
-  { "classname_font_height", PROP_TYPE_REAL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_(" "), NULL, NULL },
-  { "abstract_classname_font_height", PROP_TYPE_REAL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_(" "), NULL, NULL },
-  { "comment_font_height", PROP_TYPE_REAL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
-  N_(" "), NULL, NULL },
-  PROP_MULTICOL_END("class"),
-  PROP_STD_NOTEBOOK_END,
+    PROP_MULTICOL_COLUMN("height"),
+    {
+        "normal_font_height", PROP_TYPE_REAL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+        N_(" "), NULL, NULL
+    },
+    {
+        "polymorphic_font_height", PROP_TYPE_REAL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+        N_(" "), NULL, NULL
+    },
+    {
+        "abstract_font_height", PROP_TYPE_REAL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+        N_(" "), NULL, NULL
+    },
+    {
+        "classname_font_height", PROP_TYPE_REAL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+        N_(" "), NULL, NULL
+    },
+    {
+        "abstract_classname_font_height", PROP_TYPE_REAL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+        N_(" "), NULL, NULL
+    },
+    {
+        "comment_font_height", PROP_TYPE_REAL, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
+        N_(" "), NULL, NULL
+    },
+    PROP_MULTICOL_END("class"),
+    PROP_STD_NOTEBOOK_END,
 
-  /* these are used during load, but currently not during save */
+    /* these are used during load, but currently not during save */
 //  { "attributes", PROP_TYPE_DARRAY, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL | PROP_FLAG_DONT_MERGE | PROP_FLAG_NO_DEFAULTS,
 //  N_("Attributes"), NULL, NULL /* structattribute_extra */ },
 //  { "operations", PROP_TYPE_DARRAY, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL | PROP_FLAG_DONT_MERGE | PROP_FLAG_NO_DEFAULTS,
@@ -260,7 +278,7 @@ static PropDescription structclass_props[] = {
 //  { "templates", PROP_TYPE_DARRAY, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL | PROP_FLAG_DONT_MERGE | PROP_FLAG_NO_DEFAULTS,
 //  N_("Template Parameters"), NULL, NULL /* structformalparameters_extra */ },
 
-  PROP_DESC_END
+    PROP_DESC_END
 };
 
 //ObjectChange *
@@ -278,14 +296,16 @@ static PropDescription structclass_props[] = {
 static PropDescription *
 structclass_describe_props(STRUCTClass *structclass)
 {
- if (structclass_props[0].quark == 0) {
-    int i = 0;
+    if (structclass_props[0].quark == 0)
+    {
+        int i = 0;
 
-    prop_desc_list_calculate_quarks(structclass_props);
-    while (structclass_props[i].name != NULL) {
-      /* can't do this static, at least not on win32
-       * due to relocation (initializer not a constant)
-       */
+        prop_desc_list_calculate_quarks(structclass_props);
+        while (structclass_props[i].name != NULL)
+        {
+            /* can't do this static, at least not on win32
+             * due to relocation (initializer not a constant)
+             */
 //      if (0 == strcmp(structclass_props[i].name, "attributes"))
 //        structclass_props[i].extra_data = &structattribute_extra;
 //      else if (0 == strcmp(structclass_props[i].name, "operations")) {
@@ -302,19 +322,20 @@ structclass_describe_props(STRUCTClass *structclass)
 //      else if (0 == strcmp(structclass_props[i].name, "templates"))
 //        structclass_props[i].extra_data = &structformalparameter_extra;
 
-      i++;
+            i++;
+        }
     }
-  }
-  return structclass_props;
+    return structclass_props;
 }
 
-static PropOffset structclass_offsets[] = {
-  ELEMENT_COMMON_PROPERTIES_OFFSETS,
+static PropOffset structclass_offsets[] =
+{
+    ELEMENT_COMMON_PROPERTIES_OFFSETS,
 
-  { PROP_STDNAME_LINE_WIDTH, PROP_STDTYPE_LINE_WIDTH, offsetof(STRUCTClass, line_width) },
-  { "text_colour", PROP_TYPE_COLOUR, offsetof(STRUCTClass, text_color) },
-  { "line_colour", PROP_TYPE_COLOUR, offsetof(STRUCTClass, line_color) },
-  { "fill_colour", PROP_TYPE_COLOUR, offsetof(STRUCTClass, fill_color) },
+    { PROP_STDNAME_LINE_WIDTH, PROP_STDTYPE_LINE_WIDTH, offsetof(STRUCTClass, line_width) },
+    { "text_colour", PROP_TYPE_COLOUR, offsetof(STRUCTClass, text_color) },
+    { "line_colour", PROP_TYPE_COLOUR, offsetof(STRUCTClass, line_color) },
+    { "fill_colour", PROP_TYPE_COLOUR, offsetof(STRUCTClass, fill_color) },
 //  { "name", PROP_TYPE_STRING, offsetof(STRUCTClass, name) },
 //  { "stereotype", PROP_TYPE_STRING, offsetof(STRUCTClass, stereotype) },
 //  { "comment", PROP_TYPE_STRING, offsetof(STRUCTClass, comment) },
@@ -331,49 +352,53 @@ static PropOffset structclass_offsets[] = {
 //  { "comment_line_length", PROP_TYPE_INT, offsetof(STRUCTClass, comment_line_length) },
 //  { "comment_tagging", PROP_TYPE_BOOL, offsetof(STRUCTClass, comment_tagging) },
 
-  /* all this just to make the defaults selectable ... */
-  PROP_OFFSET_MULTICOL_BEGIN("class"),
-  PROP_OFFSET_MULTICOL_COLUMN("font"),
-  { "normal_font", PROP_TYPE_FONT, offsetof(STRUCTClass, normal_font) },
+    /* all this just to make the defaults selectable ... */
+    PROP_OFFSET_MULTICOL_BEGIN("class"),
+    PROP_OFFSET_MULTICOL_COLUMN("font"),
+    { "normal_font", PROP_TYPE_FONT, offsetof(STRUCTClass, normal_font) },
 //  { "abstract_font", PROP_TYPE_FONT, offsetof(STRUCTClass, abstract_font) },
 //  { "polymorphic_font", PROP_TYPE_FONT, offsetof(STRUCTClass, polymorphic_font) },
-  { "classname_font", PROP_TYPE_FONT, offsetof(STRUCTClass, classname_font) },
+    { "classname_font", PROP_TYPE_FONT, offsetof(STRUCTClass, classname_font) },
 //  { "abstract_classname_font", PROP_TYPE_FONT, offsetof(STRUCTClass, abstract_classname_font) },
 //  { "comment_font", PROP_TYPE_FONT, offsetof(STRUCTClass, comment_font) },
 
-  PROP_OFFSET_MULTICOL_COLUMN("height"),
-  { "normal_font_height", PROP_TYPE_REAL, offsetof(STRUCTClass, font_height) },
-  { "abstract_font_height", PROP_TYPE_REAL, offsetof(STRUCTClass, abstract_font_height) },
-  { "polymorphic_font_height", PROP_TYPE_REAL, offsetof(STRUCTClass, polymorphic_font_height) },
-  { "classname_font_height", PROP_TYPE_REAL, offsetof(STRUCTClass, classname_font_height) },
-  { "abstract_classname_font_height", PROP_TYPE_REAL, offsetof(STRUCTClass, abstract_classname_font_height) },
-  { "comment_font_height", PROP_TYPE_REAL, offsetof(STRUCTClass, comment_font_height) },
-  PROP_OFFSET_MULTICOL_END("class"),
+    PROP_OFFSET_MULTICOL_COLUMN("height"),
+    { "normal_font_height", PROP_TYPE_REAL, offsetof(STRUCTClass, font_height) },
+    { "abstract_font_height", PROP_TYPE_REAL, offsetof(STRUCTClass, abstract_font_height) },
+    { "polymorphic_font_height", PROP_TYPE_REAL, offsetof(STRUCTClass, polymorphic_font_height) },
+    { "classname_font_height", PROP_TYPE_REAL, offsetof(STRUCTClass, classname_font_height) },
+    { "abstract_classname_font_height", PROP_TYPE_REAL, offsetof(STRUCTClass, abstract_classname_font_height) },
+    { "comment_font_height", PROP_TYPE_REAL, offsetof(STRUCTClass, comment_font_height) },
+    PROP_OFFSET_MULTICOL_END("class"),
 
 //  { "operations", PROP_TYPE_DARRAY, offsetof(STRUCTClass , operations) },
 //  { "attributes", PROP_TYPE_DARRAY, offsetof(STRUCTClass , attributes) } ,
 //  { "templates",  PROP_TYPE_DARRAY, offsetof(STRUCTClass , formal_params) } ,
 
-  { NULL, 0, 0 },
+    { NULL, 0, 0 },
 };
 
 static void
 structclass_get_props(STRUCTClass * structclass, GPtrArray *props)
 {
-  object_get_props_from_offsets(&structclass->element.object,
-                                structclass_offsets, props);
+    object_get_props_from_offsets(&structclass->element.object,
+                                  structclass_offsets, props);
 }
 
-static DiaMenuItem structclass_menu_items[] = {
-        { N_("Show Comments"), structclass_show_comments_callback, NULL,
-          DIAMENU_ACTIVE|DIAMENU_TOGGLE },
+static DiaMenuItem structclass_menu_items[] =
+{
+    {
+        N_("Show Comments"), structclass_show_comments_callback, NULL,
+        DIAMENU_ACTIVE|DIAMENU_TOGGLE
+    },
 };
 
-static DiaMenu structclass_menu = {
-        N_("Class"),
-        sizeof(structclass_menu_items)/sizeof(DiaMenuItem),
-        structclass_menu_items,
-        NULL
+static DiaMenu structclass_menu =
+{
+    N_("Class"),
+    sizeof(structclass_menu_items)/sizeof(DiaMenuItem),
+    structclass_menu_items,
+    NULL
 };
 
 DiaMenu *
@@ -382,74 +407,76 @@ structclass_object_menu(DiaObject *obj, Point *p)
 //        structclass_menu_items[0].active = DIAMENU_ACTIVE|DIAMENU_TOGGLE|
 //                (((STRUCTClass *)obj)->visible_comments?DIAMENU_TOGGLE_ON:0);
 
-        return &structclass_menu;
+    return &structclass_menu;
 }
 
-typedef struct _CommentState {
-  ObjectState state;
-  gboolean    visible_comments;
+typedef struct _CommentState
+{
+    ObjectState state;
+    gboolean    visible_comments;
 } CommentState;
 static ObjectState*
 _comment_get_state (DiaObject *obj)
 {
-  CommentState *state = g_new (CommentState,1);
-  state->state.free = NULL; /* we don't have any pointers to free */
+    CommentState *state = g_new (CommentState,1);
+    state->state.free = NULL; /* we don't have any pointers to free */
 //  state->visible_comments = ((STRUCTClass *)obj)->visible_comments;
-  return (ObjectState *)state;
+    return (ObjectState *)state;
 }
 static void
 _comment_set_state (DiaObject *obj, ObjectState *state)
 {
 //  ((STRUCTClass *)obj)->visible_comments = ((CommentState *)state)->visible_comments;
-  g_free (state); /* rather strange convention set_state consumes the state */
-  structclass_calculate_data((STRUCTClass *)obj);
-  structclass_update_data((STRUCTClass *)obj);
+    g_free (state); /* rather strange convention set_state consumes the state */
+    structclass_calculate_data((STRUCTClass *)obj);
+    structclass_update_data((STRUCTClass *)obj);
 }
 
 ObjectChange *
 structclass_show_comments_callback(DiaObject *obj, Point *pos, gpointer data)
 {
-  ObjectState *old_state = _comment_get_state(obj);
-  ObjectChange *change = new_object_state_change(obj, old_state, _comment_get_state, _comment_set_state );
+    ObjectState *old_state = _comment_get_state(obj);
+    ObjectChange *change = new_object_state_change(obj, old_state, _comment_get_state, _comment_set_state );
 
 //  ((STRUCTClass *)obj)->visible_comments = !((STRUCTClass *)obj)->visible_comments;
-  structclass_calculate_data((STRUCTClass *)obj);
-  structclass_update_data((STRUCTClass *)obj);
-  return change;
+    structclass_calculate_data((STRUCTClass *)obj);
+    structclass_update_data((STRUCTClass *)obj);
+    return change;
 }
 
 static void
 structclass_set_props(STRUCTClass *structclass, GPtrArray *props)
 {
-  /* now that operations/attributes can be set here as well we need to
-   * take for the number of connections update as well
-   * Note that due to a hack in structclass_load, this is called before
-   * the normal connection points are set up.
-   */
-  DiaObject *obj = &structclass->element.object;
+    /* now that operations/attributes can be set here as well we need to
+     * take for the number of connections update as well
+     * Note that due to a hack in structclass_load, this is called before
+     * the normal connection points are set up.
+     */
+    DiaObject *obj = &structclass->element.object;
 //  GList *list;
-  int num;
+    int num;
 
-  object_set_props_from_offsets(&structclass->element.object, structclass_offsets,
-                                props);
+    object_set_props_from_offsets(&structclass->element.object, structclass_offsets,
+                                  props);
 
-  num = STRUCTCLASS_CONNECTIONPOINTS + structclass_num_dynamic_connectionpoints(structclass);
+    num = STRUCTCLASS_CONNECTIONPOINTS + structclass_num_dynamic_connectionpoints(structclass);
 
 #ifdef STRUCT_MAINPOINT
-  obj->num_connections = num + 1;
+    obj->num_connections = num + 1;
 #else
-  obj->num_connections = num;
+    obj->num_connections = num;
 #endif
 
-  obj->connections =  g_realloc(obj->connections, obj->num_connections*sizeof(ConnectionPoint *));
+    obj->connections =  g_realloc(obj->connections, obj->num_connections*sizeof(ConnectionPoint *));
 
-  /* Update data: */
-  if (num > STRUCTCLASS_CONNECTIONPOINTS) {
-    int i;
-    /* this is just updating pointers to ConnectionPoint, the real connection handling is elsewhere.
-     * Note: Can't optimize here on number change cause the ops/attribs may have changed regardless of that.
-     */
-    i = STRUCTCLASS_CONNECTIONPOINTS;
+    /* Update data: */
+    if (num > STRUCTCLASS_CONNECTIONPOINTS)
+    {
+//    int i;
+        /* this is just updating pointers to ConnectionPoint, the real connection handling is elsewhere.
+         * Note: Can't optimize here on number change cause the ops/attribs may have changed regardless of that.
+         */
+//    i = STRUCTCLASS_CONNECTIONPOINTS;
 //    list = (!structclass->visible_attributes || structclass->suppress_attributes) ? NULL : structclass->attributes;
 //    while (list != NULL) {
 //      STRUCTAttribute *attr = (STRUCTAttribute *)list->data;
@@ -476,60 +503,60 @@ structclass_set_props(STRUCTClass *structclass, GPtrArray *props)
 //      i++;
 //      list = g_list_next(list);
 //    }
-  }
+    }
 #ifdef STRUCT_MAINPOINT
-  obj->connections[num] = &structclass->connections[STRUCTCLASS_CONNECTIONPOINTS];
-  obj->connections[num]->object = obj;
+    obj->connections[num] = &structclass->connections[STRUCTCLASS_CONNECTIONPOINTS];
+    obj->connections[num]->object = obj;
 #endif
 
-  structclass_calculate_data(structclass);
-  structclass_update_data(structclass);
+    structclass_calculate_data(structclass);
+    structclass_update_data(structclass);
 #ifdef DEBUG
-  /* Would like to sanity check here, but the call to object_load_props
-   * in structclass_load means we will be called with inconsistent data. */
-  structclass_sanity_check(structclass, "After updating data");
+    /* Would like to sanity check here, but the call to object_load_props
+     * in structclass_load means we will be called with inconsistent data. */
+    structclass_sanity_check(structclass, "After updating data");
 #endif
 }
 
 static real
 structclass_distance_from(STRUCTClass *structclass, Point *point)
 {
-  DiaObject *obj = &structclass->element.object;
-  return distance_rectangle_point(&obj->bounding_box, point);
+    DiaObject *obj = &structclass->element.object;
+    return distance_rectangle_point(&obj->bounding_box, point);
 }
 
 static void
 structclass_select(STRUCTClass *structclass, Point *clicked_point,
-	       DiaRenderer *interactive_renderer)
+                   DiaRenderer *interactive_renderer)
 {
-  element_update_handles(&structclass->element);
+    element_update_handles(&structclass->element);
 }
 
 /*  2014-4-4 lcy ¸üÐÂ½çÃæÉÏËùÓÐ¶ÔÏñµÄIDºÅ*/
 static void factory_update_index(STRUCTClass *fclass)
 {
 
-      DiaObject *obj = &fclass->element.object;
-      GList *list = obj->parent_layer->objects;
-      int n = g_list_index(list,obj);
-      gchar **tmp =  g_strsplit(fclass->name,"(",-1);
-      gchar *newname = g_strconcat(tmp[0],g_strdup_printf(_("(%03d)"), n),NULL);
-      g_strfreev(tmp);
-      g_free(fclass->name);
-      fclass->name =  g_strdup(newname);
-      g_free(newname);
-      obj->name = fclass->name;
-      structclass_calculate_data(fclass);
-      if(!fclass->isInitial)
-      {
-           fclass->isInitial = TRUE;
-           factory_read_initial_to_struct(fclass);
-      }
+    DiaObject *obj = &fclass->element.object;
+    GList *list = obj->parent_layer->objects;
+    int n = g_list_index(list,obj);
+    gchar **tmp =  g_strsplit(fclass->name,"(",-1);
+    gchar *newname = g_strconcat(tmp[0],g_strdup_printf(_("(%03d)"), n),NULL);
+    g_strfreev(tmp);
+    g_free(fclass->name);
+    fclass->name =  g_strdup(newname);
+    g_free(newname);
+    obj->name = fclass->name;
+    structclass_calculate_data(fclass);
+    if(!fclass->isInitial)
+    {
+        fclass->isInitial = TRUE;
+        factory_read_initial_to_struct(fclass);
+    }
 }
 
 
 static void factory_select(STRUCTClass *fclass, Point *clicked_point,
-	       DiaRenderer *interactive_renderer)
+                           DiaRenderer *interactive_renderer)
 {
     element_update_handles(&fclass->element);
     factory_update_index(fclass);
@@ -537,25 +564,25 @@ static void factory_select(STRUCTClass *fclass, Point *clicked_point,
 
 static ObjectChange*
 structclass_move_handle(STRUCTClass *structclass, Handle *handle,
-		     Point *to, ConnectionPoint *cp,
-                     HandleMoveReason reason, ModifierKeys modifiers)
+                        Point *to, ConnectionPoint *cp,
+                        HandleMoveReason reason, ModifierKeys modifiers)
 {
-  assert(structclass!=NULL);
-  assert(handle!=NULL);
-  assert(to!=NULL);
+    assert(structclass!=NULL);
+    assert(handle!=NULL);
+    assert(to!=NULL);
 
-  assert(handle->id < STRUCTCLASS_CONNECTIONPOINTS);
+    assert(handle->id < STRUCTCLASS_CONNECTIONPOINTS);
 
-  return NULL;
+    return NULL;
 }
 
 static ObjectChange*
 structclass_move(STRUCTClass *structclass, Point *to)
 {
-  structclass->element.corner = *to;
-  structclass_update_data(structclass);
+    structclass->element.corner = *to;
+    structclass_update_data(structclass);
 
-  return NULL;
+    return NULL;
 }
 /**
  * underlines the text at the start point using the text to determine
@@ -577,38 +604,39 @@ structclass_move(STRUCTClass *structclass, Point *to)
  */
 static void
 struct_underline_text(DiaRenderer  *renderer,
-               Point         StartPoint,
-               DiaFont      *font,
-               real          font_height,
-               gchar        *string,
-               Color        *color,
-               real          line_width,
-               real          underline_width)
+                      Point         StartPoint,
+                      DiaFont      *font,
+                      real          font_height,
+                      gchar        *string,
+                      Color        *color,
+                      real          line_width,
+                      real          underline_width)
 {
-  DiaRendererClass *renderer_ops = DIA_RENDERER_GET_CLASS (renderer);
-  Point    UnderlineStartPoint;
-  Point    UnderlineEndPoint;
-  gchar *whitespaces;
-  int first_non_whitespace = 0;
+    DiaRendererClass *renderer_ops = DIA_RENDERER_GET_CLASS (renderer);
+    Point    UnderlineStartPoint;
+    Point    UnderlineEndPoint;
+    gchar *whitespaces;
+    int first_non_whitespace = 0;
 
-  UnderlineStartPoint = StartPoint;
-  UnderlineStartPoint.y += font_height * 0.1;
-  UnderlineEndPoint = UnderlineStartPoint;
+    UnderlineStartPoint = StartPoint;
+    UnderlineStartPoint.y += font_height * 0.1;
+    UnderlineEndPoint = UnderlineStartPoint;
 
-  whitespaces = string;
-  while (whitespaces &&
-	 g_unichar_isspace(g_utf8_get_char(whitespaces))) {
-    whitespaces = g_utf8_next_char(whitespaces);
-  }
-  first_non_whitespace = whitespaces - string;
-  whitespaces = g_strdup(string);
-  whitespaces[first_non_whitespace] = '\0';
-  UnderlineStartPoint.x += dia_font_string_width(whitespaces, font, font_height);
-  g_free(whitespaces);
-  UnderlineEndPoint.x += dia_font_string_width(string, font, font_height);
-  renderer_ops->set_linewidth(renderer, underline_width);
-  renderer_ops->draw_line(renderer, &UnderlineStartPoint, &UnderlineEndPoint, color);
-  renderer_ops->set_linewidth(renderer, line_width);
+    whitespaces = string;
+    while (whitespaces &&
+            g_unichar_isspace(g_utf8_get_char(whitespaces)))
+    {
+        whitespaces = g_utf8_next_char(whitespaces);
+    }
+    first_non_whitespace = whitespaces - string;
+    whitespaces = g_strdup(string);
+    whitespaces[first_non_whitespace] = '\0';
+    UnderlineStartPoint.x += dia_font_string_width(whitespaces, font, font_height);
+    g_free(whitespaces);
+    UnderlineEndPoint.x += dia_font_string_width(string, font, font_height);
+    renderer_ops->set_linewidth(renderer, underline_width);
+    renderer_ops->draw_line(renderer, &UnderlineStartPoint, &UnderlineEndPoint, color);
+    renderer_ops->set_linewidth(renderer, line_width);
 }
 
 /**
@@ -643,67 +671,72 @@ struct_underline_text(DiaRenderer  *renderer,
  */
 static gchar *
 struct_create_documentation_tag (gchar * comment,
-                              gboolean tagging,
-			      gint WrapPoint,
-			      gint *NumberOfLines)
+                                 gboolean tagging,
+                                 gint WrapPoint,
+                                 gint *NumberOfLines)
 {
-  gchar  *CommentTag           = tagging ? "{documentation = " : "";
-  gint   TagLength             = strlen(CommentTag);
-  /* Make sure that there is at least some value greater then zero for the WrapPoint to
-   * support diagrams from earlier versions of Dia. So if the WrapPoint is zero then use
-   * the taglength as the WrapPoint. If the Tag has been changed such that it has a length
-   * of 0 then use 1.
-   */
-  gint     WorkingWrapPoint = (TagLength<WrapPoint) ? WrapPoint : ((TagLength<=0)?1:TagLength);
-  gint     RawLength        = TagLength + strlen(comment) + (tagging?1:0);
-  gint     MaxCookedLength  = RawLength + RawLength/WorkingWrapPoint;
-  gchar    *WrappedComment  = g_malloc0(MaxCookedLength+1);
-  gint     AvailSpace       = WorkingWrapPoint - TagLength;
-  gchar    *Scan;
-  gchar    *BreakCandidate;
-  gunichar ScanChar;
-  gboolean AddNL            = FALSE;
+    gchar  *CommentTag           = tagging ? "{documentation = " : "";
+    gint   TagLength             = strlen(CommentTag);
+    /* Make sure that there is at least some value greater then zero for the WrapPoint to
+     * support diagrams from earlier versions of Dia. So if the WrapPoint is zero then use
+     * the taglength as the WrapPoint. If the Tag has been changed such that it has a length
+     * of 0 then use 1.
+     */
+    gint     WorkingWrapPoint = (TagLength<WrapPoint) ? WrapPoint : ((TagLength<=0)?1:TagLength);
+    gint     RawLength        = TagLength + strlen(comment) + (tagging?1:0);
+    gint     MaxCookedLength  = RawLength + RawLength/WorkingWrapPoint;
+    gchar    *WrappedComment  = g_malloc0(MaxCookedLength+1);
+    gint     AvailSpace       = WorkingWrapPoint - TagLength;
+    gchar    *Scan;
+    gchar    *BreakCandidate;
+    gunichar ScanChar;
+    gboolean AddNL            = FALSE;
 
-  if (tagging)
-    strcat(WrappedComment, CommentTag);
-  *NumberOfLines = 1;
+    if (tagging)
+        strcat(WrappedComment, CommentTag);
+    *NumberOfLines = 1;
 
-  while ( *comment ) {
-    /* Skip spaces */
-    while ( *comment && g_unichar_isspace(g_utf8_get_char(comment)) ) {
-        comment = g_utf8_next_char(comment);
+    while ( *comment )
+    {
+        /* Skip spaces */
+        while ( *comment && g_unichar_isspace(g_utf8_get_char(comment)) )
+        {
+            comment = g_utf8_next_char(comment);
+        }
+        /* Copy chars */
+        if ( *comment )
+        {
+            /* Scan to \n or avalable space exhausted */
+            Scan = comment;
+            BreakCandidate = NULL;
+            while ( *Scan && *Scan != '\n' && AvailSpace > 0 )
+            {
+                ScanChar = g_utf8_get_char(Scan);
+                /* We known, that g_unichar_isspace() is not recommended for word breaking;
+                 * but Pango usage seems too complex.
+                 */
+                if ( g_unichar_isspace(ScanChar) )
+                    BreakCandidate = Scan;
+                AvailSpace--; /* not valid for nonspacing marks */
+                Scan = g_utf8_next_char(Scan);
+            }
+            if ( AvailSpace==0 && BreakCandidate != NULL )
+                Scan = BreakCandidate;
+            if ( AddNL )
+            {
+                strcat(WrappedComment, "\n");
+                *NumberOfLines+=1;
+            }
+            AddNL = TRUE;
+            strncat(WrappedComment, comment, Scan-comment);
+            AvailSpace = WorkingWrapPoint;
+            comment = Scan;
+        }
     }
-    /* Copy chars */
-    if ( *comment ){
-      /* Scan to \n or avalable space exhausted */
-      Scan = comment;
-      BreakCandidate = NULL;
-      while ( *Scan && *Scan != '\n' && AvailSpace > 0 ) {
-        ScanChar = g_utf8_get_char(Scan);
-        /* We known, that g_unichar_isspace() is not recommended for word breaking;
-         * but Pango usage seems too complex.
-         */
-        if ( g_unichar_isspace(ScanChar) )
-          BreakCandidate = Scan;
-        AvailSpace--; /* not valid for nonspacing marks */
-        Scan = g_utf8_next_char(Scan);
-      }
-      if ( AvailSpace==0 && BreakCandidate != NULL )
-        Scan = BreakCandidate;
-      if ( AddNL ){
-        strcat(WrappedComment, "\n");
-        *NumberOfLines+=1;
-      }
-      AddNL = TRUE;
-      strncat(WrappedComment, comment, Scan-comment);
-        AvailSpace = WorkingWrapPoint;
-      comment = Scan;
-    }
-  }
-  if (tagging)
-    strcat(WrappedComment, "}");
-  assert(strlen(WrappedComment)<=MaxCookedLength);
-  return WrappedComment;
+    if (tagging)
+        strcat(WrappedComment, "}");
+    assert(strlen(WrappedComment)<=MaxCookedLength);
+    return WrappedComment;
 }
 
 /**
@@ -727,51 +760,53 @@ struct_create_documentation_tag (gchar * comment,
  */
 static void
 struct_draw_comments(DiaRenderer *renderer,
-                  DiaFont     *font,
-                  real         font_height,
-                  Color       *text_color,
-                  gchar       *comment,
-		  gboolean     comment_tagging,
-                  gint         Comment_line_length,
-                  Point       *p,
-                  gint         alignment)
+                     DiaFont     *font,
+                     real         font_height,
+                     Color       *text_color,
+                     gchar       *comment,
+                     gboolean     comment_tagging,
+                     gint         Comment_line_length,
+                     Point       *p,
+                     gint         alignment)
 {
-  gint      NumberOfLines = 0;
-  gint      Index;
-  real      ascent;
-  gchar     *CommentString = 0;
-  gchar     *NewLineP= NULL;
-  gchar     *RenderP;
+    gint      NumberOfLines = 0;
+    gint      Index;
+    real      ascent;
+    gchar     *CommentString = 0;
+    gchar     *NewLineP= NULL;
+    gchar     *RenderP;
 
-  DiaRendererClass *renderer_ops = DIA_RENDERER_GET_CLASS (renderer);
+    DiaRendererClass *renderer_ops = DIA_RENDERER_GET_CLASS (renderer);
 
-  CommentString =
+    CommentString =
         struct_create_documentation_tag(comment, comment_tagging, Comment_line_length, &NumberOfLines);
-  RenderP = CommentString;
-  renderer_ops->set_font(renderer, font, font_height);
-  ascent = dia_font_ascent(RenderP, font, font_height);
-  for ( Index=0; Index < NumberOfLines; Index++)
-  {
-    NewLineP = strchr(RenderP, '\n');
-    if ( NewLineP != NULL)
+    RenderP = CommentString;
+    renderer_ops->set_font(renderer, font, font_height);
+    ascent = dia_font_ascent(RenderP, font, font_height);
+    for ( Index=0; Index < NumberOfLines; Index++)
     {
-      *NewLineP++ = '\0';
+        NewLineP = strchr(RenderP, '\n');
+        if ( NewLineP != NULL)
+        {
+            *NewLineP++ = '\0';
+        }
+        if (Index == 0)
+        {
+            p->y += ascent;
+        }
+        else
+        {
+            p->y += font_height;                    /* Advance to the next line */
+        }
+        renderer_ops->draw_string(renderer, RenderP, p, alignment, text_color);
+        RenderP = NewLineP;
+        if ( NewLineP == NULL)
+        {
+            break;
+        }
     }
-    if (Index == 0) {
-      p->y += ascent;
-    }
-    else
-    {
-      p->y += font_height;                    /* Advance to the next line */
-    }
-    renderer_ops->draw_string(renderer, RenderP, p, alignment, text_color);
-    RenderP = NewLineP;
-    if ( NewLineP == NULL){
-        break;
-    }
-  }
-  p->y += font_height - ascent;
-  g_free(CommentString);
+    p->y += font_height - ascent;
+    g_free(CommentString);
 }
 
 
@@ -797,38 +832,38 @@ struct_draw_comments(DiaRenderer *renderer,
 static real
 structclass_draw_namebox(STRUCTClass *structclass, DiaRenderer *renderer, Element *elem )
 {
-  DiaRendererClass *renderer_ops = DIA_RENDERER_GET_CLASS (renderer);
-  real     font_height;
-  real     ascent;
-  DiaFont *font;
-  Point   StartPoint;
-  Point   LowerRightPoint;
-  real    Yoffset;
-  Color   *text_color = &structclass->text_color;
+    DiaRendererClass *renderer_ops = DIA_RENDERER_GET_CLASS (renderer);
+    real     font_height;
+    real     ascent;
+    DiaFont *font;
+    Point   StartPoint;
+    Point   LowerRightPoint;
+    real    Yoffset;
+    Color   *text_color = &structclass->text_color;
 
 
 
-  StartPoint.x = elem->corner.x;
-  StartPoint.y = elem->corner.y;
+    StartPoint.x = elem->corner.x;
+    StartPoint.y = elem->corner.y;
 
-  Yoffset = elem->corner.y + structclass->namebox_height;
+    Yoffset = elem->corner.y + structclass->namebox_height;
 
-  LowerRightPoint = StartPoint;
-  LowerRightPoint.x += elem->width;
-  LowerRightPoint.y  = Yoffset;
+    LowerRightPoint = StartPoint;
+    LowerRightPoint.x += elem->width;
+    LowerRightPoint.y  = Yoffset;
 
-  /*
-   * First draw the outer box and fill color for the class name
-   * object
-   */
-  renderer_ops->fill_rect(renderer, &StartPoint, &LowerRightPoint, &structclass->fill_color);
-  renderer_ops->draw_rect(renderer, &StartPoint, &LowerRightPoint, &structclass->line_color);
+    /*
+     * First draw the outer box and fill color for the class name
+     * object
+     */
+    renderer_ops->fill_rect(renderer, &StartPoint, &LowerRightPoint, &structclass->fill_color);
+    renderer_ops->draw_rect(renderer, &StartPoint, &LowerRightPoint, &structclass->line_color);
 
-  /* Start at the midpoint on the X axis */
-  StartPoint.x += elem->width / 2.0;
-  StartPoint.y += 0.2;
+    /* Start at the midpoint on the X axis */
+    StartPoint.x += elem->width / 2.0;
+    StartPoint.y += 0.2;
 
-  /* stereotype: */
+    /* stereotype: */
 //  if (structclass->stereotype != NULL && structclass->stereotype[0] != '\0') {
 //    gchar *String = structclass->stereotype_string;
 //    ascent = dia_font_ascent(String, structclass->normal_font, structclass->font_height);
@@ -839,22 +874,23 @@ structclass_draw_namebox(STRUCTClass *structclass, DiaRenderer *renderer, Elemen
 //  }
 //
 //  /* name: */
-  if (structclass->name != NULL) {
+    if (structclass->name != NULL)
+    {
 //    if (structclass->abstract) {
 //      font = structclass->abstract_classname_font;
 //      font_height = structclass->abstract_classname_font_height;
 //    } else
-     {
-      font = structclass->classname_font;
-      font_height = structclass->classname_font_height;
-    }
-    ascent = dia_font_ascent(structclass->name, font, font_height);
-    StartPoint.y += ascent;
+        {
+            font = structclass->classname_font;
+            font_height = structclass->classname_font_height;
+        }
+        ascent = dia_font_ascent(structclass->name, font, font_height);
+        StartPoint.y += ascent;
 
-    renderer_ops->set_font(renderer, font, font_height);
-    renderer_ops->draw_string(renderer, structclass->name, &StartPoint, ALIGN_CENTER, text_color);
-    StartPoint.y += font_height - ascent;
-  }
+        renderer_ops->set_font(renderer, font, font_height);
+        renderer_ops->draw_string(renderer, structclass->name, &StartPoint, ALIGN_CENTER, text_color);
+        StartPoint.y += font_height - ascent;
+    }
 //
 //  /* comment */
 //  if (structclass->visible_comments && structclass->comment != NULL && structclass->comment[0] != '\0'){
@@ -862,7 +898,7 @@ structclass_draw_namebox(STRUCTClass *structclass, DiaRenderer *renderer, Elemen
 //                           &structclass->text_color, structclass->comment, structclass->comment_tagging,
 //                           structclass->comment_line_length, &StartPoint, ALIGN_CENTER);
 //  }
-  return Yoffset;
+    return Yoffset;
 }
 
 /**
@@ -887,27 +923,27 @@ structclass_draw_namebox(STRUCTClass *structclass, DiaRenderer *renderer, Elemen
 static real
 structclass_draw_attributebox(STRUCTClass *structclass, DiaRenderer *renderer, Element *elem, real Yoffset)
 {
-  DiaRendererClass *renderer_ops = DIA_RENDERER_GET_CLASS (renderer);
+    DiaRendererClass *renderer_ops = DIA_RENDERER_GET_CLASS (renderer);
 //  real     font_height;
 //  real     ascent;
-  Point    StartPoint;
-  Point    LowerRight;
+    Point    StartPoint;
+    Point    LowerRight;
 //  DiaFont *font;
-  Color   *fill_color = &structclass->fill_color;
-  Color   *line_color = &structclass->line_color;
+    Color   *fill_color = &structclass->fill_color;
+    Color   *line_color = &structclass->line_color;
 //  Color   *text_color = &structclass->text_color;
 //  GList   *list;
 
-  StartPoint.x = elem->corner.x;
-  StartPoint.y = Yoffset;
+    StartPoint.x = elem->corner.x;
+    StartPoint.y = Yoffset;
 //  Yoffset   += structclass->attributesbox_height;
 
-  LowerRight   = StartPoint;
-  LowerRight.x += elem->width;
-  LowerRight.y = Yoffset;
+    LowerRight   = StartPoint;
+    LowerRight.x += elem->width;
+    LowerRight.y = Yoffset;
 
-  renderer_ops->fill_rect(renderer, &StartPoint, &LowerRight, fill_color);
-  renderer_ops->draw_rect(renderer, &StartPoint, &LowerRight, line_color);
+    renderer_ops->fill_rect(renderer, &StartPoint, &LowerRight, fill_color);
+    renderer_ops->draw_rect(renderer, &StartPoint, &LowerRight, line_color);
 
 //  if (!structclass->suppress_attributes) {
 //    gint i = 0;
@@ -950,7 +986,7 @@ structclass_draw_attributebox(STRUCTClass *structclass, DiaRenderer *renderer, E
 //      g_free (attstr);
 //    }
 //  }
-  return Yoffset;
+    return Yoffset;
 }
 
 
@@ -1192,19 +1228,19 @@ structclass_draw_attributebox(STRUCTClass *structclass, DiaRenderer *renderer, E
 static void
 structclass_draw(STRUCTClass *structclass, DiaRenderer *renderer)
 {
-  DiaRendererClass *renderer_ops = DIA_RENDERER_GET_CLASS (renderer);
-  Element *elem;
+    DiaRendererClass *renderer_ops = DIA_RENDERER_GET_CLASS (renderer);
+    Element *elem;
 
-  assert(structclass != NULL);
-  assert(renderer != NULL);
+    assert(structclass != NULL);
+    assert(renderer != NULL);
 
-  renderer_ops->set_fillstyle(renderer, FILLSTYLE_SOLID);
-  renderer_ops->set_linewidth(renderer, structclass->line_width);
-  renderer_ops->set_linestyle(renderer, LINESTYLE_SOLID);
+    renderer_ops->set_fillstyle(renderer, FILLSTYLE_SOLID);
+    renderer_ops->set_linewidth(renderer, structclass->line_width);
+    renderer_ops->set_linestyle(renderer, LINESTYLE_SOLID);
 
-  elem = &structclass->element;
+    elem = &structclass->element;
 
-  structclass_draw_namebox(structclass, renderer, elem);
+    structclass_draw_namebox(structclass, renderer, elem);
 //  if (structclass->visible_attributes) {
 //    y = structclass_draw_attributebox(structclass, renderer, elem, y);
 //  }
@@ -1219,79 +1255,81 @@ structclass_draw(STRUCTClass *structclass, DiaRenderer *renderer)
 void
 structclass_update_data(STRUCTClass *structclass)
 {
-  Element *elem = &structclass->element;
-  DiaObject *obj = &elem->object;
-  real x,y;
+    Element *elem = &structclass->element;
+    DiaObject *obj = &elem->object;
+    real x,y;
 //  GList *list;
-  int i;
-  int pointswide;
-  int lowerleftcorner;
-  real pointspacing;
+    int i;
+    int pointswide;
+    int lowerleftcorner;
+    real pointspacing;
 
-  x = elem->corner.x;
-  y = elem->corner.y;
+    x = elem->corner.x;
+    y = elem->corner.y;
 
-  /* Update connections: */
-  structclass->connections[0].pos = elem->corner;
-  structclass->connections[0].directions = DIR_NORTH|DIR_WEST;
+    /* Update connections: */
+    structclass->connections[0].pos = elem->corner;
+    structclass->connections[0].directions = DIR_NORTH|DIR_WEST;
 
-  /* there are four corner points and two side points, thus all
-   * remaining points are on the top/bottom width
-   */
-  pointswide = (STRUCTCLASS_CONNECTIONPOINTS - 6) / 2;
-  pointspacing = elem->width / (pointswide + 1.0);
+    /* there are four corner points and two side points, thus all
+     * remaining points are on the top/bottom width
+     */
+    pointswide = (STRUCTCLASS_CONNECTIONPOINTS - 6) / 2;
+    pointspacing = elem->width / (pointswide + 1.0);
 
-  /* across the top connection points */
-  for (i=1;i<=pointswide;i++) {
-    structclass->connections[i].pos.x = x + (pointspacing * i);
+    /* across the top connection points */
+    for (i=1; i<=pointswide; i++)
+    {
+        structclass->connections[i].pos.x = x + (pointspacing * i);
+        structclass->connections[i].pos.y = y;
+        structclass->connections[i].directions = DIR_NORTH;
+    }
+
+    i = (STRUCTCLASS_CONNECTIONPOINTS / 2) - 2;
+    structclass->connections[i].pos.x = x + elem->width;
     structclass->connections[i].pos.y = y;
-    structclass->connections[i].directions = DIR_NORTH;
-  }
+    structclass->connections[i].directions = DIR_NORTH|DIR_EAST;
 
-  i = (STRUCTCLASS_CONNECTIONPOINTS / 2) - 2;
-  structclass->connections[i].pos.x = x + elem->width;
-  structclass->connections[i].pos.y = y;
-  structclass->connections[i].directions = DIR_NORTH|DIR_EAST;
+    i = (STRUCTCLASS_CONNECTIONPOINTS / 2) - 1;
+    structclass->connections[i].pos.x = x;
+    structclass->connections[i].pos.y = y + structclass->namebox_height / 2.0;
+    structclass->connections[i].directions = DIR_WEST;
 
-  i = (STRUCTCLASS_CONNECTIONPOINTS / 2) - 1;
-  structclass->connections[i].pos.x = x;
-  structclass->connections[i].pos.y = y + structclass->namebox_height / 2.0;
-  structclass->connections[i].directions = DIR_WEST;
+    i = (STRUCTCLASS_CONNECTIONPOINTS / 2);
+    structclass->connections[i].pos.x = x + elem->width;
+    structclass->connections[i].pos.y = y + structclass->namebox_height / 2.0;
+    structclass->connections[i].directions = DIR_EAST;
 
-  i = (STRUCTCLASS_CONNECTIONPOINTS / 2);
-  structclass->connections[i].pos.x = x + elem->width;
-  structclass->connections[i].pos.y = y + structclass->namebox_height / 2.0;
-  structclass->connections[i].directions = DIR_EAST;
+    i = (STRUCTCLASS_CONNECTIONPOINTS / 2) + 1;
+    structclass->connections[i].pos.x = x;
+    structclass->connections[i].pos.y = y + elem->height;
+    structclass->connections[i].directions = DIR_WEST|DIR_SOUTH;
 
-  i = (STRUCTCLASS_CONNECTIONPOINTS / 2) + 1;
-  structclass->connections[i].pos.x = x;
-  structclass->connections[i].pos.y = y + elem->height;
-  structclass->connections[i].directions = DIR_WEST|DIR_SOUTH;
+    /* across the bottom connection points */
+    lowerleftcorner = (STRUCTCLASS_CONNECTIONPOINTS / 2) + 1;
+    for (i=1; i<=pointswide; i++)
+    {
+        structclass->connections[lowerleftcorner + i].pos.x = x + (pointspacing * i);
+        structclass->connections[lowerleftcorner + i].pos.y = y + elem->height;
+        structclass->connections[lowerleftcorner + i].directions = DIR_SOUTH;
+    }
 
-  /* across the bottom connection points */
-  lowerleftcorner = (STRUCTCLASS_CONNECTIONPOINTS / 2) + 1;
-  for (i=1;i<=pointswide;i++) {
-    structclass->connections[lowerleftcorner + i].pos.x = x + (pointspacing * i);
-    structclass->connections[lowerleftcorner + i].pos.y = y + elem->height;
-    structclass->connections[lowerleftcorner + i].directions = DIR_SOUTH;
-  }
-
-  /* bottom-right corner */
-  i = (STRUCTCLASS_CONNECTIONPOINTS) - 1;
-  structclass->connections[i].pos.x = x + elem->width;
-  structclass->connections[i].pos.y = y + elem->height;
-  structclass->connections[i].directions = DIR_EAST|DIR_SOUTH;
+    /* bottom-right corner */
+    i = (STRUCTCLASS_CONNECTIONPOINTS) - 1;
+    structclass->connections[i].pos.x = x + elem->width;
+    structclass->connections[i].pos.y = y + elem->height;
+    structclass->connections[i].directions = DIR_EAST|DIR_SOUTH;
 
 #ifdef STRUCT_MAINPOINT
-  /* Main point -- lives just after fixed connpoints in structclass array */
-  i = STRUCTCLASS_CONNECTIONPOINTS;
-  structclass->connections[i].pos.x = x + elem->width / 2;
-  structclass->connections[i].pos.y = y + elem->height / 2;
-  structclass->connections[i].directions = DIR_ALL;
-  structclass->connections[i].flags = CP_FLAGS_MAIN;
+    /* Main point -- lives just after fixed connpoints in structclass array */
+    i = STRUCTCLASS_CONNECTIONPOINTS;
+    structclass->connections[i].pos.x = x + elem->width / 2;
+    structclass->connections[i].pos.y = y + elem->height / 2;
+    structclass->connections[i].directions = DIR_ALL;
+    structclass->connections[i].flags = CP_FLAGS_MAIN;
 #endif
 
-  y += structclass->namebox_height + 0.1 + structclass->font_height/2;
+    y += structclass->namebox_height + 0.1 + structclass->font_height/2;
 
 //  list = (!structclass->visible_attributes || structclass->suppress_attributes) ? NULL : structclass->attributes;
 //  while (list != NULL) {
@@ -1352,7 +1390,7 @@ structclass_update_data(STRUCTClass *structclass)
 //    list = g_list_next(list);
 //  }
 
-  element_update_boundingbox(elem);
+    element_update_boundingbox(elem);
 
 //  if (structclass->template) {
 //    /* fix boundingstructclass for templates: */
@@ -1362,12 +1400,12 @@ structclass_update_data(STRUCTClass *structclass)
 //				(STRUCTCLASS_TEMPLATE_OVERLAY_X - elem->width) : 0;
 //  }
 
-  obj->position = elem->corner;
+    obj->position = elem->corner;
 
-  element_update_handles(elem);
+    element_update_handles(elem);
 
 #ifdef DEBUG
-  structclass_sanity_check(structclass, "After updating data");
+    structclass_sanity_check(structclass, "After updating data");
 #endif
 }
 
@@ -1442,24 +1480,25 @@ structclass_update_data(STRUCTClass *structclass)
 static real
 structclass_calculate_name_data(STRUCTClass *structclass)
 {
-  real   maxwidth = 0.0;
+    real   maxwidth = 0.0;
 //  real   width = 0.0;
-  /* name box: */
+    /* name box: */
 
-  if (structclass->name != NULL && structclass->name[0] != '\0') {
+    if (structclass->name != NULL && structclass->name[0] != '\0')
+    {
 //    if (structclass->abstract) {
 //      maxwidth = dia_font_string_width(structclass->name,
 //                                       structclass->abstract_classname_font,
 //                                       structclass->abstract_classname_font_height);
 //    } else
         {
-      maxwidth = dia_font_string_width(structclass->name,
-                                       structclass->classname_font,
-                                       structclass->classname_font_height);
+            maxwidth = dia_font_string_width(structclass->name,
+                                             structclass->classname_font,
+                                             structclass->classname_font_height);
+        }
     }
-  }
 
-  structclass->namebox_height = structclass->classname_font_height + 4*0.1;
+    structclass->namebox_height = structclass->classname_font_height + 4*0.1;
 //  if (structclass->stereotype_string != NULL) {
 //    g_free(structclass->stereotype_string);
 //  }
@@ -1493,7 +1532,7 @@ structclass_calculate_name_data(STRUCTClass *structclass)
 //    structclass->namebox_height += structclass->comment_font_height * NumberOfLines;
 //    maxwidth = MAX(width, maxwidth);
 //  }
-  return maxwidth;
+    return maxwidth;
 }
 
 /**
@@ -1763,17 +1802,17 @@ structclass_calculate_name_data(STRUCTClass *structclass)
 void
 structclass_calculate_data(STRUCTClass *structclass)
 {
-  int    i;
-  int    num_templates;
-  real   maxwidth = 0.0;
+//  int    i;
+    int    num_templates;
+    real   maxwidth = 0.0;
 //  real   width;
 //  GList *list;
 
-  if (!structclass->destroyed)
-  {
-    maxwidth = MAX(structclass_calculate_name_data(structclass),      maxwidth);
+    if (!structclass->destroyed)
+    {
+        maxwidth = MAX(structclass_calculate_name_data(structclass),      maxwidth);
 
-    structclass->element.height = structclass->namebox_height;
+        structclass->element.height = structclass->namebox_height;
 
 //    if (structclass->visible_attributes){
 //      maxwidth = MAX(structclass_calculate_attribute_data(structclass), maxwidth);
@@ -1783,8 +1822,8 @@ structclass_calculate_data(STRUCTClass *structclass)
 //      maxwidth = MAX(structclass_calculate_operation_data(structclass), maxwidth);
 //      structclass->element.height += structclass->operationsbox_height;
 //    }
-    structclass->element.width  = maxwidth+0.5;
-    /* templates box: */
+        structclass->element.width  = maxwidth+0.5;
+        /* templates box: */
 //    num_templates = g_list_length(structclass->formal_params);
 
 //    structclass->templates_height =
@@ -1792,10 +1831,10 @@ structclass_calculate_data(STRUCTClass *structclass)
 //    structclass->templates_height = MAX(structclass->templates_height, 0.4);
 
 
-    maxwidth = STRUCTCLASS_TEMPLATE_OVERLAY_X;
-    if (num_templates != 0)
-    {
-      i = 0;
+        maxwidth = STRUCTCLASS_TEMPLATE_OVERLAY_X;
+        if (num_templates != 0)
+        {
+//      i = 0;
 //      list = structclass->formal_params;
 //      while (list != NULL)
 //      {
@@ -1811,9 +1850,9 @@ structclass_calculate_data(STRUCTClass *structclass)
 //        list = g_list_next(list);
 //	g_free (paramstr);
 //      }
-    }
+        }
 //    structclass->templates_width = maxwidth + 2*0.2;
-  }
+    }
 }
 
 
@@ -1841,7 +1880,7 @@ structclass_calculate_data(STRUCTClass *structclass)
 //      structclass->element.height += structclass->operationsbox_height;
 //    }
 //    structclass->element.width  = maxwidth+0.5;
-    /* templates box: */
+/* templates box: */
 //    num_templates = g_list_length(structclass->formal_params);
 
 //    structclass->templates_height =
@@ -1876,10 +1915,11 @@ structclass_calculate_data(STRUCTClass *structclass)
 static void
 fill_in_fontdata(STRUCTClass *structclass)
 {
-   if (structclass->normal_font == NULL) {
-     structclass->font_height = 0.8;
-     structclass->normal_font = dia_font_new_from_style(DIA_FONT_MONOSPACE, 0.8);
-   }
+    if (structclass->normal_font == NULL)
+    {
+        structclass->font_height = 0.8;
+        structclass->normal_font = dia_font_new_from_style(DIA_FONT_MONOSPACE, 0.8);
+    }
 //   if (structclass->abstract_font == NULL) {
 //     structclass->abstract_font_height = 0.8;
 //     structclass->abstract_font =
@@ -1890,11 +1930,12 @@ fill_in_fontdata(STRUCTClass *structclass)
 //     structclass->polymorphic_font =
 //       dia_font_new_from_style(DIA_FONT_MONOSPACE | DIA_FONT_ITALIC, 0.8);
 //   }
-   if (structclass->classname_font == NULL) {
-     structclass->classname_font_height = 1.0;
-     structclass->classname_font =
-       dia_font_new_from_style(DIA_FONT_SANS | DIA_FONT_BOLD, 1.0);
-   }
+    if (structclass->classname_font == NULL)
+    {
+        structclass->classname_font_height = 1.0;
+        structclass->classname_font =
+            dia_font_new_from_style(DIA_FONT_SANS | DIA_FONT_BOLD, 1.0);
+    }
 //   if (structclass->abstract_classname_font == NULL) {
 //     structclass->abstract_classname_font_height = 1.0;
 //     structclass->abstract_classname_font =
@@ -2046,105 +2087,285 @@ fill_in_fontdata(STRUCTClass *structclass)
 
 static DiaObject *  // 2014-3-19 lcy ÕâÀï³õÊ¼»¯½á¹¹
 factory_struct_items_create(Point *startpoint,
-	       void *user_data,
-  	       Handle **handle1,
-	       Handle **handle2)
+                            void *user_data,
+                            Handle **handle1,
+                            Handle **handle2)
 {
-  STRUCTClass *structclass;
+    STRUCTClass *structclass;
 //  STRUCTClassDialog *properties_dialog;
-  Element *elem;
-  DiaObject *obj;
-  int i;
+    Element *elem;
+    DiaObject *obj;
+    int i;
 
-  structclass = g_malloc0(sizeof(STRUCTClass));
-  structclass->isInitial = FALSE;
-  elem = &structclass->element;
-  obj = &elem->object;
+    structclass = g_malloc0(sizeof(STRUCTClass));
+    structclass->isInitial = FALSE;
+    elem = &structclass->element;
+    obj = &elem->object;
 
 
-  elem->corner = *startpoint;
+
+    elem->corner = *startpoint;
 
 #ifdef STRUCT_MAINPOINT
-  element_init(elem, 8, STRUCTCLASS_CONNECTIONPOINTS + 1); /* No attribs or ops => 0 extra connectionpoints. */
+    element_init(elem, 8, STRUCTCLASS_CONNECTIONPOINTS + 1); /* No attribs or ops => 0 extra connectionpoints. */
 #else
-  element_init(elem, 8, STRUCTCLASS_CONNECTIONPOINTS); /* No attribs or ops => 0 extra connectionpoints. */
+    element_init(elem, 8, STRUCTCLASS_CONNECTIONPOINTS); /* No attribs or ops => 0 extra connectionpoints. */
 #endif
 
     fill_in_fontdata(structclass);
 
-  /*
-   * The following block of code may need to be converted to a switch statement if more than
-   * two types of objects can be made - Dave Klotzbach
-   */
-  // structclass->template = (GPOINTER_TO_INT(user_data)==1);
+    /*
+     * The following block of code may need to be converted to a switch statement if more than
+     * two types of objects can be made - Dave Klotzbach
+     */
+    // structclass->template = (GPOINTER_TO_INT(user_data)==1);
 //  structclass->template = FALSE;
-  int index = GPOINTER_TO_INT(user_data);
-  GList *sstruct = structList.structList;
-  for(;sstruct !=NULL;sstruct = sstruct->next)
-  {
-      FactoryStructItemList *i = sstruct->data;
-      if(i->number == index)
-      {
-          obj->name = g_strdup(_(i->name));
-          break;
-      }
-  }
-  structclass->name = obj->name ;
-  /* 2014-3-26 lcy  ÕâÀï³õÊ¼¹þÏ£±íÓÃ´æwidgetÓëËüµÄÖµ*/
- // structclass->widgetmap = g_hash_table_new(g_direct_hash,g_direct_equal);
-  structclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+    int index = GPOINTER_TO_INT(user_data);
+    GList *sstruct = structList.structList;
+    for(; sstruct !=NULL; sstruct = sstruct->next)
+    {
+        FactoryStructItemList *i = sstruct->data;
+        if(i->number == index)
+        {
+            obj->name = g_strdup(_(i->name));
+            break;
+        }
+    }
+    structclass->name = obj->name ;
+    /* 2014-3-26 lcy  ÕâÀï³õÊ¼¹þÏ£±íÓÃ´æwidgetÓëËüµÄÖµ*/
+// structclass->widgetmap = g_hash_table_new(g_direct_hash,g_direct_equal);
+    structclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
 
-  obj->type = &structclass_type;
-  obj->ops = &structclass_ops;
+    obj->type = &structclass_type;
+    obj->type->version  = g_strdup(structList.file_version);
+    obj->ops = &structclass_ops;
 
-  structclass->line_width = attributes_get_default_linewidth();
-  structclass->text_color = color_black;
-  structclass->line_color = attributes_get_foreground();
-  structclass->fill_color = attributes_get_background();
+    structclass->line_width = attributes_get_default_linewidth();
+    structclass->text_color = color_black;
+    structclass->line_color = attributes_get_foreground();
+    structclass->fill_color = attributes_get_background();
 
-  structclass_calculate_data(structclass);
+    structclass_calculate_data(structclass);
 
-  for (i=0;i<STRUCTCLASS_CONNECTIONPOINTS;i++) {
-    obj->connections[i] = &structclass->connections[i];
-    structclass->connections[i].object = obj;
-    structclass->connections[i].connected = NULL;
-  }
+    for (i=0; i<STRUCTCLASS_CONNECTIONPOINTS; i++)
+    {
+        obj->connections[i] = &structclass->connections[i];
+        structclass->connections[i].object = obj;
+        structclass->connections[i].connected = NULL;
+    }
 #ifdef STRUCT_MAINPOINT
-  /* Put mainpoint at the end, after conditional attr/oprn points,
-   * but store it in the local connectionpoint array. */
-  i += structclass_num_dynamic_connectionpoints(structclass);
-  obj->connections[i] = &structclass->connections[STRUCTCLASS_CONNECTIONPOINTS];
-  structclass->connections[STRUCTCLASS_CONNECTIONPOINTS].object = obj;
-  structclass->connections[STRUCTCLASS_CONNECTIONPOINTS].connected = NULL;
+    /* Put mainpoint at the end, after conditional attr/oprn points,
+     * but store it in the local connectionpoint array. */
+    i += structclass_num_dynamic_connectionpoints(structclass);
+    obj->connections[i] = &structclass->connections[STRUCTCLASS_CONNECTIONPOINTS];
+    structclass->connections[STRUCTCLASS_CONNECTIONPOINTS].object = obj;
+    structclass->connections[STRUCTCLASS_CONNECTIONPOINTS].connected = NULL;
 #endif
 
-  elem->extra_spacing.border_trans = structclass->line_width/2.0;
-  structclass_update_data(structclass);
+    elem->extra_spacing.border_trans = structclass->line_width/2.0;
+    structclass_update_data(structclass);
 
-  for (i=0;i<8;i++) {
-    obj->handles[i]->type = HANDLE_NON_MOVABLE;
-  }
+    for (i=0; i<8; i++)
+    {
+        obj->handles[i]->type = HANDLE_NON_MOVABLE;
+    }
 
-  *handle1 = NULL;
-  *handle2 = NULL;
-  structclass->EnumsAndStructs = NULL;
-  structclass->EnumsAndStructs = &structList;
-//  factory_read_initial_to_struct(structclass);
-  return &structclass->element.object;
+    *handle1 = NULL;
+    *handle2 = NULL;
+    structclass->EnumsAndStructs = NULL;
+    structclass->EnumsAndStructs = &structList;
+    return &structclass->element.object;
 }
 
-
-void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
+//AttributeNode *factory_get_xml_next_node(AttributeNode  obj_node,const gchar *comprename)
+//{
+//     AttributeNode attr_node = obj_node;
+//     while(attr_node = data_next(attr_node))
+//        {
+//            xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
+//            if(key)
+//            {
+//                if(0 == g_ascii_strncasecmp((gchar*)key,comprename,strlen((gchar*)key)))
+//                {
+//                    sss->name = g_strdup(comprename);
+//                    break;
+//                }
+//            }
+//            xmlFree(key);
+//
+//        }
+//        return attr_node;
+//}
+void  factory_read_object_value_from_file(SaveStruct *sss,STRUCTClass *fclass,FactoryStructItem *fst,ObjectNode attr_node)
 {
-    GList *tlist = g_hash_table_lookup(structclass->EnumsAndStructs->structTable,structclass->name);
 
-    if(tlist)
-    for(;tlist != NULL ; tlist = tlist->next)
+
+    xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"type");
+    if (key)
     {
-        FactoryStructItem *fst = tlist->data;
+        sss->type  =  g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);/* ÕÒµ½Êý¾ÝÀàÐÍ */
+        xmlFree (key);
+    }
+
+    key = xmlGetProp(attr_node,(xmlChar *)"wtype"); /* ÏÔÊ¾¿Ø¼þÀàÐÍ */
+    if(key)
+    {
+        if(!g_ascii_strncasecmp((gchar*)key,"ECOMBO",6))
+        {
+            sss->celltype = ECOMBO;
+            gchar **split = g_strsplit(sss->type,".",-1);
+            int section = g_strv_length(split);
+            /* 2014-3-26 lcy Í¨¹ýÃû×ÖÈ¥¹þÏ£±íÀïÕÒÁ´±í*/
+            GList *targettable = g_hash_table_lookup(fclass->EnumsAndStructs->enumTable,split[section-1]);
+            g_strfreev(split);
+            SaveEnum sen = sss->value.senum;
+            if(targettable)
+            {
+                sen.enumList = targettable;
+                GList *t  = targettable;
+                key = xmlGetProp(attr_node,(xmlChar *)"value");
+                if((gchar*)key)
+                    for(; t != NULL ; t = t->next)
+                    {
+                        FactoryStructEnum *fse = t->data;
+                        if(0 == g_ascii_strncasecmp(fse->value,(gchar*)key,strlen(key)))
+                        {
+                            sen.evalue = g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);
+                            sen.index = g_list_index(targettable,fse);
+                            break;
+                        }
+                    }
+
+                xmlFree(key);
+                key = xmlGetProp(attr_node,(xmlChar *)"width");
+                if(key)
+                    sen.width = g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);
+                xmlFree(key);
+            }
+
+        }
+        else if(0== g_ascii_strncasecmp((gchar*)key,"ENTRY",5))
+        {
+            key = xmlGetProp(attr_node,(xmlChar *)"value");
+//                    if(key)
+//                        sss->value.text = g_locale_to_utf8(key,-1,NULL,NULL,NULL);
+            xmlFree(key);
+            sss->celltype = ENTRY;
+        }
+        else if(!g_ascii_strncasecmp((gchar*)key,"OCOMBO",6))
+        {
+            sss->celltype = OCOMBO;
+            NextID *nid = &sss->value.nextid;
+            ActionID *aid = factory_read_object_comobox_value_from_file(attr_node);
+            nid->actlist = g_list_append(nid->actlist,aid);
+        }
+        else if(!g_ascii_strncasecmp((gchar*)key,"OBTN",4))
+        {
+            sss->celltype = OBTN;
+            sss->isPointer = TRUE;
+            NextID *nid = &sss->value.nextid;
+            AttributeNode obtn_node = attr_node;
+            while(obtn_node = data_next(obtn_node))
+            {
+                key = xmlGetProp(attr_node,(xmlChar *)"name");
+                if(key)
+                {
+                    ActionID *aid = factory_read_object_comobox_value_from_file(attr_node);
+                    nid->actlist = g_list_append(nid->actlist,aid);
+                }
+                xmlFree(key);
+            }
+
+        }
+        else if(!g_ascii_strncasecmp((gchar*)key,"UBTN",6))
+        {
+            sss->celltype = UBTN;
+            sss->isPointer = TRUE;
+            SaveUnion *sun = &sss->value.sunion;
+            key = xmlGetProp(attr_node,(xmlChar *)"index");
+            if(key)
+                sun->index  = atoi(key);
+            xmlFree(key);
+            key = xmlGetProp(attr_node,(xmlChar *)"type");
+            if(key)
+                sss->type = g_strdup(key);
+            xmlFree(key);
+            /* ¶ÁËüÏÂÃæµÄ×Ó½Úµã */
+            AttributeNode obtn_node = attr_node;
+
+            while(obtn_node = data_next(obtn_node))
+            {
+                key = xmlGetProp(attr_node,(xmlChar *)"name");
+                if(key)
+                {/* ÕâÀï²»È·¶¨,Òª×¢Óë±£´æµÄÒ»ÖÂ*/
+                    SaveStruct *nnode = g_new0(SaveStruct,1);
+                    nnode->widget1 = NULL;
+                    nnode->widget2 = NULL;
+                    nnode->org = fst;
+                    nnode->sclass = fclass;
+                    factory_read_object_value_from_file(nnode,fclass,fst,obtn_node);
+                    gchar *hkey =  g_strjoin("##",fst->FType,fst->Name,NULL);
+                    g_hash_table_insert(fclass->widgetmap,g_strdup(hkey),nnode);
+                }
+                xmlFree(key);
+            }
+        }
+        else if(!g_ascii_strncasecmp((gchar*)key,"UBTN",4))
+        {
+            sss->celltype = UBTN;
+            sss->isPointer = TRUE;
+            SaveUbtn *sbtn = &sss->value.ssubtn;
+            sbtn->structlist = fst->datalist;
+            sbtn->htoflist = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+        }
+        else if(!g_ascii_strncasecmp((gchar*)key,"BBTN",4))
+        {
+            SaveEntry *sey  = &sss->value.sentry;
+            sss->celltype = BBTN;
+            sss->isPointer = TRUE;
+
+            factory_handle_entry_item(sey,fst);
+            key = xmlGetProp(attr_node,(xmlChar *)"value");
+            if(key)
+            {
+                gchar **split = g_strsplit(key,",",-1);
+                int len = g_strv_length(split);
+                int n = 0;
+                for(; n < len; n++)
+                {
+                    sey->data = g_list_append(sey->data,g_strdup(split[n]));
+                }
+                g_strfreev(split);
+            }
+            xmlFree(key);
+        }
+        else
+        {
+            key = xmlGetProp(attr_node,(xmlChar *)"value");
+            if(key)
+                sss->value.number = g_strtod((gchar*)key,NULL);
+            xmlFree(key);
+            sss->celltype = SPINBOX;
+        }
+    }
+
+
+}
+
+void factory_read_value_from_file(STRUCTClass *fclass,ObjectNode obj_node)
+{
+    gchar **tmp =  g_strsplit(fclass->name,"(",-1);
+    GList *tlist = g_hash_table_lookup(fclass->EnumsAndStructs->structTable,tmp[0]);
+    GList *tttt = tlist;
+    g_strfreev(tmp);
+    for(; tttt != NULL ; tttt = tttt->next)
+    {
+        FactoryStructItem *fst = tttt->data;
         SaveStruct *sss = g_new0(SaveStruct,1);
         sss->widget1 = NULL;
         sss->widget2 = NULL;
+        sss->org = fst;
+        sss->sclass = fclass;
         AttributeNode attr_node = obj_node;
         while(attr_node = data_next(attr_node))
         {
@@ -2160,215 +2381,180 @@ void factory_read_value_from_file(STRUCTClass *structclass,ObjectNode obj_node)
             xmlFree(key);
 
         }
-        if(attr_node)
-        {
-            xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"type");
-            if (key) {
-               sss->type  =  g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);
-                xmlFree (key);
-            }
+        if(!attr_node)
+            continue;
 
-            key = xmlGetProp(attr_node,(xmlChar *)"wtype");
-            if(key)
-            {
-                if(0== g_ascii_strncasecmp((gchar*)key,"ECOMBO",4))
-                {
-                    sss->celltype = ECOMBO;
-                    gchar **split = g_strsplit(sss->type,".",-1);
-                    int section = g_strv_length(split);
-                    /* 2014-3-26 lcy Í¨¹ýÃû×ÖÈ¥¹þÏ£±íÀïÕÒÁ´±í*/
-                    GList *targettable = g_hash_table_lookup(structclass->EnumsAndStructs->enumTable,split[section-1]);
-                    g_strfreev(split);
-                    SaveEnum sen = sss->value.senum;
-                    if(targettable)
-                    {
-                        sen.enumList = targettable;
-                        GList *t  = targettable;
-                        key = xmlGetProp(attr_node,(xmlChar *)"value");
-                        if((gchar*)key)
-                        for(; t != NULL ; t = t->next)
-                        {
-                            FactoryStructEnum *fse = t->data;
-                            if(0 == g_ascii_strncasecmp(fse->value,(gchar*)key,strlen(key)))
-                            {
-                                sen.evalue = g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);
-                                sen.index = g_list_index(targettable,fse);
-                                break;
-                            }
-                        }
-
-                        xmlFree(key);
-                        key = xmlGetProp(attr_node,(xmlChar *)"width");
-                        if(key)
-                            sen.width = g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);
-                        xmlFree(key);
-                    }
-
-                }
-                else if(0== g_ascii_strncasecmp((gchar*)key,"ENTRY",5))
-                {
-                    key = xmlGetProp(attr_node,(xmlChar *)"value");
-//                    if(key)
-//                        sss->value.text = g_locale_to_utf8(key,-1,NULL,NULL,NULL);
-                    xmlFree(key);
-                    sss->celltype = ENTRY;
-                }
-                else
-                {
-                    key = xmlGetProp(attr_node,(xmlChar *)"value");
-                    if(key)
-                        sss->value.number = g_strtod((gchar*)key,NULL);
-                    xmlFree(key);
-                    sss->celltype = SPINBOX;
-                }
-            }
-            g_hash_table_insert(structclass->widgetmap,g_strjoin("##",fst->FType,fst->Name,NULL),sss);
-        }
-
+        gchar *hkey =  g_strjoin("##",fst->FType,fst->Name,NULL);
+        factory_read_object_value_from_file(sss,fclass,fst,attr_node);
+        SaveStruct *firstval =  g_hash_table_lookup(fclass->widgetmap,hkey);
+        if(firstval)
+            *firstval = *sss;
+        else
+            g_hash_table_insert(fclass->widgetmap,g_strdup(hkey),sss);
+        g_free(hkey);
     }
 
 }
 
+gpointer *factory_read_object_comobox_value_from_file(AttributeNode attr_node)
+{
+    xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"index");
+    ActionID *aid = g_new0(ActionID,1);
+    aid->index = atoi(key);
+    xmlFree(key);
+    key  =  xmlGetProp(attr_node,(xmlChar *)"nvalue");
+    aid->pre_name = g_strdup(key);
+    xmlFree(key);
+    key  =  xmlGetProp(attr_node,(xmlChar *)"name");
+    aid->title_name = g_strdup(key);
+    xmlFree(key);
+    return aid;
+}
+
+
 SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
 {
-        SaveStruct *sss = g_new0(SaveStruct,1);
-        sss->widget1= NULL;
-        sss->widget2 = NULL;
-        sss->type = g_strdup(fst->FType);
-        sss->name = g_strdup(fst->Name);
-        sss->sclass = fst->orgclass;
+    SaveStruct *sss = g_new0(SaveStruct,1);
+    sss->widget1= NULL;
+    sss->widget2 = NULL;
+    sss->type = g_strdup(fst->FType);
+    sss->name = g_strdup(fst->Name);
+    sss->sclass = fst->orgclass;
 
-       /* 2014-3-26 lcy Í¨¹ýÃû×ÖÈ¥¹þÏ£±íÀïÕÒÁ´±í*/
-       if(!g_ascii_strncasecmp(sss->name,ACTION_ID,ACT_SIZE))
-       {
-            sss->celltype = OCOMBO;
-            NextID *nid = &sss->value.nextid;
-            nid->itemlist = NULL;
-            nid->actlist = NULL;
-            nid->wlist = NULL;
+    /* 2014-3-26 lcy Í¨¹ýÃû×ÖÈ¥¹þÏ£±íÀïÕÒÁ´±í*/
+    if(!g_ascii_strncasecmp(sss->name,ACTION_ID,ACT_SIZE))
+    {
+        sss->celltype = OCOMBO;
+        NextID *nid = &sss->value.nextid;
+        nid->itemlist = NULL;
+        nid->actlist = NULL;
+        nid->wlist = NULL;
 
-            if(g_str_has_suffix(sss->name,"]"))
+        if(g_str_has_suffix(sss->name,"]"))
+        {
+            sss->celltype = OBTN; /* ÕâÀïÊÇÊý×éÁË,ÐèÒª°´¼ü´´½¨ÐÂ´°¿ÚÀ´ÉèÖÃ */
+            SaveEntry tmp;
+            factory_handle_entry_item(&tmp,fst);
+            nid->col = tmp.col;
+            nid->row = tmp.row;
+            nid->maxlength = nid->col * nid->row;
+            if(!nid->maxlength && !nid->col)
             {
-                  sss->celltype = OBTN; /* ÕâÀïÊÇÊý×éÁË,ÐèÒª°´¼ü´´½¨ÐÂ´°¿ÚÀ´ÉèÖÃ */
-                  SaveEntry tmp;
-                  factory_handle_entry_item(&tmp,fst);
-                  nid->col = tmp.col;
-                  nid->row = tmp.row;
-                nid->maxlength = nid->col * nid->row;
-                if(!nid->maxlength && !nid->col)
-                {
-                    nid->maxlength = nid->row;
-                }
-
-                 gchar **title = g_strsplit(sss->name,"[",NULL);
-                 gchar *name =  g_strconcat(title[0],"(%d)",NULL);
-                g_strfreev(title);
-
-
-                int n = 0;
-                for(;n < nid->maxlength; n++ )
-                {
-                    ActionID *aid = g_new0(ActionID,1);
-                    aid->index = 0;
-                    aid->pre_name = g_strdup("");
-                    aid->title_name = g_strdup_printf(name,n);
-                    nid->actlist = g_list_append(nid->actlist,aid);
-                }
-                g_free(name);
-            }
-            else
-            {
-                    ActionID *aid = g_new0(ActionID,1);
-                    aid->index = 0;
-                    aid->pre_name = g_strdup("");
-                    aid->title_name = g_strdup(sss->name);
-                    nid->actlist = g_list_append(nid->actlist,aid);
+                nid->maxlength = nid->row;
             }
 
+            gchar **title = g_strsplit(sss->name,"[",-1);
+            gchar *name =  g_strconcat(title[0],"(%d)",NULL);
+            g_strfreev(title);
+
+
+            int n = 0;
+            for(; n < nid->maxlength; n++ )
+            {
+                ActionID *aid = g_new0(ActionID,1);
+                aid->index = 0;
+                aid->pre_name = g_strdup("");
+                aid->title_name = g_strdup_printf(name,n);
+                nid->actlist = g_list_append(nid->actlist,aid);
+            }
+            g_free(name);
+        }
+        else
+        {
+            ActionID *aid = g_new0(ActionID,1);
+            aid->index = 0;
+            aid->pre_name = g_strdup("");
+            aid->title_name = g_strdup(sss->name);
+            nid->actlist = g_list_append(nid->actlist,aid);
+        }
 
 
 
 
-       }else
-       switch(fst->Itype)
-       {
-       case BT:
-                if( factory_find_array_flag(fst->Name))
+
+    }
+    else
+        switch(fst->Itype)
+        {
+        case BT:
+            if( factory_find_array_flag(fst->Name))
+            {
+                /* 2014-3-25 lcy ÕâÀïÊÇ×Ö·û´®£¬ÐèÓÃÎÄ±¾¿òÏÔÊ¾ÁË*/
+                sss->celltype = ENTRY;
+
+                SaveEntry *sey = &sss->value.sentry;
+                factory_handle_entry_item(sey,fst);
+                if(!sey->isString)
                 {
-                    /* 2014-3-25 lcy ÕâÀïÊÇ×Ö·û´®£¬ÐèÓÃÎÄ±¾¿òÏÔÊ¾ÁË*/
-                    sss->celltype = ENTRY;
-
-                    SaveEntry *sey = &sss->value.sentry;
-                    factory_handle_entry_item(sey,fst);
-                    if(!sey->isString)
+                    sss->celltype = BBTN;
+                    if( 2 == strlen(fst->SType) && !g_ascii_strncasecmp(fst->SType,"u1",2))
                     {
-                         sss->celltype = BBTN;
-                         if( 2 == strlen(fst->SType) && !g_ascii_strncasecmp(fst->SType,"u1",2))
-                         {
-                             int n = 0 ;
-                             int maxi = sey->col * sey->row;
-                             for( ; n < maxi; n++)
-                             {
-                                 /* ³õÈçÖµ */
-                                sey->data =  g_slist_append(sey->data,g_strdup_printf("%d",0));
-                             }
-                         }
-
+                        int n = 0 ;
+                        int maxi = sey->col * sey->row;
+                        for( ; n < maxi; n++)
+                        {
+                            /* ³õÈçÖµ */
+                            sey->data =  g_slist_append(sey->data,g_strdup_printf("%d",0));
+                        }
                     }
 
                 }
-                else
-                {
-                     sss->celltype = SPINBOX;
-                     sss->value.number = g_strtod(fst->Value,NULL);
-                }
-        break;
-       case ET:
-           {
-                  sss->celltype = ECOMBO;
-                  sss->value.senum.enumList = fst->datalist;
-                  GList *t = sss->value.senum.enumList;
-                  for(; t != NULL ; t = t->next)
-                  {
-                      FactoryStructEnum *kvmap = t->data;
-                      if(!g_ascii_strncasecmp(fst->Value,kvmap->key,strlen(fst->Value)))
-                      {
-                         sss->value.senum.index = g_list_index(fst->datalist,t->data);
-                         sss->value.senum.width = fst->Max;
-                         sss->value.senum.evalue = kvmap->value;
-                         break;
-                      }
 
-                }
-
-           }
-        break;
-       case ST:
-           {
-                sss->celltype = UBTN;
-                sss->isPointer = TRUE; /* ÕâÀïÊÇÒ»¸ö°´¼ü*/
-                SaveUbtn *sbtn = &sss->value.ssubtn;
-                sbtn->structlist = fst->datalist;
-                sbtn->htoflist = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-                //fst->datalist = g_list_copy(fst->datalist);
-           }
-           break;
-       case UT:
-           {
-                  /*  ÕâÖÖ³ÉÔ±×îÉÙÓÐÁ½¸ö gtk_widget */
-                  SaveUnion *suptr = &sss->value.sunion;
-                  sss->celltype = UCOMBO;
-                  suptr->vbox = NULL;
-                  suptr->saveVal = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-                  suptr->comobox = NULL;
-                  suptr->structlist = fst->datalist;
-           }
-        break;
-       default:
+            }
+            else
+            {
+                sss->celltype = SPINBOX;
+                sss->value.number = g_strtod(fst->Value,NULL);
+            }
             break;
-       }
-        sss->org = fst;
-        return sss;
+        case ET:
+        {
+            sss->celltype = ECOMBO;
+            sss->value.senum.enumList = fst->datalist;
+            GList *t = sss->value.senum.enumList;
+            for(; t != NULL ; t = t->next)
+            {
+                FactoryStructEnum *kvmap = t->data;
+                if(!g_ascii_strncasecmp(fst->Value,kvmap->key,strlen(fst->Value)))
+                {
+                    sss->value.senum.index = g_list_index(fst->datalist,t->data);
+                    sss->value.senum.width = fst->Max;
+                    sss->value.senum.evalue = kvmap->value;
+                    break;
+                }
+
+            }
+
+        }
+        break;
+        case ST:
+        {
+            sss->celltype = UBTN;
+            sss->isPointer = TRUE; /* ÕâÀïÊÇÒ»¸ö°´¼ü*/
+            SaveUbtn *sbtn = &sss->value.ssubtn;
+            sbtn->structlist = fst->datalist;
+            sbtn->htoflist = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+            //fst->datalist = g_list_copy(fst->datalist);
+        }
+        break;
+        case UT:
+        {
+            /*  ÕâÖÖ³ÉÔ±×îÉÙÓÐÁ½¸ö gtk_widget */
+            SaveUnion *suptr = &sss->value.sunion;
+            sss->celltype = UCOMBO;
+            suptr->vbox = NULL;
+            suptr->saveVal = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+            suptr->curkey = g_strdup("");
+            suptr->index = 0;
+            suptr->comobox = NULL;
+            suptr->structlist = fst->datalist;
+        }
+        break;
+        default:
+            break;
+        }
+    sss->org = fst;
+    return sss;
 }
 
 //void factory_initial_origin_struct(GHashTable *savetable,GList *srclist,const gchar *key)
@@ -2392,13 +2578,13 @@ void factory_read_initial_to_struct(STRUCTClass *fclass) /*2014-3-26 lcy ÍÏÈë¿Ø¼
     GList *tlist = g_hash_table_lookup(fclass->EnumsAndStructs->structTable,tmp[0]);
     GList *tttt = tlist;
     g_strfreev(tmp);
-    for(;tlist;tlist = tlist->next)
+    for(; tlist; tlist = tlist->next)
     {
         FactoryStructItem *fst = tlist->data;
         fst->orgclass = fclass;
     }
 
-    for(;tttt != NULL ; tttt = tttt->next)
+    for(; tttt != NULL ; tttt = tttt->next)
     {
         FactoryStructItem *fst = tttt->data;
         SaveStruct *sst= factory_get_savestruct(fst);
@@ -2420,49 +2606,49 @@ void factory_read_initial_to_struct(STRUCTClass *fclass) /*2014-3-26 lcy ÍÏÈë¿Ø¼
 void
 factory_handle_entry_item(SaveEntry* sey,FactoryStructItem *fst)
 {
-                /* 2014-3-25 lcy ÕâÀïÊÇ×Ö·û´®£¬ÐèÓÃÎÄ±¾¿òÏÔÊ¾ÁË*/
-                /* lcy  array[3][2]   ==>  ooo[0]="array", ooo[1]="3", ooo[2]="", ooo[3]="2" ,ooo[4]="" */
-                gchar **ooo = g_strsplit_set (fst->Name,"[]",-1);
-                int num = g_strv_length(ooo);
+    /* 2014-3-25 lcy ÕâÀïÊÇ×Ö·û´®£¬ÐèÓÃÎÄ±¾¿òÏÔÊ¾ÁË*/
+    /* lcy  array[3][2]   ==>  ooo[0]="array", ooo[1]="3", ooo[2]="", ooo[3]="2" ,ooo[4]="" */
+    gchar **ooo = g_strsplit_set (fst->Name,"[]",-1);
+    int num = g_strv_length(ooo);
 
 
-                sey->width = g_strtod(&fst->SType[1],NULL) / 8; /* u32,u8, ÕâÀïÈ¡ÀïÃæµÄÊý×Ö*/
-                if(2== strlen(fst->SType) && !g_ascii_strncasecmp(fst->SType,"u1",2))
-                    sey->width = 1;
-                sey->row = 1;
-                if(num >= 5)
-                {
-                    sey->row = g_strtod(ooo[1],NULL); /* Èç¹ûÊÇ¶þÎ¬Êý×é,ÕâÀïÊÇÐÐ */
-                    sey->col = g_strtod(ooo[3],NULL);
-                }
-                else
-                {
-                    sey->col = g_strtod(ooo[1],NULL);
-                }
-                g_strfreev(ooo);
+    sey->width = g_strtod(&fst->SType[1],NULL) / 8; /* u32,u8, ÕâÀïÈ¡ÀïÃæµÄÊý×Ö*/
+    if(2== strlen(fst->SType) && !g_ascii_strncasecmp(fst->SType,"u1",2))
+        sey->width = 1;
+    sey->row = 1;
+    if(num >= 5)
+    {
+        sey->row = g_strtod(ooo[1],NULL); /* Èç¹ûÊÇ¶þÎ¬Êý×é,ÕâÀïÊÇÐÐ */
+        sey->col = g_strtod(ooo[3],NULL);
+    }
+    else
+    {
+        sey->col = g_strtod(ooo[1],NULL);
+    }
+    g_strfreev(ooo);
 
 
-                sey->isString =  !g_ascii_strncasecmp(fst->SType,"s8",2) ? TRUE : FALSE;
-                int strlength = sey->width * sey->row * sey->col; /**   u32[6][2] ==  (32/8) * 6 * 2    **/
-                if(sey->isString)
-                {
+    sey->isString =  !g_ascii_strncasecmp(fst->SType,"s8",2) ? TRUE : FALSE;
+    int strlength = sey->width * sey->row * sey->col; /**   u32[6][2] ==  (32/8) * 6 * 2    **/
+    if(sey->isString)
+    {
 //                     sey->data.text = g_new0(gchar,strlength );
 //                     sey->data.text =  g_locale_to_utf8(fst->Value,strlength,NULL,NULL,NULL);
-                     sey->data = g_new0(gchar,strlength );
-                     sey->data =  g_locale_to_utf8(fst->Value,strlength,NULL,NULL,NULL);
-                }
-                else
-                {
+        sey->data = g_new0(gchar,strlength );
+        sey->data =  g_locale_to_utf8(fst->Value,strlength,NULL,NULL,NULL);
+    }
+    else
+    {
 //                    if(!g_ascii_strncasecmp(fst->SType,"u1",2))
-                    if( (sey->row == 1) && (sey->col > 8))
-                    {
-                        /* 2014-3-31 lcy Ò»Î¬Êý×é»¯³É¶þÎ¬Êý×éÓÃÀ´ÏÔÊ¾*/
-                        sey->row = sey->width * 2;
-                        sey->col = sey->col / sey->row;
-                    }
+        if( (sey->row == 1) && (sey->col > 8))
+        {
+            /* 2014-3-31 lcy Ò»Î¬Êý×é»¯³É¶þÎ¬Êý×éÓÃÀ´ÏÔÊ¾*/
+            sey->row = sey->width * 2;
+            sey->col = sey->col / sey->row;
+        }
 //                    sey->data.arrstr = g_new0(unsigned char,strlength);
 //                    memset(sey->data.arrstr,0xff,strlength);
-                }
+    }
 }
 
 
@@ -2475,21 +2661,21 @@ structclass_destroy(STRUCTClass *structclass)
 //  STRUCTFormalParameter *param;
 
 #ifdef DEBUG
-  structclass_sanity_check(structclass, "Destroying");
+    structclass_sanity_check(structclass, "Destroying");
 #endif
 
-  structclass->destroyed = TRUE;
+    structclass->destroyed = TRUE;
 
-  dia_font_unref(structclass->normal_font);
+    dia_font_unref(structclass->normal_font);
 //  dia_font_unref(structclass->abstract_font);
 //  dia_font_unref(structclass->polymorphic_font);
-  dia_font_unref(structclass->classname_font);
+    dia_font_unref(structclass->classname_font);
 //  dia_font_unref(structclass->abstract_classname_font);
 //  dia_font_unref(structclass->comment_font);
 
-  element_destroy(&structclass->element);
+    element_destroy(&structclass->element);
 
-  g_free(structclass->name);
+    g_free(structclass->name);
 //  g_free(structclass->stereotype);
 //  g_free(structclass->comment);
 //
@@ -2525,9 +2711,10 @@ structclass_destroy(STRUCTClass *structclass)
 //    g_free(structclass->stereotype_string);
 //  }
 
-  if (structclass->properties_dialog != NULL) {
-    structclass_dialog_free (structclass->properties_dialog);
-  }
+    if (structclass->properties_dialog != NULL)
+    {
+        structclass_dialog_free (structclass->properties_dialog);
+    }
 }
 
 static void factory_hashtable_copy(gpointer key,gpointer value,gpointer user_data)
@@ -2539,44 +2726,44 @@ static void factory_hashtable_copy(gpointer key,gpointer value,gpointer user_dat
 static DiaObject *
 structclass_copy(STRUCTClass *structclass)
 {
-  int i;
-  STRUCTClass *newstructclass;
-  Element *elem, *newelem;
-  DiaObject *newobj;
-  GList *list;
+    int i;
+    STRUCTClass *newstructclass;
+    Element *elem, *newelem;
+    DiaObject *newobj;
+//  GList *list;
 //  STRUCTFormalParameter *param;
 
-  elem = &structclass->element;
+    elem = &structclass->element;
 
-  newstructclass = g_malloc0(sizeof(STRUCTClass));
-  newelem = &newstructclass->element;
-  newobj = &newelem->object;
+    newstructclass = g_malloc0(sizeof(STRUCTClass));
+    newelem = &newstructclass->element;
+    newobj = &newelem->object;
 
-  element_copy(elem, newelem);
+    element_copy(elem, newelem);
 
-  newstructclass->font_height = structclass->font_height;
-  newstructclass->abstract_font_height = structclass->abstract_font_height;
-  newstructclass->polymorphic_font_height = structclass->polymorphic_font_height;
-  newstructclass->classname_font_height = structclass->classname_font_height;
-  newstructclass->abstract_classname_font_height =
-          structclass->abstract_classname_font_height;
-  newstructclass->comment_font_height =
-          structclass->comment_font_height;
+    newstructclass->font_height = structclass->font_height;
+    newstructclass->abstract_font_height = structclass->abstract_font_height;
+    newstructclass->polymorphic_font_height = structclass->polymorphic_font_height;
+    newstructclass->classname_font_height = structclass->classname_font_height;
+    newstructclass->abstract_classname_font_height =
+        structclass->abstract_classname_font_height;
+    newstructclass->comment_font_height =
+        structclass->comment_font_height;
 
-  newstructclass->normal_font =
-          dia_font_copy(structclass->normal_font);
+    newstructclass->normal_font =
+        dia_font_copy(structclass->normal_font);
 //  newstructclass->abstract_font =
 //          dia_font_copy(structclass->abstract_font);
 //  newstructclass->polymorphic_font =
 //          dia_font_copy(structclass->polymorphic_font);
-  newstructclass->classname_font =
-          dia_font_copy(structclass->classname_font);
+    newstructclass->classname_font =
+        dia_font_copy(structclass->classname_font);
 //  newstructclass->abstract_classname_font =
 //          dia_font_copy(structclass->abstract_classname_font);
 //  newstructclass->comment_font =
 //          dia_font_copy(structclass->comment_font);
 
-  newstructclass->name = g_strdup(structclass->name);
+    newstructclass->name = g_strdup(structclass->name);
 //  if (structclass->stereotype != NULL && structclass->stereotype[0] != '\0')
 //    newstructclass->stereotype = g_strdup(structclass->stereotype);
 //  else
@@ -2597,10 +2784,10 @@ structclass_copy(STRUCTClass *structclass)
 //  newstructclass->wrap_after_char = structclass->wrap_after_char;
 //  newstructclass->comment_line_length = structclass->comment_line_length;
 //  newstructclass->comment_tagging = structclass->comment_tagging;
-  newstructclass->line_width = structclass->line_width;
-  newstructclass->text_color = structclass->text_color;
-  newstructclass->line_color = structclass->line_color;
-  newstructclass->fill_color = structclass->fill_color;
+    newstructclass->line_width = structclass->line_width;
+    newstructclass->text_color = structclass->text_color;
+    newstructclass->line_color = structclass->line_color;
+    newstructclass->fill_color = structclass->fill_color;
 
 //  newstructclass->attributes = NULL;
 //  list = structclass->attributes;
@@ -2643,17 +2830,18 @@ structclass_copy(STRUCTClass *structclass)
 
 //  newstructclass->stereotype_string = NULL;
 
-  for (i=0;i<STRUCTCLASS_CONNECTIONPOINTS;i++) {
-    newobj->connections[i] = &newstructclass->connections[i];
-    newstructclass->connections[i].object = newobj;
-    newstructclass->connections[i].connected = NULL;
-    newstructclass->connections[i].pos = structclass->connections[i].pos;
-    newstructclass->connections[i].last_pos = structclass->connections[i].last_pos;
-  }
+    for (i=0; i<STRUCTCLASS_CONNECTIONPOINTS; i++)
+    {
+        newobj->connections[i] = &newstructclass->connections[i];
+        newstructclass->connections[i].object = newobj;
+        newstructclass->connections[i].connected = NULL;
+        newstructclass->connections[i].pos = structclass->connections[i].pos;
+        newstructclass->connections[i].last_pos = structclass->connections[i].last_pos;
+    }
 
-  structclass_calculate_data(newstructclass);
+    structclass_calculate_data(newstructclass);
 
-  i = STRUCTCLASS_CONNECTIONPOINTS;
+    i = STRUCTCLASS_CONNECTIONPOINTS;
 //  if ( (newstructclass->visible_attributes) &&
 //       (!newstructclass->suppress_attributes)) {
 //    list = newstructclass->attributes;
@@ -2679,307 +2867,342 @@ structclass_copy(STRUCTClass *structclass)
 //  }
 
 #ifdef STRUCT_MAINPOINT
-  newobj->connections[i] = &newstructclass->connections[STRUCTCLASS_CONNECTIONPOINTS];
-  newstructclass->connections[STRUCTCLASS_CONNECTIONPOINTS].object = newobj;
-  newstructclass->connections[STRUCTCLASS_CONNECTIONPOINTS].connected = NULL;
-  newstructclass->connections[STRUCTCLASS_CONNECTIONPOINTS].pos =
-    structclass->connections[STRUCTCLASS_CONNECTIONPOINTS].pos;
-  newstructclass->connections[STRUCTCLASS_CONNECTIONPOINTS].last_pos =
-    structclass->connections[STRUCTCLASS_CONNECTIONPOINTS].last_pos;
-  newstructclass->connections[STRUCTCLASS_CONNECTIONPOINTS].flags =
-    structclass->connections[STRUCTCLASS_CONNECTIONPOINTS].flags;
-  i++;
+    newobj->connections[i] = &newstructclass->connections[STRUCTCLASS_CONNECTIONPOINTS];
+    newstructclass->connections[STRUCTCLASS_CONNECTIONPOINTS].object = newobj;
+    newstructclass->connections[STRUCTCLASS_CONNECTIONPOINTS].connected = NULL;
+    newstructclass->connections[STRUCTCLASS_CONNECTIONPOINTS].pos =
+        structclass->connections[STRUCTCLASS_CONNECTIONPOINTS].pos;
+    newstructclass->connections[STRUCTCLASS_CONNECTIONPOINTS].last_pos =
+        structclass->connections[STRUCTCLASS_CONNECTIONPOINTS].last_pos;
+    newstructclass->connections[STRUCTCLASS_CONNECTIONPOINTS].flags =
+        structclass->connections[STRUCTCLASS_CONNECTIONPOINTS].flags;
+    i++;
 #endif
 
-  structclass_update_data(newstructclass);
+    structclass_update_data(newstructclass);
 
 #ifdef DEBUG
-  structclass_sanity_check(newstructclass, "Copied");
+    structclass_sanity_check(newstructclass, "Copied");
 #endif
-  newstructclass->EnumsAndStructs = &structList;
-   newstructclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-   g_hash_table_foreach(structclass->widgetmap,factory_hashtable_copy,newstructclass->widgetmap);
-  newstructclass->properties_dialog = NULL;
+    newstructclass->EnumsAndStructs = &structList;
+    newstructclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+    g_hash_table_foreach(structclass->widgetmap,factory_hashtable_copy,newstructclass->widgetmap);
+    newstructclass->properties_dialog = NULL;
 
-  return &newstructclass->element.object;
+    return &newstructclass->element.object;
 }
 
 
 
 static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
 {
-
+    xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
+    xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
 
     /* ÕâÀï»áµÝ¹éµ÷ÓÃ */
 
     switch(sss->celltype)
-     {
-     case ECOMBO:
-         xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
-         xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
-         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"ECOMBO");
-         xmlSetProp(ccc, (const xmlChar *)"width", (xmlChar *)sss->value.senum.width);
-         xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.senum.evalue);
+    {
+    case ECOMBO:
+        xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"ECOMBO");
+        xmlSetProp(ccc, (const xmlChar *)"width", (xmlChar *)sss->value.senum.width);
+        xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.senum.evalue);
         break;
-     case ENTRY:
-         {
-             xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"ENTRY");
-             SaveEntry *sey = &sss->value.sentry;
-             xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sey->data);
-         }
-        break;
+    case ENTRY:
+    {
+        xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"ENTRY");
+        SaveEntry *sey = &sss->value.sentry;
+        xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sey->data);
+    }
+    break;
     case BBTN:
-         {
-               SaveEntry *sey = &sss->value.sentry;
-               GList *tlist = sey->data;
-                gchar *ret =g_strdup("");
-                while(tlist)
-                 {   /* 2014-3-31 lcy °ÑÁ´±íÀïµÄÊý¾ÝÓÃ¶ººÅÁ¬½Ó */
-                     gchar *p = g_strconcat(g_strdup(ret),tlist->data,g_strdup(","),NULL);
-                     g_free(ret);
-                     ret = g_strdup(p);
-                     g_free(p);
-                     tlist = g_list_next(tlist);
-                 }
-                xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)ret);
-         }
+    {
+        xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"BBTN");
+        SaveEntry *sey = &sss->value.sentry;
+        GList *tlist = sey->data;
+        gchar *ret =g_strdup("");
+        for(; tlist; tlist = tlist->next)
+        {
+            /* 2014-3-31 lcy °ÑÁ´±íÀïµÄÊý¾ÝÓÃ¶ººÅÁ¬½Ó */
+            gchar *p = g_strconcat(g_strdup(ret),tlist->data,g_strdup(","),NULL);
+            g_free(ret);
+            ret = g_strdup(p);
+            g_free(p);
+        }
+        int len = strlen(ret);
+        if(ret[len-1]==',')
+            ret[len-1] = '\0';
+        xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)ret);
+
+    }
+    break;
+    case SPINBOX:
+        xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"SPINBOX");
+        xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)g_strdup_printf(_("%d"),sss->value.number));
         break;
-     case SPINBOX:
-         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"SPINBOX");
-        char buffer[20+1]; /* Enought for 64bit int + zero */
-        g_snprintf(buffer, 20, "%d", sss->value.number);
-        xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)buffer);
-        break;
-     }
+    }
+    /* ÕâÀïÒª²»ÊÇ¼ÓÒ»¸öOCOMBO ¿Ø¼þÊ¶±ðÄØ? */
 }
 
+static void factory_write_object_comobox(ActionID *aid,ObjectNode ccc )
+{
+    xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)aid->title_name);
+
+//                    xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
+    xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf(_("%d"),aid->index));
+
+    if(!strlen(aid->pre_name))
+        xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)_("-1"));
+    else
+    {
+        gchar **str = g_strsplit(aid->pre_name,"(",-1);
+        gchar *number = g_strdup(str[1]);
+        g_strfreev(str);
+        str = g_strsplit(number,")",-1);
+
+        xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)g_strdup(str[0]));
+        g_free(number);
+        g_strfreev(str);
+    }
+
+    xmlSetProp(ccc, (const xmlChar *)"nvalue", (xmlChar *)aid->pre_name);
+}
 
 static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node)
 {
     switch(sss->celltype)
-     {
-     case ECOMBO:
-     case ENTRY:
-     case BBTN:
-
-     case SPINBOX:
-         {
-             ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
-             factory_base_item_save(sss,ccc);
-         }
-        break;
-     case OCOMBO:
-     case OBTN:
-         {
-             NextID *nid  = &sss->value.nextid;
-             GList *tlist = nid->actlist;
-             for(;tlist;tlist = tlist->next)
-             {
-                    ActionID *aid = tlist->data;
-                    ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
-                    xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)aid->title_name);
-                    xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
-                    xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
-                    xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf(_("%d"),aid->index));
-                    xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)aid->pre_name);
-             }
-         }
-        break;
-     case UCOMBO:
-         {
-                SaveUnion *suptr = &sss->value.sunion;
-                SaveStruct *tsst  =  g_hash_table_lookup(suptr->saveVal,suptr->curkey);
-                if(tsst)
-                {
-                    ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_union", NULL);
-                    xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
-
-                    if(tsst->isPointer)
-                    {
-                        xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"UBTN");
-                        factory_base_struct_save_to_file(tsst,ccc);
-                    }
-
-                    else
-                    {
-//                        xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)tsst->type);
-                        factory_base_item_save(tsst,ccc);
-                    }
-
-                }
-         }
-        break;
-     case UBTN:
+    {
+    case ECOMBO:
+    case ENTRY:
+    case BBTN:
+    case SPINBOX:
+    {
+        ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+        factory_base_item_save(sss,ccc);
+    }
+    break;
+    case OCOMBO:
+    {
+        ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+        xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
+        xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
+        NextID *nid  = &sss->value.nextid;
+        GList *tlist = nid->actlist;
+        factory_write_object_comobox(g_list_first(tlist)->data,ccc);
+    }
+    break;
+    case OBTN:
+    {
+        NextID *nid  = &sss->value.nextid;
+        GList *tlist = nid->actlist;
+        ObjectNode obtn = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_obtn", NULL);
+        xmlSetProp(obtn, (const xmlChar *)"name", (xmlChar *)sss->name);
+        xmlSetProp(obtn, (const xmlChar *)"wtype", (xmlChar *)"OBTN");
+        for(; tlist; tlist = tlist->next)
         {
-
-            SaveUbtn *sbtn = &sss->value.ssubtn;
-            GList *slist = g_hash_table_get_values(sbtn->htoflist);
-            if(slist)
+            ActionID *aid = tlist->data;
+            ObjectNode ccc = xmlNewChild(obtn, NULL, (const xmlChar *)"JL_item", NULL);
+            xmlSetProp(obtn, (const xmlChar *)"name", (xmlChar *)sss->name);
+            xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
+            xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
+            factory_write_object_comobox(tlist->data,ccc);
+        }
+    }
+    break;
+    case UCOMBO:
+    {
+        SaveUnion *suptr = &sss->value.sunion;
+        SaveStruct *tsst  =  g_hash_table_lookup(suptr->saveVal,suptr->curkey);
+        if(tsst)
+        {
+            ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_union", NULL);
+            xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
+            if(tsst->isPointer)
             {
-//                ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_union", NULL);
-//                xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
-                for(;slist;slist = slist->next)
-                {
-                        SaveStruct *s = slist->data;
-//                        ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
-                        factory_base_struct_save_to_file(s,obj_node);
-                }
+                xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)tsst->type);
+                xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"UBTN");
+                xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf("%d",suptr->index));
+                factory_base_struct_save_to_file(tsst,ccc); /* µÝ¹éµ÷ÓÃ±¾º¯Êý */
+            }
+            else
+            {
+                ObjectNode aaa = xmlNewChild(ccc, NULL, (const xmlChar *)"JL_union", NULL);
+                xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)tsst->type);
+                factory_base_item_save(tsst,aaa);
             }
 
         }
-        break;
-     }
+    }
+    break;
+    case UBTN:
+    {
+
+        SaveUbtn *sbtn = &sss->value.ssubtn;
+        GList *slist = g_hash_table_get_values(sbtn->htoflist);
+        if(slist)
+        {
+            for(; slist; slist = slist->next)
+            {
+                SaveStruct *s = slist->data;
+                factory_base_struct_save_to_file(s,obj_node);
+            }
+        }
+
+    }
+    break;
+    }
 }
 
 static void factory_struct_save_to_xml(gpointer key,gpointer value,gpointer user_data)
 {
     /* 2014-3-27 lcy ÕâÀïÃ¿ÐÐÓëXMLµÄÐÐ¶ÔÓ¦ÓÃ ,²ÉÓÃ¶à¸öÊôÐÔÖµ´æ´¢*/
-     SaveStruct *sss = (SaveStruct*)value;
-     factory_base_struct_save_to_file(sss,user_data);
+    SaveStruct *sss = (SaveStruct*)value;
+    factory_base_struct_save_to_file(sss,user_data);
 }
 
 
 static DiaObject *
 factory_struct_items_load(ObjectNode obj_node,int version, const char *filename )
 {
-  STRUCTClass *structclass;
-  Element *elem;
-  DiaObject *obj;
-  AttributeNode attr_node;
-  int i;
+    STRUCTClass *structclass;
+    Element *elem;
+    DiaObject *obj;
+    AttributeNode attr_node;
+    int i;
 //  GList *list;
+    structclass = g_malloc0(sizeof(STRUCTClass));
+    elem = &structclass->element;
+    obj = &elem->object;
 
+    obj->type = &structclass_type;
+    obj->ops = &structclass_ops;
+    obj->type->version = g_strdup(structList.file_version);
 
-
-  structclass = g_malloc0(sizeof(STRUCTClass));
-
-
-  elem = &structclass->element;
-  obj = &elem->object;
-
-  obj->type = &structclass_type;
-  obj->ops = &structclass_ops;
-
-  element_load(elem, obj_node);
+    element_load(elem, obj_node);
 
 #ifdef STRUCT_MAINPOINT
-  element_init(elem, 8, STRUCTCLASS_CONNECTIONPOINTS + 1);
+    element_init(elem, 8, STRUCTCLASS_CONNECTIONPOINTS + 1);
 #else
-  element_init(elem, 8, STRUCTCLASS_CONNECTIONPOINTS);
+    element_init(elem, 8, STRUCTCLASS_CONNECTIONPOINTS);
 #endif
 
-  structclass->properties_dialog =  NULL;
+    structclass->properties_dialog =  NULL;
 
-  for (i=0;i<STRUCTCLASS_CONNECTIONPOINTS;i++) {
-    obj->connections[i] = &structclass->connections[i];
-    structclass->connections[i].object = obj;
-    structclass->connections[i].connected = NULL;
-  }
+    for (i=0; i<STRUCTCLASS_CONNECTIONPOINTS; i++)
+    {
+        obj->connections[i] = &structclass->connections[i];
+        structclass->connections[i].object = obj;
+        structclass->connections[i].connected = NULL;
+    }
 
-  structclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-  fill_in_fontdata(structclass);
+    structclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+    fill_in_fontdata(structclass);
 
-  /* kind of dirty, object_load_props() may leave us in an inconsistent state --hb */
-  object_load_props(obj,obj_node);
+    /* kind of dirty, object_load_props() may leave us in an inconsistent state --hb */
+    object_load_props(obj,obj_node);
 
-  /* parameters loaded via StdProp dont belong here anymore. In case of strings they
-   * will produce leaks. Otherwise the are just wasteing time (at runtime and while
-   * reading the code). Except maybe for some compatibility stuff.
-   * Although that *could* probably done via StdProp too.                      --hb
-   */
+    /* parameters loaded via StdProp dont belong here anymore. In case of strings they
+     * will produce leaks. Otherwise the are just wasteing time (at runtime and while
+     * reading the code). Except maybe for some compatibility stuff.
+     * Although that *could* probably done via StdProp too.                      --hb
+     */
 
-  /* new since 0.94, don't wrap by default to keep old diagrams intact */
+    /* new since 0.94, don't wrap by default to keep old diagrams intact */
 //  structclass->wrap_operations = FALSE;
-  structclass->fill_color = color_white;
-  attr_node  =   factory_find_custom_node(obj_node,"JL_struct");
-  if(attr_node)
-  {
-      xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
-      if (key) {
-           structclass->name =  g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);
+    structclass->fill_color = color_white;
+    attr_node  =   factory_find_custom_node(obj_node,"JL_struct");
+    if(attr_node)
+    {
+        xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
+        if (key)
+        {
+            structclass->name =  g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);
             xmlFree (key);
         }
-  }
+    }
 
-  fill_in_fontdata(structclass);
+    fill_in_fontdata(structclass);
 
 //  structclass->stereotype_string = NULL;
 
 
-  structclass_calculate_data(structclass);
+    structclass_calculate_data(structclass);
 
-  elem->extra_spacing.border_trans = structclass->line_width/2.0;
-  structclass_update_data(structclass);
+    elem->extra_spacing.border_trans = structclass->line_width/2.0;
+    structclass_update_data(structclass);
 
-  for (i=0;i<8;i++) {
-    obj->handles[i]->type = HANDLE_NON_MOVABLE;
-  }
+    for (i=0; i<8; i++)
+    {
+        obj->handles[i]->type = HANDLE_NON_MOVABLE;
+    }
 
 #ifdef DEBUG
-  //structclass_sanity_check(structclass, "Loaded class");
+    //structclass_sanity_check(structclass, "Loaded class");
 #endif
-  structclass->EnumsAndStructs = NULL;
-  structclass->EnumsAndStructs = &structList;
-  factory_read_value_from_file(structclass,attr_node->xmlChildrenNode);
-  return &structclass->element.object;
+    structclass->EnumsAndStructs = NULL;
+    structclass->EnumsAndStructs = &structList;
+    structclass->isInitial = TRUE;
+    /* ¶ÁÈ¡ÎÄ¼þÀïÃæµÄÖµ */
+    factory_read_value_from_file(structclass,attr_node->xmlChildrenNode);
+    return &structclass->element.object;
 }
 
 static void
 factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
-	      const char *filename)
+                          const char *filename)
 {
 //  STRUCTAttribute *attr;
 //  STRUCTOperation *op;
 //  STRUCTFormalParameter *formal_param;
-  GList *list;
+    GList *list;
 //  AttributeNode attr_node;
 
 
 
-  element_save(&structclass->element, obj_node);
+    element_save(&structclass->element, obj_node);
 
-  /*  2014-3-22 lcy ÕâÀï±£´æ×Ô¶¨Òå¿Ø¼þµÄÊý¾Ý */
+    /*  2014-3-22 lcy ÕâÀï±£´æ×Ô¶¨Òå¿Ø¼þµÄÊý¾Ý */
 
 
-  /* 2014-3-25 lcy ÕâÀïÌí¼ÓÒ»¸ö×Ô¶¨Òå½ÚµãÃûÀ´°²ÖÃÕâ¸ö½á¹¹ÌåµÄ³ÉÔ±*/
-  obj_node = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_struct", NULL);
-  xmlSetProp(obj_node, (const xmlChar *)"name", (xmlChar *)structclass->name);
-//  int mapsize = g_hash_table_size(structclass->widgetmap);
-  g_hash_table_foreach(structclass->widgetmap,factory_struct_save_to_xml,(gpointer)obj_node);
+    /* 2014-3-25 lcy ÕâÀïÌí¼ÓÒ»¸ö×Ô¶¨Òå½ÚµãÃûÀ´°²ÖÃÕâ¸ö½á¹¹ÌåµÄ³ÉÔ±*/
+    obj_node = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_struct", NULL);
+    xmlSetProp(obj_node, (const xmlChar *)"name", (xmlChar *)structclass->name);
+    g_hash_table_foreach(structclass->widgetmap,factory_struct_save_to_xml,(gpointer)obj_node);
 
 }
 
 void factory_get_enum_values(GList* src,GList *dst)
 {
     /* 2014-3-26 lcy ÕâÀï´¦Àí¿Ø¼þÉÏµÄÖµ£¬ÓÃÀ´×ö±£´æÎÄ¼þÊ±µÄÊý¾ÝÔ´¡£*/
-                    GList *thisstruct = src;
-                    for(;thisstruct != NULL; thisstruct = thisstruct->next)
-                    {
-                        SaveStruct *ss = g_new0(SaveStruct,1);
-                        FactoryStructItem *item = thisstruct->data;
-                        gchar **split = g_strsplit(item->FType,".",-1);
-                        int section = g_strv_length(split);
-                        /* ²éÑ¯Ã¶¾Ù¹þÏ£±íµÄÖµ*/
-                         GList *enumitem =  g_hash_table_lookup(structList.enumTable,(gpointer)split[section-1]);
-                         if(enumitem)
-                         {
+    GList *thisstruct = src;
+    for(; thisstruct != NULL; thisstruct = thisstruct->next)
+    {
+        SaveStruct *ss = g_new0(SaveStruct,1);
+        FactoryStructItem *item = thisstruct->data;
+        gchar **split = g_strsplit(item->FType,".",-1);
+        int section = g_strv_length(split);
+        /* ²éÑ¯Ã¶¾Ù¹þÏ£±íµÄÖµ*/
+        GList *enumitem =  g_hash_table_lookup(structList.enumTable,(gpointer)split[section-1]);
+        if(enumitem)
+        {
 //                             GList *tmp  = enumitem;
 //                             ss->celltype = ENUM;
 //                             FactoryStructEnum *cur =  factory_find_list_node(tmp,item->Value);
 //                             ss->value.index = g_list_index(tmp,cur);
-                         }
-                         else if(factory_find_array_flag(item->Name))
-                         {
-                            ss->celltype = ENTRY;
-                         }
-                         else{
-                            ss->celltype = SPINBOX;
-                         }
-                         ss->name = item->Name;
-                         ss->type = item->FType;
-                         g_strfreev(split);
-                         dst = g_list_append(dst,ss);
-                    }
+        }
+        else if(factory_find_array_flag(item->Name))
+        {
+            ss->celltype = ENTRY;
+        }
+        else
+        {
+            ss->celltype = SPINBOX;
+        }
+        ss->name = item->Name;
+        ss->type = item->FType;
+        g_strfreev(split);
+        dst = g_list_append(dst,ss);
+    }
 }
 
 //static void
@@ -3251,8 +3474,9 @@ void factory_get_enum_values(GList* src,GList *dst)
  * connections in the current state of the object.
  */
 static int
-structclass_num_dynamic_connectionpoints(STRUCTClass *structclass) {
-  int num = 0;
+structclass_num_dynamic_connectionpoints(STRUCTClass *structclass)
+{
+    int num = 0;
 //  if ( (structclass->visible_attributes) &&
 //       (!structclass->suppress_attributes)) {
 //    GList *list = structclass->attributes;
@@ -3264,47 +3488,48 @@ structclass_num_dynamic_connectionpoints(STRUCTClass *structclass) {
 //    GList *list = structclass->operations;
 //    num += 2 * g_list_length(list);
 //  }
-  return num;
+    return num;
 }
 
 void
 structclass_sanity_check(STRUCTClass *c, gchar *msg)
 {
 #ifdef STRUCT_MAINPOINT
-  int num_fixed_connections = STRUCTCLASS_CONNECTIONPOINTS + 1;
+    int num_fixed_connections = STRUCTCLASS_CONNECTIONPOINTS + 1;
 #else
-  int num_fixed_connections = STRUCTCLASS_CONNECTIONPOINTS;
+    int num_fixed_connections = STRUCTCLASS_CONNECTIONPOINTS;
 #endif
-  DiaObject *obj = (DiaObject*)c;
+    DiaObject *obj = (DiaObject*)c;
 //  GList *attrs;
-  int i;
+    int i;
 
 //  dia_object_sanity_check((DiaObject *)c, msg);
 
-  /* Check that num_connections is correct */
-  dia_assert_true(num_fixed_connections + structclass_num_dynamic_connectionpoints(c)
-		  == obj->num_connections,
-		  "%s: Class %p has %d connections, but %d fixed and %d dynamic\n",
-		  msg, c, obj->num_connections, num_fixed_connections,
-		  structclass_num_dynamic_connectionpoints(c));
+    /* Check that num_connections is correct */
+    dia_assert_true(num_fixed_connections + structclass_num_dynamic_connectionpoints(c)
+                    == obj->num_connections,
+                    "%s: Class %p has %d connections, but %d fixed and %d dynamic\n",
+                    msg, c, obj->num_connections, num_fixed_connections,
+                    structclass_num_dynamic_connectionpoints(c));
 
-  for (i = 0; i < STRUCTCLASS_CONNECTIONPOINTS; i++) {
-    dia_assert_true(&c->connections[i] == obj->connections[i],
-		    "%s: Class %p connection mismatch at %d: %p != %p\n",
-		    msg, c, i, &c->connections[i], obj->connections[i]);
-  }
+    for (i = 0; i < STRUCTCLASS_CONNECTIONPOINTS; i++)
+    {
+        dia_assert_true(&c->connections[i] == obj->connections[i],
+                        "%s: Class %p connection mismatch at %d: %p != %p\n",
+                        msg, c, i, &c->connections[i], obj->connections[i]);
+    }
 
 #ifdef STRUCT_MAINPOINT
-  dia_assert_true(&c->connections[i] ==
-		  obj->connections[i + structclass_num_dynamic_connectionpoints(c)],
-		  "%s: Class %p mainpoint mismatch: %p != %p (at %d)\n",
-		  msg, c, i, &c->connections[i],
-		  obj->connections[i + structclass_num_dynamic_connectionpoints(c)],
-		  i + structclass_num_dynamic_connectionpoints(c));
+    dia_assert_true(&c->connections[i] ==
+                    obj->connections[i + structclass_num_dynamic_connectionpoints(c)],
+                    "%s: Class %p mainpoint mismatch: %p != %p (at %d)\n",
+                    msg, c, i, &c->connections[i],
+                    obj->connections[i + structclass_num_dynamic_connectionpoints(c)],
+                    i + structclass_num_dynamic_connectionpoints(c));
 #endif
 
-  /* Check that attributes are set up right. */
-  i = 0;
+    /* Check that attributes are set up right. */
+    i = 0;
 //  for (attrs = c->attributes; attrs != NULL; attrs = g_list_next(attrs)) {
 //    STRUCTAttribute *attr = (STRUCTAttribute *)attrs->data;
 //
@@ -3342,7 +3567,7 @@ structclass_sanity_check(STRUCTClass *c, gchar *msg)
 //      i++;
 //    }
 //  }
-  /* Check that operations are set up right. */
+    /* Check that operations are set up right. */
 }
 
 

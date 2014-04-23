@@ -442,12 +442,14 @@ void factoryReadDataFromFile(const gchar* filename)
     fgets(filetxt,MAX_LINE,fd);
 
     aline = g_strdup(g_strstrip(filetxt));
-    if(aline[0]!= '<')
+    if(g_ascii_strncasecmp(aline,_(":version="),9))
     {
         message_error(_("文件格式错误,找不到文件上的版本信息!\n"));
         exit(1);
     }
-    structList.file_version = g_strdup(aline);
+    gchar **ver = g_strsplit(aline,"=",-1);
+    structList.file_version = g_strdup(ver[1]);
+    g_strfreev(ver);
     g_free(aline);
 
     fclose(fd);
@@ -477,7 +479,7 @@ void factoryReadDataFromFile(const gchar* filename)
     while(fgets(filetxt,MAX_LINE,fd)!=NULL)
     {
         aline = g_strstrip(filetxt);
-        if(aline[0]=='<')
+        if(!g_ascii_strncasecmp(aline,_(":version="),9))
             continue;
 
         if(aline[0]==':')

@@ -75,7 +75,7 @@ static void box_select(Box *box, Point *clicked_point,
 		       DiaRenderer *interactive_renderer);
 static ObjectChange* box_move_handle(Box *box, Handle *handle,
 			    Point *to, ConnectionPoint *cp,
-				     HandleMoveReason reason, 
+				     HandleMoveReason reason,
 			    ModifierKeys modifiers);
 static ObjectChange* box_move(Box *box, Point *to);
 static void box_draw(Box *box, DiaRenderer *renderer);
@@ -179,14 +179,14 @@ static PropOffset box_offsets[] = {
 static void
 box_get_props(Box *box, GPtrArray *props)
 {
-  object_get_props_from_offsets(&box->element.object, 
+  object_get_props_from_offsets(&box->element.object,
                                 box_offsets, props);
 }
 
 static void
 box_set_props(Box *box, GPtrArray *props)
 {
-  object_set_props_from_offsets(&box->element.object, 
+  object_set_props_from_offsets(&box->element.object,
                                 box_offsets, props);
   box_update_data(box);
 }
@@ -268,15 +268,15 @@ box_move_handle(Box *box, Handle *handle,
       new_width = to_width > aspect_width ? to_width : aspect_width;
       new_height = new_width / width * height;
       break;
-    default: 
+    default:
       new_width = width;
       new_height = height;
       break;
     }
-	
+
     se_to.x = corner.x + new_width;
     se_to.y = corner.y + new_height;
-        
+
     element_move_handle(&box->element, HANDLE_RESIZE_SE, &se_to, cp, reason, modifiers);
   } else {
     element_move_handle(&box->element, handle->id, to, cp, reason, modifiers);
@@ -291,7 +291,7 @@ static ObjectChange*
 box_move(Box *box, Point *to)
 {
   box->element.corner = *to;
-  
+
   box_update_data(box);
 
   return NULL;
@@ -304,7 +304,7 @@ box_draw(Box *box, DiaRenderer *renderer)
   Element *elem;
   DiaRendererClass *renderer_ops = DIA_RENDERER_GET_CLASS (renderer);
 
-  
+
   assert(box != NULL);
   assert(renderer != NULL);
 
@@ -323,7 +323,7 @@ box_draw(Box *box, DiaRenderer *renderer)
 
   if (box->show_background) {
     renderer_ops->set_fillstyle(renderer, FILLSTYLE_SOLID);
-  
+
     /* Problem:  How do we make the fill with rounded corners? */
     if (box->corner_radius > 0) {
       renderer_ops->fill_rounded_rect(renderer,
@@ -332,23 +332,23 @@ box_draw(Box *box, DiaRenderer *renderer)
 				       &box->inner_color,
 				       box->corner_radius);
     } else {
-      renderer_ops->fill_rect(renderer, 
+      renderer_ops->fill_rect(renderer,
 			       &elem->corner,
-			       &lr_corner, 
+			       &lr_corner,
 			       &box->inner_color);
     }
   }
 
   if (box->corner_radius > 0) {
-    renderer_ops->draw_rounded_rect(renderer, 
+    renderer_ops->draw_rounded_rect(renderer,
 			     &elem->corner,
-			     &lr_corner, 
+			     &lr_corner,
 			     &box->border_color,
 			     box->corner_radius);
   } else {
-    renderer_ops->draw_rect(renderer, 
+    renderer_ops->draw_rect(renderer,
 			     &elem->corner,
-			     &lr_corner, 
+			     &lr_corner,
 			     &box->border_color);
   }
 }
@@ -361,7 +361,7 @@ box_update_data(Box *box)
   ElementBBExtras *extra = &elem->extra_spacing;
   DiaObject *obj = &elem->object;
   real radius;
-  
+
   if (box->aspect == SQUARE_ASPECT){
     float size = elem->height < elem->width ? elem->height : elem->width;
     elem->height = elem->width = size;
@@ -371,7 +371,7 @@ box_update_data(Box *box)
   radius = MIN(radius, elem->width/2);
   radius = MIN(radius, elem->height/2);
   radius *= (1-M_SQRT1_2);
-  
+
   /* Update connections: */
   box->connections[0].pos.x = elem->corner.x + radius;
   box->connections[0].pos.y = elem->corner.y + radius;
@@ -404,9 +404,9 @@ box_update_data(Box *box)
 
   extra->border_trans = box->border_width / 2.0;
   element_update_boundingbox(elem);
-  
+
   obj->position = elem->corner;
-  
+
   element_update_handles(elem);
 
   if (radius > 0.0) {
@@ -436,7 +436,7 @@ box_create(Point *startpoint,
   box = g_malloc0(sizeof(Box));
   elem = &box->element;
   obj = &elem->object;
-  
+
   obj->type = &box_type;
 
   obj->ops = &box_ops;
@@ -466,7 +466,7 @@ box_create(Point *startpoint,
   box_update_data(box);
 
   *handle1 = NULL;
-  *handle2 = obj->handles[7];  
+  *handle2 = obj->handles[7];
   return &box->element.object;
 }
 
@@ -483,9 +483,9 @@ box_copy(Box *box)
   Box *newbox;
   Element *elem, *newelem;
   DiaObject *newobj;
-  
+
   elem = &box->element;
-  
+
   newbox = g_malloc0(sizeof(Box));
   newelem = &newbox->element;
   newobj = &newelem->object;
@@ -500,7 +500,7 @@ box_copy(Box *box)
   newbox->dashlength = box->dashlength;
   newbox->corner_radius = box->corner_radius;
   newbox->aspect = box->aspect;
-  
+
   for (i=0;i<NUM_CONNECTIONS;i++) {
     newobj->connections[i] = &newbox->connections[i];
     newbox->connections[i].object = newobj;
@@ -521,21 +521,21 @@ box_save(Box *box, ObjectNode obj_node, const char *filename)
   if (box->border_width != 0.1)
     data_add_real(new_attribute(obj_node, "border_width"),
 		  box->border_width);
-  
+
   if (!color_equals(&box->border_color, &color_black))
     data_add_color(new_attribute(obj_node, "border_color"),
 		   &box->border_color);
-  
+
   if (!color_equals(&box->inner_color, &color_white))
     data_add_color(new_attribute(obj_node, "inner_color"),
 		   &box->inner_color);
-  
+
   data_add_boolean(new_attribute(obj_node, "show_background"), box->show_background);
 
   if (box->line_style != LINESTYLE_SOLID)
     data_add_enum(new_attribute(obj_node, "line_style"),
 		  box->line_style);
-  
+
   if (box->line_style != LINESTYLE_SOLID &&
       box->dashlength != DEFAULT_LINESTYLE_DASHLEN)
     data_add_real(new_attribute(obj_node, "dashlength"),
@@ -562,12 +562,12 @@ box_load(ObjectNode obj_node, int version, const char *filename)
   box = g_malloc0(sizeof(Box));
   elem = &box->element;
   obj = &elem->object;
-  
+
   obj->type = &box_type;
   obj->ops = &box_ops;
 
   element_load(elem, obj_node);
-  
+
   box->border_width = 0.1;
   attr = object_find_attribute(obj_node, "border_width");
   if (attr != NULL)
@@ -577,12 +577,12 @@ box_load(ObjectNode obj_node, int version, const char *filename)
   attr = object_find_attribute(obj_node, "border_color");
   if (attr != NULL)
     data_color(attribute_first_data(attr), &box->border_color);
-  
+
   box->inner_color = color_white;
   attr = object_find_attribute(obj_node, "inner_color");
   if (attr != NULL)
     data_color(attribute_first_data(attr), &box->inner_color);
-  
+
   box->show_background = TRUE;
   attr = object_find_attribute(obj_node, "show_background");
   if (attr != NULL)
@@ -692,11 +692,11 @@ box_set_aspect_callback (DiaObject* obj, Point* clicked, gpointer data)
 }
 
 static DiaMenuItem box_menu_items[] = {
-  { N_("Free aspect"), box_set_aspect_callback, (void*)FREE_ASPECT, 
+  { N_("Free aspect"), box_set_aspect_callback, (void*)FREE_ASPECT,
     DIAMENU_ACTIVE|DIAMENU_TOGGLE },
-  { N_("Fixed aspect"), box_set_aspect_callback, (void*)FIXED_ASPECT, 
+  { N_("Fixed aspect"), box_set_aspect_callback, (void*)FIXED_ASPECT,
     DIAMENU_ACTIVE|DIAMENU_TOGGLE },
-  { N_("Square"), box_set_aspect_callback, (void*)SQUARE_ASPECT, 
+  { N_("Square"), box_set_aspect_callback, (void*)SQUARE_ASPECT,
     DIAMENU_ACTIVE|DIAMENU_TOGGLE},
 };
 
@@ -715,8 +715,8 @@ box_get_object_menu(Box *box, Point *clickedpoint)
   box_menu_items[1].active = DIAMENU_ACTIVE|DIAMENU_TOGGLE;
   box_menu_items[2].active = DIAMENU_ACTIVE|DIAMENU_TOGGLE;
 
-  box_menu_items[box->aspect].active = 
+  box_menu_items[box->aspect].active =
     DIAMENU_ACTIVE|DIAMENU_TOGGLE|DIAMENU_TOGGLE_ON;
-  
+
   return &box_menu;
 }
