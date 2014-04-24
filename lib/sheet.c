@@ -531,7 +531,7 @@ void factoryReadDataFromFile(const gchar* filename)
                 isStruct = FALSE;
                 fssl->list = dlist;
                 structList.structList = g_list_append(structList.structList,fssl);
-                g_hash_table_insert(structList.structTable,hashKey,dlist);
+                g_hash_table_insert(structList.structTable,hashKey,dlist); /* 链表在哈希表里 */
             }
             else if(isEmnu)
             {

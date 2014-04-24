@@ -92,8 +92,9 @@ object_menu_proxy(GtkWidget *widget, gpointer data)
   if (obj_change != NULL) {
     undo_set_transactionpoint(ddisp->diagram->undo);
   } else {
-    message_warning(_("This object doesn't support Undo/Redo.\n"
-		      "Undo information erased."));
+      /* 去掉这个警告,这里所有操作都不支持回退 */
+//    message_warning(_("This object doesn't support Undo/Redo.\n"
+//		      "Undo information erased."));
     undo_clear(ddisp->diagram->undo);
   }
 

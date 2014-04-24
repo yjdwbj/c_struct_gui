@@ -327,7 +327,7 @@ static void factory_create_combobox_by_list(gpointer item,SaveStruct *sst);
 static GList* factory_get_objects_from_layer(Layer *layer);
 static void factory_get_value_from_comobox(STRUCTClass *startclass,GtkWidget *comobox,ActionID *aid);
 
-static void factory_strjoin(gchar **dst,const gchar *prefix,const gchar *sep);
+void factory_strjoin(gchar **dst,const gchar *prefix,const gchar *sep);
 void factoy_changed_item(gpointer item,gpointer user_data);
 STRUCTClass *factory_find_diaobject_by_name(Layer *curlayer,const gchar *name);
 DiaObject *factory_find_same_diaobject_via_glist(GList *flist,GList *comprelist);
@@ -336,6 +336,9 @@ void factory_create_and_fill_dialog(STRUCTClass *structclass, gboolean is_defaul
 void factory_create_struct_dialog(GtkWidget *dialog,GList *datalist);
 
 gboolean factory_is_connected(ConnectionPoint *cpend,ConnectionPoint *cpstart);
+
+void factory_set_savestruct_widgets(SaveStruct *sss);
+SaveStruct * factory_get_savestruct(FactoryStructItem *fst);
 
 
 gchar* factory_entry_check(gchar* str);

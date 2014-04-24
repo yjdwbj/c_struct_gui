@@ -1934,7 +1934,7 @@ fill_in_fontdata(STRUCTClass *structclass)
     {
         structclass->classname_font_height = 1.0;
         structclass->classname_font =
-            dia_font_new_from_style(DIA_FONT_SANS | DIA_FONT_BOLD, 1.0);
+            dia_font_new_from_style(DIA_FONT_MONOSPACE | DIA_FONT_BOLD, 1.0);
     }
 //   if (structclass->abstract_classname_font == NULL) {
 //     structclass->abstract_classname_font_height = 1.0;
@@ -2196,10 +2196,72 @@ factory_struct_items_create(Point *startpoint,
 //        }
 //        return attr_node;
 //}
-void  factory_read_object_value_from_file(SaveStruct *sss,STRUCTClass *fclass,FactoryStructItem *fst,ObjectNode attr_node)
+gchar *factory_get_last_section(const gchar *src,const gchar *delimiter)
+{
+    gchar **split = g_strsplit(src,".",-1);
+    int section = g_strv_length(split);
+    gchar *ret = g_strdup(split[section-1]);
+    g_strfreev(split);
+    return ret;
+}
+FactoryStructItem *factory_get_factorystructitem(GList *inlist,const gchar *name)
+{
+    FactoryStructItem *fst = NULL;
+    GList *p =inlist;
+    for(; p; p=p->next)
+    {
+
+        FactoryStructItem *t = p->data;
+        if(!g_ascii_strncasecmp(t->Name,name,strlen(name)))
+        {
+            fst = p->data;
+            break;
+        }
+
+    }
+    return fst;
+}
+
+void factory_read_union_button_from_file(ObjectNode obtn_node,SaveUbtn *sbtn)
+{
+    gchar *key = NULL;
+    while(obtn_node = data_next(obtn_node))
+    {
+        key = xmlGetProp(obtn_node,(xmlChar *)"name");
+        if(key)
+        {
+            gchar *skey = factory_get_last_section(key,".");
+            FactoryStructItem *sitem = factory_get_factorystructitem(sbtn->structlist,skey);
+
+            /* 这里不确定,要注与保存的一致*/
+            SaveStruct *nnode = factory_get_savestruct(sitem);
+            if(nnode)
+            {
+                nnode->widget1 = NULL;
+                nnode->widget2 = NULL;
+                nnode->org = sitem;
+                nnode->sclass = sitem->orgclass;
+                nnode->name = g_strdup(key);
+                xmlFree(key);
+                key = xmlGetProp(obtn_node,(xmlChar *)"type");
+                if(key);
+                nnode->type = g_strdup(key);
+                xmlFree(key);
+                factory_read_object_value_from_file(nnode,sitem,obtn_node);
+                gchar *hkey =  g_strjoin("##",sitem->FType,sitem->Name,NULL);
+                g_hash_table_insert(sbtn->htoflist,g_strdup(hkey),nnode);
+            }
+
+        }
+        if(key)
+            xmlFree(key);
+    }
+
+}
+void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst,ObjectNode attr_node)
 {
 
-
+    STRUCTClass *fclass = fst->orgclass;
     xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"type");
     if (key)
     {
@@ -2213,15 +2275,15 @@ void  factory_read_object_value_from_file(SaveStruct *sss,STRUCTClass *fclass,Fa
         if(!g_ascii_strncasecmp((gchar*)key,"ECOMBO",6))
         {
             sss->celltype = ECOMBO;
-            gchar **split = g_strsplit(sss->type,".",-1);
-            int section = g_strv_length(split);
             /* 2014-3-26 lcy 通过名字去哈希表里找链表*/
-            GList *targettable = g_hash_table_lookup(fclass->EnumsAndStructs->enumTable,split[section-1]);
-            g_strfreev(split);
-            SaveEnum sen = sss->value.senum;
+            gchar *skey = factory_get_last_section(sss->type,".");
+
+            GList *targettable = g_hash_table_lookup(fclass->EnumsAndStructs->enumTable,skey);
+            g_free(skey);
+            SaveEnum *sen = &sss->value.senum;
             if(targettable)
             {
-                sen.enumList = targettable;
+                sen->enumList = targettable;
                 GList *t  = targettable;
                 key = xmlGetProp(attr_node,(xmlChar *)"value");
                 if((gchar*)key)
@@ -2230,8 +2292,8 @@ void  factory_read_object_value_from_file(SaveStruct *sss,STRUCTClass *fclass,Fa
                         FactoryStructEnum *fse = t->data;
                         if(0 == g_ascii_strncasecmp(fse->value,(gchar*)key,strlen(key)))
                         {
-                            sen.evalue = g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);
-                            sen.index = g_list_index(targettable,fse);
+                            sen->evalue = g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);
+                            sen->index = g_list_index(targettable,fse);
                             break;
                         }
                     }
@@ -2239,7 +2301,7 @@ void  factory_read_object_value_from_file(SaveStruct *sss,STRUCTClass *fclass,Fa
                 xmlFree(key);
                 key = xmlGetProp(attr_node,(xmlChar *)"width");
                 if(key)
-                    sen.width = g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);
+                    sen->width = g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);
                 xmlFree(key);
             }
 
@@ -2279,36 +2341,60 @@ void  factory_read_object_value_from_file(SaveStruct *sss,STRUCTClass *fclass,Fa
         }
         else if(!g_ascii_strncasecmp((gchar*)key,"UBTN",6))
         {
-            sss->celltype = UBTN;
-            sss->isPointer = TRUE;
-            SaveUnion *sun = &sss->value.sunion;
+            sss->celltype = UCOMBO;
+            SaveUnion *suptr = &sss->value.sunion;
             key = xmlGetProp(attr_node,(xmlChar *)"index");
             if(key)
-                sun->index  = atoi(key);
+                suptr->index  = atoi(key);
             xmlFree(key);
             key = xmlGetProp(attr_node,(xmlChar *)"type");
             if(key)
                 sss->type = g_strdup(key);
             xmlFree(key);
-            /* 读它下面的子节点 */
-            AttributeNode obtn_node = attr_node;
-
-            while(obtn_node = data_next(obtn_node))
+            GList *slist;
+            if(key)
             {
-                key = xmlGetProp(attr_node,(xmlChar *)"name");
-                if(key)
-                {/* 这里不确定,要注与保存的一致*/
-                    SaveStruct *nnode = g_new0(SaveStruct,1);
-                    nnode->widget1 = NULL;
-                    nnode->widget2 = NULL;
-                    nnode->org = fst;
-                    nnode->sclass = fclass;
-                    factory_read_object_value_from_file(nnode,fclass,fst,obtn_node);
-                    gchar *hkey =  g_strjoin("##",fst->FType,fst->Name,NULL);
-                    g_hash_table_insert(fclass->widgetmap,g_strdup(hkey),nnode);
-                }
-                xmlFree(key);
+                /* 通过类型名 找到对应的联合体 */
+                slist =  g_hash_table_lookup(fclass->EnumsAndStructs->unionTable,(gchar*)sss->type);
             }
+
+            g_hash_table_insert(suptr->saveVal,suptr->curkey,sss);
+
+            /* 读它下面的子节点 */
+            AttributeNode obtn_node  =  attr_node->xmlChildrenNode;
+            while (obtn_node != NULL)
+            {
+                if (xmlIsBlankNode(obtn_node))
+                {
+                    obtn_node = obtn_node->next;
+                    continue;
+                }
+                if ( obtn_node  && (strcmp((char *) obtn_node->name, "JL_item")==0) )
+                {
+                    break;
+                }
+                obtn_node = obtn_node->next;
+            }
+            FactoryStructItem *nextobj =  g_list_nth_data(slist,suptr->index);
+            suptr->structlist = slist;
+
+            if(!nextobj)
+                return ; /* 没有找到控件原型,可能出错了. */
+            suptr->curkey = g_strjoin("##",nextobj->FType,nextobj->Name,NULL);
+            suptr->curtext = g_strdup(nextobj->Name);
+            SaveStruct *nsitm = factory_get_savestruct(nextobj);/* 紧跟它下面的控件名 */
+            if(nsitm)
+            {
+                nsitm->sclass = sss->sclass;
+                SaveUbtn *sbtn = &sss->value.ssubtn;
+                factory_strjoin(&nsitm->name,sss->name,".");
+                /* 把当前选择的成员初始化保存到哈希表 */
+                sbtn->htoflist = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+                sbtn->structlist = nextobj->datalist;
+                factory_read_union_button_from_file(obtn_node,sbtn);
+                g_hash_table_insert(suptr->saveVal,suptr->curkey,nsitm);
+            }
+
         }
         else if(!g_ascii_strncasecmp((gchar*)key,"UBTN",4))
         {
@@ -2361,7 +2447,7 @@ void factory_read_value_from_file(STRUCTClass *fclass,ObjectNode obj_node)
     for(; tttt != NULL ; tttt = tttt->next)
     {
         FactoryStructItem *fst = tttt->data;
-        SaveStruct *sss = g_new0(SaveStruct,1);
+        SaveStruct *sss = factory_get_savestruct(fst);
         sss->widget1 = NULL;
         sss->widget2 = NULL;
         sss->org = fst;
@@ -2385,7 +2471,7 @@ void factory_read_value_from_file(STRUCTClass *fclass,ObjectNode obj_node)
             continue;
 
         gchar *hkey =  g_strjoin("##",fst->FType,fst->Name,NULL);
-        factory_read_object_value_from_file(sss,fclass,fst,attr_node);
+        factory_read_object_value_from_file(sss,fst,attr_node);
         SaveStruct *firstval =  g_hash_table_lookup(fclass->widgetmap,hkey);
         if(firstval)
             *firstval = *sss;
@@ -2468,10 +2554,6 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             nid->actlist = g_list_append(nid->actlist,aid);
         }
 
-
-
-
-
     }
     else
         switch(fst->Itype)
@@ -2497,9 +2579,34 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
                             sey->data =  g_slist_append(sey->data,g_strdup_printf("%d",0));
                         }
                     }
+                    else
+                    {
+                        gchar *fmt = NULL;
+                        switch(sey->width)
+                        {
+                        case 1:
+                            fmt = g_strdup("0x02%d");
+                            break;
+                        case 2:
+                            fmt = g_strdup("0x04%d");
+                            break;
+                        case 4:
+                            fmt = g_strdup("0x04%d");
+                            break;
+                        default:
+                            fmt = g_strdup("0x02%d");
+                        }
+                        int n = 0 ;
+                        int maxi = sey->col * sey->row;
+                        for( ; n < maxi; n++)
+                        {
+                            /* 初如值 */
+                            sey->data =  g_slist_append(sey->data,g_strdup_printf(fmt,0));
+                        }
+                        g_free(fmt);
+                    }
 
                 }
-
             }
             else
             {
@@ -2571,23 +2678,34 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
 //    g_hash_table_insert(savetable,key,structtable);
 //}
 
-void factory_read_initial_to_struct(STRUCTClass *fclass) /*2014-3-26 lcy 拖入控件时取得它的值*/
+
+void factory_set_all_factoryclass(STRUCTClass *fclass)
 {
-    /* 这里从原哈希表复制一份出来 */
     gchar **tmp =  g_strsplit(fclass->name,"(",-1);
     GList *tlist = g_hash_table_lookup(fclass->EnumsAndStructs->structTable,tmp[0]);
-    GList *tttt = tlist;
+      GList *tttt = tlist;
     g_strfreev(tmp);
     for(; tlist; tlist = tlist->next)
     {
         FactoryStructItem *fst = tlist->data;
         fst->orgclass = fclass;
     }
+}
+
+void factory_read_initial_to_struct(STRUCTClass *fclass) /*2014-3-26 lcy 拖入控件时取得它的值*/
+{
+    /* 这里从原哈希表复制一份出来 */
+    gchar **tmp =  g_strsplit(fclass->name,"(",-1);
+    GList *tttt = g_hash_table_lookup(fclass->EnumsAndStructs->structTable,tmp[0]);
+    g_strfreev(tmp);
+    factory_set_all_factoryclass(fclass);
+
 
     for(; tttt != NULL ; tttt = tttt->next)
     {
         FactoryStructItem *fst = tttt->data;
         SaveStruct *sst= factory_get_savestruct(fst);
+        factory_set_savestruct_widgets(sst);
         g_hash_table_insert(fclass->widgetmap,g_strjoin("##",fst->FType,fst->Name,NULL),sst);
     }
 //    factory_initial_origin_struct(fclass->widgetmap,tttt,fclass->name);
@@ -3017,9 +3135,10 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
         {
             ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_union", NULL);
             xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
+            xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
             if(tsst->isPointer)
             {
-                xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)tsst->type);
+//                xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)tsst->type);
                 xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"UBTN");
                 xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf("%d",suptr->index));
                 factory_base_struct_save_to_file(tsst,ccc); /* 递归调用本函数 */
@@ -3143,6 +3262,7 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename 
     structclass->EnumsAndStructs = &structList;
     structclass->isInitial = TRUE;
     /* 读取文件里面的值 */
+    factory_set_all_factoryclass(structclass);
     factory_read_value_from_file(structclass,attr_node->xmlChildrenNode);
     return &structclass->element.object;
 }
@@ -3154,7 +3274,7 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
 //  STRUCTAttribute *attr;
 //  STRUCTOperation *op;
 //  STRUCTFormalParameter *formal_param;
-    GList *list;
+//    GList *list;
 //  AttributeNode attr_node;
 
 

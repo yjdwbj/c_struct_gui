@@ -58,7 +58,8 @@ typedef enum
   DIA_FONT_FAMILY_ANY = 0,
   DIA_FONT_SANS       = 1,
   DIA_FONT_SERIF      = 2,
-  DIA_FONT_MONOSPACE  = 3
+  DIA_FONT_MONOSPACE  = 3,
+  DIA_FONT_SIMSUN  = 4
 } DiaFontFamily;
 
 typedef enum

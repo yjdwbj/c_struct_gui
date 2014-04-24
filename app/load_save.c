@@ -1091,6 +1091,33 @@ CLEANUP:
   g_free(tmpname);
   g_free(dirname);
   g_free(bakname);
+         /*这里添加生成BIN文件*/
+         gchar *exefile = dia_get_lib_directory("bin");
+         gchar *fullpath = g_strconcat(exefile,"\\makebin.exe");
+         gchar *input = g_strdup_printf("-i=%s",user_filename);
+         gchar *ext = _(".bin");
+         int n = strlen(user_filename);
+         int i =0 ;
+         gchar *newfile = g_strdup(user_filename);
+         newfile[n-1] = 'n';
+         newfile[n-2] = 'i';
+         newfile[n-3] = 'b';
+         gchar *outfile = g_strdup_printf("-o=%s",newfile);
+
+         gchar *arg = g_strjoin(" ",fullpath,input,outfile,NULL);
+         char          *output;
+         GError       **error = NULL;
+         gchar **sout;
+         gchar **serr;
+
+//   gboolean res = gdk_spawn_command_line_on_screen(ddisplay_active(),arg,error);
+//  gboolean res =  g_spawn_command_line_sync (arg,sout,serr,NULL,error);
+//    system(arg);
+//    g_free(outfile);
+//    g_free(newfile);
+//    g_free(input);
+//    g_free(fullpath);
+//    g_free(arg);
   return (ret?FALSE:TRUE);
 }
 

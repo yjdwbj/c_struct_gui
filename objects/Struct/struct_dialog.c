@@ -3415,16 +3415,17 @@ static GtkWidget *factory_create_variant_object(SaveStruct *sss)
     {
         SaveUnion *suptr = &sss->value.sunion;
         columTwo = gtk_vbox_new(FALSE,1) ; /*  这里插入一个VBOX*/
-        suptr->comobox = gtk_combo_box_new_text();
+        suptr->comobox = gtk_combo_box_new_text(); /* 显示联合体成员的控件 */
         suptr->vbox = columTwo;
 
         gtk_combo_box_popdown(GTK_COMBO_BOX(suptr->comobox));
         GList *p = suptr->structlist;
+        /* nextobj 就是当前下拉框所显示的 */
         FactoryStructItem *nextobj =  g_list_nth_data(suptr->structlist,suptr->index);
 
         for(; p != NULL ; p= p->next)
         {
-            FactoryStructItem *data = p->data;
+            FactoryStructItem *data = p->data; /* 添加联合体里的成员到下拉列表 */
             gtk_combo_box_append_text(GTK_COMBO_BOX(suptr->comobox),data->Name);
         }
         gtk_combo_box_set_active(GTK_COMBO_BOX(suptr->comobox),suptr->index);
@@ -3447,14 +3448,15 @@ FIRST:
             tsst = factory_get_savestruct(nextobj);
             tsst->sclass = sss->sclass;
             factory_strjoin(&tsst->name,sss->name,".");
+            /* 把当前选择的成员初始化保存到哈希表 */
             g_hash_table_insert(suptr->saveVal,suptr->curkey,tsst);
 
         }
 
         GtkWidget *widget = factory_create_variant_object(tsst); /* 递归调用本函数 */
-        if(tsst->isPointer )
+        if(tsst->isPointer )/* 这个控件是有可能是数组,结构体,所以这里显示所按键 */
         {
-            /* 初始化要保存的值 */
+            /* 初始化下面这一个有可能按键出来控件要保存的值 */
             SaveUbtn *sbtn = &tsst->value.ssubtn;
             if(sbtn->structlist)
             {
@@ -3524,7 +3526,7 @@ gboolean factory_is_valid_type(gpointer data)
     g_free(n1);
     return ftype;
 }
-static void factory_set_savestruct_widgets(SaveStruct *sss)
+void factory_set_savestruct_widgets(SaveStruct *sss)
 {
     GtkWidget *Name ;
     GtkWidget *columTwo;
@@ -3642,7 +3644,7 @@ static void factory_draw_many_lines_dialog(GtkWidget *widget,
 static int factory_substruct_dialog(GtkWidget *widget,
                                     gint       response_id,
                                     gpointer   user_data)
-{
+{/* 联合体按钮 */
 
 
     if (   response_id == GTK_RESPONSE_APPLY
@@ -3852,8 +3854,6 @@ CFIRST:
             g_hash_table_insert(suptr->saveVal,suptr->curkey,existS);
 
         }
-
-
         activeWidget = factory_create_variant_object(existS);
         if(existS->isPointer )
         {
@@ -3861,8 +3861,6 @@ CFIRST:
             SaveUbtn *sbtn = &existS->value.ssubtn;
             if(sbtn->structlist)
             {
-
-
                 sbtn->htoflist = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
                 GList *slist = sbtn->structlist;
                 for(; slist; slist = slist->next)
@@ -3884,7 +3882,7 @@ CFIRST:
 
 }
 
-static void factory_strjoin(gchar **dst,const gchar *prefix,const gchar *sep)
+void factory_strjoin(gchar **dst,const gchar *prefix,const gchar *sep)
 {
     gchar *oname = g_strdup(*dst);
     g_free(*dst);
@@ -4380,7 +4378,8 @@ void factory_create_struct_dialog(GtkWidget *dialog,GList *datalist)
     for(; item != NULL ; item = item->next,row++)
     {
         SaveStruct *sst  = item->data;
-        factory_set_savestruct_widgets(sst);
+        if(sst)
+            factory_set_savestruct_widgets(sst);
         factory_set_twoxtwo_table(dialog,sst->widget1,sst->widget2,row);
     }
 }

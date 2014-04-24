@@ -915,7 +915,7 @@ app_init (int argc, char **argv)
   dia_log_message ("object defaults");
   dia_object_defaults_load (NULL, TRUE /* prefs.object_defaults_create_lazy */);
 
-  debug_break();
+ // debug_break();
  /* 2014-3-28 lcy  这里默认是检测standard - Box */
   if (object_get_type("Standard - Line") == NULL) {
     message_error(_("Couldn't find standard objects when looking for "
