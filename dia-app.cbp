@@ -4,7 +4,7 @@
 	<Project>
 		<Option title="dvs50" />
 		<Option pch_mode="2" />
-		<Option default_target="dia" />
+		<Option default_target="debug_dia" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="lib">
@@ -1537,48 +1537,6 @@
 			<Option compilerVar="CC" />
 			<Option target="standard" />
 			<Option target="debug_standard" />
-		</Unit>
-		<Unit filename="plug-ins/cairo/diacairo-interactive.c">
-			<Option compilerVar="CC" />
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
-		<Unit filename="plug-ins/cairo/diacairo-print.c">
-			<Option compilerVar="CC" />
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
-		<Unit filename="plug-ins/cairo/diacairo-print.h">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
-		<Unit filename="plug-ins/cairo/diacairo-renderer.c">
-			<Option compilerVar="CC" />
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
-		<Unit filename="plug-ins/cairo/diacairo.c">
-			<Option compilerVar="CC" />
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
-		<Unit filename="plug-ins/cairo/diacairo.h">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
-		<Unit filename="plug-ins/shape/shape-export.c">
-			<Option compilerVar="CC" />
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
-		<Unit filename="plug-ins/shape/shape.c">
-			<Option compilerVar="CC" />
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
-		<Unit filename="plug-ins/svg/render_svg.c">
-			<Option compilerVar="CC" />
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
-		<Unit filename="plug-ins/svg/svg-import.c">
-			<Option compilerVar="CC" />
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
-		<Unit filename="plug-ins/svg/svg.c">
-			<Option compilerVar="CC" />
-			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Extensions>
 			<code_completion />

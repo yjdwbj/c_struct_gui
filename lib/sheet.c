@@ -782,21 +782,23 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
     else
         xmlFree(name);
     xmlFree(description);
+    DiaObjectType *otype;
+    SheetObject *sheet_obj;
+    gint intdata = 0;
+    gchar *chardata = NULL;
 
+    gboolean has_intdata = FALSE;
+    gboolean has_icon_on_sheet = TRUE;
     for (node = contents->xmlChildrenNode ; node != NULL; node = node->next)    // 2014-3-20 lcy 超长的for循环.
     {
-        SheetObject *sheet_obj;
-        DiaObjectType *otype;
+
+
         gchar *iconname = NULL;
 
         int subdesc_score = -1;
         gchar *objdesc = NULL;
 
-        gint intdata = 0;
-        gchar *chardata = NULL;
 
-        gboolean has_intdata = FALSE;
-        gboolean has_icon_on_sheet = TRUE;
 
         if (xmlIsBlankNode(node)) continue;
 
@@ -878,92 +880,89 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
         }
 
         tmp = xmlGetProp(node, (xmlChar *)"name");
-//    FactoryCreateSheets fcs;
-//    fcs.callback_func = factory_add_sheet_obj;
-//    fcs.otype = otype;
-//    fcs.sheet = sheet;
-//    fcs.sheet_obj = sheet_obj;
-//    fcs.tmp = tmp;
-//
-//    g_hash_table_foreach(structList.structTable,factory_create_obj_from_hashtable,&fcs);
-        gchar *bmppath =  dia_get_lib_directory("numbers"); /* 对所有控件进行简单编号*/
-
-        GList *slist = factoryContainer->structList;
-        FactoryStructItemList *fssl = NULL;
-        gchar *fmt = g_strdup("pixmap_%03d.bmp");
-        int n = 0;
-        for(; slist != NULL; slist = slist->next) // 2014-3-21 lcy 这里根据结构体个数创那图标.
-        {
-            fssl = slist->data;
-            sheet_obj = g_new(SheetObject,1);
-            sheet_obj->object_type = g_strdup((char *) tmp);
-            sheet_obj->description = g_strdup(fssl->name);
-//    xmlFree(objdesc);     objdesc = NULL;
-
-            sheet_obj->pixmap = NULL;
-            // sheet_obj->user_data = GINT_TO_POINTER(intdata); /* XXX modify user_data type ? */
-            sheet_obj->user_data = GINT_TO_POINTER(fssl->number);
-            sheet_obj->user_data_type = has_intdata ? USER_DATA_IS_INTDATA /* sure,   */
-                                        : USER_DATA_IS_OTHER;  /* why not */
-            sheet_obj->pixmap_file = iconname;
-            sheet_obj->has_icon_on_sheet = has_icon_on_sheet;
-            sheet_obj->line_break = set_line_break;
-            set_line_break = FALSE;
-
-            if ((otype = object_get_type((char *) tmp)) == NULL)
-            {
-                /* Don't complain. This does happen when disabling plug-ins too.
-                g_warning("object_get_type(%s) returned NULL", tmp); */
-                if (sheet_obj->description) g_free(sheet_obj->description);
-                g_free(sheet_obj->pixmap_file);
-                g_free(sheet_obj->object_type);
-                g_free(sheet_obj);
-                if (tmp)
-                    xmlFree(tmp);
-                continue;
-            }
-
-            /* set defaults */
-            if (sheet_obj->pixmap_file == NULL)
-            {
-                g_assert(otype->pixmap || otype->pixmap_file);
-                sheet_obj->pixmap = otype->pixmap; // 2014-3-20 lcy 这里是加xpm 的图片.
-//                sheet_obj->pixmap_file = otype->pixmap_file;
-                gchar *numname = g_strconcat(bmppath,G_DIR_SEPARATOR_S,g_strdup_printf(fmt,n++),NULL);
-                if(g_file_test(numname,G_FILE_TEST_EXISTS))
-                {
-                    sheet_obj->pixmap_file = g_strdup(numname); /* 添加数字编号 */
-                    sheet_obj->pixmap = NULL;
-                }
-                else
-                {
-                    sheet_obj->pixmap = otype->pixmap; // 2014-3-20 lcy 这里是加xpm 的图片.
-                    sheet_obj->pixmap_file = otype->pixmap_file;
-                }
-
-                g_free(numname);
-                sheet_obj->has_icon_on_sheet = has_icon_on_sheet;
-            }
-            if (sheet_obj->user_data == NULL
-                    && sheet_obj->user_data_type != USER_DATA_IS_INTDATA)
-                sheet_obj->user_data = otype->default_user_data;
-            else
-                sheet_obj->user_data_type = USER_DATA_IS_INTDATA;
-
-            // if (tmp) xmlFree(tmp);
-
-            /* we don't need to fix up the icon and descriptions for simple objects,
-               since they don't have their own description, and their icon is
-               already automatically handled. */
-            sheet_append_sheet_obj(sheet,sheet_obj);
-
-        }
-        g_free(bmppath);
-        g_free(fmt);
-        if (tmp) xmlFree(tmp);
         xmlFree(objdesc);
         objdesc = NULL;
     }    // 2014-3-20 lcy 超长的for循环.
+    otype = object_get_type((char *)"STRUCT - Class");
+    gchar *bmppath =  dia_get_lib_directory("numbers"); /* 对所有控件进行简单编号*/
+
+    GList *slist = factoryContainer->structList;
+    FactoryStructItemList *fssl = NULL;
+    gchar *fmt = g_strdup("pixmap_%03d.bmp");
+    int n = 0;
+    for(; slist != NULL; slist = slist->next) // 2014-3-21 lcy 这里根据结构体个数创那图标.
+    {
+        fssl = slist->data;
+        sheet_obj = g_new(SheetObject,1);
+        sheet_obj->object_type = g_strdup((char *) otype->name);
+        sheet_obj->description = g_strdup(fssl->name);
+//    xmlFree(objdesc);     objdesc = NULL;
+
+        sheet_obj->pixmap = NULL;
+        // sheet_obj->user_data = GINT_TO_POINTER(intdata); /* XXX modify user_data type ? */
+        sheet_obj->user_data = GINT_TO_POINTER(fssl->number);
+        sheet_obj->user_data_type = has_intdata ? USER_DATA_IS_INTDATA /* sure,   */
+                                    : USER_DATA_IS_OTHER;  /* why not */
+//            sheet_obj->pixmap_file = iconname;
+        sheet_obj->has_icon_on_sheet = has_icon_on_sheet;
+        sheet_obj->line_break = set_line_break;
+        set_line_break = FALSE;
+
+//            if ((otype = object_get_type((char *) tmp)) == NULL)
+//            {
+//                /* Don't complain. This does happen when disabling plug-ins too.
+//                g_warning("object_get_type(%s) returned NULL", tmp); */
+//                if (sheet_obj->description)
+//                    g_free(sheet_obj->description);
+//                g_free(sheet_obj->pixmap_file);
+//                g_free(sheet_obj->object_type);
+//                g_free(sheet_obj);
+//                if (tmp)
+//                    xmlFree(tmp);
+//                continue;
+//            }
+
+
+        /* set defaults */
+//            if (sheet_obj->pixmap_file == NULL)
+//            {
+//                g_assert(otype->pixmap || otype->pixmap_file);
+//                sheet_obj->pixmap = otype->pixmap; // 2014-3-20 lcy 这里是加xpm 的图片.
+//                sheet_obj->pixmap_file = otype->pixmap_file;
+        gchar *numname = g_strconcat(bmppath,G_DIR_SEPARATOR_S,g_strdup_printf(fmt,n++),NULL);
+        if(g_file_test(numname,G_FILE_TEST_EXISTS))
+        {
+            sheet_obj->pixmap_file = g_strdup(numname); /* 添加数字编号 */
+            sheet_obj->pixmap = NULL;
+        }
+        else
+        {
+            sheet_obj->pixmap = otype->pixmap; // 2014-3-20 lcy 这里是加xpm 的图片.
+            sheet_obj->pixmap_file = otype->pixmap_file;
+        }
+
+        g_free(numname);
+        sheet_obj->has_icon_on_sheet = has_icon_on_sheet;
+//            }
+        if (sheet_obj->user_data == NULL
+                && sheet_obj->user_data_type != USER_DATA_IS_INTDATA)
+            sheet_obj->user_data = otype->default_user_data;
+        else
+            sheet_obj->user_data_type = USER_DATA_IS_INTDATA;
+
+        // if (tmp) xmlFree(tmp);
+
+        /* we don't need to fix up the icon and descriptions for simple objects,
+           since they don't have their own description, and their icon is
+           already automatically handled. */
+        sheet_append_sheet_obj(sheet,sheet_obj);
+
+    }
+    g_free(bmppath);
+    g_free(fmt);
+    if (tmp) xmlFree(tmp);
+
+
 
     if (!shadowing_sheet)
         register_sheet(sheet);
@@ -973,59 +972,59 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
 
 static int increnum = 0;
 
-static void factory_add_sheet_obj(Sheet *sheet,SheetObject *sheet_obj,DiaObjectType *otype,gchar *tmp,gchar *sheet_name)
-{
-    gchar *iconname = NULL;
-    gchar *sheetdir = dia_get_data_directory("sheets");
-    iconname = g_strconcat(sheetdir,G_DIR_SEPARATOR_S, (char *) tmp,NULL);
-    g_free(sheetdir);
-    sheet_obj = g_new(SheetObject,1);
-    sheet_obj->object_type = g_strdup((char *) tmp);
-    sheet_obj->description = g_strdup(sheet_name);
-//    xmlFree(objdesc);     objdesc = NULL;
-
-    sheet_obj->pixmap = NULL;
-    // sheet_obj->user_data = GINT_TO_POINTER(intdata); /* XXX modify user_data type ? */
-    sheet_obj->user_data = GINT_TO_POINTER(increnum++);
-    sheet_obj->user_data_type = TRUE ? USER_DATA_IS_INTDATA /* sure,   */
-                                : USER_DATA_IS_OTHER;  /* why not */
-    sheet_obj->pixmap_file = iconname;
-    sheet_obj->has_icon_on_sheet = FALSE;
-    sheet_obj->line_break = FALSE;
-
-//    if ((otype = object_get_type((char *) tmp)) == NULL) {
-//      /* Don't complain. This does happen when disabling plug-ins too.
-//      g_warning("object_get_type(%s) returned NULL", tmp); */
-//      if (sheet_obj->description) g_free(sheet_obj->description);
-//      g_free(sheet_obj->pixmap_file);
-//      g_free(sheet_obj->object_type);
-//      g_free(sheet_obj);
-//      if (tmp)
-//        xmlFree(tmp);
-//      continue;
+//static void factory_add_sheet_obj(Sheet *sheet,SheetObject *sheet_obj,DiaObjectType *otype,gchar *tmp,gchar *sheet_name)
+//{
+//    gchar *iconname = NULL;
+//    gchar *sheetdir = dia_get_data_directory("sheets");
+//    iconname = g_strconcat(sheetdir,G_DIR_SEPARATOR_S, (char *) tmp,NULL);
+//    g_free(sheetdir);
+//    sheet_obj = g_new(SheetObject,1);
+//    sheet_obj->object_type = g_strdup((char *) tmp);
+//    sheet_obj->description = g_strdup(sheet_name);
+////    xmlFree(objdesc);     objdesc = NULL;
+//
+//    sheet_obj->pixmap = NULL;
+//    // sheet_obj->user_data = GINT_TO_POINTER(intdata); /* XXX modify user_data type ? */
+//    sheet_obj->user_data = GINT_TO_POINTER(increnum++);
+//    sheet_obj->user_data_type = TRUE ? USER_DATA_IS_INTDATA /* sure,   */
+//                                : USER_DATA_IS_OTHER;  /* why not */
+//    sheet_obj->pixmap_file = iconname;
+//    sheet_obj->has_icon_on_sheet = FALSE;
+//    sheet_obj->line_break = FALSE;
+//
+////    if ((otype = object_get_type((char *) tmp)) == NULL) {
+////      /* Don't complain. This does happen when disabling plug-ins too.
+////      g_warning("object_get_type(%s) returned NULL", tmp); */
+////      if (sheet_obj->description) g_free(sheet_obj->description);
+////      g_free(sheet_obj->pixmap_file);
+////      g_free(sheet_obj->object_type);
+////      g_free(sheet_obj);
+////      if (tmp)
+////        xmlFree(tmp);
+////      continue;
+////    }
+//
+//    /* set defaults */
+//    if (sheet_obj->pixmap_file == NULL)
+//    {
+//        g_assert(otype->pixmap || otype->pixmap_file);
+//        sheet_obj->pixmap = otype->pixmap; // 2014-3-20 lcy 这里是加xpm 的图片.
+//        sheet_obj->pixmap_file = otype->pixmap_file;
+//        sheet_obj->has_icon_on_sheet = FALSE;
 //    }
-
-    /* set defaults */
-    if (sheet_obj->pixmap_file == NULL)
-    {
-        g_assert(otype->pixmap || otype->pixmap_file);
-        sheet_obj->pixmap = otype->pixmap; // 2014-3-20 lcy 这里是加xpm 的图片.
-        sheet_obj->pixmap_file = otype->pixmap_file;
-        sheet_obj->has_icon_on_sheet = FALSE;
-    }
-    if (sheet_obj->user_data == NULL
-            && sheet_obj->user_data_type != USER_DATA_IS_INTDATA)
-        sheet_obj->user_data = otype->default_user_data;
-    else
-        sheet_obj->user_data_type = USER_DATA_IS_INTDATA;
-
-    // if (tmp) xmlFree(tmp);
-
-    /* we don't need to fix up the icon and descriptions for simple objects,
-       since they don't have their own description, and their icon is
-       already automatically handled. */
-    sheet_append_sheet_obj(sheet,sheet_obj);
-}
+//    if (sheet_obj->user_data == NULL
+//            && sheet_obj->user_data_type != USER_DATA_IS_INTDATA)
+//        sheet_obj->user_data = otype->default_user_data;
+//    else
+//        sheet_obj->user_data_type = USER_DATA_IS_INTDATA;
+//
+//    // if (tmp) xmlFree(tmp);
+//
+//    /* we don't need to fix up the icon and descriptions for simple objects,
+//       since they don't have their own description, and their icon is
+//       already automatically handled. */
+//    sheet_append_sheet_obj(sheet,sheet_obj);
+//}
 
 static void factory_create_obj_from_hashtable(gpointer key,
         gpointer value,
