@@ -155,8 +155,8 @@ properties_respond(GtkWidget *widget,
       if (set_tp) {
 	undo_set_transactionpoint(current_dia->undo);
       }  else {
-	message_warning(_("This object doesn't support Undo/Redo.\n"
-  			"Undo information erased."));
+//	message_warning(_("This object doesn't support Undo/Redo.\n"
+//  			"Undo information erased."));
 	undo_clear(current_dia->undo);
       }
 

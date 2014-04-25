@@ -88,6 +88,7 @@
 				<Option compiler="gcc" />
 				<Linker>
 					<Add option="-ldia-app" />
+					<Add option="-mwindows" />
 				</Linker>
 			</Target>
 			<Target title="Struct">
@@ -217,7 +218,6 @@
 			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="All" targets="lib;app;standard;dia;Struct;" />
 			<Add alias="Debug" targets="debub_lib;debug_app;debug_standard;debug_dia;debug_Struct;" />
 			<Add alias="Release" targets="lib;app;standard;dia;Struct;" />
 			<Add alias="objects" targets="standard;Struct;" />

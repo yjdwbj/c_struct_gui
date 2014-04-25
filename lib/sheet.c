@@ -40,7 +40,7 @@
 #include "dia_dirs.h"
 #include "plug-ins.h"
 
- FactoryStructItemAll *factoryContainer = NULL;
+FactoryStructItemAll *factoryContainer = NULL;
 static GSList *sheets = NULL;
 
 Sheet *
@@ -796,7 +796,7 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
         gchar *chardata = NULL;
 
         gboolean has_intdata = FALSE;
-        gboolean has_icon_on_sheet = FALSE;
+        gboolean has_icon_on_sheet = TRUE;
 
         if (xmlIsBlankNode(node)) continue;
 
@@ -886,8 +886,12 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
 //    fcs.tmp = tmp;
 //
 //    g_hash_table_foreach(structList.structTable,factory_create_obj_from_hashtable,&fcs);
+        gchar *bmppath =  dia_get_lib_directory("numbers"); /* 对所有控件进行简单编号*/
+
         GList *slist = factoryContainer->structList;
         FactoryStructItemList *fssl = NULL;
+        gchar *fmt = g_strdup("pixmap_%03d.bmp");
+        int n = 0;
         for(; slist != NULL; slist = slist->next) // 2014-3-21 lcy 这里根据结构体个数创那图标.
         {
             fssl = slist->data;
@@ -924,7 +928,20 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
             {
                 g_assert(otype->pixmap || otype->pixmap_file);
                 sheet_obj->pixmap = otype->pixmap; // 2014-3-20 lcy 这里是加xpm 的图片.
-                sheet_obj->pixmap_file = otype->pixmap_file;
+//                sheet_obj->pixmap_file = otype->pixmap_file;
+                gchar *numname = g_strconcat(bmppath,G_DIR_SEPARATOR_S,g_strdup_printf(fmt,n++),NULL);
+                if(g_file_test(numname,G_FILE_TEST_EXISTS))
+                {
+                    sheet_obj->pixmap_file = g_strdup(numname); /* 添加数字编号 */
+                    sheet_obj->pixmap = NULL;
+                }
+                else
+                {
+                    sheet_obj->pixmap = otype->pixmap; // 2014-3-20 lcy 这里是加xpm 的图片.
+                    sheet_obj->pixmap_file = otype->pixmap_file;
+                }
+
+                g_free(numname);
                 sheet_obj->has_icon_on_sheet = has_icon_on_sheet;
             }
             if (sheet_obj->user_data == NULL
@@ -941,6 +958,8 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
             sheet_append_sheet_obj(sheet,sheet_obj);
 
         }
+        g_free(bmppath);
+        g_free(fmt);
         if (tmp) xmlFree(tmp);
         xmlFree(objdesc);
         objdesc = NULL;
