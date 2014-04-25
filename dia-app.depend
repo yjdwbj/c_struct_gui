@@ -545,7 +545,7 @@
 1257614034 source:o:\tool\dvs50\lib\diainteractiverenderer.c
 	"diarenderer.h"
 
-1398321994 source:o:\tool\dvs50\lib\dialib.c
+1398411053 source:o:\tool\dvs50\lib\dialib.c
 	<config.h>
 	<stdio.h>
 	<stdlib.h>
@@ -1051,7 +1051,7 @@
 	"message.h"
 	"diagdkrenderer.h"
 
-1398305076 source:o:\tool\dvs50\lib\sheet.c
+1398413930 source:o:\tool\dvs50\lib\sheet.c
 	<config.h>
 	<stdlib.h>
 	<string.h>
@@ -1071,7 +1071,7 @@
 	"dia_dirs.h"
 	"plug-ins.h"
 
-1397647297 o:\tool\dvs50\lib\sheet.h
+1398389063 o:\tool\dvs50\lib\sheet.h
 	<glib.h>
 	"diatypes.h"
 
@@ -1137,7 +1137,7 @@
 	<time.h>
 	<gdk/gdkkeysyms.h>
 
-1398321908 source:o:\tool\dvs50\app\app_procs.c
+1398412682 source:o:\tool\dvs50\app\app_procs.c
 	<config.h>
 	<stdio.h>
 	<stdlib.h>
@@ -1321,7 +1321,7 @@
 	"attributes.h"
 	"persistence.h"
 
-1395630013 source:o:\tool\dvs50\app\commands.c
+1398411893 source:o:\tool\dvs50\app\commands.c
 	<config.h>
 	<unistd.h>
 	<stdlib.h>
@@ -1829,7 +1829,7 @@
 	"intl.h"
 	<math.h>
 
-1398331052 source:o:\tool\dvs50\app\load_save.c
+1398413761 source:o:\tool\dvs50\app\load_save.c
 	<config.h>
 	<sys/stat.h>
 	<unistd.h>
@@ -1983,7 +1983,7 @@
 	"message.h"
 	<string.h>
 
-1257604114 source:o:\tool\dvs50\app\recent_files.c
+1398397047 source:o:\tool\dvs50\app\recent_files.c
 	<config.h>
 	<gnome.h>
 	<gdk/gdkkeysyms.h>
@@ -2153,7 +2153,7 @@
 	"textedit.h"
 	"parent.h"
 
-1257614033 source:o:\tool\dvs50\app\winmain.c
+1398413469 source:o:\tool\dvs50\app\winmain.c
 	<config.h>
 	<stdlib.h>
 	<glib.h>
@@ -2364,7 +2364,7 @@
 	"autoroute.h"
 	"tool-icons.h"
 
-1257604114 source:o:\tool\dvs50\app\main.c
+1398413200 source:o:\tool\dvs50\app\main.c
 	<config.h>
 	"app_procs.h"
 	"interface.h"
@@ -2379,7 +2379,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1398339519 source:o:\tool\dvs50\objects\struct\struct_class.c
+1398409320 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2411,7 +2411,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1398339025 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1398414524 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2425,4 +2425,6 @@
 	"sheet.h"
 	"diagramdata.h"
 	"connpoint_line.h"
+
+1398410525 source:o:\tool\dvs50\dia.rc
 

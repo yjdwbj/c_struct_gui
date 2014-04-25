@@ -15,14 +15,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
 #include <config.h>
-
 #include "app_procs.h"
-
 #include "interface.h"
+
 
 int main(int argc, char *argv[])
 {
+
   app_init(argc, argv);
 
   if (!app_is_interactive())
@@ -31,9 +32,8 @@ int main(int argc, char *argv[])
   toolbox_show();
 
   app_splash_done();
-  
-  gtk_main ();
 
+  gtk_main ();
   return 0;
 }
 

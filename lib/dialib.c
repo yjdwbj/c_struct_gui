@@ -99,7 +99,7 @@ libdia_init (guint flags)
 #endif
 
   if (flags & DIA_VERBOSE) {
-    dia_log_message_enable (TRUE); /* 要不要显示 黑窗口 */
+    dia_log_message_enable (FALSE); /* 要不要显示 黑窗口 */
     dia_log_message ("initializing libdia");
   }
   stdprops_init();

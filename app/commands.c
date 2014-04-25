@@ -162,8 +162,6 @@ file_preferences_callback (GtkAction *action)
   prefs_show();
 }
 
-
-
 /* Signal handler for getting the clipboard contents */
 /* Note that the clipboard is for M$-style cut/copy/paste copying, while
    the selection is for Unix-style mark-and-copy.  We can't really do

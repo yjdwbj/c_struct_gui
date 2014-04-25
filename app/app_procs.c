@@ -894,7 +894,8 @@ app_init (int argc, char **argv)
 	       | (log_to_stderr ? DIA_MESSAGE_STDERR : 0)
 	       | (verbose ? DIA_VERBOSE : 0) );
 
-//  print_credits(credits);
+
+  print_credits(credits);
 
   if (dia_is_interactive) {
     create_user_dirs();
@@ -1004,7 +1005,7 @@ app_init (int argc, char **argv)
   g_slist_free(files);
   if (made_conversions) exit(0);
 
-  dynobj_refresh_init();
+//  dynobj_refresh_init();
   dia_log_message ("initialized");
 }
 
@@ -1201,7 +1202,6 @@ static void create_user_dirs(void)
   subdir = g_strconcat(dir, G_DIR_SEPARATOR_S "sheets", NULL);
   g_mkdir(subdir, 0755);
   g_free(subdir);
-
   g_free(dir);
 }
 

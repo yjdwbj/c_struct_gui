@@ -4,7 +4,7 @@
 	<Project>
 		<Option title="dvs50" />
 		<Option pch_mode="2" />
-		<Option default_target="debug_dia" />
+		<Option default_target="dia" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="lib">
@@ -104,8 +104,9 @@
 				</Linker>
 			</Target>
 			<Target title="debub_lib">
-				<Option output="bin/libdia" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="bin" />
+				<Option output="debug_bin/libdia" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="debug_bin" />
+				<Option object_output=".debug_objs" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option host_application="bin/dia.exe" />
@@ -116,6 +117,7 @@
 					<Add option="-g" />
 					<Add option="-std=gnu89" />
 					<Add option="-DHAVE_CONFIG_H" />
+					<Add option="-DDEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-lgtk-win32-2.0" />
@@ -143,8 +145,9 @@
 				</Linker>
 			</Target>
 			<Target title="debug_app">
-				<Option output="bin/dia-app" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="bin" />
+				<Option output="debug_bin/dia-app" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="debug_bin" />
+				<Option object_output=".debug_objs" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option host_application="bin/dia.exe" />
@@ -156,14 +159,16 @@
 					<Add option="-g" />
 					<Add option="-std=gnu89" />
 					<Add option="-DHAVE_CONFIG_H" />
+					<Add option="-DDEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-ldia" />
 				</Linker>
 			</Target>
 			<Target title="debug_standard">
-				<Option output="dia/standard" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="dia" />
+				<Option output="debug_dia/standard" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="debug_dia" />
+				<Option object_output=".debug_objs" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option host_application="devel/dia-app.exe" />
@@ -181,8 +186,9 @@
 				</Linker>
 			</Target>
 			<Target title="debug_dia">
-				<Option output="bin/dia" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="bin" />
+				<Option output="debug_bin/dia" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="debug_bin" />
+				<Option object_output=".debug_objs" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -193,8 +199,9 @@
 				</Linker>
 			</Target>
 			<Target title="debug_Struct">
-				<Option output="dia/struct" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="dia" />
+				<Option output="debug_dia/struct" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="debug_dia" />
+				<Option object_output=".debug_objs" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -219,7 +226,6 @@
 			<Add option="-Wall" />
 			<Add option="-std=gnu89" />
 			<Add option="-DHAVE_CONFIG_H" />
-			<Add option="-DDEBUG" />
 			<Add directory="." />
 			<Add directory="lib" />
 			<Add directory="app" />
@@ -578,7 +584,6 @@
 		</Unit>
 		<Unit filename="app/main.c">
 			<Option compilerVar="CC" />
-			<Option target="dia" />
 			<Option target="debug_dia" />
 		</Unit>
 		<Unit filename="app/menus.c">
@@ -759,8 +764,8 @@
 		</Unit>
 		<Unit filename="app/winmain.c">
 			<Option compilerVar="CC" />
-			<Option target="app" />
 			<Option target="debug_app" />
+			<Option target="dia" />
 		</Unit>
 		<Unit filename="config.h">
 			<Option target="lib" />
@@ -769,6 +774,11 @@
 			<Option target="debub_lib" />
 			<Option target="debug_app" />
 			<Option target="debug_standard" />
+		</Unit>
+		<Unit filename="dia.rc">
+			<Option compilerVar="WINDRES" />
+			<Option target="dia" />
+			<Option target="debug_dia" />
 		</Unit>
 		<Unit filename="lib/arrows.c">
 			<Option compilerVar="CC" />
@@ -1574,10 +1584,10 @@
 			<code_completion />
 			<envvars />
 			<debugger>
-				<remote_debugging target="debug_dia">
+				<remote_debugging target="dia">
 					<options conn_type="0" serial_baud="115200" additional_cmds=" gdbserver localhost:9999" />
 				</remote_debugging>
-				<remote_debugging target="dia">
+				<remote_debugging target="debug_dia">
 					<options conn_type="0" serial_baud="115200" additional_cmds=" gdbserver localhost:9999" />
 				</remote_debugging>
 			</debugger>

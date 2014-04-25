@@ -21,7 +21,7 @@
 #include <glib.h>
 
 #include "diatypes.h"
-DIAVAR FactoryStructItemAll structList;
+DIAVAR FactoryStructItemAll *factoryContainer;
 struct _SheetObject {
   char *object_type;
   char *description;

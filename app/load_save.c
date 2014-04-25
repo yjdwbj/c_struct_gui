@@ -58,7 +58,7 @@
 #ifdef G_OS_WIN32
 #include <io.h>
 #endif
-extern FactoryStructItemAll structList;
+extern FactoryStructItemAll *factoryContainer;
 static void read_connections(GList *objects, xmlNodePtr layer_node,
 			     GHashTable *objects_hash);
 static void GHFuncUnknownObjects(gpointer key,
@@ -145,9 +145,11 @@ read_objects(xmlNodePtr objects,
       idd = (char *) xmlGetProp(obj_node, (const xmlChar *)"id");
 
       version = 0;
-      if (versionstr != NULL && g_ascii_strncasecmp(versionstr,structList.file_version,strlen(versionstr))) {
+      if (versionstr != NULL && g_ascii_strncasecmp(versionstr,factoryContainer->file_version,strlen(versionstr))) {
         //	version = atoi(versionstr);
-        message_error(_("结构体文件的版本错误!无法打开."));
+        gchar *msg_err =  g_locale_to_utf8(_("结构体文件的版本错误!无法打开."),-1,NULL,NULL,NULL);
+        message_error(msg_err);
+        g_free(msg_err);
         xmlFree(versionstr);
         return NULL;
       }
@@ -727,7 +729,7 @@ write_objects(GList *objects, xmlNodePtr objects_node,
 
 //      g_snprintf(buffer, 30, "%d", obj->type->version);
         /* 写入自定义的唯一长串版本号 */
-      xmlSetProp(obj_node, (const xmlChar *)"version", (xmlChar *)g_strdup(structList.file_version));
+      xmlSetProp(obj_node, (const xmlChar *)"version", (xmlChar *)g_strdup(factoryContainer->file_version));
 
 
 
@@ -1094,7 +1096,7 @@ CLEANUP:
          /*这里添加生成BIN文件*/
          gchar *exefile = dia_get_lib_directory("bin");
          gchar *fullpath = g_strconcat(exefile,"\\makebin.exe");
-         gchar *input = g_strdup_printf("-i=%s",user_filename);
+         gchar *input = g_strdup_printf("-i=\"%s\"",user_filename);
          gchar *ext = _(".bin");
          int n = strlen(user_filename);
          int i =0 ;
@@ -1102,9 +1104,13 @@ CLEANUP:
          newfile[n-1] = 'n';
          newfile[n-2] = 'i';
          newfile[n-3] = 'b';
-         gchar *outfile = g_strdup_printf("-o=%s",newfile);
+         gchar *outfile = g_strdup_printf("-o=\"%s\"",newfile);
+         /* 转换本地码,不然会有乱码的 */
+         gchar *utf8f = g_convert(fullpath,-1,"GB2312","UTF-8",NULL,NULL,NULL);
+         gchar *utf8i = g_convert(input,-1,"GB2312","UTF-8",NULL,NULL,NULL);
+         gchar *utf8o = g_convert(outfile,-1,"GB2312","UTF-8",NULL,NULL,NULL);
 
-         gchar *arg = g_strjoin(" ",fullpath,input,outfile,NULL);
+         gchar *arg = g_strjoin(" ",utf8f,utf8i,utf8o,NULL);
          char          *output;
          GError       **error = NULL;
          gchar **sout;
@@ -1112,12 +1118,15 @@ CLEANUP:
 
 //   gboolean res = gdk_spawn_command_line_on_screen(ddisplay_active(),arg,error);
 //  gboolean res =  g_spawn_command_line_sync (arg,sout,serr,NULL,error);
-//    system(arg);
-//    g_free(outfile);
-//    g_free(newfile);
-//    g_free(input);
-//    g_free(fullpath);
-//    g_free(arg);
+    system(arg);
+    g_free(outfile);
+    g_free(newfile);
+    g_free(input);
+    g_free(fullpath);
+    g_free(arg);
+    g_free(utf8f);
+    g_free(utf8i);
+    g_free(utf8o);
   return (ret?FALSE:TRUE);
 }
 

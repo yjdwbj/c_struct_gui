@@ -50,7 +50,6 @@
 
 
 
-
 /* hide this functionality before rewrite;) */
 void
 structclass_dialog_free (STRUCTClassDialog *dialog)
@@ -58,7 +57,7 @@ structclass_dialog_free (STRUCTClassDialog *dialog)
 //  g_list_free(dialog->deleted_connections);
     gtk_widget_destroy(dialog->dialog);
     dialog->dialog = NULL;
-//  gtk_widget_destroy(dialog->mainTable); // 2014-3-19 lcy 这里是回收内存.
+    gtk_widget_destroy(dialog->mainTable); // 2014-3-19 lcy 这里是回收内存.
 //  g_list_free(dialog->EnumsAndStructs->enumList);
 //  g_list_free(dialog->EnumsAndStructs->structList);
     /* destroy-signal destroy_properties_dialog already does 'g_free(dialog);' and more */
@@ -3368,6 +3367,7 @@ GtkWidget *factory_create_enum_widget(GList *list,int index)
     GtkWidget *columTwo = NULL;
     GList *datalist = NULL;
     GList *p = list;
+    datalist = g_list_append(datalist,"");
     for(; p != NULL ; p= p->next)
     {
         FactoryStructEnum *kvmap = p->data;
@@ -3422,6 +3422,8 @@ static GtkWidget *factory_create_variant_object(SaveStruct *sss)
         GList *p = suptr->structlist;
         /* nextobj 就是当前下拉框所显示的 */
         FactoryStructItem *nextobj =  g_list_nth_data(suptr->structlist,suptr->index);
+        if(!nextobj)
+            break;
 
         for(; p != NULL ; p= p->next)
         {
@@ -3458,7 +3460,8 @@ FIRST:
         {
             /* 初始化下面这一个有可能按键出来控件要保存的值 */
             SaveUbtn *sbtn = &tsst->value.ssubtn;
-            if(sbtn->structlist)
+
+            if(!g_hash_table_size(sbtn->htoflist) && sbtn->structlist)
             {
                 sbtn->htoflist = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
                 GList *slist = sbtn->structlist;
@@ -3644,7 +3647,8 @@ static void factory_draw_many_lines_dialog(GtkWidget *widget,
 static int factory_substruct_dialog(GtkWidget *widget,
                                     gint       response_id,
                                     gpointer   user_data)
-{/* 联合体按钮 */
+{
+    /* 联合体按钮 */
 
 
     if (   response_id == GTK_RESPONSE_APPLY
@@ -4281,7 +4285,7 @@ GtkWidget *factory_create_many_entry_box(SaveStruct *sss)
             int maxlength = 2+sey->width * 2; /* 2014-3-31 lcy  宽度为  0x + 宽度*2  */
             gtk_entry_set_max_length (GTK_ENTRY (entry), maxlength);
             gtk_entry_set_width_chars(GTK_ENTRY (entry), maxlength);
-            gchar *str = g_slist_nth_data(sey->data,r*col+c);
+            gchar *str = g_list_nth_data(sey->data,r*col+c);
             if(str)
                 gtk_entry_set_text(GTK_ENTRY (entry),str);
             else
@@ -4378,8 +4382,7 @@ void factory_create_struct_dialog(GtkWidget *dialog,GList *datalist)
     for(; item != NULL ; item = item->next,row++)
     {
         SaveStruct *sst  = item->data;
-        if(sst)
-            factory_set_savestruct_widgets(sst);
+        factory_set_savestruct_widgets(sst);
         factory_set_twoxtwo_table(dialog,sst->widget1,sst->widget2,row);
     }
 }
@@ -4393,10 +4396,7 @@ void factory_create_and_fill_dialog(STRUCTClass *fclass, gboolean is_default)
     {
         factory_read_initial_to_struct(fclass);
     }
-//    maintable = g_hash_table_lookup(fclass->widgetmap,fclass->name);
-//    GList *targetlist = g_hash_table_get_values(maintable);
-    targetlist = g_hash_table_get_values(fclass->widgetmap);
-    if(targetlist)
+    else
     {
         int num = g_list_length(targetlist);
         prop_dialog->mainTable = gtk_table_new(num,4,FALSE);  // 2014-3-19 lcy 根据要链表的数量,创建多少行列表.

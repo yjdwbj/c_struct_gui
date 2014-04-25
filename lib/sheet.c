@@ -40,7 +40,7 @@
 #include "dia_dirs.h"
 #include "plug-ins.h"
 
-FactoryStructItemAll structList = {NULL,NULL,NULL,NULL};
+ FactoryStructItemAll *factoryContainer = NULL;
 static GSList *sheets = NULL;
 
 Sheet *
@@ -244,9 +244,9 @@ void factory_read_native_c_file(const gchar* filename)
 {
 #define MAX_LINE 1024
 #define MAX_SECTION 7
-    structList.structTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-    structList.enumTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-    structList.unionTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+    factoryContainer->structTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+    factoryContainer->enumTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+    factoryContainer->unionTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
     struct stat statbuf;
 
     FILE *fd;
@@ -364,7 +364,7 @@ static void factory_check_items_valid(gpointer key, gpointer value, gpointer use
         if(item->Itype != BT)
         {
             /* 2014-4-8 lcy 不是基本类型, 就用类型名为键值去结构体哈希与枚举哈希表内查找.*/
-            ret =  g_hash_table_lookup(structList.structTable,item->SType);
+            ret =  g_hash_table_lookup(factoryContainer->structTable,item->SType);
             if(ret)
             {
                 item->Itype = ST;
@@ -374,7 +374,7 @@ static void factory_check_items_valid(gpointer key, gpointer value, gpointer use
 
             if(item->Itype != ST)
             {
-                ret = g_hash_table_lookup(structList.enumTable,item->SType);
+                ret = g_hash_table_lookup(factoryContainer->enumTable,item->SType);
                 if(ret)
                 {
                     item->Itype = ET;
@@ -385,7 +385,7 @@ static void factory_check_items_valid(gpointer key, gpointer value, gpointer use
 
             if(item->Itype != ET)
             {
-                ret = g_hash_table_lookup(structList.unionTable,item->SType);
+                ret = g_hash_table_lookup(factoryContainer->unionTable,item->SType);
                 if(ret)
                 {
                     item->Itype = UT;
@@ -395,7 +395,9 @@ static void factory_check_items_valid(gpointer key, gpointer value, gpointer use
 
             if(item->Itype == NT)
             {
-                message_error(_(g_strdup_printf("%s没有定义",item->SType)));
+                gchar *msg_err = g_locale_to_utf8(_("%s没有定义"),-1,NULL,NULL,NULL);
+                message_error(_(g_strdup_printf(msg_err,item->SType)));
+                g_free(msg_err);
             }
 
         }
@@ -415,9 +417,10 @@ void factoryReadDataFromFile(const gchar* filename)
 {
 #define MAX_LINE 1024
 #define MAX_SECTION 7
-    structList.structTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-    structList.enumTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-    structList.unionTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+    factoryContainer = g_new0(FactoryStructItemAll,1);
+    factoryContainer->structTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+    factoryContainer->enumTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+    factoryContainer->unionTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
 
     struct stat statbuf;
 
@@ -444,11 +447,13 @@ void factoryReadDataFromFile(const gchar* filename)
     aline = g_strdup(g_strstrip(filetxt));
     if(g_ascii_strncasecmp(aline,_(":version="),9))
     {
-        message_error(_("文件格式错误,找不到文件上的版本信息!\n"));
+        gchar *msg_err = g_locale_to_utf8(_("文件格式错误,找不到文件上的版本信息!\n"),-1,NULL,NULL,NULL);
+        message_error(msg_err);
+        g_free(msg_err);
         exit(1);
     }
     gchar **ver = g_strsplit(aline,"=",-1);
-    structList.file_version = g_strdup(ver[1]);
+    factoryContainer->file_version = g_strdup(ver[1]);
     g_strfreev(ver);
     g_free(aline);
 
@@ -530,18 +535,18 @@ void factoryReadDataFromFile(const gchar* filename)
             {
                 isStruct = FALSE;
                 fssl->list = dlist;
-                structList.structList = g_list_append(structList.structList,fssl);
-                g_hash_table_insert(structList.structTable,hashKey,dlist); /* 链表在哈希表里 */
+                factoryContainer->structList = g_list_append(factoryContainer->structList,fssl);
+                g_hash_table_insert(factoryContainer->structTable,hashKey,dlist); /* 链表在哈希表里 */
             }
             else if(isEmnu)
             {
                 isEmnu = FALSE;
-                g_hash_table_insert(structList.enumTable,hashKey,enumlist);
+                g_hash_table_insert(factoryContainer->enumTable,hashKey,enumlist);
             }
             else if(isUnion)
             {
                 isUnion = FALSE;
-                g_hash_table_insert(structList.unionTable,hashKey,dlist);
+                g_hash_table_insert(factoryContainer->unionTable,hashKey,dlist);
             }
         }
         else if(isEmnu) // 2014-3-19 lcy 读取一个枚举.
@@ -607,8 +612,8 @@ void factoryReadDataFromFile(const gchar* filename)
     }
     fclose(fd);
     /* 检查每一个块里面的成员有效性 */
-    g_hash_table_foreach(structList.unionTable,factory_check_items_valid,NULL);
-    g_hash_table_foreach(structList.structTable,factory_check_items_valid,NULL);
+    g_hash_table_foreach(factoryContainer->unionTable,factory_check_items_valid,NULL);
+    g_hash_table_foreach(factoryContainer->structTable,factory_check_items_valid,NULL);
     //  g_free(filename);
 }
 
@@ -881,7 +886,7 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
 //    fcs.tmp = tmp;
 //
 //    g_hash_table_foreach(structList.structTable,factory_create_obj_from_hashtable,&fcs);
-        GList *slist = structList.structList;
+        GList *slist = factoryContainer->structList;
         FactoryStructItemList *fssl = NULL;
         for(; slist != NULL; slist = slist->next) // 2014-3-21 lcy 这里根据结构体个数创那图标.
         {
