@@ -52,7 +52,7 @@
   <name xml:lang="tr">STRUCT</name>
   <name xml:lang="uk">STRUCT</name>
   <name xml:lang="vi">STRUCT</name>
-  <name xml:lang="zh_CN">STRUCT</name>
+  <name xml:lang="zh_CN">行为结构</name>
   <name xml:lang="zh_HK">STRUCT</name>
   <name xml:lang="zh_TW">STRUCT</name>
   <description>Editor for STRUCT Static Structure Diagrams</description>

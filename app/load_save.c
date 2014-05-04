@@ -1194,7 +1194,7 @@ CLEANUP:
 
     /*这里添加生成BIN文件*/
     gchar *exefile = dia_get_lib_directory("bin");
-    gchar *fullpath = g_strconcat(exefile,G_DIR_SEPARATOR,"makebin.exe");
+    gchar *fullpath = g_strconcat(exefile,G_DIR_SEPARATOR_S"makebin.exe",NULL);
     if(!g_file_test(fullpath, G_FILE_TEST_EXISTS))
     {
         gchar *msg_utf8 = g_locale_to_utf8 (_("makebin.exe 找不到,没有生成bin文件."), -1, NULL, NULL, NULL);

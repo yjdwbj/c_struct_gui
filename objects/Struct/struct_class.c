@@ -538,14 +538,14 @@ static void factory_update_index(STRUCTClass *fclass)
 
     DiaObject *obj = &fclass->element.object;
     GList *list = obj->parent_layer->objects;
-    int n = g_list_index(list,obj);
-    gchar **tmp =  g_strsplit(fclass->name,"(",-1);
-    gchar *newname = g_strconcat(tmp[0],g_strdup_printf(_("(%03d)"), n),NULL);
-    g_strfreev(tmp);
-    g_free(fclass->name);
-    fclass->name =  g_strdup(newname);
-    g_free(newname);
-    obj->name = fclass->name;
+     obj->index  = g_list_index(list,obj);
+//    gchar **tmp =  g_strsplit(fclass->name,"(",-1);
+//    gchar *newname = g_strconcat(tmp[0],g_strdup_printf(_("(%03d)"), n),NULL);
+//    g_strfreev(tmp);
+//    g_free(fclass->name);
+//    fclass->name =  g_strdup(newname);
+//    g_free(newname);
+//    obj->name = fclass->name;
     structclass_calculate_data(fclass);
     if(!fclass->isInitial)
     {
@@ -2099,6 +2099,7 @@ factory_struct_items_create(Point *startpoint,
 
     structclass = g_malloc0(sizeof(STRUCTClass));
     structclass->isInitial = FALSE;
+
     elem = &structclass->element;
     obj = &elem->object;
 
@@ -2639,7 +2640,9 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
         {
             sss->celltype = ECOMBO;
             sss->value.senum.enumList = fst->datalist;
+
             GList *t = sss->value.senum.enumList;
+
             for(; t != NULL ; t = t->next)
             {
                 FactoryStructEnum *kvmap = t->data;
@@ -3216,11 +3219,9 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename 
     structclass = g_malloc0(sizeof(STRUCTClass));
     elem = &structclass->element;
     obj = &elem->object;
-
     obj->type = &structclass_type;
     obj->ops = &structclass_ops;
     obj->type->version = g_strdup(factoryContainer->file_version);
-
     element_load(elem, obj_node);
 
 #ifdef STRUCT_MAINPOINT

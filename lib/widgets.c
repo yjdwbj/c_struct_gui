@@ -2056,8 +2056,7 @@ dia_dynamic_menu_create_menu(DiaDynamicMenu *ddm)
     for (tmplist = ddm->default_entries; tmplist != NULL; tmplist = g_list_next(tmplist)) {
       GtkWidget *item =  (ddm->create_func)(ddm, tmplist->data);
       g_object_set_data(G_OBJECT(item), "ddm_name", tmplist->data);
-      g_signal_connect(G_OBJECT(item), "activate",
-		       G_CALLBACK(dia_dynamic_menu_activate), ddm);
+      g_signal_connect(G_OBJECT(item), "activate",G_CALLBACK(dia_dynamic_menu_activate), ddm);
       gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
       gtk_widget_show(item);
     }
@@ -2068,6 +2067,8 @@ dia_dynamic_menu_create_menu(DiaDynamicMenu *ddm)
 
   for (tmplist = persistent_list_get_glist(ddm->persistent_name);
        tmplist != NULL; tmplist = g_list_next(tmplist)) {
+    if(!g_strncasecmp(_("STRUCT"),(gchar*)tmplist->data,6))
+        continue;
     GtkWidget *item = (ddm->create_func)(ddm, tmplist->data);
     g_object_set_data(G_OBJECT(item), "ddm_name", tmplist->data);
     g_signal_connect(G_OBJECT(item), "activate",
@@ -2092,7 +2093,7 @@ dia_dynamic_menu_create_menu(DiaDynamicMenu *ddm)
 
   gtk_option_menu_set_menu(GTK_OPTION_MENU(ddm), menu);
 
-  gtk_option_menu_set_history(GTK_OPTION_MENU(ddm), 0);
+//  gtk_option_menu_set_history(GTK_OPTION_MENU(ddm), 0);
 }
 
 /** Select the method used for sorting the non-default entries.
@@ -2239,4 +2240,11 @@ dia_toggle_button_new_with_icons(const guint8 *on_icon,
 			       gtk_image_new_from_pixbuf(p2));
 }
 
+GtkWidget* factory_create_button_with_icons(const guint8 *icon)
+{
+     GtkWidget *systemdata_btn = gtk_button_new();
+    GdkPixbuf *p1 = gdk_pixbuf_new_from_inline(-1, icon, FALSE, NULL);
+     gtk_button_set_image(GTK_BUTTON(systemdata_btn),gtk_image_new_from_pixbuf(p1));
+     return systemdata_btn;
+}
 

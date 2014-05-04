@@ -223,6 +223,8 @@ DIAVAR void dia_dynamic_menu_select_entry(DiaDynamicMenu *ddm, const gchar *entr
 DIAVAR GtkWidget *dia_toggle_button_new_with_icons(const guint8 *on_icon,
 				 const guint8 *off_icon);
 
+
+DIAVAR GtkWidget* factory_create_button_with_icons(const guint8 *icon);
 /* Other common defaults */
 
 #define DEFAULT_ALIGNMENT ALIGN_LEFT

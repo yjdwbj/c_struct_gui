@@ -1366,6 +1366,8 @@ get_sheet_names()
 static void
 create_sheet_dropdown_menu(GtkWidget *parent)
 {
+    gchar *action_btn = g_locale_to_utf8(_("行为结构"),-1,NULL,NULL,NULL);
+    GtkWidget *title_lab = gtk_label_new(action_btn);
   GList *sheet_names = get_sheet_names();
 
   if (sheet_option_menu != NULL) {
@@ -1374,7 +1376,7 @@ create_sheet_dropdown_menu(GtkWidget *parent)
   }
 
   sheet_option_menu =
-    dia_dynamic_menu_new_stringlistbased(_("STRUCT"), sheet_names,
+    dia_dynamic_menu_new_stringlistbased(g_strdup(action_btn), sheet_names,
 					 NULL, "sheets");
   g_signal_connect(DIA_DYNAMIC_MENU(sheet_option_menu), "value-changed",
 		   G_CALLBACK(sheet_option_menu_changed), sheet_option_menu);
@@ -1384,15 +1386,20 @@ create_sheet_dropdown_menu(GtkWidget *parent)
 //				     "Flowchart");
 //  dia_dynamic_menu_add_default_entry(DIA_DYNAMIC_MENU(sheet_option_menu),
 //				     "UML");
-  dia_dynamic_menu_add_default_entry(DIA_DYNAMIC_MENU(sheet_option_menu),
-				     "STRUCT");
+//  dia_dynamic_menu_add_default_entry(DIA_DYNAMIC_MENU(sheet_option_menu),
+//				     g_strdup(action_btn));
+
   /*    gtk_widget_set_size_request(sheet_option_menu, 20, -1);*/
+  dia_dynamic_menu_select_entry(DIA_DYNAMIC_MENU(sheet_option_menu),g_strdup(action_btn));
+
   gtk_wrap_box_pack_wrapped(GTK_WRAP_BOX(parent), sheet_option_menu,
 			    TRUE, TRUE, FALSE, FALSE, TRUE);
   /* 15 was a magic number that goes beyond the standard objects and the divider. */
   gtk_wrap_box_reorder_child(GTK_WRAP_BOX(parent),
 			     sheet_option_menu, NUM_TOOLS+1);
   gtk_widget_show(sheet_option_menu);
+//  gtk_widget_show(title_lab);
+  g_free(action_btn);
 }
 
 void
@@ -1728,6 +1735,7 @@ create_integrated_ui (void)
   /* Toolbar */
   /* TODO: maybe delete set_style(toolbar,ICONS) */
   gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_ICONS);
+
   gtk_box_pack_start (GTK_BOX (main_vbox), toolbar, FALSE, TRUE, 0);
   gtk_widget_show (toolbar);
 

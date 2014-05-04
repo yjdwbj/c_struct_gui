@@ -90,10 +90,17 @@ static const GtkActionEntry common_entries[] =
 /* Actions for toolbox menu */
 static const GtkActionEntry toolbox_entries[] =
 {
+
    /* { "FileSheets", NULL, N_("Sheets and Objects..."), "F9", NULL, G_CALLBACK (sheets_dialog_show_callback) },*/
     { "FileSheets", NULL, N_("Sheets and Objects..."), "F9", NULL, NULL },
     { "FilePrefs", GTK_STOCK_PREFERENCES, NULL, NULL, NULL, G_CALLBACK (file_preferences_callback) },
     { "FilePlugins", NULL, N_("Plugins..."), NULL, NULL, G_CALLBACK (file_plugins_callback) }
+};
+/* 添加几个按特殊的按键 */
+static const GtkActionEntry factory_button_entries[] =
+{
+    {"SystemData",NULL,N_("系统数据"),NULL,NULL,NULL},
+    {"GlobelSetting",NULL,N_("全局变量"),NULL,NULL,NULL}
 };
 
 /* Toggle-Actions for toolbox menu */
@@ -118,7 +125,7 @@ static const GtkActionEntry display_entries[] =
     { "FileExport", GTK_STOCK_CONVERT, N_("_Export ..."), NULL, NULL, G_CALLBACK (file_export_callback) },
 //    { "DiagramProperties", GTK_STOCK_PROPERTIES, N_("_Diagram Properties"), "<shift><alt>Return", NULL,G_CALLBACK (view_diagram_properties_callback)},
 //    { "FilePagesetup", NULL, N_("Page Set_up..."), NULL, NULL, G_CALLBACK (file_pagesetup_callback) },
-    { "FilePrint", GTK_STOCK_PRINT, NULL, "<control>P", NULL, G_CALLBACK (file_print_callback) },
+//    { "FilePrint", GTK_STOCK_PRINT, NULL, "<control>P", NULL, G_CALLBACK (file_print_callback) },
     { "FileClose", GTK_STOCK_CLOSE, NULL, "<control>W", NULL, G_CALLBACK (file_close_callback) },
 
   { "Edit", NULL, N_("_Edit"), NULL, NULL, NULL },
@@ -628,6 +635,17 @@ create_integrated_ui_toolbar (void)
 
   sep = gtk_separator_tool_item_new ();
   gtk_toolbar_insert (toolbar, sep, -1);
+  /* 新建三个按钮 */
+  GtkWidget * SystemData = factory_create_button_with_icons(systemdata_on);
+  gtk_tooltips_set_tip (tool_tips, SystemData,g_locale_to_utf8(_("系统数据"),-1,NULL,NULL,NULL), NULL);
+  integrated_ui_toolbar_add_custom_item (toolbar, SystemData);
+
+
+   GtkWidget * GlobelSetting = factory_create_button_with_icons(globe_on);
+   gtk_tooltips_set_tip (tool_tips, GlobelSetting,g_locale_to_utf8(_("全局变量"),-1,NULL,NULL,NULL), NULL);
+  integrated_ui_toolbar_add_custom_item (toolbar, GlobelSetting);
+
+
   gtk_widget_show (GTK_WIDGET (sep));
 
   return GTK_WIDGET (toolbar);
@@ -831,6 +849,8 @@ create_or_ref_display_actions (void)
   gtk_action_group_set_translate_func (display_actions, _dia_translate, NULL, NULL);
   gtk_action_group_add_actions (display_actions, common_entries,
                 G_N_ELEMENTS (common_entries), NULL);
+                /*添加动作.*/
+  gtk_action_group_add_actions(display_actions,factory_button_entries,G_N_ELEMENTS(factory_button_entries),NULL);
   gtk_action_group_add_actions (display_actions, display_entries,
                 G_N_ELEMENTS (display_entries), NULL);
   gtk_action_group_add_toggle_actions (display_actions, display_toggle_entries,
@@ -878,6 +898,7 @@ menus_init(void)
   gtk_action_group_set_translate_func (toolbox_actions, _dia_translate, NULL, NULL);
   gtk_action_group_add_actions (toolbox_actions, common_entries,
                 G_N_ELEMENTS (common_entries), NULL);
+gtk_action_group_add_actions(display_actions,factory_button_entries,G_N_ELEMENTS(factory_button_entries),NULL);
   gtk_action_group_add_actions (toolbox_actions, toolbox_entries,
                 G_N_ELEMENTS (toolbox_entries), NULL);
   gtk_action_group_add_toggle_actions (toolbox_actions, toolbox_toggle_entries,
@@ -965,6 +986,7 @@ menus_get_integrated_ui_menubar (GtkWidget     **menubar,
   gtk_action_group_set_translate_func (integrated_ui_actions, _dia_translate, NULL, NULL);
   gtk_action_group_add_actions (integrated_ui_actions, common_entries,
                 G_N_ELEMENTS (common_entries), NULL);
+ gtk_action_group_add_actions(display_actions,factory_button_entries,G_N_ELEMENTS(factory_button_entries),NULL);
   gtk_action_group_add_actions (integrated_ui_actions, toolbox_entries,
                 G_N_ELEMENTS (toolbox_entries), NULL);
   gtk_action_group_add_actions (integrated_ui_actions, display_entries,

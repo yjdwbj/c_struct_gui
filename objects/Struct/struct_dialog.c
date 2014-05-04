@@ -3212,6 +3212,15 @@ factory_apply_props_from_dialog(STRUCTClass *fclass, GtkWidget *widget)
 {
 //    int s = g_hash_table_size(fclass->widgetmap);
     g_hash_table_foreach(fclass->widgetmap,factory_read_props_from_widget,(gpointer)fclass);
+    PublicSection *pps = fclass->pps;
+    pps->name = gtk_entry_get_text(pps->wid_rename_entry);
+    if(pps->name != NULL && g_strncasecmp(pps->name,fclass->name,strlen(pps->name)))
+    {
+        fclass->name = g_locale_to_utf8(pps->name,-1,NULL,NULL,NULL);
+        structclass_calculate_data(fclass);
+    }
+
+
     return  NULL;
 }
 
@@ -3324,6 +3333,7 @@ factory_get_properties(STRUCTClass *fclass, gboolean is_default)
                         GTK_SIGNAL_FUNC(destroy_properties_dialog),(gpointer) fclass);
 //  int mapsize =   g_hash_table_size(class->widgetmap);
     factory_create_and_fill_dialog(fclass,FALSE); /* 准备显示UI控件 */
+
     gtk_widget_show_all (fclass->properties_dialog->dialog);
     return fclass->properties_dialog->dialog;
 }
@@ -3367,7 +3377,6 @@ GtkWidget *factory_create_enum_widget(GList *list,int index)
     GtkWidget *columTwo = NULL;
     GList *datalist = NULL;
     GList *p = list;
-    datalist = g_list_append(datalist,"");
     for(; p != NULL ; p= p->next)
     {
         FactoryStructEnum *kvmap = p->data;
@@ -3664,7 +3673,8 @@ static int factory_substruct_dialog(GtkWidget *widget,
         for(; wlist; wlist = wlist->next)
         {
             SaveStruct *vss = wlist->data;
-            factory_save_value_from_widget(vss);
+            if(vss)
+                factory_save_value_from_widget(vss);
         }
     }
     gtk_widget_hide(widget);
@@ -3683,10 +3693,13 @@ void factory_save_value_from_widget(SaveStruct *sss)
     switch(sss->celltype)
     {
     case ECOMBO:
+    {
         sss->value.senum.index = gtk_combo_box_get_active(GTK_COMBO_BOX(sss->widget2));
         FactoryStructEnum *kmap =  g_list_nth_data(sss->value.senum.enumList,sss->value.senum.index);
-        sss->value.senum.evalue = kmap->value;
-        break;
+        if(kmap)
+            sss->value.senum.evalue = kmap->value;
+    }
+    break;
     case ENTRY:
     {
         SaveEntry *sey = &sss->value.sentry;
@@ -4402,12 +4415,34 @@ void factory_create_and_fill_dialog(STRUCTClass *fclass, gboolean is_default)
         prop_dialog->mainTable = gtk_table_new(num,4,FALSE);  // 2014-3-19 lcy 根据要链表的数量,创建多少行列表.
         factory_create_struct_dialog(prop_dialog->mainTable,targetlist);
         gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),prop_dialog->mainTable);
+        /* 2014-5-4 lcy 这里要添加一些公共选项 */
+        PublicSection *pps = g_new0(PublicSection,1);
+        pps->hasfinished = FALSE;
+
+
+        GtkWidget *sep = gtk_hseparator_new();
+        gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),sep);
+        pps->wid_hasfinished  =  	gtk_check_button_new_with_label(g_locale_to_utf8(_("编辑完成"),-1,NULL,NULL,NULL));
+        GtkWidget *vbox = gtk_vbox_new(FALSE,0);
+        GtkWidget *name_lab = gtk_label_new(g_locale_to_utf8(_("对像重命名:"),-1,NULL,NULL,NULL));
+        pps->wid_rename_entry = gtk_entry_new();
+        gtk_entry_set_max_length(pps->wid_rename_entry,255);
+        gtk_box_pack_start(GTK_BOX(vbox), name_lab, TRUE, TRUE, 0);
+        gtk_box_pack_start(GTK_BOX(vbox), pps->wid_rename_entry, TRUE, TRUE, 0);
+
+        gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),pps->wid_hasfinished);
+        gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),vbox);
+        fclass->pps = pps;
+
         gtk_table_set_col_spacing(GTK_TABLE(prop_dialog->mainTable),1,20);
     }
 
-
 }
 
+PublicSection* factory_get_pps_item()
+{
+
+}
 
 
 //GtkWidget *

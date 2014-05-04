@@ -197,6 +197,15 @@ typedef struct _SaveStruct{
     STRUCTClass *sclass; /* 它的最上层的对像 */
 };
 
+typedef struct _PublicSection PublicSection; /* 显示一些公共的信息 */
+struct _PublicSection
+{
+    GtkWidget *wid_hasfinished;
+    gboolean hasfinished;
+    GtkWidget *wid_rename_entry;
+    gchar *name;
+};
+
 /**
  * \brief The most complex object Dia has
  *
@@ -286,6 +295,7 @@ struct _STRUCTClass {
   gboolean destroyed;
   GHashTable *widgetmap; // 2014-3-22 lcy 这里用一个链表来保存界面上所有的值。
   FactoryStructItemAll *EnumsAndStructs ;// 2014-3-21 lcy 这里包含一个文件里的所有结构体.
+  PublicSection *pps;
 };
 
 void structclass_dialog_free (STRUCTClassDialog *dialog);

@@ -960,7 +960,8 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
     }
     g_free(bmppath);
     g_free(fmt);
-    if (tmp) xmlFree(tmp);
+    if (tmp)
+        xmlFree(tmp);
 
 
 
