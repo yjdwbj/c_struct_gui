@@ -516,7 +516,7 @@ struct _DiaObject {
   /** Metainfo of the object, should not be manipulated directy */
   GHashTable       *meta;
   gchar *name; /* 2014-4-2 lcy 加一个名字做调试 */
-  guint32 *index; /*2014-5-4 lcy 这里是控件唯一编号*/
+  guint32 index; /*2014-5-4 lcy 这里是控件唯一编号*/
 };
 
 /*!
@@ -600,6 +600,7 @@ typedef void (*DiaObjectFunc) (const DiaObject *obj);
 /** convenience functions for meta info */
 DIAVAR void   dia_object_set_meta (DiaObject *obj, const gchar *key, const gchar *value);
 DIAVAR gchar *dia_object_get_meta (DiaObject *obj, const gchar *key);
+DIAVAR void factory_systemdata_dialog();
 
 G_END_DECLS
 

@@ -2067,8 +2067,6 @@ dia_dynamic_menu_create_menu(DiaDynamicMenu *ddm)
 
   for (tmplist = persistent_list_get_glist(ddm->persistent_name);
        tmplist != NULL; tmplist = g_list_next(tmplist)) {
-    if(!g_strncasecmp(_("STRUCT"),(gchar*)tmplist->data,6))
-        continue;
     GtkWidget *item = (ddm->create_func)(ddm, tmplist->data);
     g_object_set_data(G_OBJECT(item), "ddm_name", tmplist->data);
     g_signal_connect(G_OBJECT(item), "activate",

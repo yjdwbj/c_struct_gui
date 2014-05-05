@@ -189,8 +189,8 @@ static PropDescription structclass_props[] =
 
     PROP_STD_NOTEBOOK_BEGIN,
     PROP_NOTEBOOK_PAGE("class", PROP_FLAG_DONT_MERGE, N_("Class")),
-//  { "name", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL | PROP_FLAG_NO_DEFAULTS,
-//  N_("Name"), NULL, NULL },
+  { "name", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL | PROP_FLAG_NO_DEFAULTS,
+  N_("Name"), NULL, NULL },
 //  { "stereotype", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
 //  N_("Stereotype"), NULL, NULL },
 //  { "comment", PROP_TYPE_STRING, PROP_FLAG_VISIBLE | PROP_FLAG_OPTIONAL,
@@ -336,7 +336,7 @@ static PropOffset structclass_offsets[] =
     { "text_colour", PROP_TYPE_COLOUR, offsetof(STRUCTClass, text_color) },
     { "line_colour", PROP_TYPE_COLOUR, offsetof(STRUCTClass, line_color) },
     { "fill_colour", PROP_TYPE_COLOUR, offsetof(STRUCTClass, fill_color) },
-//  { "name", PROP_TYPE_STRING, offsetof(STRUCTClass, name) },
+  { "name", PROP_TYPE_STRING, offsetof(STRUCTClass, name) },
 //  { "stereotype", PROP_TYPE_STRING, offsetof(STRUCTClass, stereotype) },
 //  { "comment", PROP_TYPE_STRING, offsetof(STRUCTClass, comment) },
 //  { "abstract", PROP_TYPE_BOOL, offsetof(STRUCTClass, abstract) },
@@ -537,8 +537,9 @@ static void factory_update_index(STRUCTClass *fclass)
 {
 
     DiaObject *obj = &fclass->element.object;
-    GList *list = obj->parent_layer->objects;
-     obj->index  = g_list_index(list,obj);
+    Layer *curlay = obj->parent_layer;
+    GList *list = curlay->objects;
+    obj->index  = g_list_index(list,obj);
 //    gchar **tmp =  g_strsplit(fclass->name,"(",-1);
 //    gchar *newname = g_strconcat(tmp[0],g_strdup_printf(_("(%03d)"), n),NULL);
 //    g_strfreev(tmp);
@@ -876,6 +877,9 @@ structclass_draw_namebox(STRUCTClass *structclass, DiaRenderer *renderer, Elemen
 //  /* name: */
     if (structclass->name != NULL)
     {
+        /* 2014-5-5 lcy 这里支持中文显示*/
+//        gchar *utf8name = g_locale_from_utf8(structclass->name,-1,NULL,NULL,NULL);
+    gchar *utf8name = structclass->name;
 //    if (structclass->abstract) {
 //      font = structclass->abstract_classname_font;
 //      font_height = structclass->abstract_classname_font_height;
@@ -884,11 +888,12 @@ structclass_draw_namebox(STRUCTClass *structclass, DiaRenderer *renderer, Elemen
             font = structclass->classname_font;
             font_height = structclass->classname_font_height;
         }
-        ascent = dia_font_ascent(structclass->name, font, font_height);
+        ascent = dia_font_ascent(utf8name, font, font_height);
         StartPoint.y += ascent;
 
         renderer_ops->set_font(renderer, font, font_height);
-        renderer_ops->draw_string(renderer, structclass->name, &StartPoint, ALIGN_CENTER, text_color);
+        renderer_ops->draw_string(renderer,utf8name ,
+                                   &StartPoint, ALIGN_CENTER, text_color);
         StartPoint.y += font_height - ascent;
     }
 //
@@ -1405,7 +1410,7 @@ structclass_update_data(STRUCTClass *structclass)
     element_update_handles(elem);
 
 #ifdef DEBUG
-    structclass_sanity_check(structclass, "After updating data");
+//    structclass_sanity_check(structclass, "After updating data");
 #endif
 }
 
@@ -2705,9 +2710,10 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
 
 void factory_set_all_factoryclass(STRUCTClass *fclass)
 {
-    gchar **tmp =  g_strsplit(fclass->name,"(",-1);
-    GList *tlist = g_hash_table_lookup(fclass->EnumsAndStructs->structTable,tmp[0]);
-    g_strfreev(tmp);
+//    gchar **tmp =  g_strsplit(fclass->name,"(",-1);
+    gchar *tmp = fclass->element.object.name;
+    GList *tlist = g_hash_table_lookup(fclass->EnumsAndStructs->structTable,tmp);
+//    g_strfreev(tmp);
     for(; tlist; tlist = tlist->next)
     {
         FactoryStructItem *fst = tlist->data;
@@ -2718,9 +2724,10 @@ void factory_set_all_factoryclass(STRUCTClass *fclass)
 void factory_read_initial_to_struct(STRUCTClass *fclass) /*2014-3-26 lcy 拖入控件时取得它的值*/
 {
     /* 这里从原哈希表复制一份出来 */
-    gchar **tmp =  g_strsplit(fclass->name,"(",-1);
-    GList *tttt = g_hash_table_lookup(fclass->EnumsAndStructs->structTable,tmp[0]);
-    g_strfreev(tmp);
+//    gchar **tmp =  g_strsplit(fclass->name,"(",-1);
+    gchar *tmp = fclass->element.object.name;
+    GList *tttt = g_hash_table_lookup(fclass->EnumsAndStructs->structTable,tmp);
+//    g_strfreev(tmp);
     factory_set_all_factoryclass(fclass);
 
 

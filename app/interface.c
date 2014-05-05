@@ -1378,8 +1378,8 @@ create_sheet_dropdown_menu(GtkWidget *parent)
   sheet_option_menu =
     dia_dynamic_menu_new_stringlistbased(g_strdup(action_btn), sheet_names,
 					 NULL, "sheets");
-  g_signal_connect(DIA_DYNAMIC_MENU(sheet_option_menu), "value-changed",
-		   G_CALLBACK(sheet_option_menu_changed), sheet_option_menu);
+//  g_signal_connect(DIA_DYNAMIC_MENU(sheet_option_menu), "value-changed",
+//		   G_CALLBACK(sheet_option_menu_changed), sheet_option_menu);
 //  dia_dynamic_menu_add_default_entry(DIA_DYNAMIC_MENU(sheet_option_menu),
 //				     "Assorted");
 //  dia_dynamic_menu_add_default_entry(DIA_DYNAMIC_MENU(sheet_option_menu),
@@ -1390,15 +1390,17 @@ create_sheet_dropdown_menu(GtkWidget *parent)
 //				     g_strdup(action_btn));
 
   /*    gtk_widget_set_size_request(sheet_option_menu, 20, -1);*/
-  dia_dynamic_menu_select_entry(DIA_DYNAMIC_MENU(sheet_option_menu),g_strdup(action_btn));
-
-  gtk_wrap_box_pack_wrapped(GTK_WRAP_BOX(parent), sheet_option_menu,
+//  dia_dynamic_menu_select_entry(DIA_DYNAMIC_MENU(sheet_option_menu),g_strdup(action_btn));
+//  GSList *sheetslist =  get_sheets_list();
+//  persistence_set_string("last-sheet-selected", action_btn);
+//  fill_sheet_wbox(sheetslist->data);
+  gtk_wrap_box_pack_wrapped(GTK_WRAP_BOX(parent), title_lab,
 			    TRUE, TRUE, FALSE, FALSE, TRUE);
   /* 15 was a magic number that goes beyond the standard objects and the divider. */
-  gtk_wrap_box_reorder_child(GTK_WRAP_BOX(parent),
-			     sheet_option_menu, NUM_TOOLS+1);
-  gtk_widget_show(sheet_option_menu);
-//  gtk_widget_show(title_lab);
+//  gtk_wrap_box_reorder_child(GTK_WRAP_BOX(parent),
+//			     sheet_option_menu, NUM_TOOLS+1);
+//  gtk_widget_show(sheet_option_menu);
+  gtk_widget_show(title_lab);
   g_free(action_btn);
 }
 
@@ -1408,6 +1410,7 @@ fill_sheet_menu(void)
   gchar *selection = dia_dynamic_menu_get_entry(DIA_DYNAMIC_MENU(sheet_option_menu));
   create_sheet_dropdown_menu(gtk_widget_get_parent(sheet_option_menu));
   dia_dynamic_menu_select_entry(DIA_DYNAMIC_MENU(sheet_option_menu), selection);
+
   g_free(selection);
 }
 
@@ -1453,6 +1456,9 @@ create_sheets(GtkWidget *parent)
 				  sheetname);
   }
   g_free(sheetname);
+  GSList *tmp =  get_sheets_list();
+  if(tmp)
+    fill_sheet_wbox(tmp->data); /* 这里原来是链表用下拉框显示的,现在只有一个类型也,就直接显示了*/
 }
 
 
@@ -1709,8 +1715,8 @@ create_integrated_ui (void)
 
   create_tools (wrapbox);
   create_sheets (wrapbox);
-  create_color_area (wrapbox);
-  create_lineprops_area (wrapbox);
+//  create_color_area (wrapbox);
+//  create_lineprops_area (wrapbox);
 
   /* Setup toolbox area as file drop destination */
   gtk_drag_dest_set (wrapbox,

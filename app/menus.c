@@ -99,7 +99,7 @@ static const GtkActionEntry toolbox_entries[] =
 /* 添加几个按特殊的按键 */
 static const GtkActionEntry factory_button_entries[] =
 {
-    {"SystemData",NULL,N_("系统数据"),NULL,NULL,NULL},
+    {"SystemData",NULL,N_("系统数据"),NULL,NULL,G_CALLBACK (factory_systemdata_dialog)},
     {"GlobelSetting",NULL,N_("全局变量"),NULL,NULL,NULL}
 };
 

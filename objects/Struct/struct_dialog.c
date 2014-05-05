@@ -3051,6 +3051,7 @@ DiaObject *factory_find_same_diaobject_via_glist(GList *flist,GList *comprelist)
 static void factory_connection_two_object(STRUCTClass *fclass, /* start pointer*/
         gchar *objname /* end pointer */)
 {
+
     Layer *curlayer = fclass->element.object.parent_layer;
     STRUCTClass *objclass = factory_find_diaobject_by_name(curlayer,objname);
     if(!objclass)
@@ -3059,6 +3060,7 @@ static void factory_connection_two_object(STRUCTClass *fclass, /* start pointer*
         return;
 
     DDisplay *ddisp = ddisplay_active();
+     /* ddisp->diagram->data->active_layer 与  fclass->element.object.parent_layer 是同一指针*/
     int x =0,y=0;
     x = fclass->connections[8].pos.x;
     y = fclass->connections[8].pos.y;
@@ -3154,6 +3156,7 @@ static void factory_get_value_from_comobox(STRUCTClass *startclass,GtkWidget *co
         if(!g_ascii_strncasecmp(pname,startclass->name,strlen(pname))) /* 是自己就不连线 */
             goto SETV ;
         Layer *p = startclass->element.object.parent_layer;
+
         STRUCTClass *objclass = factory_find_diaobject_by_name(p,pname);
         if(objclass && factory_is_connected(&objclass->connections[8],&startclass->connections[8]))
             goto SETV; /* 已经有连线了 */
@@ -3214,11 +3217,32 @@ factory_apply_props_from_dialog(STRUCTClass *fclass, GtkWidget *widget)
     g_hash_table_foreach(fclass->widgetmap,factory_read_props_from_widget,(gpointer)fclass);
     PublicSection *pps = fclass->pps;
     pps->name = gtk_entry_get_text(pps->wid_rename_entry);
-    if(pps->name != NULL && g_strncasecmp(pps->name,fclass->name,strlen(pps->name)))
+    if(pps->name != NULL && g_ascii_strcasecmp(pps->name,fclass->name))
     {
-        fclass->name = g_locale_to_utf8(pps->name,-1,NULL,NULL,NULL);
+
+        GList *exists = fclass->element.object.parent_layer->objects;
+        for(;exists; exists = exists->next)
+        {
+            STRUCTClass *pclass = exists->data;
+            if(!g_ascii_strcasecmp(pclass->name,pps->name))
+            {
+                 gchar *msg_err = g_locale_to_utf8(_("找到时有相同名字的控件,请更换名字!\n"),-1,NULL,NULL,NULL);
+                message_error(msg_err);
+                g_free(msg_err);
+                break;
+            }
+        }
+
+        if(!exists)
+        {
+            fclass->name = g_strdup(pps->name);
+        }
         structclass_calculate_data(fclass);
+        structclass_update_data(fclass);
+
+       // g_convert("中国",-1,"UTF-8","GB2312",NULL,NULL,NULL);
     }
+    pps->hasfinished = gtk_toggle_button_get_active(pps->wid_hasfinished);
 
 
     return  NULL;
@@ -3328,6 +3352,7 @@ factory_get_properties(STRUCTClass *fclass, gboolean is_default)
 
     vbox = gtk_vbox_new(FALSE, 0);
     prop_dialog->dialog = vbox;
+
     gtk_widget_set_name(vbox,fclass->name); // 2014-3-21 lcy 设置名字，用于区分不同窗体。
     gtk_signal_connect (GTK_OBJECT (prop_dialog->dialog),"destroy",
                         GTK_SIGNAL_FUNC(destroy_properties_dialog),(gpointer) fclass);
@@ -4041,6 +4066,7 @@ static void factory_handle_reverse_select(GtkWidget *widget,GList *user_data)
 STRUCTClass *factory_find_diaobject_by_name(Layer *curlayer,const gchar *name)
 {
     /* 通过名字在画布上找对像 */
+    gchar *utf8name = g_locale_to_utf8(name,-1,NULL,NULL,NULL);
     GList *objlist = curlayer->objects;
     STRUCTClass *objclass = NULL;
     for(; objlist ; objlist =  objlist->next )
@@ -4048,7 +4074,7 @@ STRUCTClass *factory_find_diaobject_by_name(Layer *curlayer,const gchar *name)
         if(factory_is_valid_type(objlist->data))
             continue;
         objclass = objlist->data;
-        if(!g_ascii_strncasecmp(objclass->name,name,strlen(name)))
+        if(!g_ascii_strncasecmp(objclass->name,utf8name,strlen(utf8name)))
         {
             break;
         }
@@ -4418,20 +4444,22 @@ void factory_create_and_fill_dialog(STRUCTClass *fclass, gboolean is_default)
         /* 2014-5-4 lcy 这里要添加一些公共选项 */
         PublicSection *pps = g_new0(PublicSection,1);
         pps->hasfinished = FALSE;
+        pps->name = fclass->name;
 
 
         GtkWidget *sep = gtk_hseparator_new();
         gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),sep);
         pps->wid_hasfinished  =  	gtk_check_button_new_with_label(g_locale_to_utf8(_("编辑完成"),-1,NULL,NULL,NULL));
-        GtkWidget *vbox = gtk_vbox_new(FALSE,0);
+        GtkWidget *hbox = gtk_hbox_new(FALSE,0);
         GtkWidget *name_lab = gtk_label_new(g_locale_to_utf8(_("对像重命名:"),-1,NULL,NULL,NULL));
         pps->wid_rename_entry = gtk_entry_new();
+        gtk_entry_set_text(pps->wid_rename_entry,pps->name);
         gtk_entry_set_max_length(pps->wid_rename_entry,255);
-        gtk_box_pack_start(GTK_BOX(vbox), name_lab, TRUE, TRUE, 0);
-        gtk_box_pack_start(GTK_BOX(vbox), pps->wid_rename_entry, TRUE, TRUE, 0);
+        gtk_box_pack_start(GTK_BOX(hbox), name_lab, FALSE, FALSE, 0);
+        gtk_box_pack_start(GTK_BOX(hbox), pps->wid_rename_entry, TRUE, TRUE, 0);
 
         gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),pps->wid_hasfinished);
-        gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),vbox);
+        gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),hbox);
         fclass->pps = pps;
 
         gtk_table_set_col_spacing(GTK_TABLE(prop_dialog->mainTable),1,20);

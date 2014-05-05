@@ -237,6 +237,25 @@ dia_object_default_get (const DiaObjectType *type, gpointer user_data)
   return obj;
 }
 
+void factory_systemdata_dialog()
+{
+    GtkWidget*  subdig = gtk_dialog_new_with_buttons(_("systemdata"),
+                         NULL,
+                         GTK_DIALOG_DESTROY_WITH_PARENT,
+                         GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
+                         GTK_STOCK_OK, GTK_RESPONSE_OK,NULL);
+
+    GtkWidget *sdialog = gtk_vbox_new(FALSE,0);
+    gtk_dialog_set_default_response (GTK_DIALOG(subdig), GTK_RESPONSE_OK);
+    GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
+    gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
+    gtk_window_set_resizable (GTK_WINDOW(subdig),FALSE);
+    gtk_window_set_position (GTK_WINDOW(subdig),GTK_WIN_POS_CENTER);
+    gtk_window_present(GTK_WINDOW(subdig));
+    gtk_widget_show_all(subdig);
+}
+
+
 static gboolean
 pdtpp_standard_or_defaults (const PropDescription *pdesc)
 {
