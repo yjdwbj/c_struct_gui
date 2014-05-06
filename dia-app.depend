@@ -27,7 +27,7 @@
 	"diatypes.h"
 	"geometry.h"
 
-1398150412 o:\tool\dvs50\lib\diatypes.h
+1399355886 o:\tool\dvs50\lib\diatypes.h
 	"diavar.h"
 
 1394621090 o:\tool\dvs50\lib\geometry.h
@@ -110,7 +110,7 @@
 	<libgnome/gnome-i18n.h>
 	<libintl.h>
 
-1257604114 source:o:\tool\dvs50\lib\attributes.c
+1399358923 source:o:\tool\dvs50\lib\attributes.c
 	<config.h>
 	"attributes.h"
 	"intl.h"
@@ -128,7 +128,7 @@
 	"orth_conn.h"
 	"autoroute.h"
 
-1399291752 o:\tool\dvs50\lib\object.h
+1399377017 o:\tool\dvs50\lib\object.h
 	"diatypes.h"
 	<gtk/gtk.h>
 	"geometry.h"
@@ -293,7 +293,7 @@
 	<glib.h>
 	<diagramdata.h>
 
-1399288904 o:\tool\dvs50\lib\diagramdata.h
+1399364670 o:\tool\dvs50\lib\diagramdata.h
 	<glib.h>
 	<string.h>
 	"diatypes.h"
@@ -406,7 +406,7 @@
 	<gdk-pixbuf/gdk-pixbuf.h>
 	"geometry.h"
 
-1257604224 o:\tool\dvs50\lib\dia-lib-icons.h
+1399362371 o:\tool\dvs50\lib\dia-lib-icons.h
 
 1294402050 source:o:\tool\dvs50\lib\dia_svg.c
 	"config.h"
@@ -528,7 +528,7 @@
 	"properties.h"
 	"diavar.h"
 
-1399288904 source:o:\tool\dvs50\lib\diagramdata.c
+1399364712 source:o:\tool\dvs50\lib\diagramdata.c
 	<config.h>
 	"intl.h"
 	"diagramdata.h"
@@ -696,7 +696,7 @@
 	<stdlib.h>
 	<string.h>
 
-1257614034 source:o:\tool\dvs50\lib\layer.c
+1399365085 source:o:\tool\dvs50\lib\layer.c
 	<config.h>
 	"intl.h"
 	"diagramdata.h"
@@ -767,7 +767,7 @@
 	<config.h>
 	"object.h"
 
-1398238823 source:o:\tool\dvs50\lib\object.c
+1399378584 source:o:\tool\dvs50\lib\object.c
 	<config.h>
 	<stdio.h>
 	<string.h>
@@ -810,7 +810,7 @@
 	"object.h"
 	"boundingbox.h"
 
-1399292051 source:o:\tool\dvs50\lib\object_defaults.c
+1399338995 source:o:\tool\dvs50\lib\object_defaults.c
 	<config.h>
 	<stdlib.h>
 	<string.h>
@@ -1051,7 +1051,7 @@
 	"message.h"
 	"diagdkrenderer.h"
 
-1399186885 source:o:\tool\dvs50\lib\sheet.c
+1399348184 source:o:\tool\dvs50\lib\sheet.c
 	<config.h>
 	<stdlib.h>
 	<string.h>
@@ -1286,7 +1286,7 @@
 
 1257604114 o:\tool\dvs50\app\dynamic_refresh.h
 
-1257614033 o:\tool\dvs50\app\sheets.h
+1399375758 o:\tool\dvs50\app\sheets.h
 	<gnome.h>
 	<gtk/gtk.h>
 	"../lib/sheet.h"
@@ -1376,7 +1376,7 @@
 	<gtk/gtk.h>
 	"diagram.h"
 
-1396495496 o:\tool\dvs50\app\object_ops.h
+1399348184 o:\tool\dvs50\app\object_ops.h
 	"object.h"
 	"display.h"
 	"diagram.h"
@@ -1764,7 +1764,7 @@
 	"object_ops.h"
 	"group.h"
 
-1399290814 source:o:\tool\dvs50\app\interface.c
+1399358830 source:o:\tool\dvs50\app\interface.c
 	<config.h>
 	<gnome.h>
 	<gtk/gtk.h>
@@ -1799,7 +1799,7 @@
 	<gtk/gtk.h>
 	"display.h"
 
-1399192605 o:\tool\dvs50\app\dia-app-icons.h
+1399363966 o:\tool\dvs50\app\dia-app-icons.h
 
 1257604114 o:\tool\dvs50\app\pixmaps\swap.xpm
 
@@ -1865,7 +1865,7 @@
 	"magnify.h"
 	"cursor.h"
 
-1399292051 source:o:\tool\dvs50\app\menus.c
+1399377101 source:o:\tool\dvs50\app\menus.c
 	<config.h>
 	<gtk/gtk.h>
 	<gdk/gdkkeysyms.h>
@@ -1924,7 +1924,7 @@
 	"diagdkrenderer.h"
 	"navigation.h"
 
-1257614033 source:o:\tool\dvs50\app\object_ops.c
+1399348184 source:o:\tool\dvs50\app\object_ops.c
 	<config.h>
 	<stdlib.h>
 	"object_ops.h"
@@ -2032,7 +2032,7 @@
 	"object_ops.h"
 	"textedit.h"
 
-1398424840 source:o:\tool\dvs50\app\sheets.c
+1399375713 source:o:\tool\dvs50\app\sheets.c
 	<string.h>
 	<gnome.h>
 	<gtk/gtk.h>
@@ -2265,7 +2265,7 @@
 	"properties.h"
 	"tool-icons.h"
 
-1397636454 source:o:\tool\dvs50\objects\standard\line.c
+1399359101 source:o:\tool\dvs50\objects\standard\line.c
 	<config.h>
 	<assert.h>
 	<math.h>
@@ -2381,7 +2381,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1399291359 source:o:\tool\dvs50\objects\struct\struct_class.c
+1399378751 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2397,7 +2397,7 @@
 	"debug.h"
 	"sheet.h"
 
-1399204051 o:\tool\dvs50\objects\struct\struct_class.h
+1399348754 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2413,7 +2413,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1399290598 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1399378426 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>

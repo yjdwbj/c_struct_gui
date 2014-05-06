@@ -209,7 +209,7 @@ new_layer(gchar *name, DiagramData *parent)
   layer->connectable = TRUE;
 
   layer->objects = NULL;
-
+  layer->defnames = NULL;
   layer->extents.left = 0.0;
   layer->extents.right = 10.0;
   layer->extents.top = 0.0;

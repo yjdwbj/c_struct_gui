@@ -343,6 +343,7 @@ STRUCTClass *factory_find_diaobject_by_name(Layer *curlayer,const gchar *name);
 DiaObject *factory_find_same_diaobject_via_glist(GList *flist,GList *comprelist);
 
 void factory_create_and_fill_dialog(STRUCTClass *structclass, gboolean is_default);
+void factory_append_public_info(GtkWidget *dialog,STRUCTClass *structclass);
 void factory_create_struct_dialog(GtkWidget *dialog,GList *datalist);
 
 gboolean factory_is_connected(ConnectionPoint *cpend,ConnectionPoint *cpstart);

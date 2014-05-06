@@ -199,9 +199,12 @@ typedef struct _FactoryStructEnum FactoryStructEnum;
 //typedef struct _FactoryStructEnumList FactoryStructEnumList;
 typedef struct _FactoryStructItemList  FactoryStructItemList;
 struct _FactoryStructItemList{
-    gchar *name;
+    gchar *sname; /* 结构体名 */
+    gchar *vname; /* 可见的名称 */
     GList *list;
     int number;
+    gchar *sfile; /* 指定保存文件名 */
+    gboolean isvisible; /* 是否显示到时面板上 */
 };
 
 typedef struct _FactoryStructItemAll  FactoryStructItemAll; // 2014-3-20 lcy 存放整个文件的结果,第一个为枚举,第二个存结构体
@@ -211,6 +214,7 @@ struct _FactoryStructItemAll{
     GHashTable *unionTable;
     GList* structList; // 2014-3-25 lcy 这里存放 FactoryStructItemList 的链表。
     gchar *file_version;
+
 };
 
 

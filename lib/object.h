@@ -600,7 +600,13 @@ typedef void (*DiaObjectFunc) (const DiaObject *obj);
 /** convenience functions for meta info */
 DIAVAR void   dia_object_set_meta (DiaObject *obj, const gchar *key, const gchar *value);
 DIAVAR gchar *dia_object_get_meta (DiaObject *obj, const gchar *key);
-DIAVAR void factory_systemdata_dialog();
+
+DIAVAR gchar *factory_utf8(gchar *str);
+DIAVAR gchar *factory_locale(gchar *str);
+
+DIAVAR void factory_systemdata_dialog(GtkAction *action);
+DIAVAR void factory_idlist_dialog(gpointer *data);
+DIAVAR void factory_filemanager_dialog(GtkAction *action);
 
 G_END_DECLS
 

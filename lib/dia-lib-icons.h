@@ -4,9 +4,9 @@
 #pragma align 4 (dia_broken_icon)
 #endif
 #ifdef __GNUC__
-static const guint8 dia_broken_icon[] __attribute__ ((__aligned__ (4))) = 
+static const guint8 dia_broken_icon[] __attribute__ ((__aligned__ (4))) =
 #else
-static const guint8 dia_broken_icon[] = 
+static const guint8 dia_broken_icon[] =
 #endif
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -366,9 +366,9 @@ static const guint8 dia_broken_icon[] =
 #pragma align 4 (dia_broken_chain_icon)
 #endif
 #ifdef __GNUC__
-static const guint8 dia_broken_chain_icon[] __attribute__ ((__aligned__ (4))) = 
+static const guint8 dia_broken_chain_icon[] __attribute__ ((__aligned__ (4))) =
 #else
-static const guint8 dia_broken_chain_icon[] = 
+static const guint8 dia_broken_chain_icon[] =
 #endif
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -416,9 +416,9 @@ static const guint8 dia_broken_chain_icon[] =
 #pragma align 4 (dia_unbroken_chain_icon)
 #endif
 #ifdef __GNUC__
-static const guint8 dia_unbroken_chain_icon[] __attribute__ ((__aligned__ (4))) = 
+static const guint8 dia_unbroken_chain_icon[] __attribute__ ((__aligned__ (4))) =
 #else
-static const guint8 dia_unbroken_chain_icon[] = 
+static const guint8 dia_unbroken_chain_icon[] =
 #endif
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -458,5 +458,9 @@ static const guint8 dia_unbroken_chain_icon[] =
   "\2\2\4\377\202\0\0\0\377\7\2\2\4\377nnn\377\350\350\351\377\320\320\321"
   "\377\350\350\351\377\265\265\266\377\2\2\4\377\203\0\0\0\377\205\2\2"
   "\4\377\224\0\0\0\377"};
+
+
+
+
 
 

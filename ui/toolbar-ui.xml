@@ -4,7 +4,6 @@
 	<toolitem name="FileOpen" action="FileOpen" />
 	<toolitem name="FileSave" action="FileSave" />
 	<toolitem name="FileSaveas" action="FileSaveas" />
-	<toolitem name="FileExport" action="FileExport" />
 	<separator/>
 	<toolitem name="EditCopy" action="EditCopy" />
 	<toolitem name="EditCut" action="EditCut" />

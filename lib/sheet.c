@@ -511,7 +511,14 @@ void factoryReadDataFromFile(const gchar* filename)
             {
                 isStruct = TRUE;
                 fssl = g_new0(FactoryStructItemList,1);
-                fssl->name = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
+                fssl->sname = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
+                fssl->vname = g_locale_to_utf8(sbuf[4],-1,NULL,NULL,NULL);
+                fssl->isvisible = FALSE;
+                if(!g_ascii_strcasecmp("action",sbuf[3]))
+                {
+                    fssl->isvisible = TRUE;
+                }
+                fssl->sfile = g_locale_to_utf8(sbuf[5],-1,NULL,NULL,NULL);
                 fssl->list = NULL;
                 fssl->number = n++;
                 dlist = NULL;
@@ -892,10 +899,13 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
     int n = 0;
     for(; slist != NULL; slist = slist->next) // 2014-3-21 lcy 这里根据结构体个数创那图标.
     {
+
         fssl = slist->data;
+        if(!fssl->isvisible)
+            continue;
         sheet_obj = g_new(SheetObject,1);
         sheet_obj->object_type = g_strdup((char *) otype->name);
-        sheet_obj->description = g_strdup(fssl->name);
+        sheet_obj->description = g_strdup(fssl->vname);
 //    xmlFree(objdesc);     objdesc = NULL;
 
         sheet_obj->pixmap = NULL;

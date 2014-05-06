@@ -540,6 +540,8 @@ static void factory_update_index(STRUCTClass *fclass)
     Layer *curlay = obj->parent_layer;
     GList *list = curlay->objects;
     obj->index  = g_list_index(list,obj);
+
+
 //    gchar **tmp =  g_strsplit(fclass->name,"(",-1);
 //    gchar *newname = g_strconcat(tmp[0],g_strdup_printf(_("(%03d)"), n),NULL);
 //    g_strfreev(tmp);
@@ -759,56 +761,56 @@ struct_create_documentation_tag (gchar * comment,
  * @param   alignment           The method to use for alignment of the font
  * @see   struct_create_documentation
  */
-static void
-struct_draw_comments(DiaRenderer *renderer,
-                     DiaFont     *font,
-                     real         font_height,
-                     Color       *text_color,
-                     gchar       *comment,
-                     gboolean     comment_tagging,
-                     gint         Comment_line_length,
-                     Point       *p,
-                     gint         alignment)
-{
-    gint      NumberOfLines = 0;
-    gint      Index;
-    real      ascent;
-    gchar     *CommentString = 0;
-    gchar     *NewLineP= NULL;
-    gchar     *RenderP;
-
-    DiaRendererClass *renderer_ops = DIA_RENDERER_GET_CLASS (renderer);
-
-    CommentString =
-        struct_create_documentation_tag(comment, comment_tagging, Comment_line_length, &NumberOfLines);
-    RenderP = CommentString;
-    renderer_ops->set_font(renderer, font, font_height);
-    ascent = dia_font_ascent(RenderP, font, font_height);
-    for ( Index=0; Index < NumberOfLines; Index++)
-    {
-        NewLineP = strchr(RenderP, '\n');
-        if ( NewLineP != NULL)
-        {
-            *NewLineP++ = '\0';
-        }
-        if (Index == 0)
-        {
-            p->y += ascent;
-        }
-        else
-        {
-            p->y += font_height;                    /* Advance to the next line */
-        }
-        renderer_ops->draw_string(renderer, RenderP, p, alignment, text_color);
-        RenderP = NewLineP;
-        if ( NewLineP == NULL)
-        {
-            break;
-        }
-    }
-    p->y += font_height - ascent;
-    g_free(CommentString);
-}
+//static void
+//struct_draw_comments(DiaRenderer *renderer,
+//                     DiaFont     *font,
+//                     real         font_height,
+//                     Color       *text_color,
+//                     gchar       *comment,
+//                     gboolean     comment_tagging,
+//                     gint         Comment_line_length,
+//                     Point       *p,
+//                     gint         alignment)
+//{
+//    gint      NumberOfLines = 0;
+//    gint      Index;
+//    real      ascent;
+//    gchar     *CommentString = 0;
+//    gchar     *NewLineP= NULL;
+//    gchar     *RenderP;
+//
+//    DiaRendererClass *renderer_ops = DIA_RENDERER_GET_CLASS (renderer);
+//
+//    CommentString =
+//        struct_create_documentation_tag(comment, comment_tagging, Comment_line_length, &NumberOfLines);
+//    RenderP = CommentString;
+//    renderer_ops->set_font(renderer, font, font_height);
+//    ascent = dia_font_ascent(RenderP, font, font_height);
+//    for ( Index=0; Index < NumberOfLines; Index++)
+//    {
+//        NewLineP = strchr(RenderP, '\n');
+//        if ( NewLineP != NULL)
+//        {
+//            *NewLineP++ = '\0';
+//        }
+//        if (Index == 0)
+//        {
+//            p->y += ascent;
+//        }
+//        else
+//        {
+//            p->y += font_height;                    /* Advance to the next line */
+//        }
+//        renderer_ops->draw_string(renderer, RenderP, p, alignment, text_color);
+//        RenderP = NewLineP;
+//        if ( NewLineP == NULL)
+//        {
+//            break;
+//        }
+//    }
+//    p->y += font_height - ascent;
+//    g_free(CommentString);
+//}
 
 
 /**
@@ -925,74 +927,74 @@ structclass_draw_namebox(STRUCTClass *structclass, DiaRenderer *renderer, Elemen
  * @return           The offset from the start of the class to the bottom of the attributebox
  * @see struct_draw_comments
  */
-static real
-structclass_draw_attributebox(STRUCTClass *structclass, DiaRenderer *renderer, Element *elem, real Yoffset)
-{
-    DiaRendererClass *renderer_ops = DIA_RENDERER_GET_CLASS (renderer);
-//  real     font_height;
-//  real     ascent;
-    Point    StartPoint;
-    Point    LowerRight;
-//  DiaFont *font;
-    Color   *fill_color = &structclass->fill_color;
-    Color   *line_color = &structclass->line_color;
-//  Color   *text_color = &structclass->text_color;
-//  GList   *list;
-
-    StartPoint.x = elem->corner.x;
-    StartPoint.y = Yoffset;
-//  Yoffset   += structclass->attributesbox_height;
-
-    LowerRight   = StartPoint;
-    LowerRight.x += elem->width;
-    LowerRight.y = Yoffset;
-
-    renderer_ops->fill_rect(renderer, &StartPoint, &LowerRight, fill_color);
-    renderer_ops->draw_rect(renderer, &StartPoint, &LowerRight, line_color);
-
-//  if (!structclass->suppress_attributes) {
-//    gint i = 0;
-//    StartPoint.x += (structclass->line_width/2.0 + 0.1);
-//    StartPoint.y += 0.1;
+//static real
+//structclass_draw_attributebox(STRUCTClass *structclass, DiaRenderer *renderer, Element *elem, real Yoffset)
+//{
+//    DiaRendererClass *renderer_ops = DIA_RENDERER_GET_CLASS (renderer);
+////  real     font_height;
+////  real     ascent;
+//    Point    StartPoint;
+//    Point    LowerRight;
+////  DiaFont *font;
+//    Color   *fill_color = &structclass->fill_color;
+//    Color   *line_color = &structclass->line_color;
+////  Color   *text_color = &structclass->text_color;
+////  GList   *list;
 //
-//    list = structclass->attributes;
-//    while (list != NULL)
-//    {
-//      STRUCTAttribute *attr   = (STRUCTAttribute *)list->data;
-//      gchar        *attstr = struct_get_attribute_string(attr);
+//    StartPoint.x = elem->corner.x;
+//    StartPoint.y = Yoffset;
+////  Yoffset   += structclass->attributesbox_height;
 //
-//      if (attr->abstract)  {
-//        font = structclass->abstract_font;
-//        font_height = structclass->abstract_font_height;
-//      }
-//      else  {
-//        font = structclass->normal_font;
-//        font_height = structclass->font_height;
-//      }
-//      ascent = dia_font_ascent(attstr, font, font_height);
-//      StartPoint.y += ascent;
-//      renderer_ops->set_font (renderer, font, font_height);
-//      renderer_ops->draw_string(renderer, attstr, &StartPoint, ALIGN_LEFT, text_color);
-//      StartPoint.y += font_height - ascent;
+//    LowerRight   = StartPoint;
+//    LowerRight.x += elem->width;
+//    LowerRight.y = Yoffset;
 //
-//      if (attr->class_scope) {
-//        struct_underline_text(renderer, StartPoint, font, font_height, attstr, line_color,
-//                        structclass->line_width, STRUCTCLASS_UNDERLINEWIDTH );
-//      }
+//    renderer_ops->fill_rect(renderer, &StartPoint, &LowerRight, fill_color);
+//    renderer_ops->draw_rect(renderer, &StartPoint, &LowerRight, line_color);
 //
-//      if (structclass->visible_comments && attr->comment != NULL && attr->comment[0] != '\0') {
-//        struct_draw_comments(renderer, structclass->comment_font ,structclass->comment_font_height,
-//                               &structclass->text_color, attr->comment, structclass->comment_tagging,
-//                               structclass->comment_line_length, &StartPoint, ALIGN_LEFT);
-//        StartPoint.y += structclass->comment_font_height/2;
-//      }
-//      list = g_list_next(list);
-//      i++;
-//      g_free (attstr);
-//    }
-//  }
-    return Yoffset;
-}
+////  if (!structclass->suppress_attributes) {
+////    gint i = 0;
+////    StartPoint.x += (structclass->line_width/2.0 + 0.1);
+////    StartPoint.y += 0.1;
+////
+////    list = structclass->attributes;
+////    while (list != NULL)
+////    {
+////      STRUCTAttribute *attr   = (STRUCTAttribute *)list->data;
+////      gchar        *attstr = struct_get_attribute_string(attr);
+////
+////      if (attr->abstract)  {
+////        font = structclass->abstract_font;
+////        font_height = structclass->abstract_font_height;
+////      }
+////      else  {
+////        font = structclass->normal_font;
+////        font_height = structclass->font_height;
+////      }
+////      ascent = dia_font_ascent(attstr, font, font_height);
+////      StartPoint.y += ascent;
+////      renderer_ops->set_font (renderer, font, font_height);
+////      renderer_ops->draw_string(renderer, attstr, &StartPoint, ALIGN_LEFT, text_color);
+////      StartPoint.y += font_height - ascent;
+////
+////      if (attr->class_scope) {
+////        struct_underline_text(renderer, StartPoint, font, font_height, attstr, line_color,
+////                        structclass->line_width, STRUCTCLASS_UNDERLINEWIDTH );
+////      }
+////
+////      if (structclass->visible_comments && attr->comment != NULL && attr->comment[0] != '\0') {
+////        struct_draw_comments(renderer, structclass->comment_font ,structclass->comment_font_height,
+////                               &structclass->text_color, attr->comment, structclass->comment_tagging,
+////                               structclass->comment_line_length, &StartPoint, ALIGN_LEFT);
+////        StartPoint.y += structclass->comment_font_height/2;
+////      }
+////      list = g_list_next(list);
+////      i++;
+////      g_free (attstr);
+////    }
+////  }
+//    return Yoffset;
+//}
 
 
 /**
@@ -2133,11 +2135,21 @@ factory_struct_items_create(Point *startpoint,
         FactoryStructItemList *i = sstruct->data;
         if(i->number == index)
         {
-            obj->name = g_strdup(_(i->name));
+            obj->name = g_strdup(_(i->sname));
             break;
         }
     }
     structclass->name = obj->name ;
+
+    DDisplay *ddisp = ddisplay_active();
+    if(ddisp)
+    {
+       GList **defnames = &ddisp->diagram->data->active_layer->defnames;
+       *defnames = g_list_append(*defnames,structclass->name);
+    }
+
+
+
     /* 2014-3-26 lcy  ÕâÀï³õÊ¼¹þÏ£±íÓÃ´æwidgetÓëËüµÄÖµ*/
 // structclass->widgetmap = g_hash_table_new(g_direct_hash,g_direct_equal);
     structclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
@@ -2735,6 +2747,7 @@ void factory_read_initial_to_struct(STRUCTClass *fclass) /*2014-3-26 lcy ÍÏÈë¿Ø¼
     {
         FactoryStructItem *fst = tttt->data;
         SaveStruct *sst= factory_get_savestruct(fst);
+
         factory_set_savestruct_widgets(sst);
         g_hash_table_insert(fclass->widgetmap,g_strjoin("##",fst->FType,fst->Name,NULL),sst);
     }

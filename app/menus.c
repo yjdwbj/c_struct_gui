@@ -78,11 +78,11 @@ build_ui_filename (const gchar* name);
 /* Actions common to toolbox and diagram window */
 static const GtkActionEntry common_entries[] =
 {
-  { "File", NULL, N_("_File"), NULL, NULL, NULL },
+    { "File", NULL, N_("_File"), NULL, NULL, NULL },
     { "FileNew", GTK_STOCK_NEW, NULL, "<control>N", NULL, G_CALLBACK (file_new_callback) },
     { "FileOpen", GTK_STOCK_OPEN, NULL,"<control>O", NULL, G_CALLBACK (file_open_callback) },
     { "FileQuit", GTK_STOCK_QUIT, NULL, "<control>Q", NULL, G_CALLBACK (file_quit_callback) },
-  { "Help", NULL, N_("_Help"), NULL, NULL, NULL },
+    { "Help", NULL, N_("_Help"), NULL, NULL, NULL },
     { "HelpContents", GTK_STOCK_HELP, NULL, "F1", NULL, G_CALLBACK (help_manual_callback) },
     { "HelpAbout", GTK_STOCK_ABOUT, NULL, NULL, NULL, G_CALLBACK (help_about_callback) }
 };
@@ -91,17 +91,12 @@ static const GtkActionEntry common_entries[] =
 static const GtkActionEntry toolbox_entries[] =
 {
 
-   /* { "FileSheets", NULL, N_("Sheets and Objects..."), "F9", NULL, G_CALLBACK (sheets_dialog_show_callback) },*/
+    /* { "FileSheets", NULL, N_("Sheets and Objects..."), "F9", NULL, G_CALLBACK (sheets_dialog_show_callback) },*/
     { "FileSheets", NULL, N_("Sheets and Objects..."), "F9", NULL, NULL },
     { "FilePrefs", GTK_STOCK_PREFERENCES, NULL, NULL, NULL, G_CALLBACK (file_preferences_callback) },
-    { "FilePlugins", NULL, N_("Plugins..."), NULL, NULL, G_CALLBACK (file_plugins_callback) }
+    { "FilePlugins", NULL, N_("Plugins..."),NULL, NULL, G_CALLBACK (file_plugins_callback) }
 };
-/* 添加几个按特殊的按键 */
-static const GtkActionEntry factory_button_entries[] =
-{
-    {"SystemData",NULL,N_("系统数据"),NULL,NULL,G_CALLBACK (factory_systemdata_dialog)},
-    {"GlobelSetting",NULL,N_("全局变量"),NULL,NULL,NULL}
-};
+
 
 /* Toggle-Actions for toolbox menu */
 static const GtkToggleActionEntry toolbox_toggle_entries[] =
@@ -122,16 +117,16 @@ static const GtkActionEntry display_entries[] =
 {
     { "FileSave", GTK_STOCK_SAVE, NULL, "<control>S", NULL, G_CALLBACK (file_save_callback) },
     { "FileSaveas", GTK_STOCK_SAVE_AS, NULL, "<control><shift>S", NULL, G_CALLBACK (file_save_as_callback) },
-    { "FileExport", GTK_STOCK_CONVERT, N_("_Export ..."), NULL, NULL, G_CALLBACK (file_export_callback) },
+//    { "FileExport", GTK_STOCK_CONVERT, N_("_Export ..."), NULL, NULL, G_CALLBACK (file_export_callback) },
 //    { "DiagramProperties", GTK_STOCK_PROPERTIES, N_("_Diagram Properties"), "<shift><alt>Return", NULL,G_CALLBACK (view_diagram_properties_callback)},
 //    { "FilePagesetup", NULL, N_("Page Set_up..."), NULL, NULL, G_CALLBACK (file_pagesetup_callback) },
 //    { "FilePrint", GTK_STOCK_PRINT, NULL, "<control>P", NULL, G_CALLBACK (file_print_callback) },
     { "FileClose", GTK_STOCK_CLOSE, NULL, "<control>W", NULL, G_CALLBACK (file_close_callback) },
 
-  { "Edit", NULL, N_("_Edit"), NULL, NULL, NULL },
-     /* lcy 关闭撤消与重*/
+    { "Edit", NULL, N_("_Edit"), NULL, NULL, NULL },
+    /* lcy 关闭撤消与重*/
     { "EditUndo", GTK_STOCK_UNDO, NULL, "<control>Z", NULL, NULL },
-   /* { "EditUndo", GTK_STOCK_UNDO, NULL, "<control>Z", NULL, G_CALLBACK (edit_undo_callback) },*/
+    /* { "EditUndo", GTK_STOCK_UNDO, NULL, "<control>Z", NULL, G_CALLBACK (edit_undo_callback) },*/
     { "EditRedo", GTK_STOCK_REDO, NULL, "<control><shift>Z", NULL, NULL },
 
     { "EditCopy", GTK_STOCK_COPY, NULL, "<control>C", NULL, G_CALLBACK (edit_copy_callback) },
@@ -211,7 +206,7 @@ static const GtkActionEntry display_entries[] =
 //
 //      { "ObjectsProperties", GTK_STOCK_PROPERTIES, NULL, "<alt>Return", NULL, G_CALLBACK (dialogs_properties_callback) },
 
-  { "Select", NULL, N_("_Select"), NULL, NULL, NULL },
+    { "Select", NULL, N_("_Select"), NULL, NULL, NULL },
     { "SelectAll", NULL, N_("All"), "<control>A", NULL, G_CALLBACK (select_all_callback) },
     { "SelectNone", NULL, N_("None"), "<control><shift>A", NULL, G_CALLBACK (select_none_callback) },
     { "SelectInvert", NULL, N_("Invert"), "<control>I", NULL, G_CALLBACK (select_invert_callback) },
@@ -224,17 +219,17 @@ static const GtkActionEntry display_entries[] =
 
     { "SelectBy", NULL, N_("Select By"), NULL, NULL, NULL },
 
-  { "InputMethods", NULL, N_("_Input Methods"), NULL, NULL, NULL },
+    { "InputMethods", NULL, N_("_Input Methods"), NULL, NULL, NULL },
 
-  { "Dialogs", NULL, N_("D_ialogs"), NULL, NULL, NULL },
+    { "Dialogs", NULL, N_("D_ialogs"), NULL, NULL, NULL },
 
-  { "Debug", NULL, N_("D_ebug"), NULL, NULL, NULL }
+    { "Debug", NULL, N_("D_ebug"), NULL, NULL, NULL }
 };
 
 /* Standard-Tool entries */
 static const GtkActionEntry tool_entries[] =
 {
-  { "Tools", NULL, N_("_Tools"), NULL, NULL, NULL },
+    { "Tools", NULL, N_("_Tools"), NULL, NULL, NULL },
     { "ToolsModify", NULL, N_("Modify"), "N", NULL, NULL },
     { "ToolsMagnify", NULL, N_("Magnify"), "M", NULL, NULL },
     { "ToolsTextedit", NULL, N_("Edit text"), "F2", NULL, NULL },
@@ -274,12 +269,12 @@ static const GtkToggleActionEntry display_toggle_entries[] =
 /* Radio-Actions for the diagram window's "Select"-Menu */
 static const GtkRadioActionEntry display_select_radio_entries[] =
 {
-  { "SelectReplace", NULL, N_("Replace"), NULL, NULL, SELECT_REPLACE },
-  { "SelectUnion", NULL, N_("Union"), NULL, NULL, SELECT_UNION },
-  { "SelectIntersection", NULL, N_("Intersection"), NULL, NULL, SELECT_INTERSECTION },
-  { "SelectRemove", NULL, N_("Remove"), NULL, NULL, SELECT_REMOVE },
-  /* Cannot also be called Invert, duplicate names caused keybinding problems */
-  { "SelectInverse", NULL, N_("Inverse"), NULL, NULL, SELECT_INVERT }
+    { "SelectReplace", NULL, N_("Replace"), NULL, NULL, SELECT_REPLACE },
+    { "SelectUnion", NULL, N_("Union"), NULL, NULL, SELECT_UNION },
+    { "SelectIntersection", NULL, N_("Intersection"), NULL, NULL, SELECT_INTERSECTION },
+    { "SelectRemove", NULL, N_("Remove"), NULL, NULL, SELECT_REMOVE },
+    /* Cannot also be called Invert, duplicate names caused keybinding problems */
+    { "SelectInverse", NULL, N_("Inverse"), NULL, NULL, SELECT_INVERT }
 };
 
 /* need initialisation? */
@@ -312,55 +307,60 @@ static GtkWidget *display_menubar = NULL;
 static gchar*
 _dia_translate (const gchar* term, gpointer data)
 {
-  gchar* trans = (gchar*) term;
+    gchar* trans = (gchar*) term;
 
-  if (term && *term) {
-    /* first try our own ... */
-    trans = dgettext (GETTEXT_PACKAGE, term);
-    /* ... than gtk */
-    if (term == trans)
-      trans = dgettext ("gtk20", term);
+    if (term && *term)
+    {
+        /* first try our own ... */
+        trans = dgettext (GETTEXT_PACKAGE, term);
+        /* ... than gtk */
+        if (term == trans)
+            trans = dgettext ("gtk20", term);
 #if 0
-    /* FIXME: final fallback */
-    if (term == trans) { /* FIXME: translation to be updated */
-      gchar* kludge = g_strdup_printf ("/%s", term);
-      trans = dgettext (GETTEXT_PACKAGE, kludge);
-      if (kludge == trans)
-	trans = term;
-      else
-	++trans;
-      g_free (kludge);
-    }
-    if (term == trans)
-      trans = g_strdup_printf ("XXX: %s", term);
+        /* FIXME: final fallback */
+        if (term == trans)   /* FIXME: translation to be updated */
+        {
+            gchar* kludge = g_strdup_printf ("/%s", term);
+            trans = dgettext (GETTEXT_PACKAGE, kludge);
+            if (kludge == trans)
+                trans = term;
+            else
+                ++trans;
+            g_free (kludge);
+        }
+        if (term == trans)
+            trans = g_strdup_printf ("XXX: %s", term);
 #endif
-  }
-  return trans;
+    }
+    return trans;
 }
 
 static void
-tool_menu_select(GtkWidget *w, gpointer   data) {
-  ToolButtonData *tooldata = (ToolButtonData *) data;
+tool_menu_select(GtkWidget *w, gpointer   data)
+{
+    ToolButtonData *tooldata = (ToolButtonData *) data;
 
-  if (tooldata == NULL) {
-    g_warning(_("NULL tooldata in tool_menu_select"));
-    return;
-  }
+    if (tooldata == NULL)
+    {
+        g_warning(_("NULL tooldata in tool_menu_select"));
+        return;
+    }
 
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tooldata->widget),TRUE);
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tooldata->widget),TRUE);
 }
 
 static gint
 save_accels(gpointer data)
 {
-  gchar *accelfilename;
+    gchar *accelfilename;
 
-  accelfilename = dia_config_filename("menurc");
-  if (accelfilename) {
-    gtk_accel_map_save (accelfilename);
-    g_free (accelfilename);
-  }
-  return TRUE;
+    accelfilename = dia_config_filename("menurc");
+    if (accelfilename)
+    {
+        gtk_accel_map_save (accelfilename);
+        g_free (accelfilename);
+    }
+    return TRUE;
 }
 
 /**
@@ -370,14 +370,14 @@ save_accels(gpointer data)
 void
 integrated_ui_toolbar_object_snap_synchronize_to_display(gpointer param)
 {
-  DDisplay *ddisp = param;
-  if (ddisp && ddisp->common_toolbar)
-  {
-    GtkToggleButton *b = g_object_get_data (G_OBJECT (ddisp->common_toolbar),
-                                            DIA_INTEGRATED_TOOLBAR_OBJECT_SNAP);
-    gboolean active = ddisp->mainpoint_magnetism? TRUE : FALSE;
-    gtk_toggle_button_set_active (b, active);
-  }
+    DDisplay *ddisp = param;
+    if (ddisp && ddisp->common_toolbar)
+    {
+        GtkToggleButton *b = g_object_get_data (G_OBJECT (ddisp->common_toolbar),
+                                                DIA_INTEGRATED_TOOLBAR_OBJECT_SNAP);
+        gboolean active = ddisp->mainpoint_magnetism? TRUE : FALSE;
+        gtk_toggle_button_set_active (b, active);
+    }
 }
 
 /**
@@ -388,11 +388,11 @@ integrated_ui_toolbar_object_snap_synchronize_to_display(gpointer param)
 static void
 integrated_ui_toolbar_object_snap_toggle(GtkToggleButton *b, gpointer *not_used)
 {
-  DDisplay *ddisp = ddisplay_active ();
-  if (ddisp)
-  {
-    ddisplay_set_snap_to_objects (ddisp, gtk_toggle_button_get_active (b));
-  }
+    DDisplay *ddisp = ddisplay_active ();
+    if (ddisp)
+    {
+        ddisplay_set_snap_to_objects (ddisp, gtk_toggle_button_get_active (b));
+    }
 }
 
 /**
@@ -402,14 +402,14 @@ integrated_ui_toolbar_object_snap_toggle(GtkToggleButton *b, gpointer *not_used)
 void
 integrated_ui_toolbar_grid_snap_synchronize_to_display(gpointer param)
 {
-  DDisplay *ddisp = param;
-  if (ddisp && ddisp->common_toolbar)
-  {
-    GtkToggleButton *b = g_object_get_data (G_OBJECT (ddisp->common_toolbar),
-                                            DIA_INTEGRATED_TOOLBAR_SNAP_GRID);
-    gboolean active = ddisp->grid.snap? TRUE : FALSE;
-    gtk_toggle_button_set_active (b, active);
-  }
+    DDisplay *ddisp = param;
+    if (ddisp && ddisp->common_toolbar)
+    {
+        GtkToggleButton *b = g_object_get_data (G_OBJECT (ddisp->common_toolbar),
+                                                DIA_INTEGRATED_TOOLBAR_SNAP_GRID);
+        gboolean active = ddisp->grid.snap? TRUE : FALSE;
+        gtk_toggle_button_set_active (b, active);
+    }
 }
 
 /**
@@ -420,11 +420,11 @@ integrated_ui_toolbar_grid_snap_synchronize_to_display(gpointer param)
 static void
 integrated_ui_toolbar_grid_snap_toggle(GtkToggleButton *b, gpointer *not_used)
 {
-  DDisplay *ddisp = ddisplay_active ();
-  if (ddisp)
-  {
-    ddisplay_set_snap_to_grid (ddisp, gtk_toggle_button_get_active (b));
-  }
+    DDisplay *ddisp = ddisplay_active ();
+    if (ddisp)
+    {
+        ddisplay_set_snap_to_grid (ddisp, gtk_toggle_button_get_active (b));
+    }
 }
 
 /**
@@ -434,18 +434,18 @@ integrated_ui_toolbar_grid_snap_toggle(GtkToggleButton *b, gpointer *not_used)
  */
 void integrated_ui_toolbar_set_zoom_text (GtkToolbar *toolbar, const gchar * text)
 {
-  if (toolbar)
-  {
-    GtkComboBoxEntry *combo_entry = g_object_get_data (G_OBJECT (toolbar),
-                                                       DIA_INTEGRATED_TOOLBAR_ZOOM_COMBO);
-
-    if (combo_entry)
+    if (toolbar)
     {
-        GtkWidget * entry = gtk_bin_get_child (GTK_BIN (combo_entry));
+        GtkComboBoxEntry *combo_entry = g_object_get_data (G_OBJECT (toolbar),
+                                        DIA_INTEGRATED_TOOLBAR_ZOOM_COMBO);
 
-        gtk_entry_set_text (GTK_ENTRY (entry), text);
+        if (combo_entry)
+        {
+            GtkWidget * entry = gtk_bin_get_child (GTK_BIN (combo_entry));
+
+            gtk_entry_set_text (GTK_ENTRY (entry), text);
+        }
     }
-  }
 }
 
 /**
@@ -485,7 +485,7 @@ integrated_ui_toolbar_zoom_activate (GtkWidget *item,
 
 static void
 integrated_ui_toolbar_zoom_combo_selection_changed (GtkComboBox *combo,
-                                                    gpointer     user_data)
+        gpointer     user_data)
 {
     /*
      * We call gtk_combo_get_get_active() so that typing in the combo entry
@@ -512,39 +512,61 @@ integrated_ui_toolbar_zoom_combo_selection_changed (GtkComboBox *combo,
 static guint
 ensure_menu_path (GtkUIManager *ui_manager, GtkActionGroup *actions, const gchar *path, gboolean end)
 {
-  guint id = gtk_ui_manager_new_merge_id (ui_manager);
+    guint id = gtk_ui_manager_new_merge_id (ui_manager);
 
-  if (!gtk_ui_manager_get_widget (ui_manager, path)) {
-    gchar *subpath = g_strdup (path);
+    if (!gtk_ui_manager_get_widget (ui_manager, path))
+    {
+        gchar *subpath = g_strdup (path);
 
-    if (strrchr (subpath, '/')) {
-      const gchar *action_name;
-      gchar *sep;
+        if (strrchr (subpath, '/'))
+        {
+            const gchar *action_name;
+            gchar *sep;
 
-      GtkAction *action;
+            GtkAction *action;
 
-      sep = strrchr (subpath, '/');
-      *sep = '\0'; /* cut subpath */
-      action_name = sep + 1;
+            sep = strrchr (subpath, '/');
+            *sep = '\0'; /* cut subpath */
+            action_name = sep + 1;
 
-      ensure_menu_path (ui_manager, actions, subpath, FALSE);
+            ensure_menu_path (ui_manager, actions, subpath, FALSE);
 
-      action = gtk_action_new (action_name, sep + 1, NULL, NULL);
-      if (!gtk_action_group_get_action (actions, action_name))
-        gtk_action_group_add_action (actions, action);
-      g_object_unref (G_OBJECT (action));
+            action = gtk_action_new (action_name, sep + 1, NULL, NULL);
+            if (!gtk_action_group_get_action (actions, action_name))
+                gtk_action_group_add_action (actions, action);
+            g_object_unref (G_OBJECT (action));
 
-      gtk_ui_manager_add_ui (ui_manager, id, subpath,
-	                     action_name, action_name,
-			     end ? GTK_UI_MANAGER_SEPARATOR : GTK_UI_MANAGER_MENU,
-			     FALSE); /* FALSE=add-to-end */
-    } else {
-      g_warning ("ensure_menu_path() invalid menu path: %s.", subpath ? subpath : "NULL");
+            gtk_ui_manager_add_ui (ui_manager, id, subpath,
+                                   action_name, action_name,
+                                   end ? GTK_UI_MANAGER_SEPARATOR : GTK_UI_MANAGER_MENU,
+                                   FALSE); /* FALSE=add-to-end */
+        }
+        else
+        {
+            g_warning ("ensure_menu_path() invalid menu path: %s.", subpath ? subpath : "NULL");
+        }
+        g_free (subpath);
     }
-    g_free (subpath);
-  }
-  return id;
+    return id;
 }
+
+static void factory_create_toolbar_button(const gint8 *icon,gchar *tips,GtkToolbar  *toolbar,gpointer *callback)
+{
+    GtkWidget * SystemData = factory_create_button_with_icons(icon);
+    gtk_tooltips_set_tip (tool_tips, SystemData,factory_utf8(tips), NULL);
+    integrated_ui_toolbar_add_custom_item (toolbar, SystemData);
+    g_signal_connect (G_OBJECT (SystemData), "clicked",
+                      G_CALLBACK (callback), toolbar);
+
+}
+
+static void factory_idlist_callback(GtkAction *action)
+{
+    DDisplay *ddisp = ddisplay_active();
+    if(ddisp)
+    factory_idlist_dialog(ddisp->diagram->data->active_layer);
+}
+
 
 /**
  * Create the toolbar for the integrated UI
@@ -553,103 +575,105 @@ ensure_menu_path (GtkUIManager *ui_manager, GtkActionGroup *actions, const gchar
 static GtkWidget *
 create_integrated_ui_toolbar (void)
 {
-  GtkToolbar  *toolbar;
-  GtkToolItem *sep;
-  GtkWidget   *w;
-  GError      *error = NULL;
-  gchar *uifile;
+    GtkToolbar  *toolbar;
+    GtkToolItem *sep;
+    GtkWidget   *w;
+    GError      *error = NULL;
+    gchar *uifile;
 
-  uifile = build_ui_filename ("ui/toolbar-ui.xml");
-  if (!gtk_ui_manager_add_ui_from_file (integrated_ui_manager, uifile, &error)) {
-    g_warning ("building menus failed: %s", error->message);
-    g_error_free (error);
-    error = NULL;
-    toolbar = GTK_TOOLBAR (gtk_toolbar_new ());
-  }
-  else {
-    toolbar =  GTK_TOOLBAR(gtk_ui_manager_get_widget (integrated_ui_manager, "/Toolbar"));
-  }
-  g_free (uifile);
+    uifile = build_ui_filename ("ui/toolbar-ui.xml");
+    if (!gtk_ui_manager_add_ui_from_file (integrated_ui_manager, uifile, &error))
+    {
+        g_warning ("building menus failed: %s", error->message);
+        g_error_free (error);
+        error = NULL;
+        toolbar = GTK_TOOLBAR (gtk_toolbar_new ());
+    }
+    else
+    {
+        toolbar =  GTK_TOOLBAR(gtk_ui_manager_get_widget (integrated_ui_manager, "/Toolbar"));
+    }
+    g_free (uifile);
 
-  /* Zoom Combo Box Entry */
-  w = gtk_combo_box_entry_new_text ();
+    /* Zoom Combo Box Entry */
+    w = gtk_combo_box_entry_new_text ();
 
-  g_object_set_data (G_OBJECT (toolbar),
-                     DIA_INTEGRATED_TOOLBAR_ZOOM_COMBO,
-                     w);
-  integrated_ui_toolbar_add_custom_item (toolbar, w);
+    g_object_set_data (G_OBJECT (toolbar),
+                       DIA_INTEGRATED_TOOLBAR_ZOOM_COMBO,
+                       w);
+    integrated_ui_toolbar_add_custom_item (toolbar, w);
 
-  gtk_combo_box_append_text (GTK_COMBO_BOX (w), ZOOM_FIT);
-  gtk_combo_box_append_text (GTK_COMBO_BOX (w), _("800%"));
-  gtk_combo_box_append_text (GTK_COMBO_BOX (w), _("400%"));
-  gtk_combo_box_append_text (GTK_COMBO_BOX (w), _("300%"));
-  gtk_combo_box_append_text (GTK_COMBO_BOX (w), _("200%"));
-  gtk_combo_box_append_text (GTK_COMBO_BOX (w), _("150%"));
-  gtk_combo_box_append_text (GTK_COMBO_BOX (w), _("100%"));
-  gtk_combo_box_append_text (GTK_COMBO_BOX (w), _("75%"));
-  gtk_combo_box_append_text (GTK_COMBO_BOX (w), _("50%"));
-  gtk_combo_box_append_text (GTK_COMBO_BOX (w), _("25%"));
-  gtk_combo_box_append_text (GTK_COMBO_BOX (w), _("10%"));
+    gtk_combo_box_append_text (GTK_COMBO_BOX (w), ZOOM_FIT);
+    gtk_combo_box_append_text (GTK_COMBO_BOX (w), _("800%"));
+    gtk_combo_box_append_text (GTK_COMBO_BOX (w), _("400%"));
+    gtk_combo_box_append_text (GTK_COMBO_BOX (w), _("300%"));
+    gtk_combo_box_append_text (GTK_COMBO_BOX (w), _("200%"));
+    gtk_combo_box_append_text (GTK_COMBO_BOX (w), _("150%"));
+    gtk_combo_box_append_text (GTK_COMBO_BOX (w), _("100%"));
+    gtk_combo_box_append_text (GTK_COMBO_BOX (w), _("75%"));
+    gtk_combo_box_append_text (GTK_COMBO_BOX (w), _("50%"));
+    gtk_combo_box_append_text (GTK_COMBO_BOX (w), _("25%"));
+    gtk_combo_box_append_text (GTK_COMBO_BOX (w), _("10%"));
 
-  g_signal_connect (G_OBJECT (w),
-                    "changed",
-		            G_CALLBACK (integrated_ui_toolbar_zoom_combo_selection_changed),
-                    NULL);
+    g_signal_connect (G_OBJECT (w),
+                      "changed",
+                      G_CALLBACK (integrated_ui_toolbar_zoom_combo_selection_changed),
+                      NULL);
 
-  /* Get the combo's GtkEntry child to set the width for the widget */
-  w = gtk_bin_get_child (GTK_BIN (w));
-  gtk_entry_set_width_chars (GTK_ENTRY (w), 6);
+    /* Get the combo's GtkEntry child to set the width for the widget */
+    w = gtk_bin_get_child (GTK_BIN (w));
+    gtk_entry_set_width_chars (GTK_ENTRY (w), 6);
 
-  g_signal_connect (GTK_OBJECT (w), "activate",
-		            G_CALLBACK(integrated_ui_toolbar_zoom_activate),
-		            NULL);
+    g_signal_connect (GTK_OBJECT (w), "activate",
+                      G_CALLBACK(integrated_ui_toolbar_zoom_activate),
+                      NULL);
 
-  /* Seperator */
-  sep = gtk_separator_tool_item_new ();
-  gtk_toolbar_insert (toolbar, sep, -1);
-  gtk_widget_show (GTK_WIDGET (sep));
+    /* Seperator */
+    sep = gtk_separator_tool_item_new ();
+    gtk_toolbar_insert (toolbar, sep, -1);
+    gtk_widget_show (GTK_WIDGET (sep));
 
-  /* Snap to grid */
-  w = dia_toggle_button_new_with_icons (dia_on_grid_icon,
-                                        dia_off_grid_icon);
-  g_signal_connect (G_OBJECT (w), "toggled",
-		   G_CALLBACK (integrated_ui_toolbar_grid_snap_toggle), toolbar);
-  gtk_tooltips_set_tip (tool_tips, w,
-		      _("Toggles snap-to-grid."), NULL);
-  g_object_set_data (G_OBJECT (toolbar),
-                     DIA_INTEGRATED_TOOLBAR_SNAP_GRID,
-                     w);
-  integrated_ui_toolbar_add_custom_item (toolbar, w);
+    /* Snap to grid */
+    w = dia_toggle_button_new_with_icons (dia_on_grid_icon,
+                                          dia_off_grid_icon);
+    g_signal_connect (G_OBJECT (w), "toggled",
+                      G_CALLBACK (integrated_ui_toolbar_grid_snap_toggle), toolbar);
+    gtk_tooltips_set_tip (tool_tips, w,
+                          _("Toggles snap-to-grid."), NULL);
+    g_object_set_data (G_OBJECT (toolbar),
+                       DIA_INTEGRATED_TOOLBAR_SNAP_GRID,
+                       w);
+    integrated_ui_toolbar_add_custom_item (toolbar, w);
 
-  /* Object Snapping */
-  w = dia_toggle_button_new_with_icons (dia_mainpoints_on_icon,
-                                        dia_mainpoints_off_icon);
-  g_signal_connect (G_OBJECT (w), "toggled",
-		   G_CALLBACK (integrated_ui_toolbar_object_snap_toggle), toolbar);
-  gtk_tooltips_set_tip (tool_tips, w,
-		       _("Toggles object snapping."), NULL);
-  g_object_set_data (G_OBJECT (toolbar),
-                     DIA_INTEGRATED_TOOLBAR_OBJECT_SNAP,
-                     w);
-  integrated_ui_toolbar_add_custom_item (toolbar, w);
+    /* Object Snapping */
+    w = dia_toggle_button_new_with_icons (dia_mainpoints_on_icon,
+                                          dia_mainpoints_off_icon);
+    g_signal_connect (G_OBJECT (w), "toggled",
+                      G_CALLBACK (integrated_ui_toolbar_object_snap_toggle), toolbar);
+    gtk_tooltips_set_tip (tool_tips, w,
+                          _("Toggles object snapping."), NULL);
+    g_object_set_data (G_OBJECT (toolbar),
+                       DIA_INTEGRATED_TOOLBAR_OBJECT_SNAP,
+                       w);
+    integrated_ui_toolbar_add_custom_item (toolbar, w);
 
-  sep = gtk_separator_tool_item_new ();
-  gtk_toolbar_insert (toolbar, sep, -1);
-  /* 新建三个按钮 */
-  GtkWidget * SystemData = factory_create_button_with_icons(systemdata_on);
-  gtk_tooltips_set_tip (tool_tips, SystemData,g_locale_to_utf8(_("系统数据"),-1,NULL,NULL,NULL), NULL);
-  integrated_ui_toolbar_add_custom_item (toolbar, SystemData);
+    sep = gtk_separator_tool_item_new ();
+    gtk_toolbar_insert (toolbar, sep, -1);
+    /* 新建三个按钮 */
 
+    factory_create_toolbar_button(systemdata_on,"系统数据",toolbar,factory_systemdata_dialog);
 
-   GtkWidget * GlobelSetting = factory_create_button_with_icons(globe_on);
-   gtk_tooltips_set_tip (tool_tips, GlobelSetting,g_locale_to_utf8(_("全局变量"),-1,NULL,NULL,NULL), NULL);
-  integrated_ui_toolbar_add_custom_item (toolbar, GlobelSetting);
+    factory_create_toolbar_button(globe_on,"全局变量",toolbar,NULL);
 
+    factory_create_toolbar_button(filemanager,"音频文件管理",toolbar,factory_systemdata_dialog);
 
-  gtk_widget_show (GTK_WIDGET (sep));
+    factory_create_toolbar_button(idlist,"ID 列表",toolbar,factory_idlist_callback);
 
-  return GTK_WIDGET (toolbar);
+    gtk_widget_show (GTK_WIDGET (sep));
+
+    return GTK_WIDGET (toolbar);
 }
+
 
 /*
  * Initialise tool actions.
@@ -658,161 +682,173 @@ create_integrated_ui_toolbar (void)
 static GtkActionGroup *
 create_tool_actions (void)
 {
-  GtkActionGroup *actions;
-  GtkAction      *action;
-  int           i;
-  gchar          *name;
-  static guint    cnt = 0;
+    GtkActionGroup *actions;
+    GtkAction      *action;
+    int           i;
+    gchar          *name;
+    static guint    cnt = 0;
 
-  name = g_strdup_printf ("tool-actions-%d", cnt);
-  actions = gtk_action_group_new (name);
-  gtk_action_group_set_translation_domain (actions, NULL);
-  gtk_action_group_set_translate_func (actions, _dia_translate, NULL, NULL);
-  g_free (name);
-  name = NULL;
-  cnt++;
+    name = g_strdup_printf ("tool-actions-%d", cnt);
+    actions = gtk_action_group_new (name);
+    gtk_action_group_set_translation_domain (actions, NULL);
+    gtk_action_group_set_translate_func (actions, _dia_translate, NULL, NULL);
+    g_free (name);
+    name = NULL;
+    cnt++;
 
 //  gtk_action_group_add_actions (actions, tool_entries,
 //				G_N_ELEMENTS (tool_entries), NULL);
 
-  for (i = 0; i < num_tools; i++) {
-    action = gtk_action_group_get_action (actions, tool_data[i].action_name);
-    if (action != NULL) {
-      g_signal_connect (G_OBJECT (action), "activate",
-			G_CALLBACK (tool_menu_select),
-			&tool_data[i].callback_data);
+    for (i = 0; i < num_tools; i++)
+    {
+        action = gtk_action_group_get_action (actions, tool_data[i].action_name);
+        if (action != NULL)
+        {
+            g_signal_connect (G_OBJECT (action), "activate",
+                              G_CALLBACK (tool_menu_select),
+                              &tool_data[i].callback_data);
+        }
+        else
+        {
+            g_warning ("couldn't find tool menu item %s", tool_data[i].action_name);
+        }
     }
-    else {
-      g_warning ("couldn't find tool menu item %s", tool_data[i].action_name);
-    }
-  }
-  return actions;
+    return actions;
 }
 
 /* initialize callbacks from plug-ins */
 static void
 add_plugin_actions (GtkUIManager *ui_manager, const gchar *base_path)
 {
-  GtkActionGroup    *actions;
-  GtkAction         *action;
-  GList             *cblist;
-  DiaCallbackFilter *cbf = NULL;
-  gchar             *name;
-  guint              id;
-  static guint       cnt = 0;
+    GtkActionGroup    *actions;
+    GtkAction         *action;
+    GList             *cblist;
+    DiaCallbackFilter *cbf = NULL;
+    gchar             *name;
+    guint              id;
+    static guint       cnt = 0;
 
-  name = g_strdup_printf ("plugin-actions-%d", cnt);
-  actions = gtk_action_group_new (name);
-  gtk_action_group_set_translation_domain (actions, NULL);
-  gtk_action_group_set_translate_func (actions, _dia_translate, NULL, NULL);
-  g_free (name);
-  name = NULL;
-  cnt++;
+    name = g_strdup_printf ("plugin-actions-%d", cnt);
+    actions = gtk_action_group_new (name);
+    gtk_action_group_set_translation_domain (actions, NULL);
+    gtk_action_group_set_translate_func (actions, _dia_translate, NULL, NULL);
+    g_free (name);
+    name = NULL;
+    cnt++;
 
-  gtk_ui_manager_insert_action_group (ui_manager, actions, 5 /* "back" */);
-  g_object_unref (actions);
+    gtk_ui_manager_insert_action_group (ui_manager, actions, 5 /* "back" */);
+    g_object_unref (actions);
 
-  for (cblist = filter_get_callbacks(); cblist; cblist = cblist->next) {
-    gchar *menu_path = NULL;
+    for (cblist = filter_get_callbacks(); cblist; cblist = cblist->next)
+    {
+        gchar *menu_path = NULL;
 
-    cbf = cblist->data;
+        cbf = cblist->data;
 
-    if (cbf == NULL) {
-      g_warning ("missing DiaCallbackFilter instance");
-      continue;
+        if (cbf == NULL)
+        {
+            g_warning ("missing DiaCallbackFilter instance");
+            continue;
+        }
+
+        if (cbf->action == NULL)
+        {
+            g_warning ("Plugin '%s': doesn't specify action. Loading failed.",
+                       cbf->description);
+            continue;
+        }
+
+        if (   base_path != NULL
+                && strncmp (cbf->menupath, base_path, strlen (base_path)) != 0)
+        {
+            /* hook for wrong base path, skip */
+            continue;
+        }
+        else if (!base_path)
+        {
+            /* only replace what we know */
+            if (strncmp (cbf->menupath, DISPLAY_MENU, strlen (DISPLAY_MENU)) == 0)
+                menu_path = g_strdup_printf ("%s%s", INTEGRATED_MENU, cbf->menupath + strlen (DISPLAY_MENU));
+            else if (strncmp (cbf->menupath, TOOLBOX_MENU, strlen (TOOLBOX_MENU)) == 0)
+                menu_path = g_strdup_printf ("%s%s", INTEGRATED_MENU, cbf->menupath + strlen (TOOLBOX_MENU));
+        }
+
+        action = gtk_action_new (cbf->action, cbf->description, NULL, NULL);
+        g_signal_connect (G_OBJECT (action), "activate",
+                          G_CALLBACK (plugin_callback), (gpointer) cbf);
+
+        gtk_action_group_add_action (actions, action);
+        g_object_unref (G_OBJECT (action));
+
+        id = ensure_menu_path (ui_manager, actions, menu_path ? menu_path : cbf->menupath, TRUE);
+        gtk_ui_manager_add_ui (ui_manager, id,
+                               menu_path ? menu_path : cbf->menupath,
+                               cbf->description,
+                               cbf->action,
+                               GTK_UI_MANAGER_AUTO,
+                               FALSE);
+        g_free (menu_path);
     }
-
-    if (cbf->action == NULL) {
-      g_warning ("Plugin '%s': doesn't specify action. Loading failed.",
-		cbf->description);
-      continue;
-    }
-
-    if (   base_path != NULL
-        && strncmp (cbf->menupath, base_path, strlen (base_path)) != 0) {
-      /* hook for wrong base path, skip */
-      continue;
-    } else if (!base_path) {
-      /* only replace what we know */
-      if (strncmp (cbf->menupath, DISPLAY_MENU, strlen (DISPLAY_MENU)) == 0)
-        menu_path = g_strdup_printf ("%s%s", INTEGRATED_MENU, cbf->menupath + strlen (DISPLAY_MENU));
-      else if (strncmp (cbf->menupath, TOOLBOX_MENU, strlen (TOOLBOX_MENU)) == 0)
-        menu_path = g_strdup_printf ("%s%s", INTEGRATED_MENU, cbf->menupath + strlen (TOOLBOX_MENU));
-    }
-
-    action = gtk_action_new (cbf->action, cbf->description, NULL, NULL);
-    g_signal_connect (G_OBJECT (action), "activate",
-		      G_CALLBACK (plugin_callback), (gpointer) cbf);
-
-    gtk_action_group_add_action (actions, action);
-    g_object_unref (G_OBJECT (action));
-
-    id = ensure_menu_path (ui_manager, actions, menu_path ? menu_path : cbf->menupath, TRUE);
-    gtk_ui_manager_add_ui (ui_manager, id,
-			   menu_path ? menu_path : cbf->menupath,
-			   cbf->description,
-			   cbf->action,
-			   GTK_UI_MANAGER_AUTO,
-			   FALSE);
-    g_free (menu_path);
-  }
 }
 
 static void
 _add_stock_icon (GtkIconFactory *factory, const char *name, const guint8 *data, const size_t size)
 {
-  GdkPixbuf      *pixbuf;
-  GtkIconSet     *set;
-  GError         *err = NULL;
+    GdkPixbuf      *pixbuf;
+    GtkIconSet     *set;
+    GError         *err = NULL;
 
-  pixbuf = gdk_pixbuf_new_from_inline (size, data, FALSE, &err);
-  if (err) {
-    g_warning ("%s", err->message);
-    g_error_free (err);
-    err = NULL;
-  }
-  set = gtk_icon_set_new_from_pixbuf (pixbuf);
-  gtk_icon_factory_add (factory, name, set);
-  g_object_unref (pixbuf);
-  pixbuf = NULL;
+    pixbuf = gdk_pixbuf_new_from_inline (size, data, FALSE, &err);
+    if (err)
+    {
+        g_warning ("%s", err->message);
+        g_error_free (err);
+        err = NULL;
+    }
+    set = gtk_icon_set_new_from_pixbuf (pixbuf);
+    gtk_icon_factory_add (factory, name, set);
+    g_object_unref (pixbuf);
+    pixbuf = NULL;
 }
 
 static void
 register_stock_icons (void)
 {
-  GtkIconFactory *factory;
+    GtkIconFactory *factory;
 
-  factory = gtk_icon_factory_new ();
+    factory = gtk_icon_factory_new ();
 
-  _add_stock_icon (factory, DIA_STOCK_GROUP, dia_group_icon, sizeof(dia_group_icon));
-  _add_stock_icon (factory, DIA_STOCK_UNGROUP, dia_ungroup_icon, sizeof(dia_ungroup_icon));
+    _add_stock_icon (factory, DIA_STOCK_GROUP, dia_group_icon, sizeof(dia_group_icon));
+    _add_stock_icon (factory, DIA_STOCK_UNGROUP, dia_ungroup_icon, sizeof(dia_ungroup_icon));
 
-  _add_stock_icon (factory, DIA_STOCK_LAYER_ADD, dia_layer_add, sizeof(dia_layer_add));
-  _add_stock_icon (factory, DIA_STOCK_LAYER_RENAME, dia_layer_rename, sizeof(dia_layer_rename));
-  _add_stock_icon (factory, DIA_STOCK_OBJECTS_LAYER_ABOVE, dia_objects_layer_above, sizeof(dia_objects_layer_above));
-  _add_stock_icon (factory, DIA_STOCK_OBJECTS_LAYER_BELOW, dia_objects_layer_below, sizeof(dia_objects_layer_below));
-  _add_stock_icon (factory, DIA_STOCK_LAYERS, dia_layers, sizeof(dia_layers));
+    _add_stock_icon (factory, DIA_STOCK_LAYER_ADD, dia_layer_add, sizeof(dia_layer_add));
+    _add_stock_icon (factory, DIA_STOCK_LAYER_RENAME, dia_layer_rename, sizeof(dia_layer_rename));
+    _add_stock_icon (factory, DIA_STOCK_OBJECTS_LAYER_ABOVE, dia_objects_layer_above, sizeof(dia_objects_layer_above));
+    _add_stock_icon (factory, DIA_STOCK_OBJECTS_LAYER_BELOW, dia_objects_layer_below, sizeof(dia_objects_layer_below));
+    _add_stock_icon (factory, DIA_STOCK_LAYERS, dia_layers, sizeof(dia_layers));
 
-  gtk_icon_factory_add_default (factory);
-  g_object_unref (factory);
-  factory = NULL;
+    gtk_icon_factory_add_default (factory);
+    g_object_unref (factory);
+    factory = NULL;
 }
 
 static gchar*
 build_ui_filename (const gchar* name)
 {
-  gchar* uifile;
+    gchar* uifile;
 
-  if (g_getenv ("DIA_BASE_PATH") != NULL) {
-    /* a small hack cause the final destination and the local path differ */
-    const gchar* p = strrchr (name, '/');
-    if (p != NULL)
-      name = p+1;
-    uifile = g_build_filename (g_getenv ("DIA_BASE_PATH"), "data", name, NULL);
-  } else
-    uifile = dia_get_data_directory (name);
+    if (g_getenv ("DIA_BASE_PATH") != NULL)
+    {
+        /* a small hack cause the final destination and the local path differ */
+        const gchar* p = strrchr (name, '/');
+        if (p != NULL)
+            name = p+1;
+        uifile = g_build_filename (g_getenv ("DIA_BASE_PATH"), "data", name, NULL);
+    }
+    else
+        uifile = dia_get_data_directory (name);
 
-  return uifile;
+    return uifile;
 }
 
 /*!
@@ -825,426 +861,447 @@ _ui_manager_connect_proxy (GtkUIManager *manager,
                            GtkAction    *action,
                            GtkWidget    *proxy)
 {
-  if (GTK_IS_MENU_ITEM (proxy))
+    if (GTK_IS_MENU_ITEM (proxy))
     {
-      gchar *tooltip;
+        gchar *tooltip;
 
-      g_object_get (action, "tooltip", &tooltip, NULL);
+        g_object_get (action, "tooltip", &tooltip, NULL);
 
-      if (tooltip)
+        if (tooltip)
         {
-	  gtk_tooltips_set_tip (tool_tips, proxy, tooltip, NULL);
-	  g_free (tooltip);
-	}
+            gtk_tooltips_set_tip (tool_tips, proxy, tooltip, NULL);
+            g_free (tooltip);
+        }
     }
 }
 
 GtkActionGroup *
 create_or_ref_display_actions (void)
 {
-  if (display_actions)
-    return g_object_ref (display_actions);
-  display_actions = gtk_action_group_new ("display-actions");
-  gtk_action_group_set_translation_domain (display_actions, NULL);
-  gtk_action_group_set_translate_func (display_actions, _dia_translate, NULL, NULL);
-  gtk_action_group_add_actions (display_actions, common_entries,
-                G_N_ELEMENTS (common_entries), NULL);
-                /*添加动作.*/
-  gtk_action_group_add_actions(display_actions,factory_button_entries,G_N_ELEMENTS(factory_button_entries),NULL);
-  gtk_action_group_add_actions (display_actions, display_entries,
-                G_N_ELEMENTS (display_entries), NULL);
-  gtk_action_group_add_toggle_actions (display_actions, display_toggle_entries,
-                G_N_ELEMENTS (display_toggle_entries),
-                NULL);
-  gtk_action_group_add_radio_actions (display_actions,
-                display_select_radio_entries,
-                G_N_ELEMENTS (display_select_radio_entries),
-                0, /* SELECT_REPLACE - first radio entry */
-                G_CALLBACK (select_style_callback),
-                NULL);
-  /* the initial reference */
-  return display_actions;
+    if (display_actions)
+        return g_object_ref (display_actions);
+    display_actions = gtk_action_group_new ("display-actions");
+    gtk_action_group_set_translation_domain (display_actions, NULL);
+    gtk_action_group_set_translate_func (display_actions, _dia_translate, NULL, NULL);
+    gtk_action_group_add_actions (toolbox_actions, toolbox_entries,
+                                  G_N_ELEMENTS (toolbox_entries), NULL);
+    gtk_action_group_add_actions (display_actions, common_entries,
+                                  G_N_ELEMENTS (common_entries), NULL);
+    /*添加动作.*/
+
+    gtk_action_group_add_actions (display_actions, display_entries,
+                                  G_N_ELEMENTS (display_entries), NULL);
+
+    gtk_action_group_add_radio_actions (display_actions,
+                                        display_select_radio_entries,
+                                        G_N_ELEMENTS (display_select_radio_entries),
+                                        0, /* SELECT_REPLACE - first radio entry */
+                                        G_CALLBACK (select_style_callback),
+                                        NULL);
+    /* the initial reference */
+    return display_actions;
 }
 
 /* Very minimal fallback menu info for ui-files missing
  * as well as to register the InvisibleMenu */
 static const gchar *ui_info =
-"<ui>\n"
-"  <popup name=\"InvisibleMenu\">\n"
-"    <menu name=\"File\" action=\"File\">\n"
-"       <menuitem name=\"FilePrint\" action=\"FilePrint\" />\n"
-"       <menuitem name=\"FileQuit\" action=\"FileQuit\" />\n"
-"    </menu>\n"
-"  </popup>\n"
-"</ui>";
+    "<ui>\n"
+    "  <popup name=\"InvisibleMenu\">\n"
+    "    <menu name=\"File\" action=\"File\">\n"
+    "       <menuitem name=\"FilePrint\" action=\"FilePrint\" />\n"
+    "       <menuitem name=\"FileQuit\" action=\"FileQuit\" />\n"
+    "    </menu>\n"
+    "  </popup>\n"
+    "</ui>";
 
 static void
 menus_init(void)
 {
-  gchar                 *accelfilename;
-  GError 		*error = NULL;
-  gchar			*uifile;
+    gchar                 *accelfilename;
+    GError 		*error = NULL;
+    gchar			*uifile;
 
-  if (!initialise)
-    return;
+    if (!initialise)
+        return;
 
-  initialise = FALSE;
+    initialise = FALSE;
 
-  register_stock_icons ();
+    register_stock_icons ();
 
-  /* the toolbox menu */
-  toolbox_actions = gtk_action_group_new ("toolbox-actions");
-  gtk_action_group_set_translation_domain (toolbox_actions, NULL);
-  gtk_action_group_set_translate_func (toolbox_actions, _dia_translate, NULL, NULL);
-  gtk_action_group_add_actions (toolbox_actions, common_entries,
-                G_N_ELEMENTS (common_entries), NULL);
-gtk_action_group_add_actions(display_actions,factory_button_entries,G_N_ELEMENTS(factory_button_entries),NULL);
-  gtk_action_group_add_actions (toolbox_actions, toolbox_entries,
-                G_N_ELEMENTS (toolbox_entries), NULL);
-  gtk_action_group_add_toggle_actions (toolbox_actions, toolbox_toggle_entries,
-                G_N_ELEMENTS (toolbox_toggle_entries),
-                NULL);   // 2014-3-20 lcy  这里把树窗口关闭掉.
+    /* the toolbox menu */
+    toolbox_actions = gtk_action_group_new ("toolbox-actions");
+    gtk_action_group_set_translation_domain (toolbox_actions, NULL);
+    gtk_action_group_set_translate_func (toolbox_actions, _dia_translate, NULL, NULL);
+    gtk_action_group_add_actions (toolbox_actions, common_entries,
+                                  G_N_ELEMENTS (common_entries), NULL);
 
-  toolbox_ui_manager = gtk_ui_manager_new ();
-  g_signal_connect (G_OBJECT (toolbox_ui_manager),
-                    "connect_proxy",
-		    G_CALLBACK (_ui_manager_connect_proxy),
-		    NULL);
-  gtk_ui_manager_set_add_tearoffs (toolbox_ui_manager, DIA_SHOW_TEAROFFS);
-  gtk_ui_manager_insert_action_group (toolbox_ui_manager, toolbox_actions, 0);
-  uifile = build_ui_filename ("ui/toolbox-ui.xml");
-  if (!gtk_ui_manager_add_ui_from_file (toolbox_ui_manager, uifile, &error)) {
-    g_warning ("building menus failed: %s", error->message);
-    g_error_free (error);
-    error = NULL;
-  }
-  g_free (uifile);
+    gtk_action_group_add_actions (toolbox_actions, toolbox_entries,
+                                  G_N_ELEMENTS (toolbox_entries), NULL);
+//  gtk_action_group_add_toggle_actions (toolbox_actions, toolbox_toggle_entries,
+//                G_N_ELEMENTS (toolbox_toggle_entries),
+//                NULL);   // 2014-3-20 lcy  这里把树窗口关闭掉.
 
-  toolbox_accels = gtk_ui_manager_get_accel_group (toolbox_ui_manager);
-  toolbox_menubar = gtk_ui_manager_get_widget (toolbox_ui_manager, TOOLBOX_MENU);
+    toolbox_ui_manager = gtk_ui_manager_new ();
+    g_signal_connect (G_OBJECT (toolbox_ui_manager),
+                      "connect_proxy",
+                      G_CALLBACK (_ui_manager_connect_proxy),
+                      NULL);
+    gtk_ui_manager_set_add_tearoffs (toolbox_ui_manager, DIA_SHOW_TEAROFFS);
+    gtk_ui_manager_insert_action_group (toolbox_ui_manager, toolbox_actions, 0);
+    uifile = build_ui_filename ("ui/toolbox-ui.xml");
+    if (!gtk_ui_manager_add_ui_from_file (toolbox_ui_manager, uifile, &error))
+    {
+        g_warning ("building menus failed: %s", error->message);
+        g_error_free (error);
+        error = NULL;
+    }
+    g_free (uifile);
 
-  /* the display menu */
-  display_actions = create_or_ref_display_actions ();
-  display_tool_actions = create_tool_actions ();
+    toolbox_accels = gtk_ui_manager_get_accel_group (toolbox_ui_manager);
+    toolbox_menubar = gtk_ui_manager_get_widget (toolbox_ui_manager, TOOLBOX_MENU);
 
-  display_ui_manager = gtk_ui_manager_new ();
-  g_signal_connect (G_OBJECT (display_ui_manager),
-                    "connect_proxy",
-		    G_CALLBACK (_ui_manager_connect_proxy),
-		    NULL);
-  gtk_ui_manager_set_add_tearoffs (display_ui_manager, DIA_SHOW_TEAROFFS);
-  gtk_ui_manager_insert_action_group (display_ui_manager, display_actions, 0);
-  gtk_ui_manager_insert_action_group (display_ui_manager, display_tool_actions, 0);
-  if (!gtk_ui_manager_add_ui_from_string (display_ui_manager, ui_info, -1, &error)) {
-    g_warning ("built-in menus failed: %s", error->message);
-    g_error_free (error);
-    error = NULL;
-  }
+    /* the display menu */
+    display_actions = create_or_ref_display_actions ();
+    display_tool_actions = create_tool_actions ();
 
-  uifile = build_ui_filename ("ui/popup-ui.xml");
-  /* TODO it would be more elegant if we had only one definition of the
-   * menu hierarchy and merge it into a popup somehow. */
-  if (!gtk_ui_manager_add_ui_from_file (display_ui_manager, uifile, &error)) {
-    g_warning ("building menus failed: %s", error->message);
-    g_error_free (error);
-    error = NULL;
-  }
-  g_free (uifile);
+    display_ui_manager = gtk_ui_manager_new ();
+    g_signal_connect (G_OBJECT (display_ui_manager),
+                      "connect_proxy",
+                      G_CALLBACK (_ui_manager_connect_proxy),
+                      NULL);
+    gtk_ui_manager_set_add_tearoffs (display_ui_manager, DIA_SHOW_TEAROFFS);
+    gtk_ui_manager_insert_action_group (display_ui_manager, display_actions, 0);
+    gtk_ui_manager_insert_action_group (display_ui_manager, display_tool_actions, 0);
+    if (!gtk_ui_manager_add_ui_from_string (display_ui_manager, ui_info, -1, &error))
+    {
+        g_warning ("built-in menus failed: %s", error->message);
+        g_error_free (error);
+        error = NULL;
+    }
 
-  display_accels = gtk_ui_manager_get_accel_group (display_ui_manager);
-  display_menubar = gtk_ui_manager_get_widget (display_ui_manager, DISPLAY_MENU);
-  g_assert (display_menubar);
+    uifile = build_ui_filename ("ui/popup-ui.xml");
+    /* TODO it would be more elegant if we had only one definition of the
+     * menu hierarchy and merge it into a popup somehow. */
+    if (!gtk_ui_manager_add_ui_from_file (display_ui_manager, uifile, &error))
+    {
+        g_warning ("building menus failed: %s", error->message);
+        g_error_free (error);
+        error = NULL;
+    }
+    g_free (uifile);
 
-  add_plugin_actions (toolbox_ui_manager, TOOLBOX_MENU);
-  add_plugin_actions (display_ui_manager, DISPLAY_MENU);
-  add_plugin_actions (display_ui_manager, INVISIBLE_MENU);
+    display_accels = gtk_ui_manager_get_accel_group (display_ui_manager);
+    display_menubar = gtk_ui_manager_get_widget (display_ui_manager, DISPLAY_MENU);
+    g_assert (display_menubar);
 
-  /* load accelerators and prepare to later save them */
-  accelfilename = dia_config_filename("menurc");
+    add_plugin_actions (toolbox_ui_manager, TOOLBOX_MENU);
+    add_plugin_actions (display_ui_manager, DISPLAY_MENU);
+    add_plugin_actions (display_ui_manager, INVISIBLE_MENU);
 
-  if (accelfilename) {
-    gtk_accel_map_load(accelfilename);
-    g_free(accelfilename);
-  }
-  gtk_quit_add(1, save_accels, NULL);
+    /* load accelerators and prepare to later save them */
+    accelfilename = dia_config_filename("menurc");
+
+    if (accelfilename)
+    {
+        gtk_accel_map_load(accelfilename);
+        g_free(accelfilename);
+    }
+    gtk_quit_add(1, save_accels, NULL);
 }
 
 void
 menus_get_integrated_ui_menubar (GtkWidget     **menubar,
                                  GtkWidget     **toolbar,
-			         GtkAccelGroup **accel_group)
+                                 GtkAccelGroup **accel_group)
 {
-  GError *error = NULL;
-  gchar  *uifile;
+    GError *error = NULL;
+    gchar  *uifile;
 
-  if (initialise)
-    menus_init();
+    if (initialise)
+        menus_init();
 
-  /* the integrated ui menu */
-  integrated_ui_actions = gtk_action_group_new ("integrated-ui-actions");
-  gtk_action_group_set_translation_domain (integrated_ui_actions, NULL);
-  gtk_action_group_set_translate_func (integrated_ui_actions, _dia_translate, NULL, NULL);
-  gtk_action_group_add_actions (integrated_ui_actions, common_entries,
-                G_N_ELEMENTS (common_entries), NULL);
- gtk_action_group_add_actions(display_actions,factory_button_entries,G_N_ELEMENTS(factory_button_entries),NULL);
-  gtk_action_group_add_actions (integrated_ui_actions, toolbox_entries,
-                G_N_ELEMENTS (toolbox_entries), NULL);
-  gtk_action_group_add_actions (integrated_ui_actions, display_entries,
-                G_N_ELEMENTS (display_entries), NULL);
-  gtk_action_group_add_toggle_actions (integrated_ui_actions, integrated_ui_view_toggle_entries,
-                G_N_ELEMENTS (integrated_ui_view_toggle_entries), NULL);
-  gtk_action_group_add_toggle_actions (integrated_ui_actions, toolbox_toggle_entries,
-                G_N_ELEMENTS (toolbox_toggle_entries),
-                NULL);   // 2014-3-20 lcy  这里把树窗口关闭掉.
-  gtk_action_group_add_toggle_actions (integrated_ui_actions, display_toggle_entries,
-                G_N_ELEMENTS (display_toggle_entries),
-                NULL);
-  gtk_action_group_add_radio_actions (integrated_ui_actions,
-                display_select_radio_entries,
-                G_N_ELEMENTS (display_select_radio_entries),
-                1,
-                G_CALLBACK (select_style_callback),
-                NULL);
+    /* the integrated ui menu */
+    integrated_ui_actions = gtk_action_group_new ("integrated-ui-actions");
+    gtk_action_group_set_translation_domain (integrated_ui_actions, NULL);
+    gtk_action_group_set_translate_func (integrated_ui_actions, _dia_translate, NULL, NULL);
+    gtk_action_group_add_actions (integrated_ui_actions, common_entries,
+                                  G_N_ELEMENTS (common_entries), NULL);
 
-  integrated_ui_tool_actions = create_tool_actions ();
+    gtk_action_group_add_actions (integrated_ui_actions, toolbox_entries,
+                                  G_N_ELEMENTS (toolbox_entries), NULL);
+    gtk_action_group_add_actions (integrated_ui_actions, display_entries,
+                                  G_N_ELEMENTS (display_entries), NULL);
+    gtk_action_group_add_toggle_actions (integrated_ui_actions, integrated_ui_view_toggle_entries,
+                                         G_N_ELEMENTS (integrated_ui_view_toggle_entries), NULL);
+//  gtk_action_group_add_toggle_actions (integrated_ui_actions, toolbox_toggle_entries,
+//                G_N_ELEMENTS (toolbox_toggle_entries),
+//                NULL);   // 2014-3-20 lcy  这里把树窗口关闭掉.
+    gtk_action_group_add_toggle_actions (integrated_ui_actions, display_toggle_entries,
+                                         G_N_ELEMENTS (display_toggle_entries),
+                                         NULL);
+    gtk_action_group_add_radio_actions (integrated_ui_actions,
+                                        display_select_radio_entries,
+                                        G_N_ELEMENTS (display_select_radio_entries),
+                                        1,
+                                        G_CALLBACK (select_style_callback),
+                                        NULL);
 
-  integrated_ui_manager = gtk_ui_manager_new ();
-  gtk_ui_manager_set_add_tearoffs (integrated_ui_manager, DIA_SHOW_TEAROFFS);
-  gtk_ui_manager_insert_action_group (integrated_ui_manager, integrated_ui_actions, 0);
-  gtk_ui_manager_insert_action_group (integrated_ui_manager, integrated_ui_tool_actions, 0);
+    integrated_ui_tool_actions = create_tool_actions ();
 
-  uifile = build_ui_filename ("ui/integrated-ui.xml");
-  if (!gtk_ui_manager_add_ui_from_file (integrated_ui_manager, uifile, &error)) {
-    g_warning ("building integrated ui menus failed: %s", error->message);
-    g_error_free (error);
-    error = NULL;
-  }
-  g_free (uifile);
-  if (!gtk_ui_manager_add_ui_from_string (integrated_ui_manager, ui_info, -1, &error)) {
-    g_warning ("built-in menus failed: %s", error->message);
-    g_error_free (error);
-    error = NULL;
-  }
+    integrated_ui_manager = gtk_ui_manager_new ();
+    gtk_ui_manager_set_add_tearoffs (integrated_ui_manager, DIA_SHOW_TEAROFFS);
+    gtk_ui_manager_insert_action_group (integrated_ui_manager, integrated_ui_actions, 0);
+    gtk_ui_manager_insert_action_group (integrated_ui_manager, integrated_ui_tool_actions, 0);
 
-  add_plugin_actions (integrated_ui_manager, NULL);
+    uifile = build_ui_filename ("ui/integrated-ui.xml");
+    if (!gtk_ui_manager_add_ui_from_file (integrated_ui_manager, uifile, &error))
+    {
+        g_warning ("building integrated ui menus failed: %s", error->message);
+        g_error_free (error);
+        error = NULL;
+    }
+    g_free (uifile);
+    if (!gtk_ui_manager_add_ui_from_string (integrated_ui_manager, ui_info, -1, &error))
+    {
+        g_warning ("built-in menus failed: %s", error->message);
+        g_error_free (error);
+        error = NULL;
+    }
 
-  integrated_ui_accels = gtk_ui_manager_get_accel_group (integrated_ui_manager);
-  integrated_ui_menubar = gtk_ui_manager_get_widget (integrated_ui_manager, INTEGRATED_MENU);
-  integrated_ui_toolbar = create_integrated_ui_toolbar ();
+    add_plugin_actions (integrated_ui_manager, NULL);
 
-  if (menubar)
-    *menubar = integrated_ui_menubar;
-  if (toolbar)
-    *toolbar = integrated_ui_toolbar;
-  if (accel_group)
-    *accel_group = integrated_ui_accels;
+    integrated_ui_accels = gtk_ui_manager_get_accel_group (integrated_ui_manager);
+    integrated_ui_menubar = gtk_ui_manager_get_widget (integrated_ui_manager, INTEGRATED_MENU);
+    integrated_ui_toolbar = create_integrated_ui_toolbar ();
+
+    if (menubar)
+        *menubar = integrated_ui_menubar;
+    if (toolbar)
+        *toolbar = integrated_ui_toolbar;
+    if (accel_group)
+        *accel_group = integrated_ui_accels;
 }
 
 void
 menus_get_toolbox_menubar (GtkWidget     **menubar,
-			   GtkAccelGroup **accel_group)
+                           GtkAccelGroup **accel_group)
 {
-  if (initialise)
-    menus_init();
+    if (initialise)
+        menus_init();
 
-  if (menubar)
-    *menubar = toolbox_menubar;
-  if (accel_group)
-    *accel_group = toolbox_accels;
+    if (menubar)
+        *menubar = toolbox_menubar;
+    if (accel_group)
+        *accel_group = toolbox_accels;
 }
 
 GtkWidget *
 menus_get_display_popup (void)
 {
-  if (initialise)
-    menus_init();
+    if (initialise)
+        menus_init();
 
-  return display_menubar;
+    return display_menubar;
 }
 
 GtkAccelGroup *
 menus_get_display_accels (void)
 {
-  if (initialise)
-    menus_init();
+    if (initialise)
+        menus_init();
 
-  if (is_integrated_ui ())
-    return integrated_ui_accels;
+    if (is_integrated_ui ())
+        return integrated_ui_accels;
 
-  return display_accels;
+    return display_accels;
 }
 
 GtkWidget *
 menus_create_display_menubar (GtkUIManager   **ui_manager,
-			      GtkActionGroup **actions)
+                              GtkActionGroup **actions)
 {
-  GtkActionGroup *tool_actions;
-  GtkWidget      *menu_bar;
-  GError         *error = NULL;
-  gchar          *uifile;
+    GtkActionGroup *tool_actions;
+    GtkWidget      *menu_bar;
+    GError         *error = NULL;
+    gchar          *uifile;
 
 
-  *actions = create_or_ref_display_actions ();
-  tool_actions = create_tool_actions ();
+    *actions = create_or_ref_display_actions ();
+    tool_actions = create_tool_actions ();
 
-  *ui_manager = gtk_ui_manager_new ();
-  gtk_ui_manager_set_add_tearoffs (*ui_manager, DIA_SHOW_TEAROFFS);
-  gtk_ui_manager_insert_action_group (*ui_manager, *actions, 0);
-  gtk_ui_manager_insert_action_group (*ui_manager, tool_actions, 0);
-  g_object_unref (G_OBJECT (tool_actions));
+    *ui_manager = gtk_ui_manager_new ();
+    gtk_ui_manager_set_add_tearoffs (*ui_manager, DIA_SHOW_TEAROFFS);
+    gtk_ui_manager_insert_action_group (*ui_manager, *actions, 0);
+    gtk_ui_manager_insert_action_group (*ui_manager, tool_actions, 0);
+    g_object_unref (G_OBJECT (tool_actions));
 
-  uifile = build_ui_filename ("ui/display-ui.xml");
-  if (!gtk_ui_manager_add_ui_from_file (*ui_manager, uifile, &error)) {
-    g_warning ("building menus failed: %s", error->message);
-    g_error_free (error);
+    uifile = build_ui_filename ("ui/display-ui.xml");
+    if (!gtk_ui_manager_add_ui_from_file (*ui_manager, uifile, &error))
+    {
+        g_warning ("building menus failed: %s", error->message);
+        g_error_free (error);
+        g_free (uifile);
+        return NULL;
+    }
     g_free (uifile);
-    return NULL;
-  }
-  g_free (uifile);
 
-  add_plugin_actions (*ui_manager, DISPLAY_MENU);
-  menu_bar = gtk_ui_manager_get_widget (*ui_manager, DISPLAY_MENU);
-  return menu_bar;
+    add_plugin_actions (*ui_manager, DISPLAY_MENU);
+    menu_bar = gtk_ui_manager_get_widget (*ui_manager, DISPLAY_MENU);
+    return menu_bar;
 }
 
 GtkAccelGroup *
 menus_get_accel_group ()
 {
-  return is_integrated_ui ()? integrated_ui_accels : toolbox_accels;
+    return is_integrated_ui ()? integrated_ui_accels : toolbox_accels;
 }
 
 GtkActionGroup *
 menus_get_action_group ()
 {
-  return is_integrated_ui ()? integrated_ui_actions : toolbox_actions;
+    return is_integrated_ui ()? integrated_ui_actions : toolbox_actions;
 }
 
 GtkAction *
 menus_get_action (const gchar *name)
 {
-  GtkAction *action;
+    GtkAction *action;
 
-  if (is_integrated_ui ())
-  {
-    action = gtk_action_group_get_action (integrated_ui_actions, name);
-    if (action == NULL) {
-      action = gtk_action_group_get_action (integrated_ui_tool_actions, name);
+    if (is_integrated_ui ())
+    {
+        action = gtk_action_group_get_action (integrated_ui_actions, name);
+        if (action == NULL)
+        {
+            action = gtk_action_group_get_action (integrated_ui_tool_actions, name);
+        }
     }
-  }
-  else
-  {
-    action = gtk_action_group_get_action (toolbox_actions, name);
-    if (action == NULL) {
-      action = gtk_action_group_get_action (display_actions, name);
+    else
+    {
+        action = gtk_action_group_get_action (toolbox_actions, name);
+        if (action == NULL)
+        {
+            action = gtk_action_group_get_action (display_actions, name);
+        }
+        if (action == NULL)
+        {
+            action = gtk_action_group_get_action (display_tool_actions, name);
+        }
     }
-    if (action == NULL) {
-      action = gtk_action_group_get_action (display_tool_actions, name);
-    }
-  }
-  if (!action) {
-    GList *groups, *list;
+    if (!action)
+    {
+        GList *groups, *list;
 
-    /* search everthing there is, could probably replace the above */
-    groups = gtk_ui_manager_get_action_groups (display_ui_manager);
-    for (list = groups; list != NULL; list = list->next) {
-      action = gtk_action_group_get_action (GTK_ACTION_GROUP (list->data), name);
-      if (action)
-	break;
+        /* search everthing there is, could probably replace the above */
+        groups = gtk_ui_manager_get_action_groups (display_ui_manager);
+        for (list = groups; list != NULL; list = list->next)
+        {
+            action = gtk_action_group_get_action (GTK_ACTION_GROUP (list->data), name);
+            if (action)
+                break;
+        }
     }
-  }
 
-  return action;
+    return action;
 }
 
 void
 menus_set_recent (GtkActionGroup *actions)
 {
-  GList *list;
-  guint id;
-  GtkUIManager *ui_manager;
-  const char   *recent_path;
+    GList *list;
+    guint id;
+    GtkUIManager *ui_manager;
+    const char   *recent_path;
 
-  if (is_integrated_ui ())
-  {
-    ui_manager  = integrated_ui_manager;
-    recent_path = INTEGRATED_MENU "/File/FileRecentEnd";
-  }
-  else
-  {
-    ui_manager  = toolbox_ui_manager;
-    recent_path = TOOLBOX_MENU "/File/FileRecentEnd";
-  }
+    if (is_integrated_ui ())
+    {
+        ui_manager  = integrated_ui_manager;
+        recent_path = INTEGRATED_MENU "/File/FileRecentEnd";
+    }
+    else
+    {
+        ui_manager  = toolbox_ui_manager;
+        recent_path = TOOLBOX_MENU "/File/FileRecentEnd";
+    }
 
-  if (recent_actions) {
-    menus_clear_recent ();
-  }
+    if (recent_actions)
+    {
+        menus_clear_recent ();
+    }
 
-  list = gtk_action_group_list_actions (actions);
-  g_return_if_fail (list);
+    list = gtk_action_group_list_actions (actions);
+    g_return_if_fail (list);
 
-  recent_actions = actions;
-  g_object_ref (G_OBJECT (recent_actions));
-  gtk_ui_manager_insert_action_group (ui_manager,
-                    recent_actions,
-                    10 /* insert at back */ );
+    recent_actions = actions;
+    g_object_ref (G_OBJECT (recent_actions));
+    gtk_ui_manager_insert_action_group (ui_manager,
+                                        recent_actions,
+                                        10 /* insert at back */ );
 
-  do {
-    id = gtk_ui_manager_new_merge_id (ui_manager);
-    recent_merge_ids = g_slist_prepend (recent_merge_ids, (gpointer) id);
+    do
+    {
+        id = gtk_ui_manager_new_merge_id (ui_manager);
+        recent_merge_ids = g_slist_prepend (recent_merge_ids, (gpointer) id);
 
-    gtk_ui_manager_add_ui (ui_manager, id,
-                 recent_path,
-                 gtk_action_get_name (GTK_ACTION (list->data)),
-                 gtk_action_get_name (GTK_ACTION (list->data)),
-                 GTK_UI_MANAGER_AUTO,
-                 TRUE);
+        gtk_ui_manager_add_ui (ui_manager, id,
+                               recent_path,
+                               gtk_action_get_name (GTK_ACTION (list->data)),
+                               gtk_action_get_name (GTK_ACTION (list->data)),
+                               GTK_UI_MANAGER_AUTO,
+                               TRUE);
 
-  } while (NULL != (list = list->next));
+    }
+    while (NULL != (list = list->next));
 }
 
 void
 menus_clear_recent (void)
 {
-  GSList *id;
-  GtkUIManager *ui_manager;
+    GSList *id;
+    GtkUIManager *ui_manager;
 
-  if (is_integrated_ui ())
-    ui_manager  = integrated_ui_manager;
-  else
-    ui_manager  = toolbox_ui_manager;
+    if (is_integrated_ui ())
+        ui_manager  = integrated_ui_manager;
+    else
+        ui_manager  = toolbox_ui_manager;
 
-  if (recent_merge_ids) {
-    id = recent_merge_ids;
-    do {
-      gtk_ui_manager_remove_ui (ui_manager, (guint) id->data);
+    if (recent_merge_ids)
+    {
+        id = recent_merge_ids;
+        do
+        {
+            gtk_ui_manager_remove_ui (ui_manager, (guint) id->data);
 
-    } while (NULL != (id = id->next));
+        }
+        while (NULL != (id = id->next));
 
-    g_slist_free (recent_merge_ids);
-    recent_merge_ids = NULL;
-  }
+        g_slist_free (recent_merge_ids);
+        recent_merge_ids = NULL;
+    }
 
-  if (recent_actions) {
-    gtk_ui_manager_remove_action_group (ui_manager, recent_actions);
-    g_object_unref (G_OBJECT (recent_actions));
-    recent_actions = NULL;
-  }
+    if (recent_actions)
+    {
+        gtk_ui_manager_remove_action_group (ui_manager, recent_actions);
+        g_object_unref (G_OBJECT (recent_actions));
+        recent_actions = NULL;
+    }
 }
 
 static void
 plugin_callback (GtkWidget *widget, gpointer data)
 {
-  DiaCallbackFilter *cbf = data;
+    DiaCallbackFilter *cbf = data;
 
-  /* and finally invoke it */
-  if (cbf->callback) {
-    DDisplay *ddisp = NULL;
-    DiagramData* diadata = NULL;
-    /* stuff from the toolbox menu should never get a diagram to modify */
-    if (strncmp (cbf->menupath, TOOLBOX_MENU, strlen (TOOLBOX_MENU)) != 0) {
-      ddisp = ddisplay_active();
-      diadata = ddisp ? ddisp->diagram->data : NULL;
+    /* and finally invoke it */
+    if (cbf->callback)
+    {
+        DDisplay *ddisp = NULL;
+        DiagramData* diadata = NULL;
+        /* stuff from the toolbox menu should never get a diagram to modify */
+        if (strncmp (cbf->menupath, TOOLBOX_MENU, strlen (TOOLBOX_MENU)) != 0)
+        {
+            ddisp = ddisplay_active();
+            diadata = ddisp ? ddisp->diagram->data : NULL;
+        }
+        cbf->callback (diadata, ddisp ? ddisp->diagram->filename : NULL, 0, cbf->user_data);
     }
-    cbf->callback (diadata, ddisp ? ddisp->diagram->filename : NULL, 0, cbf->user_data);
-  }
 }

@@ -3236,6 +3236,19 @@ factory_apply_props_from_dialog(STRUCTClass *fclass, GtkWidget *widget)
         if(!exists)
         {
             fclass->name = g_strdup(pps->name);
+            GList *defnames = fclass->element.object.parent_layer->defnames;
+            GList *objlist = fclass->element.object.parent_layer->objects;
+            g_list_free(defnames); /* 所有对像的名字链表也要更新 */
+            defnames = NULL;
+            for(;objlist;objlist = objlist->next)
+            {
+                if(!factory_is_valid_type(objlist->data))
+                {
+                    STRUCTClass *oclass = objlist->data;
+                    defnames = g_list_append(defnames,oclass->name);
+                }
+            }
+
         }
         structclass_calculate_data(fclass);
         structclass_update_data(fclass);
@@ -3570,13 +3583,15 @@ void factory_set_savestruct_widgets(SaveStruct *sss)
     GtkTooltips *tool_tips = gtk_tooltips_new();
 
     /* 2014-3-26 lcy 用两个区间做键值。*/
-    if(sss)
+    if(sss && sss->org )
     {
+        gchar *comment = sss->org->Comment;
         Name = gtk_label_new(sss->org->Cname);
-        gtk_tooltips_set_tip(tool_tips,Name,_(sss->org->Comment),NULL);
+        gtk_tooltips_set_tip(tool_tips,Name,g_strdup(comment),NULL);
         /* 创建多样性的对像控件  */
+
         columTwo = factory_create_variant_object(sss);
-        gtk_tooltips_set_tip(tool_tips,columTwo,_(sss->org->Comment),NULL);
+        gtk_tooltips_set_tip(tool_tips,columTwo,g_strdup(comment),NULL);
 //        sss->widget2 = columTwo;
         sss->widget1 = Name;
     }
@@ -4418,12 +4433,40 @@ void factory_create_struct_dialog(GtkWidget *dialog,GList *datalist)
     /* 通链表创建控件 SaveStruct *sst */
     GList *item = datalist;
     int row = 0;
-    for(; item != NULL ; item = item->next,row++)
+    for(; item != NULL ; item = item->next)
     {
         SaveStruct *sst  = item->data;
-        factory_set_savestruct_widgets(sst);
-        factory_set_twoxtwo_table(dialog,sst->widget1,sst->widget2,row);
+         gchar *lname = g_locale_from_utf8(sst->org->Cname,-1,NULL,NULL,NULL);
+         if(g_ascii_strcasecmp(lname,_("保留"))) /* 保留的不显示出来 */
+         {
+                factory_set_savestruct_widgets(sst);
+                factory_set_twoxtwo_table(dialog,sst->widget1,sst->widget2,row++);
+         }
+
     }
+}
+
+/* 2014-5-4 lcy 这里要添加一些公共选项 */
+void factory_append_public_info(GtkWidget *dialog,STRUCTClass *fclass)
+{
+      PublicSection *pps = g_new0(PublicSection,1);
+        pps->hasfinished = FALSE;
+        pps->name = fclass->name;
+        GtkWidget *sep = gtk_hseparator_new();
+        gtk_container_add(GTK_CONTAINER(dialog),sep);
+        pps->wid_hasfinished  =  	gtk_check_button_new_with_label(g_locale_to_utf8(_("编辑完成"),-1,NULL,NULL,NULL));
+        GtkWidget *hbox = gtk_hbox_new(FALSE,0);
+        GtkWidget *name_lab = gtk_label_new(g_locale_to_utf8(_("对像重命名:"),-1,NULL,NULL,NULL));
+        pps->wid_rename_entry = gtk_entry_new();
+        gtk_entry_set_text(pps->wid_rename_entry,pps->name);
+        gtk_entry_set_max_length(pps->wid_rename_entry,255);
+        gtk_box_pack_start(GTK_BOX(hbox), name_lab, FALSE, FALSE, 0);
+        gtk_box_pack_start(GTK_BOX(hbox), pps->wid_rename_entry, TRUE, TRUE, 0);
+
+        gtk_container_add(GTK_CONTAINER(dialog),pps->wid_hasfinished);
+        gtk_container_add(GTK_CONTAINER(dialog),hbox);
+        fclass->pps = pps;
+
 }
 
 /* 显示控件上的属性对话框 */
@@ -4441,27 +4484,8 @@ void factory_create_and_fill_dialog(STRUCTClass *fclass, gboolean is_default)
         prop_dialog->mainTable = gtk_table_new(num,4,FALSE);  // 2014-3-19 lcy 根据要链表的数量,创建多少行列表.
         factory_create_struct_dialog(prop_dialog->mainTable,targetlist);
         gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),prop_dialog->mainTable);
-        /* 2014-5-4 lcy 这里要添加一些公共选项 */
-        PublicSection *pps = g_new0(PublicSection,1);
-        pps->hasfinished = FALSE;
-        pps->name = fclass->name;
 
-
-        GtkWidget *sep = gtk_hseparator_new();
-        gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),sep);
-        pps->wid_hasfinished  =  	gtk_check_button_new_with_label(g_locale_to_utf8(_("编辑完成"),-1,NULL,NULL,NULL));
-        GtkWidget *hbox = gtk_hbox_new(FALSE,0);
-        GtkWidget *name_lab = gtk_label_new(g_locale_to_utf8(_("对像重命名:"),-1,NULL,NULL,NULL));
-        pps->wid_rename_entry = gtk_entry_new();
-        gtk_entry_set_text(pps->wid_rename_entry,pps->name);
-        gtk_entry_set_max_length(pps->wid_rename_entry,255);
-        gtk_box_pack_start(GTK_BOX(hbox), name_lab, FALSE, FALSE, 0);
-        gtk_box_pack_start(GTK_BOX(hbox), pps->wid_rename_entry, TRUE, TRUE, 0);
-
-        gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),pps->wid_hasfinished);
-        gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),hbox);
-        fclass->pps = pps;
-
+        factory_append_public_info(prop_dialog->dialog,fclass);
         gtk_table_set_col_spacing(GTK_TABLE(prop_dialog->mainTable),1,20);
     }
 

@@ -3,21 +3,21 @@
  *
  * sheets.h : a sheets and objects dialog
  * Copyright (C) 2002 M.C. Nelson
- *  
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- *  
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *  
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *  
+ *
  */
 
 #ifndef SHEETS_H
@@ -35,7 +35,7 @@
 /* The theory behind these structures is simple.  Sheets and SheetObjects
    are wrapped in SheetMod's and SheetObjectMod's respectively.  Any changes
    made by the user to the Sheet or SheetObject is reflected in the *Mod
-   subclass.  When the user commits, the information is written back to 
+   subclass.  When the user commits, the information is written back to
    the datastore and the *Mod lists discarded. */
 
 typedef struct _SheetObjectMod SheetObjectMod;
@@ -60,7 +60,7 @@ struct _SheetObjectMod
 struct _SheetMod
 {
   Sheet sheet;
-  
+
   enum { SHEETMOD_TYPE_NORMAL,
          SHEETMOD_TYPE_UNASSIGNED } type;	/* reserved for future use */
 
@@ -91,5 +91,7 @@ void sheets_dialog_show_callback(gpointer data, guint action,
 GtkWidget *lookup_widget(GtkWidget       *widget,
                          const gchar     *widget_name);
 GtkWidget *create_pixmap(GtkWidget *dialog, gchar *filename, gboolean arg3);
+
+
 
 #endif /* SHEETS_H */

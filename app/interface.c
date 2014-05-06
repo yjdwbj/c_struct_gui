@@ -1587,6 +1587,7 @@ create_lineprops_area(GtkWidget *parent)
   arrow.type = arrow_type_from_name(arrow_name);
   g_free(arrow_name);
   dia_arrow_chooser_set_arrow(DIA_ARROW_CHOOSER(chooser), &arrow);
+
   attributes_set_default_end_arrow(arrow);
 
   gtk_wrap_box_pack(GTK_WRAP_BOX(parent), chooser, FALSE, TRUE, FALSE, TRUE);

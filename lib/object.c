@@ -33,6 +33,7 @@
 
 #include "debug.h"
 
+extern FactoryStructItemAll *factoryContainer;
 /** Initialize an already allocated object with the given number of handles
  *  and connections.  This does not create the actual Handle and Connection
  *  objects, which are expected to be added later.
@@ -893,6 +894,8 @@ const Rectangle *dia_object_get_enclosing_box(const DiaObject *obj) {
 
 
 
+
+
 /* The below are for debugging purposes only. */
 
 /** Check that a DiaObject maintains its invariants and constrains.
@@ -1057,4 +1060,134 @@ dia_object_get_meta (DiaObject *obj, const gchar *key)
     return NULL;
   val = g_hash_table_lookup (obj->meta, key);
   return g_strdup (val);
+}
+
+gchar *factory_utf8(gchar *str)
+{
+    return g_locale_to_utf8(_(str),-1,NULL,NULL,NULL);
+}
+
+gchar *factory_locale(gchar *str)
+{
+    return g_locale_from_utf8(_(str),-1,NULL,NULL,NULL);
+}
+
+GtkWidget *factory_get_new_item_head()
+{
+    GtkWidget *hbox = gtk_hbox_new(FALSE,0);
+    GtkWidget *first = gtk_label_new(factory_utf8("序号"));
+    GtkWidget *sec = gtk_label_new(factory_utf8("选择"));
+    GtkWidget *third = gtk_label_new(factory_utf8("ID 列表"));
+    GtkWidget *four = gtk_label_new(factory_utf8("删除"));
+    gtk_box_pack_start(GTK_BOX(hbox),first,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),sec,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),third,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),four,TRUE,TRUE,0);
+    return hbox;
+}
+
+GtkWidget *factory_get_new_item(int id,GList *cboxlist)
+{
+    GtkWidget *hbox = gtk_hbox_new(FALSE,0);
+    GtkWidget *first = gtk_label_new(g_strdup_printf("%d",id));
+    GtkWidget *chkbox = gtk_check_button_new();
+    GtkWidget *cbox = gtk_combo_box_new_text();
+    gtk_combo_box_popdown(GTK_COMBO_BOX(cbox));
+    GList *p = cboxlist;
+    for(;p ; p = p->next)
+    {
+        gtk_combo_box_append_text(GTK_COMBO_BOX(cbox),p->data);
+    }
+    gtk_combo_box_set_active(GTK_COMBO_BOX(cbox),0);
+
+    GtkWidget *btn_del = gtk_button_new_with_label (factory_utf8("删除"));
+    gtk_box_pack_start(GTK_BOX(hbox),first,FALSE,FALSE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),chkbox,FALSE,FALSE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),cbox,FALSE,FALSE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),btn_del,FALSE,FALSE,0);
+    return hbox;
+}
+
+void factory_idlist_dialog(gpointer *data)
+{
+        GtkWidget*  subdig = gtk_dialog_new_with_buttons(_("tttt") ,
+                         NULL,
+                         GTK_DIALOG_DESTROY_WITH_PARENT,
+                         GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
+                         GTK_STOCK_OK, GTK_RESPONSE_OK,NULL);
+
+
+    GtkWidget *sdialog = gtk_vbox_new(FALSE,0);
+    gtk_dialog_set_default_response (GTK_DIALOG(subdig), GTK_RESPONSE_OK);
+    GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
+    gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
+    gtk_window_set_resizable (GTK_WINDOW(subdig),FALSE);
+    gtk_window_set_position (GTK_WINDOW(subdig),GTK_WIN_POS_CENTER);
+    gtk_window_present(GTK_WINDOW(subdig));
+
+    GtkObject *hadjust =gtk_adjustment_new (100,0.0,100,2.0,0.0,0.0);
+    GtkWidget  *wid_idlist = gtk_scrolled_window_new (hadjust,NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(wid_idlist),
+				GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
+    Layer *curlayer = data;
+    GtkWidget *wid_table = gtk_table_new(1,4,FALSE);
+    gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(wid_idlist),wid_table);
+    gtk_table_attach_defaults(GTK_TABLE(wid_table),factory_get_new_item_head(),0,1,0,1);
+    gtk_table_attach_defaults(GTK_TABLE(wid_table),factory_get_new_item(1,curlayer->defnames),0,1,1,2);
+    gtk_table_attach_defaults(GTK_TABLE(wid_table),factory_get_new_item(2,curlayer->defnames),0,1,2,3);
+
+
+
+
+
+    gtk_box_pack_start(GTK_BOX(sdialog),wid_idlist,TRUE,TRUE,0);
+
+    gtk_widget_show_all(subdig);
+}
+
+void factory_filemanager_dialog(GtkAction *action)
+{
+
+}
+
+
+void factory_systemdata_dialog(GtkAction *action)
+{
+    GtkWidget*  subdig = gtk_dialog_new_with_buttons(gtk_action_get_name(action) ,
+                         NULL,
+                         GTK_DIALOG_DESTROY_WITH_PARENT,
+                         GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
+                         GTK_STOCK_OK, GTK_RESPONSE_OK,NULL);
+
+
+    GtkWidget *sdialog = gtk_vbox_new(FALSE,0);
+    gtk_dialog_set_default_response (GTK_DIALOG(subdig), GTK_RESPONSE_OK);
+    GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
+    gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
+    gtk_window_set_resizable (GTK_WINDOW(subdig),FALSE);
+    gtk_window_set_position (GTK_WINDOW(subdig),GTK_WIN_POS_CENTER);
+    gtk_window_present(GTK_WINDOW(subdig));
+
+    GList *clist = factoryContainer->structList;
+    FactoryStructItemList *fssl = NULL;
+    for(;clist;clist = clist->next)
+    {
+        fssl = clist->data;
+        if(!g_ascii_strcasecmp(fssl->sname,"SYS_DATA") &&
+            !g_ascii_strcasecmp(fssl->sfile,"sysinfo.dat"))
+        {
+            break;
+        }
+        fssl = NULL;
+    }
+
+    if(!fssl)
+    {
+        gchar *msg_err  = g_locale_to_utf8(_("找不到系统数据项,请联系原厂工程师!"),-1,NULL,NULL,NULL);
+        message_error(msg_err);
+        g_free(msg_err);
+        return;
+    }
+
+    gtk_widget_show_all(subdig);
 }

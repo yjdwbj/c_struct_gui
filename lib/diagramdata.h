@@ -118,6 +118,7 @@ struct _Layer {
 				  must only be set by functions internal
 				  to the diagram, and accessed via
 				  layer_get_parent_diagram() */
+  GList *defnames; /* 所有控件显示的名字的链表.*/
 };
 
 DIAVAR Layer *new_layer (char *name, DiagramData *parent);

@@ -66,7 +66,7 @@ layer_render(Layer *layer, DiaRenderer *renderer, Rectangle *update,
 
   if (obj_renderer == NULL)
     obj_renderer = normal_render;
-  
+
   /* Draw all objects: */
   list = layer->objects;
   while (list!=NULL) {
@@ -89,7 +89,7 @@ layer_render(Layer *layer, DiaRenderer *renderer, Rectangle *update,
       }
       (*obj_renderer)(obj, renderer, active_layer, data);
     }
-    
+
     list = g_list_next(list);
   }
 }
@@ -99,10 +99,10 @@ layer_render(Layer *layer, DiaRenderer *renderer, Rectangle *update,
  * @param user_data The layer it should be part of.
  */
 static void
-set_parent_layer(gpointer element, gpointer user_data) 
+set_parent_layer(gpointer element, gpointer user_data)
 {
   ((DiaObject*)element)->parent_layer = (Layer*)user_data;
-  /* FIXME: even group members need a parent_layer and what about parent objects  ??? 
+  /* FIXME: even group members need a parent_layer and what about parent objects  ???
       * Now I know again why I always try to avoid back-pointers )-; --hb.
       * If the group objects didn't actually leave the diagram, this wouldn't
       * be a problem.  --LC */
@@ -176,7 +176,7 @@ layer_add_objects(Layer *layer, GList *obj_list)
     DiaObject *obj = (DiaObject *)list->data;
     /* send a signal that we have added a object to the diagram */
     data_emit (layer_get_parent_diagram(layer), layer, obj, "object_add");
-    
+
     list = g_list_next(list);
   }
 }
@@ -191,7 +191,7 @@ void
 layer_add_objects_first(Layer *layer, GList *obj_list)
 {
   GList *list = obj_list;
-  
+
   layer->objects = g_list_concat(obj_list, layer->objects);
   g_list_foreach(obj_list, set_parent_layer, layer);
 
@@ -201,7 +201,7 @@ layer_add_objects_first(Layer *layer, GList *obj_list)
     DiaObject *obj = (DiaObject *)list->data;
     /* send a signal that we have added a object to the diagram */
     data_emit (layer_get_parent_diagram(layer), layer, obj, "object_add");
-    
+
     list = g_list_next(list);
   }
 
@@ -216,6 +216,7 @@ void
 layer_remove_object(Layer *layer, DiaObject *obj)
 {
   layer->objects = g_list_remove(layer->objects, obj);
+
   dynobj_list_remove_object(obj);
   set_parent_layer(obj, NULL);
 
@@ -234,9 +235,9 @@ layer_remove_objects(Layer *layer, GList *obj_list)
   DiaObject *obj;
   while (obj_list != NULL) {
     obj = (DiaObject *) obj_list->data;
-    
+
     layer->objects = g_list_remove(layer->objects, obj);
-    
+
     obj_list = g_list_next(obj_list);
     dynobj_list_remove_object(obj);
     set_parent_layer(obj, NULL);
@@ -301,7 +302,7 @@ layer_find_objects_in_rectangle(Layer *layer, Rectangle *rect)
 	selected_list = g_list_prepend(selected_list, obj);
       }
     }
-    
+
     list = g_list_next(list);
   }
 
@@ -331,7 +332,7 @@ layer_find_objects_containing_rectangle(Layer *layer, Rectangle *rect)
 	selected_list = g_list_prepend(selected_list, obj);
       }
     }
-    
+
     list = g_list_next(list);
   }
 
@@ -360,7 +361,7 @@ layer_find_closest_object_except(Layer *layer, Point *pos,
   GList *avoid_tmp;
 
   closest = NULL;
-  
+
   for (l = layer->objects; l!=NULL; l = g_list_next(l)) {
     obj = (DiaObject *) l->data;
 
@@ -402,13 +403,13 @@ layer_find_closest_object(Layer *layer, Point *pos, real maxdist)
 
 
 /** Find the connectionpoint closest to pos in a layer.
- * @param layer 
- * @param closest 
- * @param pos 
- * @param notthis 
- * @return 
+ * @param layer
+ * @param closest
+ * @param pos
+ * @param notthis
+ * @return
  */
-real 
+real
 layer_find_closest_connectionpoint(Layer *layer,
 					ConnectionPoint **closest,
 					Point *pos,
@@ -421,9 +422,9 @@ layer_find_closest_connectionpoint(Layer *layer,
   int i;
 
   mindist = 1000000.0; /* Realy big value... */
-  
+
   *closest = NULL;
-  
+
   for (l = layer->objects; l!=NULL; l = g_list_next(l) ) {
     obj = (DiaObject *) l->data;
 
@@ -439,7 +440,7 @@ layer_find_closest_connectionpoint(Layer *layer,
 	*closest = cp;
       }
     }
-    
+
  }
 
   return mindist;
@@ -451,13 +452,13 @@ layer_update_extents(Layer *layer)
   GList *l;
   DiaObject *obj;
   Rectangle new_extents;
-  
+
   l = layer->objects;
   if (l!=NULL) {
     obj = (DiaObject *) l->data;
     new_extents = obj->bounding_box;
     l = g_list_next(l);
-  
+
     while(l!=NULL) {
       const Rectangle *bbox;
       obj = (DiaObject *) l->data;
