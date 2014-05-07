@@ -1072,6 +1072,8 @@ gchar *factory_locale(gchar *str)
     return g_locale_from_utf8(_(str),-1,NULL,NULL,NULL);
 }
 
+static Layer *curlayer = NULL;
+
 GtkWidget *factory_get_new_item_head()
 {
     GtkWidget *hbox = gtk_hbox_new(FALSE,0);
@@ -1083,28 +1085,59 @@ GtkWidget *factory_get_new_item_head()
     gtk_box_pack_start(GTK_BOX(hbox),sec,TRUE,TRUE,0);
     gtk_box_pack_start(GTK_BOX(hbox),third,TRUE,TRUE,0);
     gtk_box_pack_start(GTK_BOX(hbox),four,TRUE,TRUE,0);
+    gtk_widget_show_all(hbox);
     return hbox;
 }
 
-GtkWidget *factory_get_new_item(int id,GList *cboxlist)
+void factory_add_item_to_idlist(GtkWidget *self)
 {
-    GtkWidget *hbox = gtk_hbox_new(FALSE,0);
+    GtkWidget *vbox  = gtk_widget_get_parent(self);
+    GList *clist =  gtk_container_get_children(GTK_CONTAINER(vbox));
+    int len = g_list_length(clist);
+    GtkWidget *nitem = factory_get_new_item(len-1);
+    gtk_box_pack_start(GTK_BOX(vbox),nitem,FALSE,FALSE,0);
+    gtk_box_reorder_child(GTK_BOX(vbox),self,len);
+    int w = 0;
+    int h = 0;
+    gtk_widget_get_size_request (nitem,&w,&h);
+    GtkWidget *topwid = gtk_widget_get_toplevel(vbox);
+    gtk_widget_set_size_request(topwid,w,h);
+
+    gtk_widget_show_all(vbox);
+}
+
+GtkWidget *factory_new_add_button()
+{
+    GtkWidget *btn = gtk_button_new_from_stock (GTK_STOCK_ADD);
+    g_signal_connect (G_OBJECT (btn), "clicked",
+                      G_CALLBACK (factory_add_item_to_idlist),
+                      NULL);
+    return btn;
+}
+
+
+
+
+GtkWidget *factory_get_new_item(int id)
+{
+    GtkWidget *hbox = gtk_hbox_new(FALSE,1);
     GtkWidget *first = gtk_label_new(g_strdup_printf("%d",id));
     GtkWidget *chkbox = gtk_check_button_new();
     GtkWidget *cbox = gtk_combo_box_new_text();
     gtk_combo_box_popdown(GTK_COMBO_BOX(cbox));
-    GList *p = cboxlist;
+    GList *p = curlayer->defnames;
     for(;p ; p = p->next)
     {
         gtk_combo_box_append_text(GTK_COMBO_BOX(cbox),p->data);
     }
     gtk_combo_box_set_active(GTK_COMBO_BOX(cbox),0);
 
-    GtkWidget *btn_del = gtk_button_new_with_label (factory_utf8("É¾³ý"));
-    gtk_box_pack_start(GTK_BOX(hbox),first,FALSE,FALSE,0);
-    gtk_box_pack_start(GTK_BOX(hbox),chkbox,FALSE,FALSE,0);
-    gtk_box_pack_start(GTK_BOX(hbox),cbox,FALSE,FALSE,0);
-    gtk_box_pack_start(GTK_BOX(hbox),btn_del,FALSE,FALSE,0);
+    GtkWidget *btn_del = gtk_button_new_from_stock(GTK_STOCK_DELETE);
+    gtk_box_pack_start(GTK_BOX(hbox),first,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),chkbox,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),cbox,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),btn_del,TRUE,TRUE,0);
+
     return hbox;
 }
 
@@ -1121,24 +1154,22 @@ void factory_idlist_dialog(gpointer *data)
     gtk_dialog_set_default_response (GTK_DIALOG(subdig), GTK_RESPONSE_OK);
     GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
     gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
-    gtk_window_set_resizable (GTK_WINDOW(subdig),FALSE);
+    gtk_window_set_resizable (GTK_WINDOW (subdig),TRUE);
+    gtk_widget_set_size_request (GTK_WINDOW (subdig),-1,500);
+    gtk_window_set_policy (GTK_WINDOW (subdig), FALSE, TRUE, TRUE);
     gtk_window_set_position (GTK_WINDOW(subdig),GTK_WIN_POS_CENTER);
     gtk_window_present(GTK_WINDOW(subdig));
 
-    GtkObject *hadjust =gtk_adjustment_new (100,0.0,100,2.0,0.0,0.0);
-    GtkWidget  *wid_idlist = gtk_scrolled_window_new (hadjust,NULL);
+    GtkWidget  *wid_idlist = gtk_scrolled_window_new (NULL,NULL);
+
+
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(wid_idlist),
-				GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
-    Layer *curlayer = data;
-    GtkWidget *wid_table = gtk_table_new(1,4,FALSE);
-    gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(wid_idlist),wid_table);
-    gtk_table_attach_defaults(GTK_TABLE(wid_table),factory_get_new_item_head(),0,1,0,1);
-    gtk_table_attach_defaults(GTK_TABLE(wid_table),factory_get_new_item(1,curlayer->defnames),0,1,1,2);
-    gtk_table_attach_defaults(GTK_TABLE(wid_table),factory_get_new_item(2,curlayer->defnames),0,1,2,3);
-
-
-
-
+				GTK_POLICY_NEVER,GTK_POLICY_ALWAYS);
+    curlayer = data;
+    GtkWidget *vbox  = gtk_vbox_new(FALSE,5);
+    gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(wid_idlist),vbox);
+    gtk_box_pack_start(GTK_BOX(vbox),factory_get_new_item_head(),FALSE,FALSE,0);
+    gtk_box_pack_start(GTK_BOX(vbox),factory_new_add_button(),FALSE,FALSE,0);
 
     gtk_box_pack_start(GTK_BOX(sdialog),wid_idlist,TRUE,TRUE,0);
 

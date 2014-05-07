@@ -99,7 +99,8 @@ typedef enum{
     SPINBOX,
     BBTN,
     UBTN,
-    OBTN /* 这里是按键按钮 */
+    OBTN,/* 这里是按键按钮 */
+    EBTN /* 枚举也有数组 */
 }CellType;
 
 typedef struct _ActionId ActionID;
@@ -140,8 +141,10 @@ struct _SaveEnum{
 typedef struct _SaveUbtn SaveUbtn;
 struct _SaveUbtn
 {
+
     GList *structlist;
-    GHashTable *htoflist;
+//    GHashTable *htoflist;
+    GList* savelist;
 };
 
 
@@ -173,7 +176,22 @@ struct _SaveEntry
     GList *wlist;   /* GtkWidget List  */
 };
 
+typedef struct _NameIndex NameIndex;
+struct _NameIndex
+{
+  gchar *title;
+  int index;
+};
 
+typedef struct _SaveEbtn SaveEbtn;
+struct _SaveEbtn
+{
+    int row;
+    int col;   /* default is 1 */
+    int maxlength;
+    GList *ebtnslist; /* 枚举的数据源链表 */
+    GList *ebtnwlist; /* 全部是枚举的控件  存放 SaveEnum的链表  */
+};
 
 
 typedef struct _SaveStruct SaveStruct;
@@ -191,7 +209,8 @@ typedef struct _SaveStruct{
         SaveEnum senum;  // enum value;
         SaveUnion sunion; // 第二个值,指针类
         NextID nextid;  // 保存连线的 comobox;
-        SaveUbtn ssubtn;
+        SaveUbtn ssubtn; /* 联合体按键 */
+        SaveEbtn ssebtn; /* 枚举数组 */
     }value;
     FactoryStructItem *org;
     STRUCTClass *sclass; /* 它的最上层的对像 */
@@ -293,7 +312,8 @@ struct _STRUCTClass {
    */
   gboolean isInitial; /* 初始化属性对话框*/
   gboolean destroyed;
-  GHashTable *widgetmap; // 2014-3-22 lcy 这里用一个链表来保存界面上所有的值。
+  GHashTable *widgetmap; // 2014-3-22 lcy 这里用一个哈希表来保存界面上所有的值。
+  GList *widgetSave; // 2014-3-22 lcy 这里为顺序显示用链表保存.
   FactoryStructItemAll *EnumsAndStructs ;// 2014-3-21 lcy 这里包含一个文件里的所有结构体.
   PublicSection *pps;
 };
@@ -334,6 +354,7 @@ void factoy_create_subdialog(gpointer item,SaveStruct *sss);
 static void factory_create_subdialg_by_list(gpointer item,SaveStruct *sst);
 static void factory_create_checkbuttons_by_list(gpointer item,SaveStruct *sst);
 static void factory_create_combobox_by_list(gpointer item,SaveStruct *sst);
+static void factory_create_enumarray_by_list(gpointer item,SaveStruct *sst);
 static GList* factory_get_objects_from_layer(Layer *layer);
 static void factory_get_value_from_comobox(STRUCTClass *startclass,GtkWidget *comobox,ActionID *aid);
 

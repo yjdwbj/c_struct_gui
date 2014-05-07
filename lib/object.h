@@ -608,6 +608,9 @@ DIAVAR void factory_systemdata_dialog(GtkAction *action);
 DIAVAR void factory_idlist_dialog(gpointer *data);
 DIAVAR void factory_filemanager_dialog(GtkAction *action);
 
+GtkWidget *factory_new_add_button();
+GtkWidget *factory_get_new_item(int id);
+
 G_END_DECLS
 
 #endif /* OBJECT_H */

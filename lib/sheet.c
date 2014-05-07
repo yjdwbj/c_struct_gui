@@ -514,7 +514,7 @@ void factoryReadDataFromFile(const gchar* filename)
                 fssl->sname = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
                 fssl->vname = g_locale_to_utf8(sbuf[4],-1,NULL,NULL,NULL);
                 fssl->isvisible = FALSE;
-                if(!g_ascii_strcasecmp("action",sbuf[3]))
+                if(!g_ascii_strcasecmp("action",sbuf[3])|| !g_ascii_strcasecmp("system",sbuf[3]))
                 {
                     fssl->isvisible = TRUE;
                 }
@@ -565,8 +565,8 @@ void factoryReadDataFromFile(const gchar* filename)
             sbuf=  g_strsplit_set (aline,":",-1);
             if( g_strv_length(sbuf) <2)
             {
-                kvmap->key = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
-                kvmap->value = g_locale_to_utf8(g_strdup_printf("%d",zero++),-1,NULL,NULL,NULL);
+                kvmap->key = factory_utf8(sbuf[0]);
+                kvmap->value = factory_utf8(g_strdup_printf("%d",zero++));
             }
             else
             {
