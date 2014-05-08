@@ -803,6 +803,7 @@ write_objects(GList *objects, xmlNodePtr objects_node,
 
 
 
+
             g_snprintf(buffer, 30, "O%d", *obj_nr);
             xmlSetProp(obj_node, (const xmlChar *)"id", (xmlChar *)buffer);
 

@@ -1051,7 +1051,7 @@
 	"message.h"
 	"diagdkrenderer.h"
 
-1399460112 source:o:\tool\dvs50\lib\sheet.c
+1399548063 source:o:\tool\dvs50\lib\sheet.c
 	<config.h>
 	<stdlib.h>
 	<string.h>
@@ -1829,7 +1829,7 @@
 	"intl.h"
 	<math.h>
 
-1398501035 source:o:\tool\dvs50\app\load_save.c
+1399537407 source:o:\tool\dvs50\app\load_save.c
 	<config.h>
 	<sys/stat.h>
 	<unistd.h>
@@ -2381,7 +2381,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1399466171 source:o:\tool\dvs50\objects\struct\struct_class.c
+1399542110 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2397,7 +2397,7 @@
 	"debug.h"
 	"sheet.h"
 
-1399453940 o:\tool\dvs50\objects\struct\struct_class.h
+1399533319 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2413,7 +2413,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1399465667 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1399546196 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>

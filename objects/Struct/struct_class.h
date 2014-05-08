@@ -70,28 +70,36 @@ typedef struct _STRUCTClassDialog STRUCTClassDialog;
  * There is a (too) tight coupling between the STRUCTClass and it's user interface.
  * And the dialog is too huge in code as well as on screen.
  */
-struct _STRUCTClassDialog {
-  GtkWidget *dialog;
-  GtkWidget *mainTable; // 2014-3-19 lcy 这里添一个表格,用来布局显示.
+struct _STRUCTClassDialog
+{
+    GtkWidget *dialog;
+    GtkWidget *mainTable; // 2014-3-19 lcy 这里添一个表格,用来布局显示.
 };
 
 
 typedef struct  _FactoryClassDialog  FactoryClassDialog;
 
-struct _FactoryClassDialog{
-  GtkWidget *dialog;
+struct _FactoryClassDialog
+{
+    GtkWidget *dialog;
 
 //  GList *itemsData;   // 2014-3-19 lcy 这里是自定项,用存储从文件读到的条目.
 //  GList *enumList;    // 2014-3-19 lcy 这里用存储枚举的链表.
-  FactoryStructItemAll *EnumsAndStructs ;// 2014-3-21 lcy 这里包含一个文件里的所有结构体.
-  GtkWidget *mainTable; // 2014-3-19 lcy 这里添一个表格,用来布局显示.
+    FactoryStructItemAll *EnumsAndStructs ;// 2014-3-21 lcy 这里包含一个文件里的所有结构体.
+    GtkWidget *mainTable; // 2014-3-19 lcy 这里添一个表格,用来布局显示.
 
 };
 
 
+typedef struct _SaveStruct SaveStruct;
+
+typedef void  (*CloseWidgetAndSave)(GtkWidget *widget,gint response_id,gpointer user_data);
+typedef void  (*CreateNewDialog)(gpointer item,SaveStruct *sst);
 
 
-typedef enum{
+
+typedef enum
+{
     ECOMBO, /* 下拉框  enum comobox */
     UCOMBO, /* union comobox */
     OCOMBO, /* object combox*/
@@ -101,7 +109,7 @@ typedef enum{
     UBTN,
     OBTN,/* 这里是按键按钮 */
     EBTN /* 枚举也有数组 */
-}CellType;
+} CellType;
 
 typedef struct _ActionId ActionID;
 struct _ActionId
@@ -111,15 +119,22 @@ struct _ActionId
     gchar *title_name;
 };
 
+
+typedef struct _ArrayBaseProp ArrayBaseProp ; /* 数组的基本属性 */
+struct _ArrayBaseProp
+{
+    int row;
+    int col;   /* default is 1 */
+    int reallen;
+};
+
 typedef struct _NextId NextID;
 struct _NextId
 {
     GList *itemlist;
     GList *actlist;
     GList *wlist; /* widget list */
-    int row;
-    int col;   /* default is 1 */
-    int maxlength;
+    ArrayBaseProp *arr_base;
 };
 
 typedef struct _CheckSave CheckSave;
@@ -131,17 +146,25 @@ struct _CheckSave
 
 
 typedef struct _SaveEnum SaveEnum;
-struct _SaveEnum{
+struct _SaveEnum
+{
     GList *enumList;
     int index;
     gchar* evalue;
     gchar* width;
 };
 
+typedef struct _SaveEnumArr SaveEnumArr;
+struct _SaveEnumArr
+{
+    GtkWidget *widget1;
+    GtkWidget *widget2;
+    SaveEnum *senum;
+};
+
 typedef struct _SaveUbtn SaveUbtn;
 struct _SaveUbtn
 {
-
     GList *structlist;
 //    GHashTable *htoflist;
     GList* savelist;
@@ -169,33 +192,37 @@ typedef struct _SaveEntry SaveEntry;
 struct _SaveEntry
 {
     gboolean isString;
-    int row;
-    int col;   /* default is 1 */
+//    int row;
+//    int col;   /* default is 1 */
+//    int reallen; /* 实际长度比 9,10,4 不是8的倍数的. */
+    ArrayBaseProp *arr_base;
     int width;
     gpointer data;
     GList *wlist;   /* GtkWidget List  */
 };
 
+
 typedef struct _NameIndex NameIndex;
 struct _NameIndex
 {
-  gchar *title;
-  int index;
+    gchar *title;
+    int index;
 };
 
 typedef struct _SaveEbtn SaveEbtn;
 struct _SaveEbtn
 {
-    int row;
-    int col;   /* default is 1 */
-    int maxlength;
+    ArrayBaseProp *arr_base;
     GList *ebtnslist; /* 枚举的数据源链表 */
-    GList *ebtnwlist; /* 全部是枚举的控件  存放 SaveEnum的链表  */
+    GList *ebtnwlist; /* 全部是枚举的控件  存放 SaveEnumArr的链表  */
+//    CloseWidgetAndSave  *close_func; /* 指向保存函数 */
+//    CreateNewDialog *newdlg_func; /* 指向显示窗口的函数,也是用来做按键消息回调的函数 */
 };
 
 
-typedef struct _SaveStruct SaveStruct;
-typedef struct _SaveStruct{
+
+typedef struct _SaveStruct
+{
     GtkWidget *widget1;
     GtkWidget *widget2;
     gchar* type;
@@ -203,7 +230,8 @@ typedef struct _SaveStruct{
 //    gchar* pname;  /* 上一级名字, NULL 就是最上级 */
     CellType celltype;
     gboolean isPointer; /* FALSE == pointer , TRUE = single*/
-    union{
+    union
+    {
         SaveEntry sentry; // entry value
         gint number; // spinbox value or actionid max items
         SaveEnum senum;  // enum value;
@@ -211,9 +239,11 @@ typedef struct _SaveStruct{
         NextID nextid;  // 保存连线的 comobox;
         SaveUbtn ssubtn; /* 联合体按键 */
         SaveEbtn ssebtn; /* 枚举数组 */
-    }value;
+    } value;
     FactoryStructItem *org;
     STRUCTClass *sclass; /* 它的最上层的对像 */
+    CloseWidgetAndSave  *close_func; /* 指向保存函数 */
+    CreateNewDialog *newdlg_func; /* 指向显示窗口的函数,也是用来做按键消息回调的函数 */
 };
 
 typedef struct _PublicSection PublicSection; /* 显示一些公共的信息 */
@@ -230,36 +260,37 @@ struct _PublicSection
  *
  * What should I say? Don't try this at home :)
  */
-struct _STRUCTClass {
-  Element element; /**< inheritance */
+struct _STRUCTClass
+{
+    Element element; /**< inheritance */
 
-  /** static connection point storage,  the mainpoint must be behind the dynamics in Element::connections */
+    /** static connection point storage,  the mainpoint must be behind the dynamics in Element::connections */
 #ifdef STRUCT_MAINPOINT
-  ConnectionPoint connections[STRUCTCLASS_CONNECTIONPOINTS + 1];
+    ConnectionPoint connections[STRUCTCLASS_CONNECTIONPOINTS + 1];
 #else
-  ConnectionPoint connections[STRUCTCLASS_CONNECTIONPOINTS];
+    ConnectionPoint connections[STRUCTCLASS_CONNECTIONPOINTS];
 #endif
 
-  /* Class info: */
+    /* Class info: */
 
-  real line_width;
-  real font_height;
-  real abstract_font_height;
-  real polymorphic_font_height;
-  real classname_font_height;
-  real abstract_classname_font_height;
-  real comment_font_height;
+    real line_width;
+    real font_height;
+    real abstract_font_height;
+    real polymorphic_font_height;
+    real classname_font_height;
+    real abstract_classname_font_height;
+    real comment_font_height;
 
-  DiaFont *normal_font;
+    DiaFont *normal_font;
 //  DiaFont *abstract_font;
 //  DiaFont *polymorphic_font;
-  DiaFont *classname_font;
+    DiaFont *classname_font;
 //  DiaFont *abstract_classname_font;
 //  DiaFont *comment_font;
 
-  char *name;
- // char *stereotype; /**< NULL if no stereotype */
- // char *comment; /**< Comments on the class */
+    char *name;
+// char *stereotype; /**< NULL if no stereotype */
+// char *comment; /**< Comments on the class */
 //  int abstract;
 //  int suppress_attributes;
 //  int suppress_operations;
@@ -272,50 +303,50 @@ struct _STRUCTClass {
 //  int comment_line_length; /**< Maximum line length for comments */
 //  int comment_tagging; /**< bool: if the {documentation = }  tag should be used */
 
-  Color line_color;
-  Color fill_color;
-  Color text_color;
+    Color line_color;
+    Color fill_color;
+    Color text_color;
 
 
-  /** Attributes: aka member variables */
+    /** Attributes: aka member variables */
 //  GList *attributes;
 
-  /** Operators: aka member functions */
+    /** Operators: aka member functions */
 //  GList *operations;
 
-  /** Template: if it's a template class */
+    /** Template: if it's a template class */
 //  int template;
-  /** Template parameters */
+    /** Template parameters */
 //  GList *formal_params;
 
-  /* Calculated variables: */
+    /* Calculated variables: */
 
-  real namebox_height;
+    real namebox_height;
 //  char *stereotype_string;
 
 //  real attributesbox_height;
 //
 //  real operationsbox_height;
-/*
-  GList *operations_wrappos;*/
+    /*
+      GList *operations_wrappos;*/
 //  int max_wrapped_line_width;
 
 //  real templates_height;
 //  real templates_width;
 
-  /* Dialog: */
-  STRUCTClassDialog *properties_dialog;
+    /* Dialog: */
+    STRUCTClassDialog *properties_dialog;
 
-  /** Until GtkList replaced by something better, set this when being
-   * destroyed, and don't do structclass_calculate_data when it is set.
-   * This is to avoid a half-way destroyed list being updated.
-   */
-  gboolean isInitial; /* 初始化属性对话框*/
-  gboolean destroyed;
-  GHashTable *widgetmap; // 2014-3-22 lcy 这里用一个哈希表来保存界面上所有的值。
-  GList *widgetSave; // 2014-3-22 lcy 这里为顺序显示用链表保存.
-  FactoryStructItemAll *EnumsAndStructs ;// 2014-3-21 lcy 这里包含一个文件里的所有结构体.
-  PublicSection *pps;
+    /** Until GtkList replaced by something better, set this when being
+     * destroyed, and don't do structclass_calculate_data when it is set.
+     * This is to avoid a half-way destroyed list being updated.
+     */
+    gboolean isInitial; /* 初始化属性对话框*/
+    gboolean destroyed;
+    GHashTable *widgetmap; // 2014-3-22 lcy 这里用一个哈希表来保存界面上所有的值。
+    GList *widgetSave; // 2014-3-22 lcy 这里为顺序显示用链表保存.
+    FactoryStructItemAll *EnumsAndStructs ;// 2014-3-21 lcy 这里包含一个文件里的所有结构体.
+    PublicSection *pps;
 };
 
 void structclass_dialog_free (STRUCTClassDialog *dialog);
@@ -332,9 +363,9 @@ static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc);
 
 static void
 attributes_list_selection_changed_callback(GtkWidget *gtklist,
-					   STRUCTClass *structclass);
+        STRUCTClass *structclass);
 static void factory_connection_two_object(STRUCTClass *fclass, /* start pointer*/
-                                          gchar *objname /* end pointer */);
+        gchar *objname /* end pointer */);
 
 
 
@@ -350,11 +381,18 @@ factory_get_properties(STRUCTClass *structclass, gboolean is_default);
 
 GtkWidget *factory_create_many_entry_box(SaveStruct *sss);
 GtkWidget *factory_create_many_checkbox(SaveStruct *sss);
-void factoy_create_subdialog(gpointer item,SaveStruct *sss);
-static void factory_create_subdialg_by_list(gpointer item,SaveStruct *sst);
-static void factory_create_checkbuttons_by_list(gpointer item,SaveStruct *sst);
-static void factory_create_combobox_by_list(gpointer item,SaveStruct *sst);
-static void factory_create_enumarray_by_list(gpointer item,SaveStruct *sst);
+static GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent);
+void factory_create_basebutton_dialog(gpointer item,SaveStruct *sss);
+void factory_create_unionbutton_dialog(gpointer item,SaveStruct *sst);
+void factory_create_checkbuttons_by_list(gpointer item,SaveStruct *sst);
+void factory_create_objectbutton_dialog(gpointer item,SaveStruct *sst);
+void factory_create_enumbutton_dialog(gpointer item,SaveStruct *sst);
+void factory_save_enumbutton_dialog(GtkWidget *widget,gint response_id,gpointer user_data);
+void factory_save_objectbutton_dialog(GtkWidget *widget,gint  response_id,gpointer   user_data);
+void factory_save_unionbutton_dialog(GtkWidget *widget,gint       response_id,gpointer   user_data);
+void factory_save_basebutton_dialog(GtkWidget *widget,gint       response_id,gpointer   user_data);
+
+
 static GList* factory_get_objects_from_layer(Layer *layer);
 static void factory_get_value_from_comobox(STRUCTClass *startclass,GtkWidget *comobox,ActionID *aid);
 
@@ -376,13 +414,13 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst);
 gchar* factory_entry_check(gchar* str);
 void factory_editable_insert_callback(GtkEntry *entry,
                                       gchar* new_text,
-                   gint new_length,
-                   gpointer position,
-                   gpointer data);
+                                      gint new_length,
+                                      gpointer position,
+                                      gpointer data);
 
 void factory_editable_delete_callback(GtkEditable *editable,
-                          gint start_pos,
-                          gint end_pos);
+                                      gint start_pos,
+                                      gint end_pos);
 void factory_editable_active_callback(GtkEditable *edit,gpointer data);
 
 

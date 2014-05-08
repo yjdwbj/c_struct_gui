@@ -352,6 +352,7 @@ static gboolean factory_is_base_type(const gchar *str)
 }
 
 
+
 static void factory_check_items_valid(gpointer key, gpointer value, gpointer user_data)
 {
     gchar *keystr = (gchar *)key;
@@ -367,30 +368,26 @@ static void factory_check_items_valid(gpointer key, gpointer value, gpointer use
             ret =  g_hash_table_lookup(factoryContainer->structTable,item->SType);
             if(ret)
             {
+                FactoryStructItemList *fsil = ret;
                 item->Itype = ST;
+                item->datalist = fsil->list;
+                continue;
+            }
+
+            ret = g_hash_table_lookup(factoryContainer->enumTable,item->SType);
+            if(ret)
+            {
+                item->Itype = ET;
                 item->datalist = ret;
-
+                continue;
             }
 
-            if(item->Itype != ST)
+            ret = g_hash_table_lookup(factoryContainer->unionTable,item->SType);
+            if(ret)
             {
-                ret = g_hash_table_lookup(factoryContainer->enumTable,item->SType);
-                if(ret)
-                {
-                    item->Itype = ET;
-                    item->datalist = ret;
-                }
-
-            }
-
-            if(item->Itype != ET)
-            {
-                ret = g_hash_table_lookup(factoryContainer->unionTable,item->SType);
-                if(ret)
-                {
-                    item->Itype = UT;
-                    item->datalist = ret;
-                }
+                item->Itype = UT;
+                item->datalist = ret;
+                continue;
             }
 
             if(item->Itype == NT)
@@ -401,6 +398,7 @@ static void factory_check_items_valid(gpointer key, gpointer value, gpointer use
             }
 
         }
+
 //        else if (!g_ascii_strncasecmp("ACTIONID_",item->Name,9))
 //        {
 //            item->Itype == NT;
@@ -409,7 +407,13 @@ static void factory_check_items_valid(gpointer key, gpointer value, gpointer use
 
     }
 
+}
 
+static void factory_check_struct_items_valid(gpointer key, gpointer value, gpointer user_data)
+{
+    FactoryStructItemList *fsil = value;
+    if(fsil)
+        factory_check_items_valid(NULL,fsil->list,NULL);
 
 }
 
@@ -543,7 +547,7 @@ void factoryReadDataFromFile(const gchar* filename)
                 isStruct = FALSE;
                 fssl->list = dlist;
                 factoryContainer->structList = g_list_append(factoryContainer->structList,fssl);
-                g_hash_table_insert(factoryContainer->structTable,hashKey,dlist); /* 链表在哈希表里 */
+                g_hash_table_insert(factoryContainer->structTable,hashKey,fssl); /* 链表在哈希表里 */
             }
             else if(isEmnu)
             {
@@ -620,7 +624,7 @@ void factoryReadDataFromFile(const gchar* filename)
     fclose(fd);
     /* 检查每一个块里面的成员有效性 */
     g_hash_table_foreach(factoryContainer->unionTable,factory_check_items_valid,NULL);
-    g_hash_table_foreach(factoryContainer->structTable,factory_check_items_valid,NULL);
+    g_hash_table_foreach(factoryContainer->structTable,factory_check_struct_items_valid,NULL);
     //  g_free(filename);
 }
 
