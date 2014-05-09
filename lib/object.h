@@ -32,6 +32,9 @@
 #include "objchange.h"
 #include "dia_xml.h"
 #include "text.h"
+
+
+
 GHashTable *global_Table;
 G_BEGIN_DECLS
 
@@ -390,6 +393,8 @@ DiaObjectType *object_get_type(char *name);
 DIAVAR gchar *object_get_displayname (DiaObject* obj);
 DIAVAR gboolean object_flags_set(DiaObject* obj, gint flags);
 
+DIAVAR GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent);
+
 /* These functions can be used as a default implementation for an object which
    can be completely described, loaded and saved through standard properties.
 */
@@ -605,9 +610,10 @@ DIAVAR gchar *factory_utf8(gchar *str);
 DIAVAR gchar *factory_locale(gchar *str);
 
 DIAVAR void factory_systemdata_dialog(GtkAction *action);
-DIAVAR void factory_idlist_dialog(gpointer *data);
-DIAVAR void factory_filemanager_dialog(GtkAction *action);
+DIAVAR void factory_idlist_dialog(gpointer data);
+DIAVAR void factory_music_filemanager_dialog(gchar *title,GtkAction *action);
 
+DIAVAR GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent);
 GtkWidget *factory_new_add_button();
 GtkWidget *factory_get_new_item(int id);
 

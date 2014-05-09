@@ -485,8 +485,13 @@ void factoryReadDataFromFile(const gchar* filename)
                         "object-libs; exiting...\n"));
     }
 
+    int curline = 0;
+
     while(fgets(filetxt,MAX_LINE,fd)!=NULL)
     {
+
+    curline++;
+
         aline = g_strstrip(filetxt);
         if(!g_ascii_strncasecmp(aline,_(":version="),9))
             continue;
@@ -620,6 +625,7 @@ void factoryReadDataFromFile(const gchar* filename)
             dlist = g_list_append(dlist,item);
             g_strfreev(sbuf);
         }
+        memset(filetxt,0x0,MAX_LINE);
     }
     fclose(fd);
     /* 检查每一个块里面的成员有效性 */

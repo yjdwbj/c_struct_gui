@@ -60,7 +60,7 @@
 
 
 
-
+Layer *curLayer;
 typedef struct _STRUCTClass STRUCTClass;
 typedef struct _STRUCTClassDialog STRUCTClassDialog;
 
@@ -233,7 +233,7 @@ typedef struct _SaveStruct
     union
     {
         SaveEntry sentry; // entry value
-        gint number; // spinbox value or actionid max items
+        gchar *vnumber; // spinbox value or actionid max items
         SaveEnum senum;  // enum value;
         SaveUnion sunion; // 第二个值,指针类
         NextID nextid;  // 保存连线的 comobox;
@@ -381,7 +381,7 @@ factory_get_properties(STRUCTClass *structclass, gboolean is_default);
 
 GtkWidget *factory_create_many_entry_box(SaveStruct *sss);
 GtkWidget *factory_create_many_checkbox(SaveStruct *sss);
-static GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent);
+
 void factory_create_basebutton_dialog(gpointer item,SaveStruct *sss);
 void factory_create_unionbutton_dialog(gpointer item,SaveStruct *sst);
 void factory_create_checkbuttons_by_list(gpointer item,SaveStruct *sst);

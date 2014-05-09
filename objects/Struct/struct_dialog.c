@@ -3107,8 +3107,12 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
 
     break;
     case SPINBOX:
-        sss->value.number =gtk_spin_button_get_value(GTK_SPIN_BUTTON(sss->widget2));
-        break;
+    {
+        int v = gtk_spin_button_get_value(GTK_SPIN_BUTTON(sss->widget2));
+        sss->value.vnumber = g_strdup_printf("%d",v);
+    }
+
+    break;
     case OCOMBO:
     {
         NextID *nid = &sss->value.nextid;
@@ -3141,6 +3145,7 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
     default:
         break;
     }
+
 }
 
 static void factory_get_value_from_comobox(STRUCTClass *startclass,GtkWidget *comobox,ActionID *aid)
@@ -3185,8 +3190,8 @@ SETV:
 void factory_delete_line_between_two_objects(STRUCTClass *startc,const gchar *endc)
 {
     DDisplay *ddisp =  ddisplay_active();
-    Layer *curlayer = startc->element.object.parent_layer;
-    STRUCTClass *objclass = factory_find_diaobject_by_name(curlayer,endc);
+//    Layer *curlayer = startc->element.object.parent_layer;
+    STRUCTClass *objclass = factory_find_diaobject_by_name(curLayer,endc);
     if(objclass)
     {
         ConnectionPoint *cpstart = &startc->connections[8];
@@ -3201,7 +3206,7 @@ void factory_delete_line_between_two_objects(STRUCTClass *startc,const gchar *en
             g_list_free(line->connections[0]->connected);
             line->connections[0]->connected = NULL;
             line->connections[0]->object = NULL;
-            layer_remove_object(curlayer,line); // 在当前的画布里面删除连线对像.
+            layer_remove_object(curLayer,line); // 在当前的画布里面删除连线对像.
             diagram_flush(ddisp->diagram);
         }
 
@@ -3217,13 +3222,17 @@ factory_apply_props_from_dialog(STRUCTClass *fclass, GtkWidget *widget)
     PublicSection *pps = fclass->pps;
     if(!pps)
         return NULL;
-    pps->name = gtk_entry_get_text(pps->wid_rename_entry);
+    pps->name = gtk_entry_get_text(GTK_ENTRY(pps->wid_rename_entry));
     if(pps->name != NULL && g_ascii_strcasecmp(pps->name,fclass->name))
     {
-        GList *exists = fclass->element.object.parent_layer->objects;
+        GList *exists = NULL;
+        if(curLayer)
+            exists = curLayer->objects;
         for(; exists; exists = exists->next)
         {
             STRUCTClass *pclass = exists->data;
+            if(!factory_is_valid_type(pclass))
+                continue;
             if(!g_ascii_strcasecmp(pclass->name,pps->name))
             {
                 gchar *msg_err = g_locale_to_utf8(_("找到时有相同名字的控件,请更换名字!\n"),-1,NULL,NULL,NULL);
@@ -3233,19 +3242,23 @@ factory_apply_props_from_dialog(STRUCTClass *fclass, GtkWidget *widget)
             }
         }
 
-        if(!exists)
+        if(!exists && curLayer)
         {
             fclass->name = g_strdup(pps->name);
-            GList *defnames = fclass->element.object.parent_layer->defnames;
-            GList *objlist = fclass->element.object.parent_layer->objects;
-            g_list_free(defnames); /* 所有对像的名字链表也要更新 */
-            defnames = NULL;
+            GList *defnames = NULL;
+            GList *objlist = NULL;
+
+            curLayer->defnames;
+            objlist = curLayer->objects;
+            g_list_free1(curLayer->defnames); /* 所有对像的名字链表也要更新 */
+            curLayer->defnames = NULL;
+
             for(; objlist; objlist = objlist->next)
             {
-                if(!factory_is_valid_type(objlist->data))
+                if(factory_is_valid_type(objlist->data))
                 {
                     STRUCTClass *oclass = objlist->data;
-                    defnames = g_list_append(defnames,oclass->name);
+                    curLayer->defnames = g_list_append(curLayer->defnames,oclass->name);
                 }
             }
 
@@ -3255,7 +3268,7 @@ factory_apply_props_from_dialog(STRUCTClass *fclass, GtkWidget *widget)
 
         // g_convert("中国",-1,"UTF-8","GB2312",NULL,NULL,NULL);
     }
-    pps->hasfinished = gtk_toggle_button_get_active(pps->wid_hasfinished);
+    pps->hasfinished = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(pps->wid_hasfinished));
 
 
     return  NULL;
@@ -3381,10 +3394,10 @@ GtkWidget *factory_create_combo_widget(GList *datalist,gint activeid)
     GtkWidget *widget;
     widget = gtk_combo_box_new_text();
     gtk_combo_box_popdown(GTK_COMBO_BOX(widget));
-    GList *p = datalist;
-    for(; p != NULL ; p= p->next)
+    GList *pp = datalist;
+    for(; pp ; pp = pp->next)
     {
-        gtk_combo_box_append_text(GTK_COMBO_BOX(widget),p->data);
+        gtk_combo_box_append_text(GTK_COMBO_BOX(widget),pp->data);
     }
     gtk_combo_box_set_active(GTK_COMBO_BOX(widget),activeid);
     return  widget;
@@ -3402,8 +3415,7 @@ GtkWidget *factory_create_text_widget(gchar *str,gint maxlength)
 GtkWidget *factory_create_spbinbox_widget(gint value,gint minvalue,gint maxvalue)
 {
     GtkWidget *widget;
-    GtkObject *adj =gtk_adjustment_new( value , minvalue,maxvalue, 1.0, 5.0, 0);
-    widget = GTK_SPIN_BUTTON(gtk_spin_button_new( GTK_ADJUSTMENT( adj), 0.1, 0));
+    widget = GTK_SPIN_BUTTON(gtk_spin_button_new_with_range(minvalue,maxvalue,1));
     gtk_spin_button_set_numeric( GTK_SPIN_BUTTON( widget), TRUE);
     gtk_spin_button_set_snap_to_ticks( GTK_SPIN_BUTTON(widget), TRUE);
     return widget;
@@ -3448,7 +3460,16 @@ static GtkWidget *factory_create_variant_object(SaveStruct *sss)
     break;
     case SPINBOX:
     {
-        columTwo = factory_create_spbinbox_widget(sss->value.number,g_strtod(item->Min,NULL),g_strtod(item->Max,NULL));
+        gint v = 0;
+        if(!g_ascii_strncasecmp(sss->value.vnumber,"-1",2))
+            v = -1;
+            else
+            v = g_strtod(sss->value.vnumber,NULL);
+        gint vmin =  g_strtod(item->Min,NULL);
+        gint vmax = g_strtod(item->Max,NULL);
+//        if(v<0)
+//            v = vmax+1;
+        columTwo = factory_create_spbinbox_widget(v,vmin,vmax);
     }
     break;
     case UCOMBO:
@@ -3511,7 +3532,6 @@ FIRST:
                     SaveStruct *s  = factory_get_savestruct(o);
                     s->sclass = sss->sclass;
                     factory_strjoin(&s->name,sss->name,".");
-//                    g_hash_table_insert(sbtn->htoflist,g_strjoin("##",o->FType,o->Name,NULL),s);
                     sbtn->savelist = g_list_append(sbtn->savelist,s);
                 }
             }
@@ -3531,12 +3551,12 @@ FIRST:
         NextID *nextid = &sss->value.nextid;
         columTwo = gtk_combo_box_new_text();
         gtk_combo_box_popdown(GTK_COMBO_BOX(columTwo));
-        Layer *curlayer = orgclass->element.object.parent_layer;
+//        Layer *curlayer = orgclass->element.object.parent_layer;
 //        GList *objlist = curlayer->objects;
         g_list_free(nextid->itemlist);
         nextid->itemlist = NULL;
 
-        nextid->itemlist = factory_get_objects_from_layer(curlayer);
+        nextid->itemlist = factory_get_objects_from_layer(curLayer);
         nextid->itemlist = g_list_insert(nextid->itemlist,g_strdup(""),0);
         ActionID *aid = nextid->actlist->data;
 
@@ -3566,7 +3586,7 @@ gboolean factory_is_valid_type(gpointer data)
     char *n1 = g_strdup("STRUCT - Class");
     gboolean ftype = g_ascii_strncasecmp(otype->type->name,n1,strlen(n1));
     g_free(n1);
-    return ftype;
+    return !ftype;
 }
 void factory_set_savestruct_widgets(SaveStruct *sss)
 {
@@ -3620,10 +3640,10 @@ void factory_save_enumbutton_dialog(GtkWidget *widget,gint response_id,gpointer 
         {
             SaveEnumArr *sea = wlist->data;
             SaveEnum *se = sea->senum;
-            se->index =   gtk_combo_box_get_active(sea->widget2);
-            key = gtk_combo_box_get_active_text(sea->widget2);
+            se->index =   gtk_combo_box_get_active(GTK_COMBO_BOX(sea->widget2));
+            key = gtk_combo_box_get_active_text(GTK_COMBO_BOX(sea->widget2));
             GList *tlist = sebtn->ebtnslist;
-            for(;tlist ; tlist = tlist->next)
+            for(; tlist ; tlist = tlist->next)
             {
                 FactoryStructEnum *fse = tlist->data;
                 if(!g_ascii_strcasecmp(fse->key,key))
@@ -3776,8 +3796,12 @@ void factory_save_value_from_widget(SaveStruct *sss)
     }
     break;
     case SPINBOX:
-        sss->value.number = gtk_spin_button_get_value(GTK_SPIN_BUTTON(sss->widget2));
-        break;
+    {
+        guint v = gtk_spin_button_get_value(GTK_SPIN_BUTTON(sss->widget2));
+        sss->value.vnumber = g_strdup_printf("%d",v);
+    }
+
+    break;
     case UCOMBO:
     {
         SaveUnion *ssu = &sss->value.sunion;
@@ -3938,7 +3962,6 @@ CFIRST:
             SaveUbtn *sbtn = &existS->value.ssubtn;
             if(sbtn->structlist)
             {
-//                sbtn->htoflist = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
                 GList *slist = sbtn->structlist;
                 for(; slist; slist = slist->next)
                 {
@@ -3946,7 +3969,6 @@ CFIRST:
                     SaveStruct *s  = factory_get_savestruct(o);
                     s->sclass = sss->sclass;
                     factory_strjoin(&s->name,sss->name,".");
-//                    g_hash_table_insert(sbtn->htoflist,g_strjoin("##",o->FType,o->Name,NULL),s);
                     sbtn->savelist = g_list_append(sbtn->savelist,s);
                 }
             }
@@ -4013,23 +4035,6 @@ void factory_create_basebutton_dialog(gpointer item,SaveStruct *sss)
 
 
 
-static GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent)
-{
-    /* 创建对话框 */
-    GtkWidget*  subdig = gtk_dialog_new_with_buttons(_(title),
-                         parent,
-                         GTK_DIALOG_DESTROY_WITH_PARENT,
-                         GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
-                         GTK_STOCK_OK, GTK_RESPONSE_OK,NULL);
-//    GtkWidget *sdialog = gtk_hbox_new(FALSE,0);
-    gtk_dialog_set_default_response (GTK_DIALOG(subdig), GTK_RESPONSE_OK);
-//    GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
-//    gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
-    gtk_window_set_resizable (GTK_WINDOW(subdig),FALSE);
-    gtk_window_set_position (GTK_WINDOW(subdig),GTK_WIN_POS_CENTER_ALWAYS);
-    gtk_window_present(GTK_WINDOW(subdig));
-    return subdig;
-}
 
 void factory_create_enumbutton_dialog(gpointer item,SaveStruct *sst)
 {
@@ -4039,8 +4044,8 @@ void factory_create_enumbutton_dialog(gpointer item,SaveStruct *sst)
     gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
 
     SaveEbtn *sebtn  = &sst->value.ssebtn;
-    GList *nixlist = sebtn->ebtnwlist;
-    int n = 0;
+//    GList *nixlist = sebtn->ebtnwlist;
+//    int n = 0;
     gchar **title = g_strsplit(sst->name,"[",-1);
     gchar *fmt =  g_strconcat(title[0],"(%d)",NULL);
     g_strfreev(title);
@@ -4093,7 +4098,7 @@ void factory_create_objectbutton_dialog(gpointer item,SaveStruct *sst)
 
     NextID *nextid = &sst->value.nextid;
     STRUCTClass *orgclass = sst->sclass;
-    nextid->itemlist = factory_get_objects_from_layer(orgclass->element.object.parent_layer);
+    nextid->itemlist = factory_get_objects_from_layer(curLayer);
     nextid->itemlist = g_list_insert(nextid->itemlist,g_strdup(""),0);
 
     int r = 0;
@@ -4171,15 +4176,17 @@ static void factory_handle_reverse_select(GtkWidget *widget,GList *user_data)
 STRUCTClass *factory_find_diaobject_by_name(Layer *curlayer,const gchar *name)
 {
     /* 通过名字在画布上找对像 */
-    gchar *utf8name = g_locale_to_utf8(name,-1,NULL,NULL,NULL);
-    GList *objlist = curlayer->objects;
+//    gchar *utf8name = g_locale_to_utf8(name,-1,NULL,NULL,NULL);
+    GList *objlist = NULL;
+    if(curlayer)
+        objlist = curlayer->objects;
     STRUCTClass *objclass = NULL;
     for(; objlist ; objlist =  objlist->next )
     {
-        if(factory_is_valid_type(objlist->data))
+        if(!factory_is_valid_type(objlist->data))
             continue;
         objclass = objlist->data;
-        if(!g_ascii_strncasecmp(objclass->name,utf8name,strlen(utf8name)))
+        if(!g_ascii_strcasecmp(objclass->name,name))
         {
             break;
         }
@@ -4203,13 +4210,17 @@ gboolean factory_is_connected(ConnectionPoint *cpend,ConnectionPoint *cpstart)
 
 static GList * factory_get_objects_from_layer(Layer *layer)
 {
-    GList *objlist = layer->objects;
+    GList *objlist = NULL;
+    if(curLayer)
+        objlist = layer->objects ;
     GList *list = NULL;
     for(; objlist ; objlist =  objlist->next )
     {
-        if(factory_is_valid_type(objlist->data))
+        if(!factory_is_valid_type(objlist->data))
             continue;
         STRUCTClass* objclass = objlist->data;
+        if(!g_ascii_strcasecmp(objclass->name,"SYS_DATA"))
+            continue;
         list = g_list_append(list,objclass->name);
     }
     return list;
@@ -4342,7 +4353,6 @@ void factory_create_unionbutton_dialog(gpointer item,SaveStruct *sst)
     {
         if(sbtn->structlist)
         {
-//            sbtn->htoflist = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
             GList *slist = sbtn->structlist;
             for(; slist; slist = slist->next)
             {
@@ -4350,10 +4360,8 @@ void factory_create_unionbutton_dialog(gpointer item,SaveStruct *sst)
                 SaveStruct *s  = factory_get_savestruct(o);
                 s->sclass = sst->sclass;
                 factory_strjoin(&s->name,sst->name,".");
-//                g_hash_table_insert(sbtn->htoflist,g_strjoin("##",o->FType,o->Name,NULL),s);
                 sbtn->savelist = g_list_append(sbtn->savelist,s);
             }
-//            subitem =   g_hash_table_get_values(sbtn->htoflist);
             subitem = sbtn->savelist;
             if(subitem)
             {
@@ -4526,7 +4534,7 @@ void factory_create_struct_dialog(GtkWidget *dialog,GList *datalist)
     /* 通链表创建控件 SaveStruct *sst */
     GList *item = datalist;
     int row = 0;
-    for(; item != NULL ; item = item->next)
+    for(; item  ; item = item->next)
     {
         SaveStruct *sst  = item->data;
         gchar *lname = g_locale_from_utf8(sst->org->Cname,-1,NULL,NULL,NULL);
@@ -4551,8 +4559,8 @@ void factory_append_public_info(GtkWidget *dialog,STRUCTClass *fclass)
     GtkWidget *hbox = gtk_hbox_new(FALSE,0);
     GtkWidget *name_lab = gtk_label_new(g_locale_to_utf8(_("对像重命名:"),-1,NULL,NULL,NULL));
     pps->wid_rename_entry = gtk_entry_new();
-    gtk_entry_set_text(pps->wid_rename_entry,pps->name);
-    gtk_entry_set_max_length(pps->wid_rename_entry,255);
+    gtk_entry_set_text( GTK_ENTRY(pps->wid_rename_entry),pps->name);
+    gtk_entry_set_max_length(GTK_ENTRY(pps->wid_rename_entry),255);
     gtk_box_pack_start(GTK_BOX(hbox), name_lab, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(hbox), pps->wid_rename_entry, TRUE, TRUE, 0);
 
@@ -4565,6 +4573,8 @@ void factory_append_public_info(GtkWidget *dialog,STRUCTClass *fclass)
 /* 显示控件上的属性对话框 */
 void factory_create_and_fill_dialog(STRUCTClass *fclass, gboolean is_default)
 {
+    DDisplay *ddsp = ddisplay_active();
+    curLayer = ddsp->diagram->data->active_layer;
     STRUCTClassDialog *prop_dialog = fclass->properties_dialog;
 //    GList *targetlist = g_hash_table_get_values(fclass->widgetmap);
     GList *targetlist = fclass->widgetSave;
@@ -4572,19 +4582,18 @@ void factory_create_and_fill_dialog(STRUCTClass *fclass, gboolean is_default)
     {
         factory_read_initial_to_struct(fclass);
     }
-    else
-    {
-        int num = g_list_length(targetlist);
-        prop_dialog->mainTable = gtk_table_new(num,4,FALSE);  // 2014-3-19 lcy 根据要链表的数量,创建多少行列表.
-        factory_create_struct_dialog(prop_dialog->mainTable,targetlist);
-        gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),prop_dialog->mainTable);
-        if(g_ascii_strcasecmp(fclass->name,"SYS_DATA"))
-        {
-            factory_append_public_info(prop_dialog->dialog,fclass);
-            gtk_table_set_col_spacing(GTK_TABLE(prop_dialog->mainTable),1,20);
-        }
 
+    int num = g_list_length(targetlist);
+    prop_dialog->mainTable = gtk_table_new(num,4,FALSE);  // 2014-3-19 lcy 根据要链表的数量,创建多少行列表.
+    factory_create_struct_dialog(prop_dialog->mainTable,targetlist);
+    gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),prop_dialog->mainTable);
+    if(g_ascii_strcasecmp(fclass->name,"SYS_DATA"))
+    {
+        factory_append_public_info(prop_dialog->dialog,fclass);
+        gtk_table_set_col_spacing(GTK_TABLE(prop_dialog->mainTable),1,20);
     }
+
+
 
 }
 

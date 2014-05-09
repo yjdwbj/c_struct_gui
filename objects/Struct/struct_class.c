@@ -2100,6 +2100,9 @@ factory_struct_items_create(Point *startpoint,
                             Handle **handle1,
                             Handle **handle2)
 {
+    DDisplay *ddisp = ddisplay_active();
+    if(ddisp)
+        curLayer = ddisp->diagram->data->active_layer;
     STRUCTClass *structclass;
 //  STRUCTClassDialog *properties_dialog;
     Element *elem;
@@ -2143,12 +2146,9 @@ factory_struct_items_create(Point *startpoint,
     }
     structclass->name = obj->name ;
 
-    DDisplay *ddisp = ddisplay_active();
-    if(ddisp)
-    {
-        GList **defnames = &ddisp->diagram->data->active_layer->defnames;
-        *defnames = g_list_append(*defnames,structclass->name);
-    }
+    if(curLayer)
+        curLayer->defnames = g_list_append(curLayer->defnames,structclass->name);
+
 
 
 
@@ -2194,6 +2194,7 @@ factory_struct_items_create(Point *startpoint,
     *handle2 = NULL;
     structclass->EnumsAndStructs = NULL;
     structclass->EnumsAndStructs = factoryContainer;
+
     return &structclass->element.object;
 }
 
@@ -2478,7 +2479,7 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         {
             key = xmlGetProp(attr_node,(xmlChar *)"value");
             if(key)
-                sss->value.number = g_strtod((gchar*)key,NULL);
+                sss->value.vnumber = g_strdup((gchar*)key);
             xmlFree(key);
             sss->celltype = SPINBOX;
         }
@@ -2685,7 +2686,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             else
             {
                 sss->celltype = SPINBOX;
-                sss->value.number = g_strtod(fst->Value,NULL);
+                sss->value.vnumber = g_strdup(fst->Value);
             }
             break;
         case ET:
@@ -2840,8 +2841,6 @@ void factory_read_initial_to_struct(STRUCTClass *fclass) /*2014-3-26 lcy ÍÏÈë¿Ø¼
     {
         FactoryStructItem *fst = tttt->data;
         SaveStruct *sst= factory_get_savestruct(fst);
-
-        factory_set_savestruct_widgets(sst);
         g_hash_table_insert(fclass->widgetmap,g_strjoin("##",fst->FType,fst->Name,NULL),sst);
         fclass->widgetSave = g_list_append(fclass->widgetSave,sst);
     }
@@ -2912,7 +2911,7 @@ factory_handle_entry_item(SaveEntry* sey,FactoryStructItem *fst)
             int modv = abp->col % 8;
             if((sqrtv * sqrtv  == abp->col) && (sqrtv > 8)) /* ¿É¿ª·½³ÉÕûÊý */
                 abp->row = abp->col = sqrtv;
-            else if(modv) /* ¿´Ò»ÏÂÄÜ²»ÓÃ 8x8 µÄ¾ØÕó*/
+            else if(modv) /* ¿´Ò»ÏÂÄÜ²»ÄÜÓÃ 8x8 µÄ¾ØÕó*/
             {
                 abp->row = abp->col / 8;
                 abp->row++;
@@ -2998,6 +2997,16 @@ structclass_destroy(STRUCTClass *structclass)
     {
         structclass_dialog_free (structclass->properties_dialog);
     }
+     GList *targetlist = structclass->widgetSave;
+     for(;targetlist;targetlist = targetlist->next)
+     {
+                SaveStruct *sss = targetlist->data;
+               gtk_widget_destroy(sss->widget1);
+                gtk_widget_destroy(sss->widget2);
+                sss->widget1 = NULL;
+                sss->widget2 = NULL;
+     }
+
 }
 
 static void factory_hashtable_copy(gpointer key,gpointer value,gpointer user_data)
@@ -3240,7 +3249,7 @@ static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
     break;
     case SPINBOX:
         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"SPINBOX");
-        xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)g_strdup_printf(_("%d"),sss->value.number));
+        xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.vnumber);
         break;
     }
     /* ÕâÀïÒª²»ÊÇ¼ÓÒ»¸öOCOMBO ¿Ø¼þÊ¶±ðÄØ? */
@@ -3257,14 +3266,14 @@ static void factory_write_object_comobox(ActionID *aid,ObjectNode ccc )
         xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)_("-1"));
     else
     {
-        gchar **str = g_strsplit(aid->pre_name,"(",-1);
-        gchar *number = g_strdup(str[1]);
-        g_strfreev(str);
-        str = g_strsplit(number,")",-1);
+//        gchar **str = g_strsplit(aid->pre_name,"(",-1);
+//        gchar *number = g_strdup(str[1]);
+//        g_strfreev(str);
+//        str = g_strsplit(number,")",-1);
 
-        xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)g_strdup(str[0]));
-        g_free(number);
-        g_strfreev(str);
+        xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)g_strdup(aid->pre_name));
+//        g_free(number);
+//        g_strfreev(str);
     }
 
     xmlSetProp(ccc, (const xmlChar *)"nvalue", (xmlChar *)aid->pre_name);
@@ -3370,6 +3379,9 @@ static void factory_struct_save_to_xml(gpointer key,gpointer value,gpointer user
 static DiaObject *
 factory_struct_items_load(ObjectNode obj_node,int version, const char *filename )
 {
+    DDisplay *ddisp = ddisplay_active();
+    curLayer = ddisp->diagram->data->active_layer;
+
     STRUCTClass *structclass;
     Element *elem;
     DiaObject *obj;
@@ -3418,10 +3430,23 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename 
     attr_node  =   factory_find_custom_node(obj_node,"JL_struct");
     if(attr_node)
     {
+
         xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
         if (key)
         {
-            structclass->name =  g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);
+            structclass->element.object.name =  g_strdup(factory_utf8((gchar*)key));
+
+            xmlFree (key);
+        }
+        key = xmlGetProp(attr_node,(xmlChar *)"vname");
+        if(key)
+        {
+//            if (!g_utf8_validate((gchar*)key, -1, NULL))
+//                structclass->name =  factory_utf8((gchar*)key);
+//            else
+            structclass->name =  g_strdup(factory_utf8((gchar*)key));
+             if(curLayer)
+                curLayer->defnames = g_list_append(curLayer->defnames,structclass->name);
             xmlFree (key);
         }
     }
@@ -3461,7 +3486,8 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
 
     /* 2014-3-25 lcy ÕâÀïÌí¼ÓÒ»¸ö×Ô¶¨Òå½ÚµãÃûÀ´°²ÖÃÕâ¸ö½á¹¹ÌåµÄ³ÉÔ±*/
     obj_node = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_struct", NULL);
-    xmlSetProp(obj_node, (const xmlChar *)"name", (xmlChar *)structclass->name);
+    xmlSetProp(obj_node, (const xmlChar *)"name", (xmlChar *)structclass->element.object.name);
+    xmlSetProp(obj_node, (const xmlChar *)"vname", (xmlChar *)structclass->name);
     FactoryStructItemList *fsi = g_hash_table_lookup(structclass->EnumsAndStructs->structTable,
                                                      structclass->element.object.name);
     if(fsi) /* Ð´Èëµ½Ö¸¶¨ÎÄ¼þÃû */
@@ -3474,39 +3500,39 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
     }
 }
 
-void factory_get_enum_values(GList* src,GList *dst)
-{
-    /* 2014-3-26 lcy ÕâÀï´¦Àí¿Ø¼þÉÏµÄÖµ£¬ÓÃÀ´×ö±£´æÎÄ¼þÊ±µÄÊý¾ÝÔ´¡£*/
-    GList *thisstruct = src;
-    for(; thisstruct != NULL; thisstruct = thisstruct->next)
-    {
-        SaveStruct *ss = g_new0(SaveStruct,1);
-        FactoryStructItem *item = thisstruct->data;
-        gchar **split = g_strsplit(item->FType,".",-1);
-        int section = g_strv_length(split);
-        /* ²éÑ¯Ã¶¾Ù¹þÏ£±íµÄÖµ*/
-        GList *enumitem =  g_hash_table_lookup(factoryContainer->enumTable,(gpointer)split[section-1]);
-        if(enumitem)
-        {
-//                             GList *tmp  = enumitem;
-//                             ss->celltype = ENUM;
-//                             FactoryStructEnum *cur =  factory_find_list_node(tmp,item->Value);
-//                             ss->value.index = g_list_index(tmp,cur);
-        }
-        else if(factory_find_array_flag(item->Name))
-        {
-            ss->celltype = ENTRY;
-        }
-        else
-        {
-            ss->celltype = SPINBOX;
-        }
-        ss->name = item->Name;
-        ss->type = item->FType;
-        g_strfreev(split);
-        dst = g_list_append(dst,ss);
-    }
-}
+//void factory_get_enum_values(GList* src,GList *dst)
+//{
+//    /* 2014-3-26 lcy ÕâÀï´¦Àí¿Ø¼þÉÏµÄÖµ£¬ÓÃÀ´×ö±£´æÎÄ¼þÊ±µÄÊý¾ÝÔ´¡£*/
+//    GList *thisstruct = src;
+//    for(; thisstruct != NULL; thisstruct = thisstruct->next)
+//    {
+//        SaveStruct *ss = g_new0(SaveStruct,1);
+//        FactoryStructItem *item = thisstruct->data;
+//        gchar **split = g_strsplit(item->FType,".",-1);
+//        int section = g_strv_length(split);
+//        /* ²éÑ¯Ã¶¾Ù¹þÏ£±íµÄÖµ*/
+//        GList *enumitem =  g_hash_table_lookup(factoryContainer->enumTable,(gpointer)split[section-1]);
+//        if(enumitem)
+//        {
+////                             GList *tmp  = enumitem;
+////                             ss->celltype = ENUM;
+////                             FactoryStructEnum *cur =  factory_find_list_node(tmp,item->Value);
+////                             ss->value.index = g_list_index(tmp,cur);
+//        }
+//        else if(factory_find_array_flag(item->Name))
+//        {
+//            ss->celltype = ENTRY;
+//        }
+//        else
+//        {
+//            ss->celltype = SPINBOX;
+//        }
+//        ss->name = item->Name;
+//        ss->type = item->FType;
+//        g_strfreev(split);
+//        dst = g_list_append(dst,ss);
+//    }
+//}
 
 //static void
 //structclass_save(STRUCTClass *structclass, ObjectNode obj_node,

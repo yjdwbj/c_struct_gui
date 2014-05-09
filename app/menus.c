@@ -550,13 +550,14 @@ ensure_menu_path (GtkUIManager *ui_manager, GtkActionGroup *actions, const gchar
     return id;
 }
 
-static void factory_create_toolbar_button(const gint8 *icon,gchar *tips,GtkToolbar  *toolbar,gpointer *callback)
+static void factory_create_toolbar_button(const gint8 *icon,gchar *tips,GtkToolbar  *toolbar,
+                                          gpointer *callback)
 {
     GtkWidget * SystemData = factory_create_button_with_icons(icon);
     gtk_tooltips_set_tip (tool_tips, SystemData,factory_utf8(tips), NULL);
     integrated_ui_toolbar_add_custom_item (toolbar, SystemData);
     g_signal_connect (G_OBJECT (SystemData), "clicked",
-                      G_CALLBACK (callback), toolbar);
+                      G_CALLBACK (callback), tips);
 
 }
 
@@ -564,7 +565,7 @@ static void factory_idlist_callback(GtkAction *action)
 {
     DDisplay *ddisp = ddisplay_active();
     if(ddisp)
-    factory_idlist_dialog(ddisp->diagram->data->active_layer);
+        factory_idlist_dialog(ddisp->diagram->data->active_layer);
 }
 
 
@@ -661,13 +662,14 @@ create_integrated_ui_toolbar (void)
     gtk_toolbar_insert (toolbar, sep, -1);
     /* 新建三个按钮 */
 
-    factory_create_toolbar_button(systemdata_on,"系统数据",toolbar,factory_systemdata_dialog);
+//    factory_create_toolbar_button(systemdata_on,"系统数据",toolbar,factory_systemdata_dialog);
+//
+//    factory_create_toolbar_button(globe_on,"全局变量",toolbar,NULL);
 
-    factory_create_toolbar_button(globe_on,"全局变量",toolbar,NULL);
-
-    factory_create_toolbar_button(filemanager,"音频文件管理",toolbar,factory_systemdata_dialog);
+    factory_create_toolbar_button(audio_list,"音频文件管理",toolbar,factory_music_filemanager_dialog);
 
     factory_create_toolbar_button(idlist,"ID 列表",toolbar,factory_idlist_callback);
+
 
     gtk_widget_show (GTK_WIDGET (sep));
 

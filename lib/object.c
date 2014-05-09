@@ -1078,9 +1078,9 @@ GtkWidget *factory_get_new_item_head()
 {
     GtkWidget *hbox = gtk_hbox_new(FALSE,0);
     GtkWidget *first = gtk_label_new(factory_utf8("序号"));
-    GtkWidget *sec = gtk_label_new(factory_utf8("选择"));
-    GtkWidget *third = gtk_label_new(factory_utf8("ID 列表"));
-    GtkWidget *four = gtk_label_new(factory_utf8("删除"));
+    GtkWidget *sec = gtk_label_new(factory_utf8("地址"));
+    GtkWidget *third = gtk_label_new(factory_utf8("行为ID"));
+    GtkWidget *four = gtk_label_new(factory_utf8("操作"));
     gtk_box_pack_start(GTK_BOX(hbox),first,TRUE,TRUE,0);
     gtk_box_pack_start(GTK_BOX(hbox),sec,TRUE,TRUE,0);
     gtk_box_pack_start(GTK_BOX(hbox),third,TRUE,TRUE,0);
@@ -1122,7 +1122,7 @@ GtkWidget *factory_get_new_item(int id)
 {
     GtkWidget *hbox = gtk_hbox_new(FALSE,1);
     GtkWidget *first = gtk_label_new(g_strdup_printf("%d",id));
-    GtkWidget *chkbox = gtk_check_button_new();
+    GtkWidget *spbox = gtk_spin_button_new_with_range(0,65536,1);
     GtkWidget *cbox = gtk_combo_box_new_text();
     gtk_combo_box_popdown(GTK_COMBO_BOX(cbox));
     GList *p = curlayer->defnames;
@@ -1134,14 +1134,14 @@ GtkWidget *factory_get_new_item(int id)
 
     GtkWidget *btn_del = gtk_button_new_from_stock(GTK_STOCK_DELETE);
     gtk_box_pack_start(GTK_BOX(hbox),first,TRUE,TRUE,0);
-    gtk_box_pack_start(GTK_BOX(hbox),chkbox,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),spbox,TRUE,TRUE,0);
     gtk_box_pack_start(GTK_BOX(hbox),cbox,TRUE,TRUE,0);
     gtk_box_pack_start(GTK_BOX(hbox),btn_del,TRUE,TRUE,0);
 
     return hbox;
 }
 
-void factory_idlist_dialog(gpointer *data)
+void factory_idlist_dialog(gpointer data)
 {
         GtkWidget*  subdig = gtk_dialog_new_with_buttons(_("tttt") ,
                          NULL,
@@ -1176,49 +1176,76 @@ void factory_idlist_dialog(gpointer *data)
     gtk_widget_show_all(subdig);
 }
 
-void factory_filemanager_dialog(GtkAction *action)
+void factory_music_filemanager_dialog(gchar *title,GtkAction *action)
 {
+    GtkWidget *sdialog = gtk_vbox_new(FALSE,0);
+    GtkWidget *newdialog = factory_create_new_dialog_with_buttons(title,NULL);
+    GtkWidget *dialog_vbox = GTK_DIALOG(newdialog)->vbox;
+    gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
+    gtk_window_set_resizable (GTK_WINDOW (newdialog),TRUE);
+    gtk_widget_set_size_request (GTK_WINDOW (newdialog),-1,500);
+    GtkWidget  *wid_idlist = gtk_scrolled_window_new (NULL,NULL);
 
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(wid_idlist),
+				GTK_POLICY_NEVER,GTK_POLICY_ALWAYS);
+     GtkWidget *vbox  = gtk_vbox_new(FALSE,5);
+    gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(wid_idlist),vbox);
+    gtk_box_pack_start(GTK_BOX(vbox),factory_get_new_item_head(),FALSE,FALSE,0);
+    gtk_box_pack_start(GTK_BOX(vbox),factory_new_add_button(),FALSE,FALSE,0);
+
+    gtk_box_pack_start(GTK_BOX(sdialog),wid_idlist,TRUE,TRUE,0);
+
+    gtk_widget_show_all(newdialog);
 }
 
 
-void factory_systemdata_dialog(GtkAction *action)
+GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent)
 {
-    GtkWidget*  subdig = gtk_dialog_new_with_buttons(gtk_action_get_name(action) ,
-                         NULL,
+    /* 创建对话框 */
+    GtkWidget*  subdig = gtk_dialog_new_with_buttons(_(title),
+                         GTK_WINDOW(parent),
                          GTK_DIALOG_DESTROY_WITH_PARENT,
                          GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
                          GTK_STOCK_OK, GTK_RESPONSE_OK,NULL);
-
-
-    GtkWidget *sdialog = gtk_vbox_new(FALSE,0);
+//    GtkWidget *sdialog = gtk_hbox_new(FALSE,0);
     gtk_dialog_set_default_response (GTK_DIALOG(subdig), GTK_RESPONSE_OK);
-    GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
-    gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
+//    GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
+//    gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
     gtk_window_set_resizable (GTK_WINDOW(subdig),FALSE);
-    gtk_window_set_position (GTK_WINDOW(subdig),GTK_WIN_POS_CENTER);
+    gtk_window_set_position (GTK_WINDOW(subdig),GTK_WIN_POS_CENTER_ALWAYS);
     gtk_window_present(GTK_WINDOW(subdig));
-
-    GList *clist = factoryContainer->structList;
-    FactoryStructItemList *fssl = NULL;
-    for(;clist;clist = clist->next)
-    {
-        fssl = clist->data;
-        if(!g_ascii_strcasecmp(fssl->sname,"SYS_DATA") &&
-            !g_ascii_strcasecmp(fssl->sfile,"sysinfo.dat"))
-        {
-            break;
-        }
-        fssl = NULL;
-    }
-
-    if(!fssl)
-    {
-        gchar *msg_err  = g_locale_to_utf8(_("找不到系统数据项,请联系原厂工程师!"),-1,NULL,NULL,NULL);
-        message_error(msg_err);
-        g_free(msg_err);
-        return;
-    }
-
-    gtk_widget_show_all(subdig);
+    return subdig;
 }
+
+
+
+//void factory_systemdata_dialog(GtkAction *action)
+//{
+//    GtkWidget *sdialog = gtk_vbox_new(FALSE,0);
+//    GtkWidget *newdialog = factory_create_new_dialog_with_buttons(sst->name,NULL);
+//    GtkWidget *dialog_vbox = GTK_DIALOG(newdialog)->vbox;
+//    gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
+//
+//    GList *clist = factoryContainer->structList;
+//    FactoryStructItemList *fssl = NULL;
+//    for(;clist;clist = clist->next)
+//    {
+//        fssl = clist->data;
+//        if(!g_ascii_strcasecmp(fssl->sname,"SYS_DATA") &&
+//            !g_ascii_strcasecmp(fssl->sfile,"sysinfo.dat"))
+//        {
+//            break;
+//        }
+//        fssl = NULL;
+//    }
+//
+//    if(!fssl)
+//    {
+//        gchar *msg_err  = g_locale_to_utf8(_("找不到系统数据项,请联系原厂工程师!"),-1,NULL,NULL,NULL);
+//        message_error(msg_err);
+//        g_free(msg_err);
+//        return;
+//    }
+//
+//    gtk_widget_show_all(newdialog);
+//}
