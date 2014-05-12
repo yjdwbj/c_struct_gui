@@ -216,8 +216,6 @@ struct _SaveEbtn
     ArrayBaseProp *arr_base;
     GList *ebtnslist; /* 枚举的数据源链表 */
     GList *ebtnwlist; /* 全部是枚举的控件  存放 SaveEnumArr的链表  */
-//    CloseWidgetAndSave  *close_func; /* 指向保存函数 */
-//    CreateNewDialog *newdlg_func; /* 指向显示窗口的函数,也是用来做按键消息回调的函数 */
 };
 
 

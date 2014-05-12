@@ -44,20 +44,20 @@ extern FactoryStructItemAll *factoryContainer;
  */
 void
 object_init(DiaObject *obj,
-	    int num_handles,
-	    int num_connections)
+            int num_handles,
+            int num_connections)
 {
-  obj->num_handles = num_handles;
-  if (num_handles>0)
-    obj->handles = g_malloc0(sizeof(Handle *) * num_handles);
-  else
-    obj->handles = NULL;
+    obj->num_handles = num_handles;
+    if (num_handles>0)
+        obj->handles = g_malloc0(sizeof(Handle *) * num_handles);
+    else
+        obj->handles = NULL;
 
-  obj->num_connections = num_connections;
-  if (num_connections>0)
-    obj->connections = g_malloc0(sizeof(ConnectionPoint *) * num_connections);
-  else
-    obj->connections = NULL;
+    obj->num_connections = num_connections;
+    if (num_connections>0)
+        obj->connections = g_malloc0(sizeof(ConnectionPoint *) * num_connections);
+    else
+        obj->connections = NULL;
 }
 
 /** Destroy an objects allocations and disconnect it from everything else.
@@ -68,17 +68,17 @@ object_init(DiaObject *obj,
 void
 object_destroy(DiaObject *obj)
 {
-  object_unconnect_all(obj);
+    object_unconnect_all(obj);
 
-  if (obj->handles)
-    g_free(obj->handles);
-  obj->handles = NULL;
-  if (obj->connections)
-    g_free(obj->connections);
-  obj->connections = NULL;
-  if (obj->meta)
-    g_hash_table_destroy (obj->meta);
-  obj->meta = NULL;
+    if (obj->handles)
+        g_free(obj->handles);
+    obj->handles = NULL;
+    if (obj->connections)
+        g_free(obj->connections);
+    obj->connections = NULL;
+    if (obj->meta)
+        g_hash_table_destroy (obj->meta);
+    obj->meta = NULL;
 }
 
 /** Copy the object-level information of this object.
@@ -99,29 +99,29 @@ object_destroy(DiaObject *obj)
 void
 object_copy(DiaObject *from, DiaObject *to)
 {
-  to->type = from->type;
-  to->position = from->position;
-  to->bounding_box = from->bounding_box;
+    to->type = from->type;
+    to->position = from->position;
+    to->bounding_box = from->bounding_box;
 
-  to->num_handles = from->num_handles;
-  if (to->handles != NULL) g_free(to->handles);
-  if (to->num_handles>0)
-    to->handles = g_malloc(sizeof(Handle *)*to->num_handles);
-  else
-    to->handles = NULL;
+    to->num_handles = from->num_handles;
+    if (to->handles != NULL) g_free(to->handles);
+    if (to->num_handles>0)
+        to->handles = g_malloc(sizeof(Handle *)*to->num_handles);
+    else
+        to->handles = NULL;
 
-  to->num_connections = from->num_connections;
-  if (to->connections != NULL) g_free(to->connections);
-  if (to->num_connections>0)
-    to->connections = g_malloc0(sizeof(ConnectionPoint *) * to->num_connections);
-  else
-    to->connections = NULL;
+    to->num_connections = from->num_connections;
+    if (to->connections != NULL) g_free(to->connections);
+    if (to->num_connections>0)
+        to->connections = g_malloc0(sizeof(ConnectionPoint *) * to->num_connections);
+    else
+        to->connections = NULL;
 
-  to->ops = from->ops;
+    to->ops = from->ops;
 
-  to->flags = from->flags;
-  to->parent = from->parent;
-  to->children = g_list_copy(from->children);
+    to->flags = from->flags;
+    to->parent = from->parent;
+    to->children = g_list_copy(from->children);
 }
 
 /** A hash function of a pointer value.  Not the most well-spreadout
@@ -130,7 +130,7 @@ object_copy(DiaObject *from, DiaObject *to)
 static guint
 pointer_hash(gpointer some_pointer)
 {
-  return GPOINTER_TO_UINT(some_pointer);
+    return GPOINTER_TO_UINT(some_pointer);
 }
 
 
@@ -147,95 +147,101 @@ pointer_hash(gpointer some_pointer)
 GList *
 object_copy_list(GList *list_orig)
 {
-  GList *list_copy;
-  GList *list;
-  DiaObject *obj;
-  DiaObject *obj_copy;
-  GHashTable *hash_table;
-  int i;
+    GList *list_copy;
+    GList *list;
+    DiaObject *obj;
+    DiaObject *obj_copy;
+    GHashTable *hash_table;
+    int i;
 
-  hash_table = g_hash_table_new((GHashFunc) pointer_hash, NULL);
+    hash_table = g_hash_table_new((GHashFunc) pointer_hash, NULL);
 
-  /* First ops->copy the entire list */
-  list = list_orig;
-  list_copy = NULL;
-  while (list != NULL) {
-    obj = (DiaObject *)list->data;
-
-    obj_copy = obj->ops->copy(obj);
-
-    g_hash_table_insert(hash_table, obj, obj_copy);
-
-    list_copy = g_list_append(list_copy, obj_copy);
-
-    list = g_list_next(list);
-  }
-
-  /* Rebuild the connections and parent/child references between the
-  objects in the list: */
-  list = list_orig;
-  while (list != NULL) {
-    obj = (DiaObject *)list->data;
-    obj_copy = g_hash_table_lookup(hash_table, obj);
-
-    if (obj_copy->parent)
-      obj_copy->parent = g_hash_table_lookup(hash_table, obj_copy->parent);
-
-    if (object_flags_set(obj_copy, DIA_OBJECT_CAN_PARENT)
-	&& obj_copy->children)
+    /* First ops->copy the entire list */
+    list = list_orig;
+    list_copy = NULL;
+    while (list != NULL)
     {
-      GList *child_list = obj_copy->children;
-      while(child_list)
-      {
-        DiaObject *child_obj = (DiaObject *) child_list->data;
-        child_list->data = g_hash_table_lookup(hash_table, child_obj);
-	child_list = g_list_next(child_list);
-      }
+        obj = (DiaObject *)list->data;
+
+        obj_copy = obj->ops->copy(obj);
+
+        g_hash_table_insert(hash_table, obj, obj_copy);
+
+        list_copy = g_list_append(list_copy, obj_copy);
+
+        list = g_list_next(list);
     }
 
-    for (i=0;i<obj->num_handles;i++) {
-      ConnectionPoint *con_point;
-      con_point = obj->handles[i]->connected_to;
+    /* Rebuild the connections and parent/child references between the
+    objects in the list: */
+    list = list_orig;
+    while (list != NULL)
+    {
+        obj = (DiaObject *)list->data;
+        obj_copy = g_hash_table_lookup(hash_table, obj);
 
-      if ( con_point != NULL ) {
-	DiaObject *other_obj;
-	DiaObject *other_obj_copy;
-	int con_point_nr;
+        if (obj_copy->parent)
+            obj_copy->parent = g_hash_table_lookup(hash_table, obj_copy->parent);
 
-	other_obj = con_point->object;
-	other_obj_copy = g_hash_table_lookup(hash_table, other_obj);
+        if (object_flags_set(obj_copy, DIA_OBJECT_CAN_PARENT)
+                && obj_copy->children)
+        {
+            GList *child_list = obj_copy->children;
+            while(child_list)
+            {
+                DiaObject *child_obj = (DiaObject *) child_list->data;
+                child_list->data = g_hash_table_lookup(hash_table, child_obj);
+                child_list = g_list_next(child_list);
+            }
+        }
 
-	if (other_obj_copy == NULL) {
-	  /* Ensure we have no dangling connection to avoid crashing, on
-	   * object_unconnect() e.g. bug #497070. Two questions remaining:
-	   *  - shouldn't the object::copy() have initialized this to NULL?
-	   *  - could we completely solve this by looking deeper into groups?
-	   *    The sample from #497070 has nested groups but this function currently
-	   *    works on one level at the time. Thus the object within the group are
-	   *    invisible when we try to restore the groups connectons. BUT the
-	   *    connectionpoints in the group are shared with the connectionpoints
-	   *    of the inner objects ...
-	   */
-	  obj_copy->handles[i]->connected_to = NULL;
-	  break; /* other object was not on list. */
-	}
+        for (i=0; i<obj->num_handles; i++)
+        {
+            ConnectionPoint *con_point;
+            con_point = obj->handles[i]->connected_to;
 
-	con_point_nr=0;
-	while (other_obj->connections[con_point_nr] != con_point) {
-	  con_point_nr++;
-	}
+            if ( con_point != NULL )
+            {
+                DiaObject *other_obj;
+                DiaObject *other_obj_copy;
+                int con_point_nr;
 
-	object_connect(obj_copy, obj_copy->handles[i],
-		       other_obj_copy->connections[con_point_nr]);
-      }
+                other_obj = con_point->object;
+                other_obj_copy = g_hash_table_lookup(hash_table, other_obj);
+
+                if (other_obj_copy == NULL)
+                {
+                    /* Ensure we have no dangling connection to avoid crashing, on
+                     * object_unconnect() e.g. bug #497070. Two questions remaining:
+                     *  - shouldn't the object::copy() have initialized this to NULL?
+                     *  - could we completely solve this by looking deeper into groups?
+                     *    The sample from #497070 has nested groups but this function currently
+                     *    works on one level at the time. Thus the object within the group are
+                     *    invisible when we try to restore the groups connectons. BUT the
+                     *    connectionpoints in the group are shared with the connectionpoints
+                     *    of the inner objects ...
+                     */
+                    obj_copy->handles[i]->connected_to = NULL;
+                    break; /* other object was not on list. */
+                }
+
+                con_point_nr=0;
+                while (other_obj->connections[con_point_nr] != con_point)
+                {
+                    con_point_nr++;
+                }
+
+                object_connect(obj_copy, obj_copy->handles[i],
+                               other_obj_copy->connections[con_point_nr]);
+            }
+        }
+
+        list = g_list_next(list);
     }
 
-    list = g_list_next(list);
-  }
+    g_hash_table_destroy(hash_table);
 
-  g_hash_table_destroy(hash_table);
-
-  return list_copy;
+    return list_copy;
 }
 
 /** Move a number of objects the same distance.  Any children of objects in
@@ -254,41 +260,42 @@ object_copy_list(GList *list_orig)
 ObjectChange*
 object_list_move_delta_r(GList *objects, Point *delta, gboolean affected)
 {
-  GList *list;
-  DiaObject *obj;
-  Point pos;
-  ObjectChange *objchange = NULL;
+    GList *list;
+    DiaObject *obj;
+    Point pos;
+    ObjectChange *objchange = NULL;
 
-  if (delta->x == 0 && delta->y == 0)
-       return NULL;
+    if (delta->x == 0 && delta->y == 0)
+        return NULL;
 
-  list = objects;
-  while (list != NULL) {
-    obj = (DiaObject *) list->data;
-
-    pos = obj->position;
-    point_add(&pos, delta);
-
-    if (obj->parent && affected)
+    list = objects;
+    while (list != NULL)
     {
-      Rectangle p_ext;
-      Rectangle c_ext;
-      Point new_delta;
+        obj = (DiaObject *) list->data;
 
-      parent_handle_extents(obj->parent, &p_ext);
-      parent_handle_extents(obj, &c_ext);
-      new_delta = parent_move_child_delta(&p_ext, &c_ext, delta);
-      point_add(&pos, &new_delta);
-      point_add(delta, &new_delta);
+        pos = obj->position;
+        point_add(&pos, delta);
+
+        if (obj->parent && affected)
+        {
+            Rectangle p_ext;
+            Rectangle c_ext;
+            Point new_delta;
+
+            parent_handle_extents(obj->parent, &p_ext);
+            parent_handle_extents(obj, &c_ext);
+            new_delta = parent_move_child_delta(&p_ext, &c_ext, delta);
+            point_add(&pos, &new_delta);
+            point_add(delta, &new_delta);
+        }
+        objchange = obj->ops->move(obj, &pos);
+
+        if (object_flags_set(obj, DIA_OBJECT_CAN_PARENT) && obj->children)
+            objchange = object_list_move_delta_r(obj->children, delta, FALSE);
+
+        list = g_list_next(list);
     }
-    objchange = obj->ops->move(obj, &pos);
-
-    if (object_flags_set(obj, DIA_OBJECT_CAN_PARENT) && obj->children)
-      objchange = object_list_move_delta_r(obj->children, delta, FALSE);
-
-    list = g_list_next(list);
-  }
-  return objchange;
+    return objchange;
 }
 
 /** Move a set of objects a given amount.
@@ -299,27 +306,27 @@ object_list_move_delta_r(GList *objects, Point *delta, gboolean affected)
 extern ObjectChange*
 object_list_move_delta(GList *objects, Point *delta)
 {
-  GList *list;
-  DiaObject *obj;
-  GList *process;
-  ObjectChange *objchange = NULL;
+    GList *list;
+    DiaObject *obj;
+    GList *process;
+    ObjectChange *objchange = NULL;
 
-  objects = parent_list_affected_hierarchy(objects);
-  list = objects;
-  /* The recursive function object_list_move_delta cannot process the toplevel
-     (in selection) objects so we have to have this extra loop */
-  while (list != NULL)
-  {
-    obj = (DiaObject *) list->data;
+    objects = parent_list_affected_hierarchy(objects);
+    list = objects;
+    /* The recursive function object_list_move_delta cannot process the toplevel
+       (in selection) objects so we have to have this extra loop */
+    while (list != NULL)
+    {
+        obj = (DiaObject *) list->data;
 
-    process = NULL;
-    process = g_list_append(process, obj);
-    objchange = object_list_move_delta_r(process, delta, (obj->parent != NULL) );
-    g_list_free(process);
+        process = NULL;
+        process = g_list_append(process, obj);
+        objchange = object_list_move_delta_r(process, delta, (obj->parent != NULL) );
+        g_list_free(process);
 
-    list = g_list_next(list);
-  }
-  return objchange;
+        list = g_list_next(list);
+    }
+    return objchange;
 }
 
 /** Destroy a list of objects by calling ops->destroy on each in turn.
@@ -329,20 +336,21 @@ object_list_move_delta(GList *objects, Point *delta)
 void
 destroy_object_list(GList *list_to_be_destroyed)
 {
-  GList *list;
-  DiaObject *obj;
+    GList *list;
+    DiaObject *obj;
 
-  list = list_to_be_destroyed;
-  while (list != NULL) {
-    obj = (DiaObject *)list->data;
+    list = list_to_be_destroyed;
+    while (list != NULL)
+    {
+        obj = (DiaObject *)list->data;
 
-    obj->ops->destroy(obj);
-    g_free(obj);
+        obj->ops->destroy(obj);
+        g_free(obj);
 
-    list = g_list_next(list);
-  }
+        list = g_list_next(list);
+    }
 
-  g_list_free(list_to_be_destroyed);
+    g_list_free(list_to_be_destroyed);
 }
 
 /** Add a new handle to an object.  This is merely a utility wrapper around
@@ -355,7 +363,7 @@ destroy_object_list(GList *list_to_be_destroyed)
 void
 object_add_handle(DiaObject *obj, Handle *handle)
 {
-  object_add_handle_at(obj, handle, obj->num_handles);
+    object_add_handle_at(obj, handle, obj->num_handles);
 }
 
 /** Add a new handle to an object at a given position.  This is merely
@@ -369,19 +377,20 @@ object_add_handle(DiaObject *obj, Handle *handle)
 void
 object_add_handle_at(DiaObject *obj, Handle *handle, int pos)
 {
-  int i;
+    int i;
 
-  g_assert(0 <= pos && pos <= obj->num_handles);
+    g_assert(0 <= pos && pos <= obj->num_handles);
 
-  obj->num_handles++;
+    obj->num_handles++;
 
-  obj->handles =
-    g_realloc(obj->handles, obj->num_handles*sizeof(Handle *));
+    obj->handles =
+        g_realloc(obj->handles, obj->num_handles*sizeof(Handle *));
 
-  for (i=obj->num_handles-1; i > pos; i--) {
-    obj->handles[i] = obj->handles[i-1];
-  }
-  obj->handles[pos] = handle;
+    for (i=obj->num_handles-1; i > pos; i--)
+    {
+        obj->handles[i] = obj->handles[i-1];
+    }
+    obj->handles[pos] = handle;
 }
 
 /** Remove a handle from an object.
@@ -393,28 +402,31 @@ object_add_handle_at(DiaObject *obj, Handle *handle, int pos)
 void
 object_remove_handle(DiaObject *obj, Handle *handle)
 {
-  int i, handle_nr;
+    int i, handle_nr;
 
-  handle_nr = -1;
-  for (i=0;i<obj->num_handles;i++) {
-    if (obj->handles[i] == handle)
-      handle_nr = i;
-  }
+    handle_nr = -1;
+    for (i=0; i<obj->num_handles; i++)
+    {
+        if (obj->handles[i] == handle)
+            handle_nr = i;
+    }
 
-  if (handle_nr < 0) {
-    message_error("Internal error, object_remove_handle: Handle doesn't exist");
-    return;
-  }
+    if (handle_nr < 0)
+    {
+        message_error("Internal error, object_remove_handle: Handle doesn't exist");
+        return;
+    }
 
-  for (i=handle_nr;i<(obj->num_handles-1);i++) {
-    obj->handles[i] = obj->handles[i+1];
-  }
-  obj->handles[obj->num_handles-1] = NULL;
+    for (i=handle_nr; i<(obj->num_handles-1); i++)
+    {
+        obj->handles[i] = obj->handles[i+1];
+    }
+    obj->handles[obj->num_handles-1] = NULL;
 
-  obj->num_handles--;
+    obj->num_handles--;
 
-  obj->handles =
-    g_realloc(obj->handles, obj->num_handles*sizeof(Handle *));
+    obj->handles =
+        g_realloc(obj->handles, obj->num_handles*sizeof(Handle *));
 }
 
 /** Add a new connectionpoint to an object.
@@ -425,7 +437,7 @@ object_remove_handle(DiaObject *obj, Handle *handle)
 void
 object_add_connectionpoint(DiaObject *obj, ConnectionPoint *conpoint)
 {
-  object_add_connectionpoint_at(obj, conpoint, obj->num_connections);
+    object_add_connectionpoint_at(obj, conpoint, obj->num_connections);
 }
 
 /** Add a new connectionpoint to an object.
@@ -436,20 +448,21 @@ object_add_connectionpoint(DiaObject *obj, ConnectionPoint *conpoint)
  */
 void
 object_add_connectionpoint_at(DiaObject *obj,
-			      ConnectionPoint *conpoint, int pos)
+                              ConnectionPoint *conpoint, int pos)
 {
-  int i;
+    int i;
 
-  obj->num_connections++;
+    obj->num_connections++;
 
-  obj->connections =
-    g_realloc(obj->connections,
-	      obj->num_connections*sizeof(ConnectionPoint *));
+    obj->connections =
+        g_realloc(obj->connections,
+                  obj->num_connections*sizeof(ConnectionPoint *));
 
-  for (i=obj->num_connections-1; i > pos; i--) {
-    obj->connections[i] = obj->connections[i-1];
-  }
-  obj->connections[pos] = conpoint;
+    for (i=obj->num_connections-1; i > pos; i--)
+    {
+        obj->connections[i] = obj->connections[i-1];
+    }
+    obj->connections[pos] = conpoint;
 }
 
 /** Remove an existing connectionpoint from and object.
@@ -464,31 +477,34 @@ object_add_connectionpoint_at(DiaObject *obj,
 void
 object_remove_connectionpoint(DiaObject *obj, ConnectionPoint *conpoint)
 {
-  int i, nr;
+    int i, nr;
 
-  nr = -1;
-  for (i=0;i<obj->num_connections;i++) {
-    if (obj->connections[i] == conpoint)
-      nr = i;
-  }
+    nr = -1;
+    for (i=0; i<obj->num_connections; i++)
+    {
+        if (obj->connections[i] == conpoint)
+            nr = i;
+    }
 
-  if (nr < 0) {
-    message_error("Internal error, object_remove_connectionpoint: "
-                  "ConnectionPoint doesn't exist");
-    return;
-  }
+    if (nr < 0)
+    {
+        message_error("Internal error, object_remove_connectionpoint: "
+                      "ConnectionPoint doesn't exist");
+        return;
+    }
 
-  object_remove_connections_to(conpoint);
+    object_remove_connections_to(conpoint);
 
-  for (i=nr;i<(obj->num_connections-1);i++) {
-    obj->connections[i] = obj->connections[i+1];
-  }
-  obj->connections[obj->num_connections-1] = NULL;
+    for (i=nr; i<(obj->num_connections-1); i++)
+    {
+        obj->connections[i] = obj->connections[i+1];
+    }
+    obj->connections[obj->num_connections-1] = NULL;
 
-  obj->num_connections--;
+    obj->num_connections--;
 
-  obj->connections =
-    g_realloc(obj->connections, obj->num_connections*sizeof(ConnectionPoint *));
+    obj->connections =
+        g_realloc(obj->connections, obj->num_connections*sizeof(ConnectionPoint *));
 }
 
 
@@ -501,22 +517,23 @@ object_remove_connectionpoint(DiaObject *obj, ConnectionPoint *conpoint)
  */
 void
 object_connect(DiaObject *obj, Handle *handle,
-	       ConnectionPoint *connectionpoint)
+               ConnectionPoint *connectionpoint)
 {
-  g_return_if_fail (obj && obj->type && obj->type->name);
-  g_return_if_fail (connectionpoint && connectionpoint->object &&
-                    connectionpoint->object->type && connectionpoint->object->type->name);
-  if (handle->connect_type==HANDLE_NONCONNECTABLE) {
-    message_error("Error? trying to connect a non connectable handle.\n"
-                  "'%s' -> '%s'\n"
-		  "Check this out...\n",
-		  obj->type->name,
-		  connectionpoint->object->type->name);
-    return;
-  }
-  handle->connected_to = connectionpoint;
-  connectionpoint->connected =
-    g_list_prepend(connectionpoint->connected, obj);
+    g_return_if_fail (obj && obj->type && obj->type->name);
+    g_return_if_fail (connectionpoint && connectionpoint->object &&
+                      connectionpoint->object->type && connectionpoint->object->type->name);
+    if (handle->connect_type==HANDLE_NONCONNECTABLE)
+    {
+        message_error("Error? trying to connect a non connectable handle.\n"
+                      "'%s' -> '%s'\n"
+                      "Check this out...\n",
+                      obj->type->name,
+                      connectionpoint->object->type->name);
+        return;
+    }
+    handle->connected_to = connectionpoint;
+    connectionpoint->connected =
+        g_list_prepend(connectionpoint->connected, obj);
 }
 
 /** Disconnect handle from whatever it may be connected to.
@@ -526,15 +543,16 @@ object_connect(DiaObject *obj, Handle *handle,
 void
 object_unconnect(DiaObject *connected_obj, Handle *handle)
 {
-  ConnectionPoint *connectionpoint;
+    ConnectionPoint *connectionpoint;
 
-  connectionpoint = handle->connected_to;
+    connectionpoint = handle->connected_to;
 
-  if (connectionpoint!=NULL) {
-    connectionpoint->connected =
-      g_list_remove(connectionpoint->connected, connected_obj);
-    handle->connected_to = NULL;
-  }
+    if (connectionpoint!=NULL)
+    {
+        connectionpoint->connected =
+            g_list_remove(connectionpoint->connected, connected_obj);
+        handle->connected_to = NULL;
+    }
 }
 
 /** Remove all connections to the given connectionpoint.
@@ -546,23 +564,26 @@ object_unconnect(DiaObject *connected_obj, Handle *handle)
 void
 object_remove_connections_to(ConnectionPoint *conpoint)
 {
-  GList *list;
-  DiaObject *connected_obj;
-  int i;
+    GList *list;
+    DiaObject *connected_obj;
+    int i;
 
-  list = conpoint->connected;
-  while (list != NULL) {
-    connected_obj = (DiaObject *)list->data;
+    list = conpoint->connected;
+    while (list != NULL)
+    {
+        connected_obj = (DiaObject *)list->data;
 
-    for (i=0;i<connected_obj->num_handles;i++) {
-      if (connected_obj->handles[i]->connected_to == conpoint) {
-	connected_obj->handles[i]->connected_to = NULL;
-      }
+        for (i=0; i<connected_obj->num_handles; i++)
+        {
+            if (connected_obj->handles[i]->connected_to == conpoint)
+            {
+                connected_obj->handles[i]->connected_to = NULL;
+            }
+        }
+        list = g_list_next(list);
     }
-    list = g_list_next(list);
-  }
-  g_list_free(conpoint->connected);
-  conpoint->connected = NULL;
+    g_list_free(conpoint->connected);
+    conpoint->connected = NULL;
 }
 
 /** Remove all connections to and from an object.
@@ -571,14 +592,16 @@ object_remove_connections_to(ConnectionPoint *conpoint)
 void
 object_unconnect_all(DiaObject *obj)
 {
-  int i;
+    int i;
 
-  for (i=0;i<obj->num_handles;i++) {
-    object_unconnect(obj, obj->handles[i]);
-  }
-  for (i=0;i<obj->num_connections;i++) {
-    object_remove_connections_to(obj->connections[i]);
-  }
+    for (i=0; i<obj->num_handles; i++)
+    {
+        object_unconnect(obj, obj->handles[i]);
+    }
+    for (i=0; i<obj->num_connections; i++)
+    {
+        object_remove_connections_to(obj->connections[i]);
+    }
 }
 
 /** Save the object-specific parts of an object.
@@ -590,12 +613,12 @@ object_unconnect_all(DiaObject *obj)
 void
 object_save(DiaObject *obj, ObjectNode obj_node)
 {
-  data_add_point(new_attribute(obj_node, "obj_pos"),
-		 &obj->position);
-  data_add_rectangle(new_attribute(obj_node, "obj_bb"),
-		     &obj->bounding_box);
-  if (obj->meta)
-    data_add_dict (new_attribute(obj_node, "meta"), obj->meta);
+    data_add_point(new_attribute(obj_node, "obj_pos"),
+                   &obj->position);
+    data_add_rectangle(new_attribute(obj_node, "obj_bb"),
+                       &obj->bounding_box);
+    if (obj->meta)
+        data_add_dict (new_attribute(obj_node, "meta"), obj->meta);
 }
 
 /** Load the object-specific parts of an object.
@@ -607,23 +630,23 @@ object_save(DiaObject *obj, ObjectNode obj_node)
 void
 object_load(DiaObject *obj, ObjectNode obj_node)
 {
-  AttributeNode attr;
+    AttributeNode attr;
 
-  obj->position.x = 0.0;
-  obj->position.y = 0.0;
-  attr = object_find_attribute(obj_node, "obj_pos");
-  if (attr != NULL)
-    data_point( attribute_first_data(attr), &obj->position );
+    obj->position.x = 0.0;
+    obj->position.y = 0.0;
+    attr = object_find_attribute(obj_node, "obj_pos");
+    if (attr != NULL)
+        data_point( attribute_first_data(attr), &obj->position );
 
-  obj->bounding_box.left = obj->bounding_box.right = 0.0;
-  obj->bounding_box.top = obj->bounding_box.bottom = 0.0;
-  attr = object_find_attribute(obj_node, "obj_bb");
-  if (attr != NULL)
-    data_rectangle( attribute_first_data(attr), &obj->bounding_box );
+    obj->bounding_box.left = obj->bounding_box.right = 0.0;
+    obj->bounding_box.top = obj->bounding_box.bottom = 0.0;
+    attr = object_find_attribute(obj_node, "obj_bb");
+    if (attr != NULL)
+        data_rectangle( attribute_first_data(attr), &obj->bounding_box );
 
-  attr = object_find_attribute(obj_node, "meta");
-  if (attr != NULL)
-    obj->meta = data_dict (attribute_first_data(attr));
+    attr = object_find_attribute(obj_node, "meta");
+    if (attr != NULL)
+        obj->meta = data_dict (attribute_first_data(attr));
 }
 
 /** Returns the layer that the given object belongs to.
@@ -632,8 +655,9 @@ object_load(DiaObject *obj, ObjectNode obj_node)
  * not in any layer.
  */
 Layer *
-dia_object_get_parent_layer(DiaObject *obj) {
-  return obj->parent_layer;
+dia_object_get_parent_layer(DiaObject *obj)
+{
+    return obj->parent_layer;
 }
 
 /** Returns true if `obj' is currently selected.
@@ -647,24 +671,25 @@ dia_object_get_parent_layer(DiaObject *obj) {
 gboolean
 dia_object_is_selected (const DiaObject *obj)
 {
-  Layer *layer = obj->parent_layer;
-  DiagramData *diagram = layer ? layer->parent_diagram : NULL;
-  GList * selected;
+    Layer *layer = obj->parent_layer;
+    DiagramData *diagram = layer ? layer->parent_diagram : NULL;
+    GList * selected;
 
-  /* although this is a little bogus, it is better than crashing
-   * It appears as if neither group members nor "parented" objects do have their
-   * parent_layer set (but they aren't slected either, are they ? --hb
-   * No, grouped objects at least aren't selectable, but they may need
-   * to test selectedness when rendering beziers.  Parented objects are
-   * a different thing, though. */
-  if (!diagram)
+    /* although this is a little bogus, it is better than crashing
+     * It appears as if neither group members nor "parented" objects do have their
+     * parent_layer set (but they aren't slected either, are they ? --hb
+     * No, grouped objects at least aren't selectable, but they may need
+     * to test selectedness when rendering beziers.  Parented objects are
+     * a different thing, though. */
+    if (!diagram)
+        return FALSE;
+
+    selected = diagram->selected;
+    for (; selected != NULL; selected = g_list_next(selected))
+    {
+        if (selected->data == obj) return TRUE;
+    }
     return FALSE;
-
-  selected = diagram->selected;
-  for (; selected != NULL; selected = g_list_next(selected)) {
-    if (selected->data == obj) return TRUE;
-  }
-  return FALSE;
 }
 
 /** Return the top-most object in the parent chain that has the given
@@ -680,17 +705,20 @@ dia_object_is_selected (const DiaObject *obj)
 DiaObject *
 dia_object_get_parent_with_flags(DiaObject *obj, guint flags)
 {
-  DiaObject *top = obj;
-  if (obj == NULL) {
-    return NULL;
-  }
-  while (obj->parent != NULL) {
-    obj = obj->parent;
-    if ((obj->flags & flags) == flags) {
-      top = obj;
+    DiaObject *top = obj;
+    if (obj == NULL)
+    {
+        return NULL;
     }
-  }
-  return top;
+    while (obj->parent != NULL)
+    {
+        obj = obj->parent;
+        if ((obj->flags & flags) == flags)
+        {
+            top = obj;
+        }
+    }
+    return top;
 }
 
 /** Utility function: Checks if an objects can be selected.
@@ -704,11 +732,12 @@ dia_object_get_parent_with_flags(DiaObject *obj, guint flags)
 gboolean
 dia_object_is_selectable(DiaObject *obj)
 {
-  if (obj->parent_layer == NULL) {
-    return FALSE;
-  }
-  return obj->parent_layer == obj->parent_layer->parent_diagram->active_layer
-    && obj == dia_object_get_parent_with_flags(obj, DIA_OBJECT_GRABS_CHILD_INPUT);
+    if (obj->parent_layer == NULL)
+    {
+        return FALSE;
+    }
+    return obj->parent_layer == obj->parent_layer->parent_diagram->active_layer
+           && obj == dia_object_get_parent_with_flags(obj, DIA_OBJECT_GRABS_CHILD_INPUT);
 }
 
 #ifdef DEBUG
@@ -724,21 +753,22 @@ static void printKey(gpointer key,gpointer value,gpointer data)
 
 static guint hash(gpointer key)
 {
-  char *string = (char *)key;
-  int sum;
+    char *string = (char *)key;
+    int sum;
 
-  sum = 0;
-  while (*string) {
-    sum += (*string);
-    string++;
-  }
+    sum = 0;
+    while (*string)
+    {
+        sum += (*string);
+        string++;
+    }
 
-  return sum;
+    return sum;
 }
 
 static gint compare(gpointer a, gpointer b)
 {
-  return strcmp((char *)a, (char *)b)==0;
+    return strcmp((char *)a, (char *)b)==0;
 }
 
 static  GHashTable *object_type_table = NULL;
@@ -747,7 +777,7 @@ static  GHashTable *object_type_table = NULL;
 void
 object_registry_init(void)
 {
-  object_type_table = g_hash_table_new( (GHashFunc) hash, (GCompareFunc) compare );
+    object_type_table = g_hash_table_new( (GHashFunc) hash, (GCompareFunc) compare );
 }
 
 /** Register the type of an object.
@@ -761,14 +791,15 @@ void
 object_register_type(DiaObjectType *type)
 {
 
-  if (g_hash_table_lookup(object_type_table, type->name) != NULL) {
-    message_warning("Several object-types were named %s.\n"
-		    "Only first one will be used.\n"
-		    "Some things might not work as expected.\n",
-		    type->name);
-    return;
-  }
-  g_hash_table_insert(object_type_table, type->name, type);
+    if (g_hash_table_lookup(object_type_table, type->name) != NULL)
+    {
+        message_warning("Several object-types were named %s.\n"
+                        "Only first one will be used.\n"
+                        "Some things might not work as expected.\n",
+                        type->name);
+        return;
+    }
+    g_hash_table_insert(object_type_table, type->name, type);
 }
 
 
@@ -779,7 +810,7 @@ object_register_type(DiaObjectType *type)
 void
 object_registry_foreach (GHFunc func, gpointer user_data)
 {
-  g_hash_table_foreach (object_type_table, func, user_data);
+    g_hash_table_foreach (object_type_table, func, user_data);
 }
 
 /** Get the object type information associated with a name.
@@ -792,7 +823,7 @@ object_registry_foreach (GHFunc func, gpointer user_data)
 DIAVAR DiaObjectType *
 object_get_type(char *name)
 {
-  return (DiaObjectType *) g_hash_table_lookup(object_type_table, name);
+    return (DiaObjectType *) g_hash_table_lookup(object_type_table, name);
 }
 
 /** True if all the given flags are set, false otherwise.
@@ -803,7 +834,7 @@ object_get_type(char *name)
 gboolean
 object_flags_set(DiaObject *obj, gint flags)
 {
-  return (obj->flags & flags) == flags;
+    return (obj->flags & flags) == flags;
 }
 
 /** Load an object from XML based on its properties.
@@ -822,13 +853,13 @@ object_load_using_properties(const DiaObjectType *type,
                              ObjectNode obj_node, int version,
                              const char *filename)
 {
-  DiaObject *obj;
-  Point startpoint = {0.0,0.0};
-  Handle *handle1,*handle2;
+    DiaObject *obj;
+    Point startpoint = {0.0,0.0};
+    Handle *handle1,*handle2;
 
-  obj = type->ops->create(&startpoint,NULL, &handle1,&handle2);
-  object_load_props(obj,obj_node);
-  return obj;
+    obj = type->ops->create(&startpoint,NULL, &handle1,&handle2);
+    object_load_props(obj,obj_node);
+    return obj;
 }
 
 /** Save an object into an XML structure based on its properties.
@@ -844,7 +875,7 @@ void
 object_save_using_properties(DiaObject *obj, ObjectNode obj_node,
                              int version, const char *filename)
 {
-  object_save_props(obj,obj_node);
+    object_save_props(obj,obj_node);
 }
 
 /** Copy an object based solely on its properties.
@@ -854,12 +885,12 @@ object_save_using_properties(DiaObject *obj, ObjectNode obj_node,
  */
 DiaObject *object_copy_using_properties(DiaObject *obj)
 {
-  Point startpoint = {0.0,0.0};
-  Handle *handle1,*handle2;
-  DiaObject *newobj = obj->type->ops->create(&startpoint,NULL,
-                                          &handle1,&handle2);
-  object_copy_props(newobj,obj,FALSE);
-  return newobj;
+    Point startpoint = {0.0,0.0};
+    Handle *handle1,*handle2;
+    DiaObject *newobj = obj->type->ops->create(&startpoint,NULL,
+                        &handle1,&handle2);
+    object_copy_props(newobj,obj,FALSE);
+    return newobj;
 }
 
 /** Return a box that all 'real' parts of the object is bounded by.
@@ -870,8 +901,9 @@ DiaObject *object_copy_using_properties(DiaObject *obj)
  *  be freed after use, as it belongs to the object.
  */
 const Rectangle *
-dia_object_get_bounding_box(const DiaObject *obj) {
-  return &obj->bounding_box;
+dia_object_get_bounding_box(const DiaObject *obj)
+{
+    return &obj->bounding_box;
 }
 
 /** Return a box that encloses all interactively rendered parts of the object.
@@ -879,17 +911,21 @@ dia_object_get_bounding_box(const DiaObject *obj) {
  * @return A pointer to a Rectangle object.  This object should *not*
  *  be freed after use, as it belongs to the object.
  */
-const Rectangle *dia_object_get_enclosing_box(const DiaObject *obj) {
-  /* I believe we can do this comparison, as it is only to compare for cases
-   * where it would be set explicitly to 0.
-   */
-  if (obj->enclosing_box.top == 0.0 &&
-      obj->enclosing_box.bottom == 0.0 &&
-      obj->enclosing_box.left == 0.0 &&
-      obj->enclosing_box.right == 0.0) {
-    return &obj->bounding_box;
-  } else {
-  } return &obj->enclosing_box;
+const Rectangle *dia_object_get_enclosing_box(const DiaObject *obj)
+{
+    /* I believe we can do this comparison, as it is only to compare for cases
+     * where it would be set explicitly to 0.
+     */
+    if (obj->enclosing_box.top == 0.0 &&
+            obj->enclosing_box.bottom == 0.0 &&
+            obj->enclosing_box.left == 0.0 &&
+            obj->enclosing_box.right == 0.0)
+    {
+        return &obj->bounding_box;
+    }
+    else
+    {
+    } return &obj->enclosing_box;
 }
 
 
@@ -902,164 +938,181 @@ const Rectangle *dia_object_get_enclosing_box(const DiaObject *obj) {
  * @param obj An object to check
  * @return TRUE if the object is OK. */
 gboolean
-dia_object_sanity_check(const DiaObject *obj, const gchar *msg) {
-  int i;
-  /* Check the type */
-  dia_assert_true(obj->type != NULL,
-		  "%s: Object %p has null type\n",
-		  msg, obj);
-  if (obj != NULL) {
-    dia_assert_true(obj->type->name != NULL &&
-		    g_utf8_validate(obj->type->name, -1, NULL),
-		    "%s: Object %p has illegal type name %p (%s)\n",
-		    msg, obj, obj->type->name);
-    /* Check the position vs. the bounding box */
-    /* Check the handles */
-    dia_assert_true(obj->num_handles >= 0,
-		    "%s: Object %p has < 0 (%d) handles\n",
-		    msg, obj,  obj->num_handles);
-    if (obj->num_handles != 0) {
-      dia_assert_true(obj->handles != NULL,
-		      "%s: Object %p has null handles\n", obj);
-    }
-    for (i = 0; i < obj->num_handles; i++) {
-      Handle *h = obj->handles[i];
-      dia_assert_true(h != NULL, "%s: Object %p handle %d is null\n",
-		      msg, obj, i);
-      if (h != NULL) {
-	/* Check handle id */
-	dia_assert_true((h->id >= 0 && h->id <= HANDLE_MOVE_ENDPOINT)
-			|| (h->id >= HANDLE_CUSTOM1 && h->id <= HANDLE_CUSTOM9),
-			"%s: Object %p handle %d (%p) has wrong id %d\n",
-			msg, obj, i, h, h->id);
-	/* Check handle type */
-	dia_assert_true(h->type >= 0 && h->type <= NUM_HANDLE_TYPES,
-			"%s: Object %p handle %d (%p) has wrong type %d\n",
-			msg, obj, i, h, h->type);
-	/* Check handle pos is legal pos */
-	/* Check connect type is legal */
-	dia_assert_true(h->connect_type >= 0
-			&& h->connect_type <= HANDLE_CONNECTABLE_NOBREAK,
-			"%s: Object %p handle %d (%p) has wrong connect type %d\n",
-			msg, obj, i, h, h->connect_type);
-	/* Check that if connected, connection makes sense */
-	do { /* do...while(FALSE) to make aborting easy */
-	  ConnectionPoint *cp = h->connected_to;
-	  if (cp != NULL) {
-	    gboolean found = FALSE;
-	    GList *conns;
-	    if (!dia_assert_true(cp->object != NULL,
-				 "%s: Handle %d (%p) on object %p connects to CP %p with NULL object\n",
-				 msg, i, h, obj, cp)) break;
-	    if (!dia_assert_true(cp->object->type != NULL,
-				 "%s:  Handle %d (%p) on object %p connects to CP %p with untyped object %p\n",
-				 msg, i, h, obj, cp, cp->object)) break;
-	    if (!dia_assert_true(cp->object->type->name != NULL &&
-				 g_utf8_validate(cp->object->type->name, -1, NULL),
-				 "%s:  Handle %d (%p) on object %p connects to CP %p with untyped object %p\n",
-				 msg, i, h, obj, cp, cp->object)) break;
-	    dia_assert_true(fabs(cp->pos.x - h->pos.x) < 0.0000001 &&
-			    fabs(cp->pos.y - h->pos.y) < 0.0000001,
-			    "%s: Handle %d (%p) on object %p has pos %f, %f,\nbut its CP %p of object %p has pos %f, %f\n",
-			    msg, i, h, obj, h->pos.x, h->pos.y,
-			    cp, cp->object, cp->pos.x, cp->pos.y);
-	    for (conns = cp->connected; conns != NULL; conns = g_list_next(conns)) {
-	      DiaObject *obj2 = (DiaObject *)conns->data;
-	      int j;
+dia_object_sanity_check(const DiaObject *obj, const gchar *msg)
+{
+    int i;
+    /* Check the type */
+    dia_assert_true(obj->type != NULL,
+                    "%s: Object %p has null type\n",
+                    msg, obj);
+    if (obj != NULL)
+    {
+        dia_assert_true(obj->type->name != NULL &&
+                        g_utf8_validate(obj->type->name, -1, NULL),
+                        "%s: Object %p has illegal type name %p (%s)\n",
+                        msg, obj, obj->type->name);
+        /* Check the position vs. the bounding box */
+        /* Check the handles */
+        dia_assert_true(obj->num_handles >= 0,
+                        "%s: Object %p has < 0 (%d) handles\n",
+                        msg, obj,  obj->num_handles);
+        if (obj->num_handles != 0)
+        {
+            dia_assert_true(obj->handles != NULL,
+                            "%s: Object %p has null handles\n", obj);
+        }
+        for (i = 0; i < obj->num_handles; i++)
+        {
+            Handle *h = obj->handles[i];
+            dia_assert_true(h != NULL, "%s: Object %p handle %d is null\n",
+                            msg, obj, i);
+            if (h != NULL)
+            {
+                /* Check handle id */
+                dia_assert_true((h->id >= 0 && h->id <= HANDLE_MOVE_ENDPOINT)
+                                || (h->id >= HANDLE_CUSTOM1 && h->id <= HANDLE_CUSTOM9),
+                                "%s: Object %p handle %d (%p) has wrong id %d\n",
+                                msg, obj, i, h, h->id);
+                /* Check handle type */
+                dia_assert_true(h->type >= 0 && h->type <= NUM_HANDLE_TYPES,
+                                "%s: Object %p handle %d (%p) has wrong type %d\n",
+                                msg, obj, i, h, h->type);
+                /* Check handle pos is legal pos */
+                /* Check connect type is legal */
+                dia_assert_true(h->connect_type >= 0
+                                && h->connect_type <= HANDLE_CONNECTABLE_NOBREAK,
+                                "%s: Object %p handle %d (%p) has wrong connect type %d\n",
+                                msg, obj, i, h, h->connect_type);
+                /* Check that if connected, connection makes sense */
+                do   /* do...while(FALSE) to make aborting easy */
+                {
+                    ConnectionPoint *cp = h->connected_to;
+                    if (cp != NULL)
+                    {
+                        gboolean found = FALSE;
+                        GList *conns;
+                        if (!dia_assert_true(cp->object != NULL,
+                                             "%s: Handle %d (%p) on object %p connects to CP %p with NULL object\n",
+                                             msg, i, h, obj, cp)) break;
+                        if (!dia_assert_true(cp->object->type != NULL,
+                                             "%s:  Handle %d (%p) on object %p connects to CP %p with untyped object %p\n",
+                                             msg, i, h, obj, cp, cp->object)) break;
+                        if (!dia_assert_true(cp->object->type->name != NULL &&
+                                             g_utf8_validate(cp->object->type->name, -1, NULL),
+                                             "%s:  Handle %d (%p) on object %p connects to CP %p with untyped object %p\n",
+                                             msg, i, h, obj, cp, cp->object)) break;
+                        dia_assert_true(fabs(cp->pos.x - h->pos.x) < 0.0000001 &&
+                                        fabs(cp->pos.y - h->pos.y) < 0.0000001,
+                                        "%s: Handle %d (%p) on object %p has pos %f, %f,\nbut its CP %p of object %p has pos %f, %f\n",
+                                        msg, i, h, obj, h->pos.x, h->pos.y,
+                                        cp, cp->object, cp->pos.x, cp->pos.y);
+                        for (conns = cp->connected; conns != NULL; conns = g_list_next(conns))
+                        {
+                            DiaObject *obj2 = (DiaObject *)conns->data;
+                            int j;
 
-	      for (j = 0; j < obj2->num_handles; j++) {
-		if (obj2->handles[j]->connected_to == cp) found = TRUE;
-	      }
-	    }
-	    dia_assert_true(found == TRUE,
-			    "%s: Handle %d (%p) on object %p is connected to %p on object %p, but is not in its connect list\n",
-			    msg, i, h, obj, cp, cp->object);
-	  }
-	} while (FALSE);
-      }
+                            for (j = 0; j < obj2->num_handles; j++)
+                            {
+                                if (obj2->handles[j]->connected_to == cp) found = TRUE;
+                            }
+                        }
+                        dia_assert_true(found == TRUE,
+                                        "%s: Handle %d (%p) on object %p is connected to %p on object %p, but is not in its connect list\n",
+                                        msg, i, h, obj, cp, cp->object);
+                    }
+                }
+                while (FALSE);
+            }
+        }
+        /* Check the connections */
+        dia_assert_true(obj->num_connections >= 0,
+                        "%s: Object %p has < 0 (%d) connection points\n",
+                        msg, obj, obj->num_connections);
+        if (obj->num_connections != 0)
+        {
+            dia_assert_true(obj->connections != NULL,
+                            "%s: Object %p has NULL connections array\n",
+                            msg, obj);
+        }
+        for (i = 0; i < obj->num_connections; i++)
+        {
+            GList *connected;
+            ConnectionPoint *cp = obj->connections[i];
+            int j;
+            dia_assert_true(cp != NULL, "%s: Object %p has null CP at %d\n", msg, obj, i);
+            if (cp != NULL)
+            {
+                dia_assert_true(cp->object == obj,
+                                "%s: Object %p CP %d (%p) points to other obj %p\n",
+                                msg, obj, i, cp, cp->object);
+                dia_assert_true((cp->directions & (~DIR_ALL)) == 0,
+                                "%s: Object %p CP %d (%p) has illegal directions %d\n",
+                                msg, obj, i, cp, cp->directions);
+                dia_assert_true((cp->flags & CP_FLAGS_MAIN) == cp->flags,
+                                "%s: Object %p CP %d (%p) has illegal flags %d\n",
+                                msg, obj, i, cp, cp->flags);
+                dia_assert_true(cp->name == NULL
+                                || g_utf8_validate(cp->name, -1, NULL),
+                                "%s: Object %p CP %d (%p) has non-UTF8 name %s\n",
+                                msg, obj, i, cp, cp->name);
+                j = 0;
+                for (connected = cp->connected; connected != NULL;
+                        connected = g_list_next(connected))
+                {
+                    DiaObject *obj2;
+                    obj2 = connected->data;
+                    dia_assert_true(obj2 != NULL, "%s: Object %p CP %d (%p) has NULL object at index %d\n",
+                                    msg, obj, i, cp, j);
+                    if (obj2 != NULL)
+                    {
+                        int k;
+                        gboolean found_handle = FALSE;
+                        dia_assert_true(obj2->type->name != NULL &&
+                                        g_utf8_validate(obj2->type->name, -1, NULL),
+                                        "%s: Object %p CP %d (%p) connected to untyped object %p (%s) at index %d\n",
+                                        msg, obj, i, cp, obj2, obj2->type->name, j);
+                        /* Check that connected object points back to this CP */
+                        for (k = 0; k < obj2->num_handles; k++)
+                        {
+                            if (obj2->handles[k] != NULL &&
+                                    obj2->handles[k]->connected_to == cp)
+                            {
+                                found_handle = TRUE;
+                            }
+                        }
+                        dia_assert_true(found_handle,
+                                        "%s: Object %p CP %d (%p) connected to %p (%s) at index %d, but no handle points back\n",
+                                        msg, obj, i, cp, obj2, obj2->type->name, j);
+                    }
+                    j++;
+                }
+            }
+        }
+        /* Check the children */
     }
-    /* Check the connections */
-    dia_assert_true(obj->num_connections >= 0,
-		    "%s: Object %p has < 0 (%d) connection points\n",
-		    msg, obj, obj->num_connections);
-    if (obj->num_connections != 0) {
-      dia_assert_true(obj->connections != NULL,
-		      "%s: Object %p has NULL connections array\n",
-		      msg, obj);
-    }
-    for (i = 0; i < obj->num_connections; i++) {
-      GList *connected;
-      ConnectionPoint *cp = obj->connections[i];
-      int j;
-      dia_assert_true(cp != NULL, "%s: Object %p has null CP at %d\n", msg, obj, i);
-      if (cp != NULL) {
-	dia_assert_true(cp->object == obj,
-			"%s: Object %p CP %d (%p) points to other obj %p\n",
-			msg, obj, i, cp, cp->object);
-	dia_assert_true((cp->directions & (~DIR_ALL)) == 0,
-			"%s: Object %p CP %d (%p) has illegal directions %d\n",
-			msg, obj, i, cp, cp->directions);
-	dia_assert_true((cp->flags & CP_FLAGS_MAIN) == cp->flags,
-			"%s: Object %p CP %d (%p) has illegal flags %d\n",
-			msg, obj, i, cp, cp->flags);
-	dia_assert_true(cp->name == NULL
-			|| g_utf8_validate(cp->name, -1, NULL),
-			"%s: Object %p CP %d (%p) has non-UTF8 name %s\n",
-			msg, obj, i, cp, cp->name);
-	j = 0;
-	for (connected = cp->connected; connected != NULL;
-	     connected = g_list_next(connected)) {
-	  DiaObject *obj2;
-	  obj2 = connected->data;
-	  dia_assert_true(obj2 != NULL, "%s: Object %p CP %d (%p) has NULL object at index %d\n",
-			  msg, obj, i, cp, j);
-	  if (obj2 != NULL) {
-	    int k;
-	    gboolean found_handle = FALSE;
-	    dia_assert_true(obj2->type->name != NULL &&
-			    g_utf8_validate(obj2->type->name, -1, NULL),
-			    "%s: Object %p CP %d (%p) connected to untyped object %p (%s) at index %d\n",
-			    msg, obj, i, cp, obj2, obj2->type->name, j);
-	    /* Check that connected object points back to this CP */
-	    for (k = 0; k < obj2->num_handles; k++) {
-	      if (obj2->handles[k] != NULL &&
-		  obj2->handles[k]->connected_to == cp) {
-		found_handle = TRUE;
-	      }
-	    }
-	    dia_assert_true(found_handle,
-			    "%s: Object %p CP %d (%p) connected to %p (%s) at index %d, but no handle points back\n",
-			    msg, obj, i, cp, obj2, obj2->type->name, j);
-	  }
-	  j++;
-	}
-      }
-    }
-    /* Check the children */
-  }
-  return TRUE;
+    return TRUE;
 }
 
 void
 dia_object_set_meta (DiaObject *obj, const gchar *key, const gchar *value)
 {
-  g_return_if_fail (obj != NULL && key != NULL);
-  if (!obj->meta)
-    obj->meta = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
-  if (value)
-    g_hash_table_insert (obj->meta, g_strdup (key), g_strdup (value));
-  else
-    g_hash_table_remove (obj->meta, key);
+    g_return_if_fail (obj != NULL && key != NULL);
+    if (!obj->meta)
+        obj->meta = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+    if (value)
+        g_hash_table_insert (obj->meta, g_strdup (key), g_strdup (value));
+    else
+        g_hash_table_remove (obj->meta, key);
 }
 
 gchar *
 dia_object_get_meta (DiaObject *obj, const gchar *key)
 {
-  gchar *val;
-  if (!obj->meta)
-    return NULL;
-  val = g_hash_table_lookup (obj->meta, key);
-  return g_strdup (val);
+    gchar *val;
+    if (!obj->meta)
+        return NULL;
+    val = g_hash_table_lookup (obj->meta, key);
+    return g_strdup (val);
 }
 
 gchar *factory_utf8(gchar *str)
@@ -1072,131 +1125,9 @@ gchar *factory_locale(gchar *str)
     return g_locale_from_utf8(_(str),-1,NULL,NULL,NULL);
 }
 
-static Layer *curlayer = NULL;
-
-GtkWidget *factory_get_new_item_head()
-{
-    GtkWidget *hbox = gtk_hbox_new(FALSE,0);
-    GtkWidget *first = gtk_label_new(factory_utf8("序号"));
-    GtkWidget *sec = gtk_label_new(factory_utf8("地址"));
-    GtkWidget *third = gtk_label_new(factory_utf8("行为ID"));
-    GtkWidget *four = gtk_label_new(factory_utf8("操作"));
-    gtk_box_pack_start(GTK_BOX(hbox),first,TRUE,TRUE,0);
-    gtk_box_pack_start(GTK_BOX(hbox),sec,TRUE,TRUE,0);
-    gtk_box_pack_start(GTK_BOX(hbox),third,TRUE,TRUE,0);
-    gtk_box_pack_start(GTK_BOX(hbox),four,TRUE,TRUE,0);
-    gtk_widget_show_all(hbox);
-    return hbox;
-}
-
-void factory_add_item_to_idlist(GtkWidget *self)
-{
-    GtkWidget *vbox  = gtk_widget_get_parent(self);
-    GList *clist =  gtk_container_get_children(GTK_CONTAINER(vbox));
-    int len = g_list_length(clist);
-    GtkWidget *nitem = factory_get_new_item(len-1);
-    gtk_box_pack_start(GTK_BOX(vbox),nitem,FALSE,FALSE,0);
-    gtk_box_reorder_child(GTK_BOX(vbox),self,len);
-    int w = 0;
-    int h = 0;
-    gtk_widget_get_size_request (nitem,&w,&h);
-    GtkWidget *topwid = gtk_widget_get_toplevel(vbox);
-    gtk_widget_set_size_request(topwid,w,h);
-
-    gtk_widget_show_all(vbox);
-}
-
-GtkWidget *factory_new_add_button()
-{
-    GtkWidget *btn = gtk_button_new_from_stock (GTK_STOCK_ADD);
-    g_signal_connect (G_OBJECT (btn), "clicked",
-                      G_CALLBACK (factory_add_item_to_idlist),
-                      NULL);
-    return btn;
-}
 
 
 
-
-GtkWidget *factory_get_new_item(int id)
-{
-    GtkWidget *hbox = gtk_hbox_new(FALSE,1);
-    GtkWidget *first = gtk_label_new(g_strdup_printf("%d",id));
-    GtkWidget *spbox = gtk_spin_button_new_with_range(0,65536,1);
-    GtkWidget *cbox = gtk_combo_box_new_text();
-    gtk_combo_box_popdown(GTK_COMBO_BOX(cbox));
-    GList *p = curlayer->defnames;
-    for(;p ; p = p->next)
-    {
-        gtk_combo_box_append_text(GTK_COMBO_BOX(cbox),p->data);
-    }
-    gtk_combo_box_set_active(GTK_COMBO_BOX(cbox),0);
-
-    GtkWidget *btn_del = gtk_button_new_from_stock(GTK_STOCK_DELETE);
-    gtk_box_pack_start(GTK_BOX(hbox),first,TRUE,TRUE,0);
-    gtk_box_pack_start(GTK_BOX(hbox),spbox,TRUE,TRUE,0);
-    gtk_box_pack_start(GTK_BOX(hbox),cbox,TRUE,TRUE,0);
-    gtk_box_pack_start(GTK_BOX(hbox),btn_del,TRUE,TRUE,0);
-
-    return hbox;
-}
-
-void factory_idlist_dialog(gpointer data)
-{
-        GtkWidget*  subdig = gtk_dialog_new_with_buttons(_("tttt") ,
-                         NULL,
-                         GTK_DIALOG_DESTROY_WITH_PARENT,
-                         GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
-                         GTK_STOCK_OK, GTK_RESPONSE_OK,NULL);
-
-
-    GtkWidget *sdialog = gtk_vbox_new(FALSE,0);
-    gtk_dialog_set_default_response (GTK_DIALOG(subdig), GTK_RESPONSE_OK);
-    GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
-    gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
-    gtk_window_set_resizable (GTK_WINDOW (subdig),TRUE);
-    gtk_widget_set_size_request (GTK_WINDOW (subdig),-1,500);
-    gtk_window_set_policy (GTK_WINDOW (subdig), FALSE, TRUE, TRUE);
-    gtk_window_set_position (GTK_WINDOW(subdig),GTK_WIN_POS_CENTER);
-    gtk_window_present(GTK_WINDOW(subdig));
-
-    GtkWidget  *wid_idlist = gtk_scrolled_window_new (NULL,NULL);
-
-
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(wid_idlist),
-				GTK_POLICY_NEVER,GTK_POLICY_ALWAYS);
-    curlayer = data;
-    GtkWidget *vbox  = gtk_vbox_new(FALSE,5);
-    gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(wid_idlist),vbox);
-    gtk_box_pack_start(GTK_BOX(vbox),factory_get_new_item_head(),FALSE,FALSE,0);
-    gtk_box_pack_start(GTK_BOX(vbox),factory_new_add_button(),FALSE,FALSE,0);
-
-    gtk_box_pack_start(GTK_BOX(sdialog),wid_idlist,TRUE,TRUE,0);
-
-    gtk_widget_show_all(subdig);
-}
-
-void factory_music_filemanager_dialog(gchar *title,GtkAction *action)
-{
-    GtkWidget *sdialog = gtk_vbox_new(FALSE,0);
-    GtkWidget *newdialog = factory_create_new_dialog_with_buttons(title,NULL);
-    GtkWidget *dialog_vbox = GTK_DIALOG(newdialog)->vbox;
-    gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
-    gtk_window_set_resizable (GTK_WINDOW (newdialog),TRUE);
-    gtk_widget_set_size_request (GTK_WINDOW (newdialog),-1,500);
-    GtkWidget  *wid_idlist = gtk_scrolled_window_new (NULL,NULL);
-
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(wid_idlist),
-				GTK_POLICY_NEVER,GTK_POLICY_ALWAYS);
-     GtkWidget *vbox  = gtk_vbox_new(FALSE,5);
-    gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(wid_idlist),vbox);
-    gtk_box_pack_start(GTK_BOX(vbox),factory_get_new_item_head(),FALSE,FALSE,0);
-    gtk_box_pack_start(GTK_BOX(vbox),factory_new_add_button(),FALSE,FALSE,0);
-
-    gtk_box_pack_start(GTK_BOX(sdialog),wid_idlist,TRUE,TRUE,0);
-
-    gtk_widget_show_all(newdialog);
-}
 
 
 GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent)

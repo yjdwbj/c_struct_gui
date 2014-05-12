@@ -147,6 +147,16 @@ void diagram_redraw_all(void);
 
 void diagram_object_modified(Diagram *dia, DiaObject *object);
 
+DIAVAR void factory_idlist_dialog(gchar *title,GtkAction *action);
+void factory_music_filemanager_dialog(gchar *title,GtkAction *action);
+
+
+typedef void (*factory_button_callback)(GtkWidget *self);
+
+void factory_add_item_to_music_manager(GtkWidget *self);
+GtkWidget *factory_new_add_button(factory_button_callback *callback,const gchar *title);
+GtkWidget *factory_get_new_item(int id);
+
 #endif /* DIAGRAM_H */
 
 

@@ -128,7 +128,7 @@
 	"orth_conn.h"
 	"autoroute.h"
 
-1399625701 o:\tool\dvs50\lib\object.h
+1399892749 o:\tool\dvs50\lib\object.h
 	"diatypes.h"
 	<gtk/gtk.h>
 	"geometry.h"
@@ -767,7 +767,7 @@
 	<config.h>
 	"object.h"
 
-1399626409 source:o:\tool\dvs50\lib\object.c
+1399893475 source:o:\tool\dvs50\lib\object.c
 	<config.h>
 	<stdio.h>
 	<string.h>
@@ -1203,7 +1203,7 @@
 	"menus.h"
 	"diarenderer.h"
 
-1398047014 o:\tool\dvs50\app\diagram.h
+1399893347 o:\tool\dvs50\app\diagram.h
 	<gtk/gtk.h>
 	"geometry.h"
 	"handle.h"
@@ -1632,7 +1632,7 @@
 	"geometry.h"
 	"tool.h"
 
-1397637181 source:o:\tool\dvs50\app\display.c
+1399896900 source:o:\tool\dvs50\app\display.c
 	<config.h>
 	<string.h>
 	<stdio.h>
@@ -1865,7 +1865,7 @@
 	"magnify.h"
 	"cursor.h"
 
-1399626033 source:o:\tool\dvs50\app\menus.c
+1399893031 source:o:\tool\dvs50\app\menus.c
 	<config.h>
 	<gtk/gtk.h>
 	<gdk/gdkkeysyms.h>
@@ -2381,7 +2381,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1399878697 source:o:\tool\dvs50\objects\struct\struct_class.c
+1399886170 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2397,7 +2397,7 @@
 	"debug.h"
 	"sheet.h"
 
-1399864957 o:\tool\dvs50\objects\struct\struct_class.h
+1399880783 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"

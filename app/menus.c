@@ -561,12 +561,6 @@ static void factory_create_toolbar_button(const gint8 *icon,gchar *tips,GtkToolb
 
 }
 
-static void factory_idlist_callback(GtkAction *action)
-{
-    DDisplay *ddisp = ddisplay_active();
-    if(ddisp)
-        factory_idlist_dialog(ddisp->diagram->data->active_layer);
-}
 
 
 /**
@@ -668,7 +662,7 @@ create_integrated_ui_toolbar (void)
 
     factory_create_toolbar_button(audio_list,"音频文件管理",toolbar,factory_music_filemanager_dialog);
 
-    factory_create_toolbar_button(idlist,"ID 列表",toolbar,factory_idlist_callback);
+    factory_create_toolbar_button(idlist,"ID 列表",toolbar,factory_idlist_dialog);
 
 
     gtk_widget_show (GTK_WIDGET (sep));

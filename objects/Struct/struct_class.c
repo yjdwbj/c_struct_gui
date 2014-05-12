@@ -2247,12 +2247,10 @@ void factory_read_union_button_from_file(STRUCTClass *fclass,ObjectNode obtn_nod
     while(obtn_node = data_next(obtn_node))
     {
         key = xmlGetProp(obtn_node,(xmlChar *)"name");
-        if(key)
-        {
+        if(!key) continue;
             gchar *skey = factory_get_last_section((gchar*)key,".");
             FactoryStructItem *sitem = factory_get_factorystructitem(sbtn->structlist,skey);
-            if(!sitem)
-                continue;
+            if(!sitem)  continue;
             sitem->orgclass = fclass;
 
             /* 这里不确定,要注与保存的一致*/
@@ -2270,12 +2268,8 @@ void factory_read_union_button_from_file(STRUCTClass *fclass,ObjectNode obtn_nod
                 nnode->type = g_strdup((gchar*)key);
                 xmlFree(key);
                 factory_read_object_value_from_file(nnode,sitem,obtn_node);
-//                gchar *hkey =  g_strjoin("##",sitem->FType,sitem->Name,NULL);
-//                g_hash_table_insert(sbtn->htoflist,g_strdup(hkey),nnode);
                 sbtn->savelist = g_list_append(sbtn->savelist,nnode);
             }
-
-        }
     }
 
 }
@@ -2289,232 +2283,228 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         sss->type  =  g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);/* 找到数据类型 */
         xmlFree (key);
     }
-
     key = xmlGetProp(attr_node,(xmlChar *)"wtype"); /* 显示控件类型 */
-    if(key)
+    if(!key) return NULL;
+
+    if(!g_ascii_strncasecmp((gchar*)key,"ECOMBO",6))
     {
-        if(!g_ascii_strncasecmp((gchar*)key,"ECOMBO",6))
+        sss->celltype = ECOMBO;
+        /* 2014-3-26 lcy 通过名字去哈希表里找链表*/
+        gchar *skey = factory_get_last_section(sss->type,".");
+
+        GList *targettable = g_hash_table_lookup(fclass->EnumsAndStructs->enumTable,skey);
+        g_free(skey);
+        SaveEnum *sen = &sss->value.senum;
+        if(targettable)
         {
-            sss->celltype = ECOMBO;
-            /* 2014-3-26 lcy 通过名字去哈希表里找链表*/
-            gchar *skey = factory_get_last_section(sss->type,".");
-
-            GList *targettable = g_hash_table_lookup(fclass->EnumsAndStructs->enumTable,skey);
-            g_free(skey);
-            SaveEnum *sen = &sss->value.senum;
-            if(targettable)
-            {
-                sen->enumList = targettable;
-                GList *t  = targettable;
-                key = xmlGetProp(attr_node,(xmlChar *)"value");
-                if((gchar*)key)
-                    for(; t != NULL ; t = t->next)
-                    {
-                        FactoryStructEnum *fse = t->data;
-                        if(0 == g_ascii_strncasecmp(fse->value,(gchar*)key,strlen((gchar*)key)))
-                        {
-                            sen->evalue = g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);
-                            sen->index = g_list_index(targettable,fse);
-                            break;
-                        }
-                    }
-
-                xmlFree(key);
-                key = xmlGetProp(attr_node,(xmlChar *)"width");
-                if(key)
-                    sen->width = g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);
-                xmlFree(key);
-            }
-
-        }
-        else if(0== g_ascii_strncasecmp((gchar*)key,"ENTRY",5))
-        {
+            sen->enumList = targettable;
+            GList *t  = targettable;
             key = xmlGetProp(attr_node,(xmlChar *)"value");
-//                    if(key)
-//                        sss->value.text = g_locale_to_utf8(key,-1,NULL,NULL,NULL);
-            xmlFree(key);
-            sss->celltype = ENTRY;
-        }
-        else if(!g_ascii_strncasecmp((gchar*)key,"OCOMBO",6))
-        {
-            sss->celltype = OCOMBO;
-            NextID *nid = &sss->value.nextid;
-
-            ActionID *aid = factory_read_object_comobox_value_from_file(attr_node);
-            if(g_list_length(nid->actlist) == 1)
-            {
-                ActionID *exists = nid->actlist->data;
-                *exists = *aid;
-            }
-            else
-                nid->actlist = g_list_append(nid->actlist,aid);
-        }
-        else if(!g_ascii_strncasecmp((gchar*)key,"OBTN",4))
-        {
-            sss->celltype = OBTN;
-            sss->isPointer = TRUE;
-            sss->newdlg_func = factory_create_objectbutton_dialog;
-            sss->close_func = factory_save_objectbutton_dialog;
-            NextID *nid = &sss->value.nextid;
-            /* 读它下面的子节点 */
-            g_list_free1(nid->actlist); /* 这里是清理掉默认值 */
-            nid->actlist = NULL;
-            AttributeNode obtn_node  =  attr_node->xmlChildrenNode;
-            while (obtn_node != NULL)
-            {
-                if (xmlIsBlankNode(obtn_node))
+            if((gchar*)key)
+                for(; t != NULL ; t = t->next)
                 {
-                    obtn_node = obtn_node->next;
-                    continue;
-                }
-                if ( obtn_node  && (strcmp((char *) obtn_node->name, "JL_item")==0) )
-                {
-                    key = xmlGetProp(obtn_node,(xmlChar *)"name");
-                    if(key)
+                    FactoryStructEnum *fse = t->data;
+                    if(0 == g_ascii_strncasecmp(fse->value,(gchar*)key,strlen((gchar*)key)))
                     {
-                        ActionID *aid = factory_read_object_comobox_value_from_file(obtn_node);
-                        nid->actlist = g_list_append(nid->actlist,aid);
-                    }
-                    xmlFree(key);
-                }
-                obtn_node = obtn_node->next;
-            }
-
-        }
-        else if(!g_ascii_strncasecmp((gchar*)key,"UBTN",6))
-        {
-            sss->celltype = UCOMBO;
-            SaveUnion *suptr = &sss->value.sunion;
-            key = xmlGetProp(attr_node,(xmlChar *)"index");
-            if(key)
-                suptr->index  = atoi((gchar*)key);
-            xmlFree(key);
-            key = xmlGetProp(attr_node,(xmlChar *)"type");
-            if(key)
-                sss->type = g_strdup((gchar*)key);
-            xmlFree(key);
-            GList *slist;
-            if(key)
-            {
-                /* 通过类型名 找到对应的联合体 */
-                slist =  g_hash_table_lookup(fclass->EnumsAndStructs->unionTable,(gchar*)sss->type);
-            }
-
-            g_hash_table_insert(suptr->saveVal,suptr->curkey,sss);
-
-            /* 读它下面的子节点 */
-            AttributeNode obtn_node  =  attr_node->xmlChildrenNode;
-            while (obtn_node != NULL)
-            {
-                if (xmlIsBlankNode(obtn_node))
-                {
-                    obtn_node = obtn_node->next;
-                    continue;
-                }
-                if ( obtn_node  && (strcmp((char *) obtn_node->name, "JL_item")==0) )
-                {
-                    break;
-                }
-                obtn_node = obtn_node->next;
-            }
-            FactoryStructItem *nextobj =  g_list_nth_data(slist,suptr->index);
-            suptr->structlist = slist;
-
-            if(!nextobj)
-                return ; /* 没有找到控件原型,可能出错了. */
-            suptr->curkey = g_strjoin("##",nextobj->FType,nextobj->Name,NULL);
-            suptr->curtext = g_strdup(nextobj->Name);
-            SaveStruct *nsitm = factory_get_savestruct(nextobj);/* 紧跟它下面的控件名 */
-            if(nsitm)
-            {
-                nsitm->sclass = sss->sclass;
-                SaveUbtn *sbtn = &nsitm->value.ssubtn;
-                factory_strjoin(&nsitm->name,sss->name,".");
-                /* 把当前选择的成员初始化保存到哈希表 */
-//                sbtn->htoflist = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-                sbtn->structlist = nextobj->datalist;
-                sbtn->savelist = NULL;
-                factory_read_union_button_from_file(sss->sclass,obtn_node->prev,sbtn);
-                g_hash_table_insert(suptr->saveVal,suptr->curkey,nsitm);
-            }
-
-        }
-        else if(!g_ascii_strncasecmp((gchar*)key,"OCOMBO",6))
-        {
-            sss->celltype = UBTN;
-            sss->isPointer = TRUE;
-            SaveUbtn *sbtn = &sss->value.ssubtn;
-            sbtn->structlist = fst->datalist;
-            sbtn->savelist = NULL;
-            sss->newdlg_func = factory_create_unionbutton_dialog;
-            sss->close_func = factory_save_unionbutton_dialog;
-//            sbtn->htoflist = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-        }
-        else if(!g_ascii_strncasecmp((gchar*)key,"BBTN",4))
-        {
-            SaveEntry *sey  = &sss->value.sentry;
-            sss->celltype = BBTN;
-            sss->isPointer = TRUE;
-            sss->newdlg_func = factory_create_basebutton_dialog;
-            sss->close_func = factory_save_basebutton_dialog;
-
-            factory_handle_entry_item(sey,fst);
-            key = xmlGetProp(attr_node,(xmlChar *)"value");
-            g_list_free1(sey->data);
-            sey->data = NULL;
-            if(key)
-            {
-                gchar **split = g_strsplit((gchar*)key,",",-1);
-                int len = g_strv_length(split);
-                int n = 0;
-                for(; n < len; n++)
-                {
-                    sey->data = g_list_append(sey->data,g_strdup(split[n]));
-                }
-                g_strfreev(split);
-            }
-            xmlFree(key);
-        }
-        else if(!g_ascii_strncasecmp((gchar*)key,"EBTN",4))
-        {
-            sss->celltype = EBTN;
-            factory_inital_ebtn(sss,fst);
-            SaveEbtn *sebtn = &sss->value.ssebtn;
-            key = xmlGetProp(attr_node,(xmlChar *)"value");
-            if(key)
-            {
-                gchar **split = g_strsplit((gchar*)key,",",-1);
-                int len = g_strv_length(split);
-                int n = 0;
-                for(; n < len; n++)
-                {
-                    SaveEnumArr *sea = g_list_nth_data(sebtn->ebtnwlist,n);
-                    SaveEnum *se = sea->senum;
-                    se->evalue = g_strdup(split[n]);
-                    GList *tlist  = sebtn->ebtnslist;
-                    for(;tlist; tlist = tlist->next)
-                    {
-                        FactoryStructEnum *fse = tlist->data;
-                        if(!g_ascii_strcasecmp(fse->value,se->evalue))
-                        {
-                            se->index = g_list_index(sebtn->ebtnslist,fse);
-                            break;
-                        }
+                        sen->evalue = g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);
+                        sen->index = g_list_index(targettable,fse);
+                        break;
                     }
                 }
-                g_strfreev(split);
-            }
+
             xmlFree(key);
+            key = xmlGetProp(attr_node,(xmlChar *)"width");
+            if(key)
+                sen->width = g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);
+            xmlFree(key);
+        }
+
+    }
+    else if(0== g_ascii_strncasecmp((gchar*)key,"ENTRY",5))
+    {
+        key = xmlGetProp(attr_node,(xmlChar *)"value");
+        xmlFree(key);
+        sss->celltype = ENTRY;
+    }
+    else if(!g_ascii_strncasecmp((gchar*)key,"OCOMBO",6))
+    {
+        sss->celltype = OCOMBO;
+        NextID *nid = &sss->value.nextid;
+
+        ActionID *aid = factory_read_object_comobox_value_from_file(attr_node);
+        if(g_list_length(nid->actlist) == 1)
+        {
+            ActionID *exists = nid->actlist->data;
+            *exists = *aid;
         }
         else
-        {
-            key = xmlGetProp(attr_node,(xmlChar *)"value");
-            if(key)
-                sss->value.vnumber = g_strdup((gchar*)key);
-            xmlFree(key);
-            sss->celltype = SPINBOX;
-        }
+            nid->actlist = g_list_append(nid->actlist,aid);
     }
+    else if(!g_ascii_strncasecmp((gchar*)key,"OBTN",4))
+    {
+        sss->celltype = OBTN;
+        sss->isPointer = TRUE;
+        sss->newdlg_func = factory_create_objectbutton_dialog;
+        sss->close_func = factory_save_objectbutton_dialog;
+        NextID *nid = &sss->value.nextid;
+        /* 读它下面的子节点 */
+        g_list_free1(nid->actlist); /* 这里是清理掉默认值 */
+        nid->actlist = NULL;
+        AttributeNode obtn_node  =  attr_node->xmlChildrenNode;
+        while (obtn_node != NULL)
+        {
+            if (xmlIsBlankNode(obtn_node))
+            {
+                obtn_node = obtn_node->next;
+                continue;
+            }
+            if ( obtn_node  && (strcmp((char *) obtn_node->name, "JL_item")==0) )
+            {
+                key = xmlGetProp(obtn_node,(xmlChar *)"name");
+                if(key)
+                {
+                    ActionID *aid = factory_read_object_comobox_value_from_file(obtn_node);
+                    nid->actlist = g_list_append(nid->actlist,aid);
+                }
+                xmlFree(key);
+            }
+            obtn_node = obtn_node->next;
+        }
+
+    }
+    else if(!g_ascii_strncasecmp((gchar*)key,"UBTN",6))
+    {
+        sss->celltype = UCOMBO;
+        SaveUnion *suptr = &sss->value.sunion;
+        key = xmlGetProp(attr_node,(xmlChar *)"index");
+        if(key)
+            suptr->index  = atoi((gchar*)key);
+        xmlFree(key);
+        key = xmlGetProp(attr_node,(xmlChar *)"type");
+        if(key)
+            sss->type = g_strdup((gchar*)key);
+        xmlFree(key);
+        GList *slist;
+        if(key)
+        {
+            /* 通过类型名 找到对应的联合体 */
+            slist =  g_hash_table_lookup(fclass->EnumsAndStructs->unionTable,(gchar*)sss->type);
+        }
+
+        g_hash_table_insert(suptr->saveVal,suptr->curkey,sss);
+
+        /* 读它下面的子节点 */
+        AttributeNode obtn_node  =  attr_node->xmlChildrenNode;
+        while (obtn_node != NULL)
+        {
+            if (xmlIsBlankNode(obtn_node))
+            {
+                obtn_node = obtn_node->next;
+                continue;
+            }
+            if ( obtn_node  && (strcmp((char *) obtn_node->name, "JL_item")==0) )
+            {
+                break;
+            }
+            obtn_node = obtn_node->next;
+        }
+        FactoryStructItem *nextobj =  g_list_nth_data(slist,suptr->index);
+        suptr->structlist = slist;
+
+        if(!nextobj)
+            return ; /* 没有找到控件原型,可能出错了. */
+        suptr->curkey = g_strjoin("##",nextobj->FType,nextobj->Name,NULL);
+        suptr->curtext = g_strdup(nextobj->Name);
+        SaveStruct *nsitm = factory_get_savestruct(nextobj);/* 紧跟它下面的控件名 */
+        if(nsitm)
+        {
+            nsitm->sclass = sss->sclass;
+            SaveUbtn *sbtn = &nsitm->value.ssubtn;
+            factory_strjoin(&nsitm->name,sss->name,".");
+            /* 把当前选择的成员初始化保存到哈希表 */
+//                sbtn->htoflist = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+            sbtn->structlist = nextobj->datalist;
+            sbtn->savelist = NULL;
+            factory_read_union_button_from_file(sss->sclass,obtn_node->prev,sbtn);
+            g_hash_table_insert(suptr->saveVal,suptr->curkey,nsitm);
+        }
+
+    }
+    else if(!g_ascii_strncasecmp((gchar*)key,"UBTN",6))
+    {
+        sss->celltype = UCOMBO; /* 这里的UBTN -> UCOMBO　没有搞错，上面还有对应相反的 */
+        sss->isPointer = TRUE;
+        SaveUbtn *sbtn = &sss->value.ssubtn;
+        sbtn->structlist = fst->datalist;
+        sbtn->savelist = NULL;
+        sss->newdlg_func = factory_create_unionbutton_dialog;
+        sss->close_func = factory_save_unionbutton_dialog;
+//            sbtn->htoflist = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+    }
+    else if(!g_ascii_strncasecmp((gchar*)key,"BBTN",4))
+    {
+        SaveEntry *sey  = &sss->value.sentry;
+        sss->celltype = BBTN;
+        sss->isPointer = TRUE;
+        sss->newdlg_func = factory_create_basebutton_dialog;
+        sss->close_func = factory_save_basebutton_dialog;
+
+        factory_handle_entry_item(sey,fst);
+        key = xmlGetProp(attr_node,(xmlChar *)"value");
+        g_list_free1(sey->data); sey->data = NULL;
+        if(key)
+        {
+            gchar **split = g_strsplit((gchar*)key,",",-1);
+            int len = g_strv_length(split);
+            int n = 0;
+            for(; n < len; n++)
+            {
+                sey->data = g_list_append(sey->data,g_strdup(split[n]));
+            }
+            g_strfreev(split);
+        }
+        xmlFree(key);
+    }
+    else if(!g_ascii_strncasecmp((gchar*)key,"EBTN",4))
+    {
+        sss->celltype = EBTN;
+        factory_inital_ebtn(sss,fst);
+        SaveEbtn *sebtn = &sss->value.ssebtn;
+        key = xmlGetProp(attr_node,(xmlChar *)"value");
+        if(key)
+        {
+            gchar **split = g_strsplit((gchar*)key,",",-1);
+            int len = g_strv_length(split);
+            int n = 0;
+            for(; n < len; n++)
+            {
+                SaveEnumArr *sea = g_list_nth_data(sebtn->ebtnwlist,n);
+                SaveEnum *se = sea->senum;
+                se->evalue = g_strdup(split[n]);
+                GList *tlist  = sebtn->ebtnslist;
+                for(; tlist; tlist = tlist->next)
+                {
+                    FactoryStructEnum *fse = tlist->data;
+                    if(!g_ascii_strcasecmp(fse->value,se->evalue))
+                    {
+                        se->index = g_list_index(sebtn->ebtnslist,fse);
+                        break;
+                    }
+                }
+            }
+            g_strfreev(split);
+        }
+        xmlFree(key);
+    }
+    else
+    {
+        key = xmlGetProp(attr_node,(xmlChar *)"value");
+        if(key)
+            sss->value.vnumber = g_strdup((gchar*)key);
+        xmlFree(key);
+        sss->celltype = SPINBOX;
+    }
+
 
 
 }
@@ -2524,11 +2514,8 @@ GList *factory_get_list_from_hashtable(STRUCTClass *fclass)
     FactoryStructItemList *fsil = g_hash_table_lookup(fclass->EnumsAndStructs->structTable,
                                   fclass->element.object.name);
     GList *tlist = NULL;
-
     if(fsil)
-    {
         tlist =  fsil->list;
-    }
     return tlist;
 }
 
@@ -3012,14 +2999,6 @@ factory_handle_entry_item(SaveEntry* sey,FactoryStructItem *fst)
 static void
 structclass_destroy(STRUCTClass *structclass)
 {
-//  GList *list;
-//  STRUCTAttribute *attr;
-//  STRUCTOperation *op;
-//  STRUCTFormalParameter *param;
-
-#ifdef DEBUG
-    structclass_sanity_check(structclass, "Destroying");
-#endif
 
     structclass->destroyed = TRUE;
 
@@ -3076,15 +3055,9 @@ structclass_destroy(STRUCTClass *structclass)
     {
         structclass_dialog_free (structclass->properties_dialog);
     }
-    GList *targetlist = structclass->widgetSave;
-    for(; targetlist; targetlist = targetlist->next)
-    {
-        SaveStruct *sss = targetlist->data;
-        gtk_widget_destroy(sss->widget1);
-        gtk_widget_destroy(sss->widget2);
-        sss->widget1 = NULL;
-        sss->widget2 = NULL;
-    }
+
+    g_list_free1(structclass->widgetSave);
+
 
 }
 
@@ -3339,6 +3312,8 @@ static void factory_write_object_comobox(ActionID *aid,ObjectNode ccc )
     xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)aid->title_name);
 //                    xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
     xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf(_("%d"),aid->index));
+
+
     xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)aid->value);
 
 
@@ -3360,13 +3335,21 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
     }
     break;
     case OCOMBO:
-    {   /*每一项用JL_item 做节点名，存放多个属性*/
+    {
+        /*每一项用JL_item 做节点名，存放多个属性*/
         ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
         xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
         NextID *nid  = &sss->value.nextid;
         GList *tlist = nid->actlist;
-        factory_write_object_comobox(g_list_first(tlist)->data,ccc);
+        ActionID *aid = g_list_first(tlist)->data;
+        STRUCTClass *fclass = factory_find_diaobject_by_name(curLayer,aid->pre_name);
+        if(fclass && fclass->widgetSave->data) /* 防止自身ＩＤ更新 */
+        {
+            SaveStruct *tmp = fclass->widgetSave->data;
+            aid->value = g_strdup(tmp->value.vnumber);
+        }
+        factory_write_object_comobox(aid,ccc);
     }
     break;
     case OBTN:
@@ -3383,6 +3366,13 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
             xmlSetProp(obtn, (const xmlChar *)"name", (xmlChar *)sss->name);
             xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
             xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
+            STRUCTClass *fclass = factory_find_diaobject_by_name(curLayer,aid->pre_name);
+            if(fclass && fclass->widgetSave->data) /* 防止自身ＩＤ更新 */
+            {
+                SaveStruct *tmp = fclass->widgetSave->data;
+                aid->value = g_strdup(tmp->value.vnumber);
+            }
+
             factory_write_object_comobox(tlist->data,ccc);
         }
     }
@@ -3398,7 +3388,6 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
             xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
             if(tsst->isPointer)
             {
-//                xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)tsst->type);
                 xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"UBTN");
                 xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf("%d",suptr->index));
                 factory_base_struct_save_to_file(tsst,ccc); /* 递归调用本函数 */

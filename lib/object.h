@@ -608,14 +608,12 @@ DIAVAR gchar *dia_object_get_meta (DiaObject *obj, const gchar *key);
 
 DIAVAR gchar *factory_utf8(gchar *str);
 DIAVAR gchar *factory_locale(gchar *str);
-
-DIAVAR void factory_systemdata_dialog(GtkAction *action);
-DIAVAR void factory_idlist_dialog(gpointer data);
-DIAVAR void factory_music_filemanager_dialog(gchar *title,GtkAction *action);
-
 DIAVAR GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent);
-GtkWidget *factory_new_add_button();
-GtkWidget *factory_get_new_item(int id);
+
+
+
+
+
 
 G_END_DECLS
 
