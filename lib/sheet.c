@@ -417,6 +417,17 @@ static void factory_check_struct_items_valid(gpointer key, gpointer value, gpoin
 
 }
 
+
+gchar *factory_get_utf8_str(gboolean isutf8,gchar *str)
+{
+    gchar *p = NULL;
+    if(isutf8)
+        p = g_strdup(str);
+    else
+        p = g_strdup(factory_utf8(str));
+    return p;
+}
+
 void factoryReadDataFromFile(const gchar* filename)
 {
 #define MAX_LINE 1024
@@ -425,7 +436,7 @@ void factoryReadDataFromFile(const gchar* filename)
     factoryContainer->structTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
     factoryContainer->enumTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
     factoryContainer->unionTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-
+    gboolean isutf8 = FALSE;
     struct stat statbuf;
 
     FILE *fd;
@@ -449,6 +460,8 @@ void factoryReadDataFromFile(const gchar* filename)
     fgets(filetxt,MAX_LINE,fd);
 
     aline = g_strdup(g_strstrip(filetxt));
+
+
     if(g_ascii_strncasecmp(aline,_(":version="),9))
     {
         gchar *msg_err = g_locale_to_utf8(_("文件格式错误,找不到文件上的版本信息!\n"),-1,NULL,NULL,NULL);
@@ -487,19 +500,26 @@ void factoryReadDataFromFile(const gchar* filename)
 
     int curline = 0;
 
+    gchar *dot = g_strdup(".");
+    gchar *u_dot = factory_utf8(".");
+
+    gchar *tdot = g_strdup(":");
+    gchar *u_tdot = factory_utf8(":");
+
     while(fgets(filetxt,MAX_LINE,fd)!=NULL)
     {
 
-    curline++;
+        curline++;
 
         aline = g_strstrip(filetxt);
+
         if(!g_ascii_strncasecmp(aline,_(":version="),9))
             continue;
-
+        isutf8 = g_utf8_validate(aline,-1,NULL);
         if(aline[0]==':')
         {
             gchar ** sbuf=NULL;
-            sbuf=  g_strsplit_set (filetxt,":",-1);
+            sbuf=  g_strsplit_set (filetxt,isutf8 ? u_tdot : tdot,-1);
 
             if(g_strv_length(sbuf) < 3)
             {
@@ -511,34 +531,31 @@ void factoryReadDataFromFile(const gchar* filename)
                 isEmnu = TRUE;
                 zero = 0;
                 enumlist = NULL;
-                //   fsel = g_new0(FactoryStructEnumList,1);
-                hashKey = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
-                //hashValue = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-
             }
             else if( 0 == g_ascii_strncasecmp("Struct",sbuf[1],6)) // 2014-3-20 lcy 这里匹配到结构体名字.
             {
                 isStruct = TRUE;
                 fssl = g_new0(FactoryStructItemList,1);
-                fssl->sname = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
-                fssl->vname = g_locale_to_utf8(sbuf[4],-1,NULL,NULL,NULL);
+                fssl->sname = factory_get_utf8_str(isutf8,sbuf[2]);;
+                fssl->vname = factory_get_utf8_str(isutf8,sbuf[4]);;
                 fssl->isvisible = FALSE;
                 if(!g_ascii_strcasecmp("action",sbuf[3])|| !g_ascii_strcasecmp("system",sbuf[3]))
                 {
                     fssl->isvisible = TRUE;
                 }
-                fssl->sfile = g_locale_to_utf8(sbuf[5],-1,NULL,NULL,NULL);
+                fssl->sfile = factory_get_utf8_str(isutf8,sbuf[5]);;
                 fssl->list = NULL;
                 fssl->number = n++;
                 dlist = NULL;
-                hashKey = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
+
             }
             else if( 0 == g_ascii_strncasecmp("union",sbuf[1],5))
             {
                 isUnion = TRUE;
                 dlist = NULL;
-                hashKey = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
+
             }
+            hashKey = factory_get_utf8_str(isutf8,sbuf[2]);
             g_strfreev(sbuf);
         }
         else if(aline[0] == '{' )
@@ -571,18 +588,18 @@ void factoryReadDataFromFile(const gchar* filename)
                 continue;
             FactoryStructEnum *kvmap  = g_new0(FactoryStructEnum,1);
             gchar ** sbuf=NULL;
-            sbuf=  g_strsplit_set (aline,":",-1);
+            sbuf=  g_strsplit_set (aline,isutf8 ? u_tdot : tdot,-1);
             if( g_strv_length(sbuf) <2)
             {
-                kvmap->key = factory_utf8(sbuf[0]);
+                kvmap->key = factory_get_utf8_str(isutf8,sbuf[0]);
                 kvmap->value = factory_utf8(g_strdup_printf("%d",zero++));
             }
             else
             {
                 /* 2014-3-25 lcy 这里把上一个枚举值存下来，做为下一个没有指定值的时候在此基础上递增。*/
                 zero = g_ascii_strtod(sbuf[1],NULL);
-                kvmap->key = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
-                kvmap->value = g_locale_to_utf8(sbuf[1],-1,NULL,NULL,NULL);
+                kvmap->key = factory_get_utf8_str(isutf8,sbuf[0]);
+                kvmap->value =factory_get_utf8_str(isutf8,sbuf[1]);
             }
             // fsel->list  =  g_list_append(fsel->list ,kvmap);
 
@@ -600,28 +617,28 @@ void factoryReadDataFromFile(const gchar* filename)
             item->savestruct = NULL;
             item->orgclass = NULL;
             //  sscanf(&aline,"%[^:]:%[^:]:%[^:]:%[^:]:%[^:]:%[^:]",sbuf[0],sbuf[1],sbuf[2],sbuf[3],sbuf[4],sbuf[5]);
-            sbuf=  g_strsplit_set (filetxt,":",-1);
+            sbuf=  g_strsplit_set (filetxt,isutf8 ? u_tdot : tdot,-1);
 
             if( g_strv_length(sbuf) <MAX_SECTION)
                 continue;
 
-            item->FType = g_locale_to_utf8(sbuf[0],-1,NULL,NULL,NULL);
+            item->FType = factory_get_utf8_str(isutf8,sbuf[0]);
 
-            gchar **p = g_strsplit(item->FType,".",-1);
+            gchar **p = g_strsplit(item->FType,isutf8 ? u_dot : dot,-1);
             int l = g_strv_length(p);
-            item->SType = g_locale_to_utf8(p[l-1],-1,NULL,NULL,NULL);
+            item->SType = factory_get_utf8_str(isutf8,p[l-1]);
             g_strfreev(p);
             item->Itype = NT;
             if(factory_is_base_type(item->SType))
             {
                 item->Itype = BT;
             }
-            item->Name = g_locale_to_utf8(sbuf[1],-1,NULL,NULL,NULL);
-            item->Cname = g_locale_to_utf8(sbuf[2],-1,NULL,NULL,NULL);
-            item->Value = g_locale_to_utf8(sbuf[3],-1,NULL,NULL,NULL);
-            item->Min = g_locale_to_utf8(sbuf[4],-1,NULL,NULL,NULL);
-            item->Max = g_locale_to_utf8(sbuf[5],-1,NULL,NULL,NULL);
-            item->Comment = g_locale_to_utf8(sbuf[6],-1,NULL,NULL,NULL);
+            item->Name = factory_get_utf8_str(isutf8,sbuf[1]);
+            item->Cname = factory_get_utf8_str(isutf8,sbuf[2]);
+            item->Value = factory_get_utf8_str(isutf8,sbuf[3]);
+            item->Min = factory_get_utf8_str(isutf8,sbuf[4]);
+            item->Max = factory_get_utf8_str(isutf8,sbuf[5]);
+            item->Comment = factory_get_utf8_str(isutf8,sbuf[6]);
             dlist = g_list_append(dlist,item);
             g_strfreev(sbuf);
         }

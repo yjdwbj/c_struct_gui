@@ -482,6 +482,7 @@ ensure_pluginrc(void)
   if (!pluginrc) {
     pluginrc = xmlNewDoc((const xmlChar *)"1.0");
     pluginrc->encoding = xmlStrdup((const xmlChar *)"UTF-8");
+
     xmlDocSetRootElement(pluginrc,
 			 xmlNewDocNode(pluginrc, NULL, (const xmlChar *)"plugins", NULL));
   }

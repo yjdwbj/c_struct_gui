@@ -950,6 +950,7 @@ diagram_data_write_doc(DiagramData *data, const char *filename)
 
     doc = xmlNewDoc((const xmlChar *)"1.0");
     doc->encoding = xmlStrdup((const xmlChar *)"UTF-8");
+
     doc->xmlRootNode = xmlNewDocNode(doc, NULL, (const xmlChar *)"diagram", NULL);
 
     name_space = xmlNewNs(doc->xmlRootNode,

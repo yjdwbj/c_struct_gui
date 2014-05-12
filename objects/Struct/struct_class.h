@@ -115,6 +115,7 @@ typedef struct _ActionId ActionID;
 struct _ActionId
 {
     int index; // comobox index
+    gchar* value;
     gchar *pre_name;
     gchar *title_name;
 };
@@ -391,6 +392,9 @@ void factory_save_enumbutton_dialog(GtkWidget *widget,gint response_id,gpointer 
 void factory_save_objectbutton_dialog(GtkWidget *widget,gint  response_id,gpointer   user_data);
 void factory_save_unionbutton_dialog(GtkWidget *widget,gint       response_id,gpointer   user_data);
 void factory_save_basebutton_dialog(GtkWidget *widget,gint       response_id,gpointer   user_data);
+
+
+void factory_inital_ebtn(SaveStruct *sss,const FactoryStructItem *fst);
 
 
 static GList* factory_get_objects_from_layer(Layer *layer);

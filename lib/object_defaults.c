@@ -407,6 +407,7 @@ dia_object_defaults_save (const gchar *filename)
 
     doc = xmlNewDoc((const xmlChar *)"1.0");
     doc->encoding = xmlStrdup((const xmlChar *)"UTF-8");
+
     doc->xmlRootNode = xmlNewDocNode(doc, NULL, (const xmlChar *)"diagram", NULL);
 
     ni.name_space = xmlNewNs(doc->xmlRootNode,

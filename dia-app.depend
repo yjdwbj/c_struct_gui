@@ -14,7 +14,7 @@
 	"widgets.h"
 	"intl.h"
 
-1394600884 o:\tool\dvs50\config.h
+1399880185 o:\tool\dvs50\config.h
 
 1394617928 o:\tool\dvs50\lib\message.h
 	<stdarg.h>
@@ -810,7 +810,7 @@
 	"object.h"
 	"boundingbox.h"
 
-1399632701 source:o:\tool\dvs50\lib\object_defaults.c
+1399857930 source:o:\tool\dvs50\lib\object_defaults.c
 	<config.h>
 	<stdlib.h>
 	<string.h>
@@ -852,7 +852,7 @@
 	"parent.h"
 	<glib.h>
 
-1257604114 source:o:\tool\dvs50\lib\persistence.c
+1399857930 source:o:\tool\dvs50\lib\persistence.c
 	"config.h"
 	<stdio.h>
 	<string.h>
@@ -867,7 +867,7 @@
 	<gtk/gtk.h>
 	<libxml/tree.h>
 
-1396340110 source:o:\tool\dvs50\lib\plug-ins.c
+1399857930 source:o:\tool\dvs50\lib\plug-ins.c
 	<config.h>
 	<stdlib.h>
 	<string.h>
@@ -1051,7 +1051,7 @@
 	"message.h"
 	"diagdkrenderer.h"
 
-1399627452 source:o:\tool\dvs50\lib\sheet.c
+1399861325 source:o:\tool\dvs50\lib\sheet.c
 	<config.h>
 	<stdlib.h>
 	<string.h>
@@ -1829,7 +1829,7 @@
 	"intl.h"
 	<math.h>
 
-1399537407 source:o:\tool\dvs50\app\load_save.c
+1399857930 source:o:\tool\dvs50\app\load_save.c
 	<config.h>
 	<sys/stat.h>
 	<unistd.h>
@@ -2069,7 +2069,7 @@
 	"intl.h"
 	"persistence.h"
 
-1397646696 source:o:\tool\dvs50\app\sheets_dialog_callbacks.c
+1399857930 source:o:\tool\dvs50\app\sheets_dialog_callbacks.c
 	<config.h>
 	<errno.h>
 	<string.h>
@@ -2381,7 +2381,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1399641043 source:o:\tool\dvs50\objects\struct\struct_class.c
+1399878697 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2397,7 +2397,7 @@
 	"debug.h"
 	"sheet.h"
 
-1399620338 o:\tool\dvs50\objects\struct\struct_class.h
+1399864957 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2413,7 +2413,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1399638472 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1399877198 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>

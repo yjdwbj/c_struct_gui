@@ -1691,6 +1691,7 @@ write_user_sheet(Sheet *sheet)
 
   doc = xmlNewDoc((const xmlChar *)"1.0");
   doc->encoding = xmlStrdup((const xmlChar *)"UTF-8");
+
   doc->standalone = FALSE;
   root = xmlNewDocNode(doc, NULL, (const xmlChar *)"sheet", NULL);
   doc->xmlRootNode = root;

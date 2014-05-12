@@ -2475,6 +2475,37 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
             }
             xmlFree(key);
         }
+        else if(!g_ascii_strncasecmp((gchar*)key,"EBTN",4))
+        {
+            sss->celltype = EBTN;
+            factory_inital_ebtn(sss,fst);
+            SaveEbtn *sebtn = &sss->value.ssebtn;
+            key = xmlGetProp(attr_node,(xmlChar *)"value");
+            if(key)
+            {
+                gchar **split = g_strsplit((gchar*)key,",",-1);
+                int len = g_strv_length(split);
+                int n = 0;
+                for(; n < len; n++)
+                {
+                    SaveEnumArr *sea = g_list_nth_data(sebtn->ebtnwlist,n);
+                    SaveEnum *se = sea->senum;
+                    se->evalue = g_strdup(split[n]);
+                    GList *tlist  = sebtn->ebtnslist;
+                    for(;tlist; tlist = tlist->next)
+                    {
+                        FactoryStructEnum *fse = tlist->data;
+                        if(!g_ascii_strcasecmp(fse->value,se->evalue))
+                        {
+                            se->index = g_list_index(sebtn->ebtnslist,fse);
+                            break;
+                        }
+                    }
+                }
+                g_strfreev(split);
+            }
+            xmlFree(key);
+        }
         else
         {
             key = xmlGetProp(attr_node,(xmlChar *)"value");
@@ -2490,9 +2521,9 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
 
 GList *factory_get_list_from_hashtable(STRUCTClass *fclass)
 {
-     FactoryStructItemList *fsil = g_hash_table_lookup(fclass->EnumsAndStructs->structTable,
-                                                       fclass->element.object.name);
-     GList *tlist = NULL;
+    FactoryStructItemList *fsil = g_hash_table_lookup(fclass->EnumsAndStructs->structTable,
+                                  fclass->element.object.name);
+    GList *tlist = NULL;
 
     if(fsil)
     {
@@ -2508,8 +2539,8 @@ void factory_read_value_from_file(STRUCTClass *fclass,ObjectNode obj_node)
 //    GList *tttt = tlist;
 //    g_strfreev(tmp);
 
-     GList *tlist = factory_get_list_from_hashtable(fclass);
-     GList *tttt = tlist;
+    GList *tlist = factory_get_list_from_hashtable(fclass);
+    GList *tttt = tlist;
 
     for(; tttt != NULL ; tttt = tttt->next)
     {
@@ -2544,7 +2575,11 @@ void factory_read_value_from_file(STRUCTClass *fclass,ObjectNode obj_node)
         if(firstval)
             *firstval = *sss;
         else
+        {
             g_hash_table_insert(fclass->widgetmap,g_strdup(hkey),sss);
+            fclass->widgetSave = g_list_append(fclass->widgetSave,sss);
+        }
+
         g_free(hkey);
     }
 
@@ -2561,10 +2596,59 @@ gpointer *factory_read_object_comobox_value_from_file(AttributeNode attr_node)
     xmlFree(key);
     key  =  xmlGetProp(attr_node,(xmlChar *)"name");
     aid->title_name = g_strdup((gchar*)key);
+    key  =  xmlGetProp(attr_node,(xmlChar *)"value");
+    aid->value = g_strdup((gchar*)key);
     xmlFree(key);
     return aid;
 }
 
+void factory_inital_ebtn(SaveStruct *sss,const FactoryStructItem *fst)
+{
+    SaveEbtn *sebtn = &sss->value.ssebtn;
+    sebtn->ebtnslist = g_hash_table_lookup(factoryContainer->enumTable,fst->SType);
+    sebtn->ebtnwlist = NULL;
+    sss->close_func = factory_save_enumbutton_dialog;
+    sss->newdlg_func = factory_create_enumbutton_dialog;
+    GList *tmplist = sebtn->ebtnslist;
+    int index = 0;
+    gchar *value = NULL;
+    GList *fill_list = NULL;
+    for(; tmplist; tmplist = tmplist->next)
+    {
+        FactoryStructEnum *kvmap = tmplist->data;
+        if(!g_ascii_strncasecmp(fst->Value,kvmap->key,strlen(fst->Value)))
+        {
+            index = g_list_index(sebtn->ebtnslist,kvmap);
+            value = kvmap->value;
+        }
+        fill_list = g_list_append(fill_list,kvmap->key);
+    }
+    SaveEntry tmp;
+    factory_handle_entry_item(&tmp,fst);
+    sebtn->arr_base  = tmp.arr_base;
+
+    GList *tlist  = sebtn->ebtnslist; /* Ô´Êý¾ÝÓÃÌî³äÏÂÀ­¿ò,ÕâÀïÀ´×ÔÃ¶¾Ù*/
+    GList *nixlist = NULL;
+    int n = 0;
+    gchar **title = g_strsplit(fst->Name,"[",-1);
+    gchar *name =  g_strconcat(title[0],"(%d)",NULL);
+    g_strfreev(title);
+
+    n = 0;
+    for(; n < sebtn->arr_base->reallen; n++)
+    {
+        SaveEnum *see = g_new0(SaveEnum,1);
+        see->enumList = fill_list;
+        see->index = index;
+        see->evalue = value;
+        see->width = fst->Max;
+        SaveEnumArr *sea = g_new0(SaveEnumArr,1);
+        sea->widget1 = NULL;
+        sea->widget2 = NULL;
+        sea->senum = see;
+        sebtn->ebtnwlist = g_list_append(sebtn->ebtnwlist,sea);
+    }
+}
 
 SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
 {
@@ -2593,14 +2677,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             sss->close_func = factory_save_objectbutton_dialog;
             SaveEntry tmp;
             factory_handle_entry_item(&tmp,fst);
-//            nid->col = tmp.col;
-//            nid->row = tmp.row;
-//            nid->maxlength = tmp->reallen;
             nid->arr_base = tmp.arr_base;
-//            if(!nid->maxlength && !nid->col)
-//            {
-//                nid->maxlength = nid->row;
-//            }
 
             gchar **title = g_strsplit(sss->name,"[",-1);
             gchar *name =  g_strconcat(title[0],"(%d)",NULL);
@@ -2613,6 +2690,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
                 ActionID *aid = g_new0(ActionID,1);
                 aid->index = 0;
                 aid->pre_name = g_strdup("");
+                aid->value = g_strdup("-1");
                 aid->title_name = g_strdup_printf(name,n);
                 nid->actlist = g_list_append(nid->actlist,aid);
             }
@@ -2623,6 +2701,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             ActionID *aid = g_new0(ActionID,1);
             aid->index = 0;
             aid->pre_name = g_strdup("");
+            aid->value = g_strdup("-1");
             aid->title_name = g_strdup(sss->name);
             nid->actlist = g_list_append(nid->actlist,aid);
         }
@@ -2694,50 +2773,50 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             if( factory_find_array_flag(fst->Name))
             {
                 sss->celltype = EBTN;
-                SaveEbtn *sebtn = &sss->value.ssebtn;
-                sebtn->ebtnslist = g_hash_table_lookup(factoryContainer->enumTable,fst->SType);
-                sebtn->ebtnwlist = NULL;
-                sss->close_func = factory_save_enumbutton_dialog;
-                sss->newdlg_func = factory_create_enumbutton_dialog;
-                GList *tmplist = sebtn->ebtnslist;
-                int index = 0;
-                gchar *value = NULL;
-                GList *fill_list = NULL;
-                for(; tmplist; tmplist = tmplist->next)
-                {
-                    FactoryStructEnum *kvmap = tmplist->data;
-                    if(!g_ascii_strncasecmp(fst->Value,kvmap->key,strlen(fst->Value)))
-                    {
-                        index = g_list_index(sebtn->ebtnslist,kvmap);
-                        value = kvmap->value;
-                    }
-                    fill_list = g_list_append(fill_list,kvmap->key);
-                }
-                SaveEntry tmp;
-                factory_handle_entry_item(&tmp,fst);
-                sebtn->arr_base  = tmp.arr_base;
-
-                GList *tlist  = sebtn->ebtnslist; /* Ô´Êý¾ÝÓÃÌî³äÏÂÀ­¿ò,ÕâÀïÀ´×ÔÃ¶¾Ù*/
-                GList *nixlist = NULL;
-                int n = 0;
-                gchar **title = g_strsplit(sss->name,"[",-1);
-                gchar *name =  g_strconcat(title[0],"(%d)",NULL);
-                g_strfreev(title);
-
-                n = 0;
-                for(; n < sebtn->arr_base->reallen; n++)
-                {
-                    SaveEnum *see = g_new0(SaveEnum,1);
-                    see->enumList = fill_list;
-                    see->index = index;
-                    see->evalue = value;
-                    see->width = fst->Max;
-                    SaveEnumArr *sea = g_new0(SaveEnumArr,1);
-                    sea->widget1 = NULL;
-                    sea->widget2 = NULL;
-                    sea->senum = see;
-                    sebtn->ebtnwlist = g_list_append(sebtn->ebtnwlist,sea);
-                }
+                factory_inital_ebtn(sss,fst);
+//                sebtn->ebtnslist = g_hash_table_lookup(factoryContainer->enumTable,fst->SType);
+//                sebtn->ebtnwlist = NULL;
+//                sss->close_func = factory_save_enumbutton_dialog;
+//                sss->newdlg_func = factory_create_enumbutton_dialog;
+//                GList *tmplist = sebtn->ebtnslist;
+//                int index = 0;
+//                gchar *value = NULL;
+//                GList *fill_list = NULL;
+//                for(; tmplist; tmplist = tmplist->next)
+//                {
+//                    FactoryStructEnum *kvmap = tmplist->data;
+//                    if(!g_ascii_strncasecmp(fst->Value,kvmap->key,strlen(fst->Value)))
+//                    {
+//                        index = g_list_index(sebtn->ebtnslist,kvmap);
+//                        value = kvmap->value;
+//                    }
+//                    fill_list = g_list_append(fill_list,kvmap->key);
+//                }
+//                SaveEntry tmp;
+//                factory_handle_entry_item(&tmp,fst);
+//                sebtn->arr_base  = tmp.arr_base;
+//
+//                GList *tlist  = sebtn->ebtnslist; /* Ô´Êý¾ÝÓÃÌî³äÏÂÀ­¿ò,ÕâÀïÀ´×ÔÃ¶¾Ù*/
+//                GList *nixlist = NULL;
+//                int n = 0;
+//                gchar **title = g_strsplit(sss->name,"[",-1);
+//                gchar *name =  g_strconcat(title[0],"(%d)",NULL);
+//                g_strfreev(title);
+//
+//                n = 0;
+//                for(; n < sebtn->arr_base->reallen; n++)
+//                {
+//                    SaveEnum *see = g_new0(SaveEnum,1);
+//                    see->enumList = fill_list;
+//                    see->index = index;
+//                    see->evalue = value;
+//                    see->width = fst->Max;
+//                    SaveEnumArr *sea = g_new0(SaveEnumArr,1);
+//                    sea->widget1 = NULL;
+//                    sea->widget2 = NULL;
+//                    sea->senum = see;
+//                    sebtn->ebtnwlist = g_list_append(sebtn->ebtnwlist,sea);
+//                }
             }
             else
             {
@@ -2829,8 +2908,8 @@ void factory_read_initial_to_struct(STRUCTClass *fclass) /*2014-3-26 lcy ÍÏÈë¿Ø¼
 {
     /* ÕâÀï´ÓÔ­¹þÏ£±í¸´ÖÆÒ»·Ý³öÀ´ */
 //    gchar **tmp =  g_strsplit(fclass->name,"(",-1);
-     GList *tttt = factory_get_list_from_hashtable(fclass);
-     GList * tlist = tttt ;
+    GList *tttt = factory_get_list_from_hashtable(fclass);
+    GList * tlist = tttt ;
     for(; tlist; tlist = tlist->next)
     {
         FactoryStructItem *fst = tlist->data;
@@ -2997,15 +3076,15 @@ structclass_destroy(STRUCTClass *structclass)
     {
         structclass_dialog_free (structclass->properties_dialog);
     }
-     GList *targetlist = structclass->widgetSave;
-     for(;targetlist;targetlist = targetlist->next)
-     {
-                SaveStruct *sss = targetlist->data;
-               gtk_widget_destroy(sss->widget1);
-                gtk_widget_destroy(sss->widget2);
-                sss->widget1 = NULL;
-                sss->widget2 = NULL;
-     }
+    GList *targetlist = structclass->widgetSave;
+    for(; targetlist; targetlist = targetlist->next)
+    {
+        SaveStruct *sss = targetlist->data;
+        gtk_widget_destroy(sss->widget1);
+        gtk_widget_destroy(sss->widget2);
+        sss->widget1 = NULL;
+        sss->widget2 = NULL;
+    }
 
 }
 
@@ -3258,23 +3337,10 @@ static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
 static void factory_write_object_comobox(ActionID *aid,ObjectNode ccc )
 {
     xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)aid->title_name);
-
 //                    xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
     xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf(_("%d"),aid->index));
+    xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)aid->value);
 
-    if(!strlen(aid->pre_name))
-        xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)_("-1"));
-    else
-    {
-//        gchar **str = g_strsplit(aid->pre_name,"(",-1);
-//        gchar *number = g_strdup(str[1]);
-//        g_strfreev(str);
-//        str = g_strsplit(number,")",-1);
-
-        xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)g_strdup(aid->pre_name));
-//        g_free(number);
-//        g_strfreev(str);
-    }
 
     xmlSetProp(ccc, (const xmlChar *)"nvalue", (xmlChar *)aid->pre_name);
 }
@@ -3294,7 +3360,7 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
     }
     break;
     case OCOMBO:
-    {
+    {   /*Ã¿Ò»ÏîÓÃJL_item ×ö½ÚµãÃû£¬´æ·Å¶à¸öÊôÐÔ*/
         ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
         xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
@@ -3434,18 +3500,15 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename 
         xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
         if (key)
         {
-            structclass->element.object.name =  g_strdup(factory_utf8((gchar*)key));
-
+            structclass->element.object.name =  g_strdup((gchar*)key);
             xmlFree (key);
         }
         key = xmlGetProp(attr_node,(xmlChar *)"vname");
         if(key)
         {
-//            if (!g_utf8_validate((gchar*)key, -1, NULL))
-//                structclass->name =  factory_utf8((gchar*)key);
-//            else
-            structclass->name =  g_strdup(factory_utf8((gchar*)key));
-             if(curLayer)
+
+            structclass->name = g_strdup((gchar*)key);
+            if(curLayer)
                 curLayer->defnames = g_list_append(curLayer->defnames,structclass->name);
             xmlFree (key);
         }
@@ -3489,9 +3552,9 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
     xmlSetProp(obj_node, (const xmlChar *)"name", (xmlChar *)structclass->element.object.name);
     xmlSetProp(obj_node, (const xmlChar *)"vname", (xmlChar *)structclass->name);
     FactoryStructItemList *fsi = g_hash_table_lookup(structclass->EnumsAndStructs->structTable,
-                                                     structclass->element.object.name);
+                                 structclass->element.object.name);
     if(fsi) /* Ð´Èëµ½Ö¸¶¨ÎÄ¼þÃû */
-     xmlSetProp(obj_node, (const xmlChar *)"file", (xmlChar *)fsi->sfile);
+        xmlSetProp(obj_node, (const xmlChar *)"file", (xmlChar *)fsi->sfile);
     //g_hash_table_foreach(structclass->widgetmap,factory_struct_save_to_xml,(gpointer)obj_node);
     GList *saveList = structclass->widgetSave;
     for(; saveList; saveList = saveList->next)

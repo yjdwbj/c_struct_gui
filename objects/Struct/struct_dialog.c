@@ -3167,6 +3167,16 @@ static void factory_get_value_from_comobox(STRUCTClass *startclass,GtkWidget *co
             goto SETV; /* 已经有连线了 */
         else
         {
+            if(objclass && objclass->widgetSave)
+            {
+                SaveStruct *sst =objclass->widgetSave->data; /* 对像的自身ID */
+                aid->value =   g_strdup(sst->value.vnumber);
+            }
+            else
+            {
+                aid->value = g_strdup("-1");
+            }
+
             factory_connection_two_object(startclass,g_strdup(pname));
         }
 
@@ -3182,7 +3192,6 @@ DELL:
 SETV:
     aid->pre_name = g_strdup(pname);
     aid->index  = curindex;
-
     g_free(pname);
 }
 
@@ -3222,7 +3231,12 @@ factory_apply_props_from_dialog(STRUCTClass *fclass, GtkWidget *widget)
     PublicSection *pps = fclass->pps;
     if(!pps)
         return NULL;
-    pps->name = gtk_entry_get_text(GTK_ENTRY(pps->wid_rename_entry));
+    pps->hasfinished = gtk_toggle_tool_button_get_active(GTK_TOGGLE_BUTTON(pps->wid_hasfinished));
+    gchar *txt = gtk_entry_get_text(GTK_ENTRY(pps->wid_rename_entry));
+    if(g_utf8_validate(txt,-1,NULL))
+        pps->name = g_strdup(txt);
+    else
+        pps->name = factory_utf8(txt);
     if(pps->name != NULL && g_ascii_strcasecmp(pps->name,fclass->name))
     {
         GList *exists = NULL;
@@ -3269,6 +3283,17 @@ factory_apply_props_from_dialog(STRUCTClass *fclass, GtkWidget *widget)
         // g_convert("中国",-1,"UTF-8","GB2312",NULL,NULL,NULL);
     }
     pps->hasfinished = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(pps->wid_hasfinished));
+    if(pps->hasfinished)
+    {
+        Color red = {200,0,0};
+        fclass->fill_color = red;
+    }
+    else
+    {
+        Color w = {255,255,255};
+        fclass->fill_color = w;
+    }
+
 
 
     return  NULL;
@@ -3416,8 +3441,10 @@ GtkWidget *factory_create_spbinbox_widget(gint value,gint minvalue,gint maxvalue
 {
     GtkWidget *widget;
     widget = GTK_SPIN_BUTTON(gtk_spin_button_new_with_range(minvalue,maxvalue,1));
+
     gtk_spin_button_set_numeric( GTK_SPIN_BUTTON( widget), TRUE);
     gtk_spin_button_set_snap_to_ticks( GTK_SPIN_BUTTON(widget), TRUE);
+    gtk_spin_button_set_value (GTK_SPIN_BUTTON(widget),value);
     return widget;
 }
 
@@ -3463,7 +3490,7 @@ static GtkWidget *factory_create_variant_object(SaveStruct *sss)
         gint v = 0;
         if(!g_ascii_strncasecmp(sss->value.vnumber,"-1",2))
             v = -1;
-            else
+        else
             v = g_strtod(sss->value.vnumber,NULL);
         gint vmin =  g_strtod(item->Min,NULL);
         gint vmax = g_strtod(item->Max,NULL);
@@ -3655,7 +3682,8 @@ void factory_save_enumbutton_dialog(GtkWidget *widget,gint response_id,gpointer 
         }
     }
     gtk_widget_hide(widget);
-    gtk_widget_destroy(widget);
+//    if(widget)
+//        gtk_widget_destroy(widget);
 }
 
 void factory_save_objectbutton_dialog(GtkWidget *widget,
@@ -3678,13 +3706,7 @@ void factory_save_objectbutton_dialog(GtkWidget *widget,
         }
     }
     gtk_widget_hide(widget);
-    gtk_widget_destroy(widget);
-
-//    wlist = nid->wlist;
-//    for(; wlist; wlist = wlist->next)
-//    {
-//        gtk_container_remove(GTK_CONTAINER(widget),wlist->data);
-//    }
+//    gtk_widget_destroy(widget);
 
     wlist = nid->wlist;
     for(; wlist; wlist = wlist->next)
@@ -4054,6 +4076,9 @@ void factory_create_enumbutton_dialog(gpointer item,SaveStruct *sst)
     int pos = 0;
     int tnum = 0;
     ArrayBaseProp *abp = sebtn->arr_base;
+
+
+
     for(; r < abp->row ; r++)
     {
         GtkWidget *vbox = gtk_vbox_new(TRUE,0);
@@ -4064,7 +4089,7 @@ void factory_create_enumbutton_dialog(gpointer item,SaveStruct *sst)
             pos = tnum +c;
             if( pos >= abp->reallen)
                 break;
-            GtkWidget *hbox = gtk_hbox_new(FALSE,0);
+            GtkWidget *hbox = abp->row > 8 ? gtk_vbox_new(FALSE,0): gtk_hbox_new(FALSE,0) ;
             SaveEnumArr *sea = g_list_nth_data(sebtn->ebtnwlist,pos);
             GtkWidget *comobox = factory_create_combo_widget(sea->senum->enumList,sea->senum->index);
             GtkWidget *wid = gtk_label_new(g_strdup_printf(fmt,pos));
@@ -4550,15 +4575,28 @@ void factory_create_struct_dialog(GtkWidget *dialog,GList *datalist)
 /* 2014-5-4 lcy 这里要添加一些公共选项 */
 void factory_append_public_info(GtkWidget *dialog,STRUCTClass *fclass)
 {
-    PublicSection *pps = g_new0(PublicSection,1);
-    pps->hasfinished = FALSE;
-    pps->name = fclass->name;
+    GtkWidget *chbox = gtk_check_button_new_with_label(factory_utf8(_("编辑完成")));
+    GtkWidget *entry = gtk_entry_new();
+
     GtkWidget *sep = gtk_hseparator_new();
     gtk_container_add(GTK_CONTAINER(dialog),sep);
-    pps->wid_hasfinished  =  	gtk_check_button_new_with_label(g_locale_to_utf8(_("编辑完成"),-1,NULL,NULL,NULL));
+    PublicSection *pps = NULL;
+    if(NULL == fclass->pps)
+    {
+         pps = g_new0(PublicSection,1);
+        fclass->pps = pps;
+        pps->hasfinished = FALSE;
+        pps->name = g_strdup(fclass->name);
+    }
+    else
+    {
+        pps = fclass->pps;
+    }
+    pps->wid_hasfinished  =  chbox	;
     GtkWidget *hbox = gtk_hbox_new(FALSE,0);
     GtkWidget *name_lab = gtk_label_new(g_locale_to_utf8(_("对像重命名:"),-1,NULL,NULL,NULL));
-    pps->wid_rename_entry = gtk_entry_new();
+    pps->wid_rename_entry = entry;
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(chbox),pps->hasfinished);
     gtk_entry_set_text( GTK_ENTRY(pps->wid_rename_entry),pps->name);
     gtk_entry_set_max_length(GTK_ENTRY(pps->wid_rename_entry),255);
     gtk_box_pack_start(GTK_BOX(hbox), name_lab, FALSE, FALSE, 0);
@@ -4566,7 +4604,7 @@ void factory_append_public_info(GtkWidget *dialog,STRUCTClass *fclass)
 
     gtk_container_add(GTK_CONTAINER(dialog),pps->wid_hasfinished);
     gtk_container_add(GTK_CONTAINER(dialog),hbox);
-    fclass->pps = pps;
+
 
 }
 
