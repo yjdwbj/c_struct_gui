@@ -122,7 +122,7 @@ diagram_removed (Diagram* dia, GtkWidget* dialog)
 }
 #endif
 
-static GtkFileFilter *
+GtkFileFilter *
 build_gtk_file_filter_from_index (int index)
 {
   DiaImportFilter *ifilter = NULL;
@@ -181,7 +181,7 @@ import_adapt_extension_callback(GtkWidget *widget)
 /**
  * Create the combobox menu to select Import Filter options
  */
-static GtkWidget *
+ GtkWidget *
 create_open_menu(void)
 {
   GtkWidget *menu;

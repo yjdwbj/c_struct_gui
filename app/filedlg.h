@@ -28,5 +28,8 @@ void file_open_callback(gpointer data, guint action, GtkWidget *widget);
 void file_save_callback(gpointer data, guint action, GtkWidget *widget);
 void file_save_as_callback(gpointer data, guint action, GtkWidget *widget);
 void file_export_callback(gpointer data, guint action, GtkWidget *widget);
-
+DIAVAR GtkFileFilter *
+build_gtk_file_filter_from_index (int index);
+DIAVAR GtkWidget *
+create_open_menu(void);
 #endif

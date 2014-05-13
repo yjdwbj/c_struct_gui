@@ -213,6 +213,7 @@ struct _NameIndex
 typedef struct _SaveEbtn SaveEbtn;
 struct _SaveEbtn
 {
+    gchar* width;
     ArrayBaseProp *arr_base;
     GList *ebtnslist; /* 枚举的数据源链表 */
     GList *ebtnwlist; /* 全部是枚举的控件  存放 SaveEnumArr的链表  */
@@ -395,7 +396,8 @@ void factory_save_basebutton_dialog(GtkWidget *widget,gint       response_id,gpo
 void factory_inital_ebtn(SaveStruct *sss,const FactoryStructItem *fst);
 
 
-static GList* factory_get_objects_from_layer(Layer *layer);
+GList* factory_get_objects_from_layer(Layer *layer);
+STRUCTClass* factory_get_object_from_layer(Layer *layer,const gchar *name);
 static void factory_get_value_from_comobox(STRUCTClass *startclass,GtkWidget *comobox,ActionID *aid);
 
 void factory_strjoin(gchar **dst,const gchar *prefix,const gchar *sep);
@@ -428,6 +430,20 @@ void factory_editable_active_callback(GtkEditable *edit,gpointer data);
 
 extern ObjectChange *
 factory_apple_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
+
+
+void factory_create_toolbar_button(const gint8 *icon,gchar *tips,GtkToolbar  *toolbar,
+                                          gpointer *callback);
+
+void factory_idlist_dialog(gchar *title,GtkWidget *parent);
+void factory_music_filemanager_dialog(gchar *title,GtkWidget *parent);
+
+
+typedef void (*factory_button_callback)(GtkWidget *self);
+
+void factory_add_item_to_music_manager(GtkWidget *self);
+GtkWidget *factory_new_add_button(factory_button_callback *callback);
+GtkWidget *factory_get_new_item(int id);
 
 //void factoryReadDataFromFile(STRUCTClass *structclass);
 

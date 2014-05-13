@@ -43,6 +43,8 @@
 
 #include "debug.h"
 #include "sheet.h"
+#include "filedlg.h"
+
 extern FactoryStructItemAll *factoryContainer;
 
 
@@ -2146,7 +2148,8 @@ factory_struct_items_create(Point *startpoint,
     }
     structclass->name = obj->name ;
 
-    if(curLayer)
+
+    if(curLayer && g_strcasecmp(obj->name,"IDLIST") && g_strcasecmp(obj->name,"MUSICLIST"))
         curLayer->defnames = g_list_append(curLayer->defnames,structclass->name);
 
 
@@ -2232,7 +2235,7 @@ FactoryStructItem *factory_get_factorystructitem(GList *inlist,const gchar *name
     for(; p; p=p->next)
     {
         FactoryStructItem *t = p->data;
-        if(!g_ascii_strncasecmp(t->Name,name,strlen(name)))
+        if(!g_ascii_strcasecmp(t->Name,name))
         {
             fst = p->data;
             break;
@@ -2304,7 +2307,7 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
                 for(; t != NULL ; t = t->next)
                 {
                     FactoryStructEnum *fse = t->data;
-                    if(0 == g_ascii_strncasecmp(fse->value,(gchar*)key,strlen((gchar*)key)))
+                    if(0 == g_ascii_strcasecmp(fse->value,(gchar*)key))
                     {
                         sen->evalue = g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);
                         sen->index = g_list_index(targettable,fse);
@@ -2544,7 +2547,7 @@ void factory_read_value_from_file(STRUCTClass *fclass,ObjectNode obj_node)
             xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
             if(key)
             {
-                if(0 == g_ascii_strncasecmp((gchar*)key,fst->Name,strlen((gchar*)key)))
+                if(0 == g_ascii_strcasecmp((gchar*)key,fst->Name))
                 {
                     sss->name = g_strdup(fst->Name);
                     break;
@@ -2594,6 +2597,7 @@ void factory_inital_ebtn(SaveStruct *sss,const FactoryStructItem *fst)
     SaveEbtn *sebtn = &sss->value.ssebtn;
     sebtn->ebtnslist = g_hash_table_lookup(factoryContainer->enumTable,fst->SType);
     sebtn->ebtnwlist = NULL;
+    sebtn->width = g_strdup(fst->Max);
     sss->close_func = factory_save_enumbutton_dialog;
     sss->newdlg_func = factory_create_enumbutton_dialog;
     GList *tmplist = sebtn->ebtnslist;
@@ -2603,7 +2607,7 @@ void factory_inital_ebtn(SaveStruct *sss,const FactoryStructItem *fst)
     for(; tmplist; tmplist = tmplist->next)
     {
         FactoryStructEnum *kvmap = tmplist->data;
-        if(!g_ascii_strncasecmp(fst->Value,kvmap->key,strlen(fst->Value)))
+        if(!g_ascii_strcasecmp(fst->Value,kvmap->key))
         {
             index = g_list_index(sebtn->ebtnslist,kvmap);
             value = kvmap->value;
@@ -2656,7 +2660,6 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
         nid->itemlist = NULL;
         nid->actlist = NULL;
         nid->wlist = NULL;
-
         if(g_str_has_suffix(sss->name,"]"))
         {
             sss->celltype = OBTN; /* 这里是数组了,需要按键创建新窗口来设置 */
@@ -2669,7 +2672,6 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             gchar **title = g_strsplit(sss->name,"[",-1);
             gchar *name =  g_strconcat(title[0],"(%d)",NULL);
             g_strfreev(title);
-
 
             int n = 0;
             for(; n < nid->arr_base->reallen; n++ )
@@ -2761,68 +2763,31 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             {
                 sss->celltype = EBTN;
                 factory_inital_ebtn(sss,fst);
-//                sebtn->ebtnslist = g_hash_table_lookup(factoryContainer->enumTable,fst->SType);
-//                sebtn->ebtnwlist = NULL;
-//                sss->close_func = factory_save_enumbutton_dialog;
-//                sss->newdlg_func = factory_create_enumbutton_dialog;
-//                GList *tmplist = sebtn->ebtnslist;
-//                int index = 0;
-//                gchar *value = NULL;
-//                GList *fill_list = NULL;
-//                for(; tmplist; tmplist = tmplist->next)
-//                {
-//                    FactoryStructEnum *kvmap = tmplist->data;
-//                    if(!g_ascii_strncasecmp(fst->Value,kvmap->key,strlen(fst->Value)))
-//                    {
-//                        index = g_list_index(sebtn->ebtnslist,kvmap);
-//                        value = kvmap->value;
-//                    }
-//                    fill_list = g_list_append(fill_list,kvmap->key);
-//                }
-//                SaveEntry tmp;
-//                factory_handle_entry_item(&tmp,fst);
-//                sebtn->arr_base  = tmp.arr_base;
-//
-//                GList *tlist  = sebtn->ebtnslist; /* 源数据用填充下拉框,这里来自枚举*/
-//                GList *nixlist = NULL;
-//                int n = 0;
-//                gchar **title = g_strsplit(sss->name,"[",-1);
-//                gchar *name =  g_strconcat(title[0],"(%d)",NULL);
-//                g_strfreev(title);
-//
-//                n = 0;
-//                for(; n < sebtn->arr_base->reallen; n++)
-//                {
-//                    SaveEnum *see = g_new0(SaveEnum,1);
-//                    see->enumList = fill_list;
-//                    see->index = index;
-//                    see->evalue = value;
-//                    see->width = fst->Max;
-//                    SaveEnumArr *sea = g_new0(SaveEnumArr,1);
-//                    sea->widget1 = NULL;
-//                    sea->widget2 = NULL;
-//                    sea->senum = see;
-//                    sebtn->ebtnwlist = g_list_append(sebtn->ebtnwlist,sea);
-//                }
             }
             else
             {
                 sss->celltype = ECOMBO;
                 sss->value.senum.enumList = fst->datalist;
-
+//                sss->value.senum.width = g_strdup(fst->Max);
                 GList *t = sss->value.senum.enumList;
-
                 for(; t != NULL ; t = t->next)
                 {
                     FactoryStructEnum *kvmap = t->data;
-                    if(!g_ascii_strncasecmp(fst->Value,kvmap->key,strlen(fst->Value)))
+                    if(!g_ascii_strcasecmp(fst->Value,kvmap->key))
                     {
-                        sss->value.senum.index = g_list_index(fst->datalist,t->data);
-                        sss->value.senum.width = fst->Max;
-                        sss->value.senum.evalue = kvmap->value;
+                        sss->value.senum.index = g_list_index(fst->datalist,kvmap);
+                        sss->value.senum.width = g_strdup(fst->Max);
+                        sss->value.senum.evalue = g_strdup(kvmap->value);
                         break;
                     }
 
+                }
+                if(!t && !sss->value.senum.width ) /*源文件有错误，这里用默认值*/
+                {
+                        sss->value.senum.index = 0;
+                        sss->value.senum.width = g_strdup(fst->Max);
+                        FactoryStructEnum *kvmap = sss->value.senum.enumList->data;
+                        sss->value.senum.evalue = g_strdup(kvmap->value);
                 }
 
             }
@@ -2962,8 +2927,6 @@ factory_handle_entry_item(SaveEntry* sey,FactoryStructItem *fst)
     int strlength = sey->width * abp->row * abp->col; /**   u32[6][2] ==  (32/8) * 6 * 2    **/
     if(sey->isString)
     {
-//                     sey->data.text = g_new0(gchar,strlength );
-//                     sey->data.text =  g_locale_to_utf8(fst->Value,strlength,NULL,NULL,NULL);
         sey->data = g_new0(gchar,strlength );
         sey->data =  g_locale_to_utf8(fst->Value,strlength,NULL,NULL,NULL);
     }
@@ -3280,6 +3243,7 @@ static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
     {
         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"EBTN");
         SaveEbtn *sebtn = &sss->value.ssebtn;
+        xmlSetProp(ccc, (const xmlChar *)"width", (xmlChar *)sebtn->width);
         GList *tlist = sebtn->ebtnwlist;
         gchar *ret =g_strdup("");
 
@@ -3432,11 +3396,8 @@ static void factory_struct_save_to_xml(gpointer key,gpointer value,gpointer user
 
 
 static DiaObject *
-factory_struct_items_load(ObjectNode obj_node,int version, const char *filename )
+factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
 {
-    DDisplay *ddisp = ddisplay_active();
-    curLayer = ddisp->diagram->data->active_layer;
-
     STRUCTClass *structclass;
     Element *elem;
     DiaObject *obj;
@@ -3495,10 +3456,7 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename 
         key = xmlGetProp(attr_node,(xmlChar *)"vname");
         if(key)
         {
-
             structclass->name = g_strdup((gchar*)key);
-            if(curLayer)
-                curLayer->defnames = g_list_append(curLayer->defnames,structclass->name);
             xmlFree (key);
         }
     }
@@ -3551,6 +3509,223 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
         factory_base_struct_save_to_file(saveList->data,obj_node);
     }
 }
+/**** 这里添加了两个特殊控件　***/
+
+
+
+GtkWidget *factory_get_new_item_head()
+{
+    GtkWidget *hbox = gtk_hbox_new(FALSE,0);
+    GtkWidget *first = gtk_label_new(factory_utf8("序号"));
+    GtkWidget *sec = gtk_label_new(factory_utf8("地址"));
+    GtkWidget *third = gtk_label_new(factory_utf8("行为ID"));
+    GtkWidget *four = gtk_label_new(factory_utf8("操作"));
+    gtk_box_pack_start(GTK_BOX(hbox),first,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),sec,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),third,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),four,TRUE,TRUE,0);
+    gtk_widget_show_all(hbox);
+    return hbox;
+}
+
+GtkWidget *factory_music_manager_head()
+{
+    GtkWidget *hbox = gtk_hbox_new(FALSE,0);
+    GtkWidget *first = gtk_label_new(factory_utf8("序号"));
+    GtkWidget *sec = gtk_label_new(factory_utf8("地址"));
+    GtkWidget *third = gtk_label_new(factory_utf8("音乐文件"));
+    GtkWidget *four = gtk_label_new(factory_utf8("添加"));
+    gtk_box_pack_start(GTK_BOX(hbox),first,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),sec,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),third,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),four,TRUE,TRUE,0);
+    gtk_widget_show_all(hbox);
+    return hbox;
+}
+
+
+void factory_add_item_to_idlist(GtkWidget *self)
+{
+    GtkWidget *twidget = gtk_widget_get_toplevel(self);
+    GtkWidget *vbox  = gtk_widget_get_parent(self);
+    GList *clist =  gtk_container_get_children(GTK_CONTAINER(vbox));
+    int len = g_list_length(clist);
+    GtkWidget *nitem = factory_get_new_item(len-1);
+    GtkAllocation *acat = &self->allocation;
+    gtk_box_pack_start(GTK_BOX(vbox),nitem,FALSE,FALSE,0);
+    gtk_box_reorder_child(GTK_BOX(vbox),self,len); /* 交换两行的位置 */
+    gtk_widget_set_size_request (twidget,acat->width,-1);
+    gtk_widget_show_all(vbox);
+}
+
+void factory_open_file_dialog(GtkWidget *widget,GtkWidget *entry)
+{
+    GtkWidget *opendlg = NULL;
+    opendlg = gtk_file_chooser_dialog_new_with_backend(_("打开音乐文件"), NULL,
+					  GTK_FILE_CHOOSER_ACTION_OPEN,
+					  "default", /* default, not gnome-vfs */
+					  GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+					  GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+					  NULL);
+    gtk_dialog_set_default_response(GTK_DIALOG(opendlg), GTK_RESPONSE_ACCEPT);
+//    gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(opendlg), fnabs);
+     g_signal_connect(GTK_OBJECT(opendlg), "destroy",
+		     G_CALLBACK(gtk_widget_destroyed), &opendlg);
+
+     if (!gtk_file_chooser_get_extra_widget(GTK_FILE_CHOOSER(opendlg))) {
+    GtkWidget *hbox, *label, *omenu, *options;
+    GtkFileFilter* filter;
+
+    options = gtk_frame_new(_("Open Options"));
+    gtk_frame_set_shadow_type(GTK_FRAME(options), GTK_SHADOW_ETCHED_IN);
+
+    hbox = gtk_hbox_new(FALSE, 1);
+    gtk_container_set_border_width(GTK_CONTAINER(hbox), 5);
+    gtk_container_add(GTK_CONTAINER(options), hbox);
+    gtk_widget_show(hbox);
+
+    label = gtk_label_new (_("Determine file type:"));
+    gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
+    gtk_widget_show (label);
+
+    omenu = create_open_menu();
+    gtk_box_pack_start(GTK_BOX(hbox), omenu, TRUE, TRUE, 0);
+    gtk_widget_show(omenu);
+
+    gtk_file_chooser_set_extra_widget(GTK_FILE_CHOOSER(opendlg),
+				      options);
+
+    gtk_widget_show(options);
+
+
+    /* set up the gtk file (name) filters */
+    /* 0 = by extension */
+    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (opendlg),
+	                         build_gtk_file_filter_from_index (0));
+        filter = gtk_file_filter_new ();
+    gtk_file_filter_set_name (filter, _("All Files"));
+    gtk_file_filter_add_pattern (filter, "*");
+    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (opendlg), filter);
+
+    gtk_combo_box_set_active (GTK_COMBO_BOX (omenu), persistence_get_integer ("import-filter"));
+  }
+
+    gtk_widget_show(opendlg);
+}
+
+void factory_add_item_to_music_manager(GtkWidget *self)
+{
+    GtkWidget *vbox  = gtk_widget_get_parent(self);
+    GList *clist =  gtk_container_get_children(GTK_CONTAINER(vbox));
+    int len = g_list_length(clist);
+    GtkWidget *hbox = gtk_hbox_new(FALSE,1);
+    GtkWidget *first = gtk_label_new(g_strdup_printf("%d",len-1));
+    gtk_widget_set_size_request(first,50,-1);
+    GtkWidget *spbox = gtk_spin_button_new_with_range(-1,65535,2);
+    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spbox),-1);
+    GtkWidget *entry = gtk_entry_new();
+    GtkWidget *btn_select = gtk_button_new_from_stock(GTK_STOCK_OPEN);
+
+    g_signal_connect(btn_select,"clicked",G_CALLBACK(factory_open_file_dialog),entry);
+    gtk_box_pack_start(GTK_BOX(hbox),first,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),spbox,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),entry,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),btn_select,TRUE,TRUE,0);
+
+
+    gtk_box_pack_start(GTK_BOX(vbox),hbox,FALSE,FALSE,0);
+    gtk_box_reorder_child(GTK_BOX(vbox),self,len);
+
+
+    GtkWidget *topwid = gtk_widget_get_toplevel(vbox);
+    GtkAllocation *acat = &self->allocation;
+    gtk_widget_set_size_request(topwid,acat->width,-1);
+    gtk_widget_show_all(vbox);
+
+}
+
+GtkWidget *factory_new_add_button(factory_button_callback *callback)
+{
+    GtkWidget *btn = gtk_button_new_from_stock (GTK_STOCK_ADD);
+    gtk_widget_set_name (btn,"add_button");
+    g_signal_connect (G_OBJECT (btn), "clicked",
+                      G_CALLBACK (callback),
+                      NULL);
+    return btn;
+}
+
+
+GtkWidget *factory_get_new_item(int id)
+{
+    GtkWidget *hbox = gtk_hbox_new(FALSE,1);
+    GtkWidget *first = gtk_label_new(g_strdup_printf("%d",id));
+    gtk_widget_set_size_request(first,50,-1);
+    GtkWidget *spbox = gtk_spin_button_new_with_range(-1,65536,2);
+    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spbox),-1);
+//    gtk_widget_set_size_request(spbox,50,-1);
+    GtkWidget *cbox = gtk_combo_box_new_text();
+
+    gtk_combo_box_popdown(GTK_COMBO_BOX(cbox));
+    GList *p = curLayer->defnames;
+    gtk_combo_box_append_text(GTK_COMBO_BOX(cbox),"");
+    for(; p ; p = p->next)
+    {
+        gtk_combo_box_append_text(GTK_COMBO_BOX(cbox),p->data);
+    }
+    gtk_combo_box_set_active(GTK_COMBO_BOX(cbox),0);
+
+//    GtkWidget *btn_del = gtk_button_new_from_stock(GTK_STOCK_DELETE);
+//    gtk_widget_set_size_request(btn_del,100,-1);
+    gtk_box_pack_start(GTK_BOX(hbox),first,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),spbox,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),cbox,TRUE,TRUE,0);
+//    gtk_box_pack_start(GTK_BOX(hbox),btn_del,TRUE,TRUE,0);
+
+    return hbox;
+}
+
+void factory_idlist_dialog(gchar *title,GtkWidget *parent)
+{
+    gtk_window_set_title (GTK_WINDOW (parent),title);
+    gtk_window_set_resizable (GTK_WINDOW (parent),TRUE);
+    gtk_widget_set_size_request (GTK_WINDOW (parent),-1,500);
+    GtkWidget  *wid_idlist = gtk_scrolled_window_new (NULL,NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(wid_idlist),
+                                   GTK_POLICY_NEVER,GTK_POLICY_ALWAYS);
+
+    GtkWidget *vbox  = gtk_vbox_new(FALSE,0);
+    gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(wid_idlist),vbox);
+    gtk_box_pack_start(GTK_BOX(vbox),factory_get_new_item_head(),FALSE,FALSE,0);
+    gtk_box_pack_start(GTK_BOX(vbox),factory_new_add_button(factory_add_item_to_idlist),FALSE,FALSE,0);
+
+    gtk_box_pack_start(GTK_BOX(parent),wid_idlist,TRUE,TRUE,0);
+
+//    gtk_widget_show_all(newdialog);
+}
+
+void factory_music_filemanager_dialog(gchar *title,GtkWidget *parent)
+{
+    gtk_window_set_title (GTK_WINDOW (parent),title);
+    gtk_window_set_resizable (GTK_WINDOW (parent),TRUE);
+    gtk_widget_set_size_request (GTK_WINDOW (parent),300,500);
+
+    GtkWidget  *wid_idlist = gtk_scrolled_window_new (NULL,NULL);
+
+
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(wid_idlist),
+                                   GTK_POLICY_NEVER,GTK_POLICY_ALWAYS);
+
+    GtkWidget *vbox  = gtk_vbox_new(FALSE,5);
+    gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(wid_idlist),vbox);
+    gtk_box_pack_start(GTK_BOX(vbox),factory_get_new_item_head(),FALSE,FALSE,0);
+    gtk_box_pack_start(GTK_BOX(vbox),factory_new_add_button(factory_add_item_to_music_manager),FALSE,FALSE,0);
+
+    gtk_box_pack_start(GTK_BOX(parent),wid_idlist,TRUE,TRUE,0);
+
+
+}
+
+
 
 //void factory_get_enum_values(GList* src,GList *dst)
 //{
@@ -3601,7 +3776,7 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
 //#endif
 //
 //  element_save(&structclass->element, obj_node);
-//
+//fclass->name
 //  /* Class info: */
 //  data_add_string(new_attribute(obj_node, "name"),
 //		  structclass->name);

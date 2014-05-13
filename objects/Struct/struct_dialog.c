@@ -2991,7 +2991,7 @@ gpointer factory_find_list_node(GList *list,gchar *data)
     for(; t != NULL ; t = t->next)
     {
         FactoryStructEnum *p = t->data;
-        if(!g_ascii_strncasecmp(data,p->key,strlen(data)))
+        if(!g_ascii_strcasecmp(data,p->key))
             return t->data;
     }
 }
@@ -3158,7 +3158,7 @@ static void factory_get_value_from_comobox(STRUCTClass *startclass,GtkWidget *co
         goto DELL;
     else
     {
-        if(!g_ascii_strncasecmp(pname,startclass->name,strlen(pname))) /* 是自己就不连线 */
+        if(!g_ascii_strcasecmp(pname,startclass->name)) /* 是自己就不连线 */
             goto SETV ;
         Layer *p = startclass->element.object.parent_layer;
 
@@ -3184,7 +3184,7 @@ static void factory_get_value_from_comobox(STRUCTClass *startclass,GtkWidget *co
 
 DELL:
     if(aid->index && aid->index != curindex &&
-            g_ascii_strncasecmp(aid->pre_name,startclass->name,strlen(aid->pre_name))) /* 上次非零,名字又不是自己,要删除线*/
+            g_ascii_strcasecmp(aid->pre_name,startclass->name)) /* 上次非零,名字又不是自己,要删除线*/
     {
         factory_delete_line_between_two_objects(startclass,aid->pre_name);
     }
@@ -3645,7 +3645,7 @@ static FactoryStructItem * factory_find_a_struct_item(GList *itemlist,const gcha
     for(; ulist; ulist = ulist->next)
     {
         fsi = ulist->data;
-        if(!g_ascii_strncasecmp(fsi->Name,text,strlen(text)))
+        if(!g_ascii_strcasecmp(fsi->Name,text))
         {
             break;
         }
@@ -4232,8 +4232,26 @@ gboolean factory_is_connected(ConnectionPoint *cpend,ConnectionPoint *cpstart)
     }
     return isconnected;
 }
+STRUCTClass* factory_get_object_from_layer(Layer *layer,const gchar *name)
+{
+    GList *objlist = NULL;
+    STRUCTClass *fclass = NULL;
+    if(curLayer)
+        objlist = layer->objects ;
+    for(; objlist ; objlist =  objlist->next )
+    {
+        if(!factory_is_valid_type(objlist->data))
+            continue;
+        fclass = objlist->data;
+        if(!g_ascii_strcasecmp(fclass->name,name))
+        {
+            break;
+        }
+    }
+    return fclass;
+}
 
-static GList * factory_get_objects_from_layer(Layer *layer)
+GList * factory_get_objects_from_layer(Layer *layer)
 {
     GList *objlist = NULL;
     if(curLayer)
@@ -4244,7 +4262,9 @@ static GList * factory_get_objects_from_layer(Layer *layer)
         if(!factory_is_valid_type(objlist->data))
             continue;
         STRUCTClass* objclass = objlist->data;
-        if(!g_ascii_strcasecmp(objclass->name,"SYS_DATA"))
+        if(!g_ascii_strcasecmp(objclass->name,"SYS_DATA")
+                || !g_ascii_strcasecmp(objclass->name,"IDLIST")
+                || !g_ascii_strcasecmp(objclass->name,"MUSICLIST"))
             continue;
         list = g_list_append(list,objclass->name);
     }
@@ -4583,7 +4603,7 @@ void factory_append_public_info(GtkWidget *dialog,STRUCTClass *fclass)
     PublicSection *pps = NULL;
     if(NULL == fclass->pps)
     {
-         pps = g_new0(PublicSection,1);
+        pps = g_new0(PublicSection,1);
         fclass->pps = pps;
         pps->hasfinished = FALSE;
         pps->name = g_strdup(fclass->name);
@@ -4620,13 +4640,25 @@ void factory_create_and_fill_dialog(STRUCTClass *fclass, gboolean is_default)
     {
         factory_read_initial_to_struct(fclass);
     }
-
     int num = g_list_length(targetlist);
     prop_dialog->mainTable = gtk_table_new(num,4,FALSE);  // 2014-3-19 lcy 根据要链表的数量,创建多少行列表.
     factory_create_struct_dialog(prop_dialog->mainTable,targetlist);
     gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),prop_dialog->mainTable);
-    if(g_ascii_strcasecmp(fclass->name,"SYS_DATA"))
+
+
+    if(!g_ascii_strcasecmp(fclass->name,"IDLIST"))
     {
+        gtk_container_remove(GTK_CONTAINER(prop_dialog->dialog),prop_dialog->mainTable);
+        factory_idlist_dialog("ID列表",prop_dialog->dialog);
+    }
+    else if(!g_ascii_strcasecmp(fclass->name,"MUSICLIST"))
+    {
+        gtk_container_remove(GTK_CONTAINER(prop_dialog->dialog),prop_dialog->mainTable);
+        factory_music_filemanager_dialog("音乐文件管理",prop_dialog->dialog);
+    }
+    else if(g_ascii_strcasecmp(fclass->name,"SYS_DATA"))
+    {
+
         factory_append_public_info(prop_dialog->dialog,fclass);
         gtk_table_set_col_spacing(GTK_TABLE(prop_dialog->mainTable),1,20);
     }
