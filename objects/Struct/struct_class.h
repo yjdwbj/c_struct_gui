@@ -145,6 +145,30 @@ struct _CheckSave
     gboolean isChecked;
 };
 
+typedef struct _SaveIdList SaveIdList;
+struct _SaveIdList
+{
+    int id_addr;
+    int id_nextid;
+    gchar *id_curtxt;
+};
+
+typedef struct _SaveMusicItem SaveMusicItem;
+struct _SaveMusicItem{
+    int music_addr;
+    gchar *base_name;
+    gchar *full_name;
+    GtkWidget *entry;
+};
+
+typedef struct _SaveIdWidget SaveIdWidget;
+struct _SaveIdWidget
+{
+    int id_index;
+    GtkWidget *wid_colum2;
+    GtkWidget *wid_colum3;
+    gpointer save_data;  /* 这里存两种类型指针　SaveIdList　SaveIdWidget　 */
+};
 
 typedef struct _SaveEnum SaveEnum;
 struct _SaveEnum
@@ -230,6 +254,7 @@ typedef struct _SaveStruct
 //    gchar* pname;  /* 上一级名字, NULL 就是最上级 */
     CellType celltype;
     gboolean isPointer; /* FALSE == pointer , TRUE = single*/
+    gboolean isSensitive; /* 是否可编辑 */
     union
     {
         SaveEntry sentry; // entry value
@@ -435,15 +460,21 @@ factory_apple_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
 void factory_create_toolbar_button(const gint8 *icon,gchar *tips,GtkToolbar  *toolbar,
                                           gpointer *callback);
 
-void factory_idlist_dialog(gchar *title,GtkWidget *parent);
-void factory_music_filemanager_dialog(gchar *title,GtkWidget *parent);
+void factory_idlist_dialog(gchar *title,GtkWidget *parent,GList **savelist);
+void factory_music_filemanager_dialog(gchar *title,GtkWidget *parent,GList **savelist);
 
 
 typedef void (*factory_button_callback)(GtkWidget *self);
 
-void factory_add_item_to_music_manager(GtkWidget *self);
-GtkWidget *factory_new_add_button(factory_button_callback *callback);
-GtkWidget *factory_get_new_item(int id);
+void factory_add_item_to_music_manager(GtkButton *self,gpointer user_data);
+GtkWidget *factory_new_add_button(factory_button_callback *callback,gpointer list);
+GtkWidget *factory_get_new_iditem(SaveIdWidget *swt);
+GtkWidget *factory_get_new_musicitem( SaveIdWidget *swt);
+
+gboolean factory_is_special_object(const gchar *name);
+
+
+void factory_open_file_dialog(GtkWidget *widget,gpointer user_data);
 
 //void factoryReadDataFromFile(STRUCTClass *structclass);
 

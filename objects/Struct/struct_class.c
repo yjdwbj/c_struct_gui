@@ -543,7 +543,7 @@ static void factory_update_index(STRUCTClass *fclass)
     DiaObject *obj = &fclass->element.object;
     Layer *curlay = obj->parent_layer;
     GList *list = curlay->objects;
-    obj->index  = g_list_index(list,obj);
+    obj->oindex  = g_list_index(list,obj);
 
 
 //    gchar **tmp =  g_strsplit(fclass->name,"(",-1);
@@ -2117,8 +2117,6 @@ factory_struct_items_create(Point *startpoint,
     elem = &structclass->element;
     obj = &elem->object;
 
-
-
     elem->corner = *startpoint;
 
 #ifdef STRUCT_MAINPOINT
@@ -2142,15 +2140,37 @@ factory_struct_items_create(Point *startpoint,
         FactoryStructItemList *i = sstruct->data;
         if(i->number == index)
         {
+            structclass->name = g_strdup(i->vname) ;
             obj->name = g_strdup(_(i->sname));
             break;
         }
     }
-    structclass->name = obj->name ;
+
+    if(curLayer && !factory_is_special_object(obj->name))
+    {
+        GList *list = curLayer->defnames;
+        int num = 0;
+        for(; list; list = list->next)
+        {
+            gchar *str = list->data; /* 同名的加序号 */
+            if(!g_ascii_strncasecmp(str,structclass->name,strlen(structclass->name)))
+                num++;
+        }
 
 
-    if(curLayer && g_strcasecmp(obj->name,"IDLIST") && g_strcasecmp(obj->name,"MUSICLIST"))
+        if(num>0)
+        {
+            gchar *tstr = g_strdup(structclass->name);
+            g_free(structclass->name);
+            structclass->name =g_strconcat(tstr,g_strdup_printf("(%d)",num),NULL);
+            g_free(tstr);
+        }
+
         curLayer->defnames = g_list_append(curLayer->defnames,structclass->name);
+
+
+    }
+
 
 
 
@@ -2251,28 +2271,28 @@ void factory_read_union_button_from_file(STRUCTClass *fclass,ObjectNode obtn_nod
     {
         key = xmlGetProp(obtn_node,(xmlChar *)"name");
         if(!key) continue;
-            gchar *skey = factory_get_last_section((gchar*)key,".");
-            FactoryStructItem *sitem = factory_get_factorystructitem(sbtn->structlist,skey);
-            if(!sitem)  continue;
-            sitem->orgclass = fclass;
+        gchar *skey = factory_get_last_section((gchar*)key,".");
+        FactoryStructItem *sitem = factory_get_factorystructitem(sbtn->structlist,skey);
+        if(!sitem)  continue;
+        sitem->orgclass = fclass;
 
-            /* 这里不确定,要注与保存的一致*/
-            SaveStruct *nnode = factory_get_savestruct(sitem);
-            if(nnode)
-            {
-                nnode->widget1 = NULL;
-                nnode->widget2 = NULL;
-                nnode->org = sitem;
-                nnode->sclass = sitem->orgclass;
-                nnode->name = g_strdup((gchar*)key);
-                xmlFree(key);
-                key = xmlGetProp(obtn_node,(xmlChar *)"type");
-                if(key);
-                nnode->type = g_strdup((gchar*)key);
-                xmlFree(key);
-                factory_read_object_value_from_file(nnode,sitem,obtn_node);
-                sbtn->savelist = g_list_append(sbtn->savelist,nnode);
-            }
+        /* 这里不确定,要注与保存的一致*/
+        SaveStruct *nnode = factory_get_savestruct(sitem);
+        if(nnode)
+        {
+            nnode->widget1 = NULL;
+            nnode->widget2 = NULL;
+            nnode->org = sitem;
+            nnode->sclass = sitem->orgclass;
+            nnode->name = g_strdup((gchar*)key);
+            xmlFree(key);
+            key = xmlGetProp(obtn_node,(xmlChar *)"type");
+            if(key);
+            nnode->type = g_strdup((gchar*)key);
+            xmlFree(key);
+            factory_read_object_value_from_file(nnode,sitem,obtn_node);
+            sbtn->savelist = g_list_append(sbtn->savelist,nnode);
+        }
     }
 
 }
@@ -2454,7 +2474,8 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
 
         factory_handle_entry_item(sey,fst);
         key = xmlGetProp(attr_node,(xmlChar *)"value");
-        g_list_free1(sey->data); sey->data = NULL;
+        g_list_free1(sey->data);
+        sey->data = NULL;
         if(key)
         {
             gchar **split = g_strsplit((gchar*)key,",",-1);
@@ -2646,11 +2667,19 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
     SaveStruct *sss = g_new0(SaveStruct,1);
     sss->widget1= NULL;
     sss->widget2 = NULL;
+
     sss->type = g_strdup(fst->FType);
     sss->name = g_strdup(fst->Name);
     sss->sclass = fst->orgclass;
     sss->close_func = NULL;
     sss->newdlg_func = NULL;
+
+    if(!g_ascii_strcasecmp(fst->Min,factory_utf8(_("固定值"))))
+    {
+        sss->isSensitive = FALSE;
+    }
+    else
+        sss->isSensitive = TRUE;
 
     /* 2014-3-26 lcy 通过名字去哈希表里找链表*/
     if(!g_ascii_strncasecmp(sss->name,ACTION_ID,ACT_SIZE))
@@ -2754,7 +2783,15 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             else
             {
                 sss->celltype = SPINBOX;
-                sss->value.vnumber = g_strdup(fst->Value);
+                if(!g_ascii_strcasecmp(fst->Name,"wActID")) /*这里一个关键字判断是否是ＩＤ*/
+                {
+                    STRUCTClass *sclass = fst->orgclass;
+
+                    sss->value.vnumber = g_strdup_printf("%d",sclass->element.object.oindex);
+                    sss->isSensitive = FALSE;
+                }
+                else
+                    sss->value.vnumber = g_strdup(fst->Value);
             }
             break;
         case ET:
@@ -2784,10 +2821,10 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
                 }
                 if(!t && !sss->value.senum.width ) /*源文件有错误，这里用默认值*/
                 {
-                        sss->value.senum.index = 0;
-                        sss->value.senum.width = g_strdup(fst->Max);
-                        FactoryStructEnum *kvmap = sss->value.senum.enumList->data;
-                        sss->value.senum.evalue = g_strdup(kvmap->value);
+                    sss->value.senum.index = 0;
+                    sss->value.senum.width = g_strdup(fst->Max);
+                    FactoryStructEnum *kvmap = sss->value.senum.enumList->data;
+                    sss->value.senum.evalue = g_strdup(kvmap->value);
                 }
 
             }
@@ -3307,13 +3344,17 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
         NextID *nid  = &sss->value.nextid;
         GList *tlist = nid->actlist;
         ActionID *aid = g_list_first(tlist)->data;
-        STRUCTClass *fclass = factory_find_diaobject_by_name(curLayer,aid->pre_name);
-        if(fclass && fclass->widgetSave->data) /* 防止自身ＩＤ更新 */
+        if(strlen(aid->pre_name )> 0)
         {
-            SaveStruct *tmp = fclass->widgetSave->data;
-            aid->value = g_strdup(tmp->value.vnumber);
+            STRUCTClass *fclass = factory_find_diaobject_by_name(curLayer,aid->pre_name);
+            if(fclass ) /* 防止自身ＩＤ更新 */
+            {
+                aid->value = g_strdup_printf("%d",fclass->element.object.oindex);
+            }
+
         }
         factory_write_object_comobox(aid,ccc);
+
     }
     break;
     case OBTN:
@@ -3511,7 +3552,14 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
 }
 /**** 这里添加了两个特殊控件　***/
 
-
+gboolean factory_is_special_object(const gchar *name)
+{
+    gboolean b = FALSE;
+    if(!g_strcasecmp(name,"IDLIST") ||
+            !g_strcasecmp(name,"MUSICLIST"))
+        b = TRUE;
+    return b;
+}
 
 GtkWidget *factory_get_new_item_head()
 {
@@ -3543,127 +3591,168 @@ GtkWidget *factory_music_manager_head()
     return hbox;
 }
 
-
-void factory_add_item_to_idlist(GtkWidget *self)
+GtkWidget *factory_get_new_musicitem(SaveIdWidget *swt)
 {
-    GtkWidget *twidget = gtk_widget_get_toplevel(self);
-    GtkWidget *vbox  = gtk_widget_get_parent(self);
+
+    SaveMusicItem *smt = swt->save_data;
+    GtkWidget *hbox = gtk_hbox_new(FALSE,1);
+    GtkWidget *first = gtk_label_new(g_strdup_printf("%d",swt->id_index));
+    gtk_widget_set_size_request(first,50,-1);
+    GtkWidget *spbox = gtk_spin_button_new_with_range(-1,65535,2);
+    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spbox),smt->music_addr);
+    GtkWidget *entry = gtk_entry_new();
+    gtk_entry_set_text(GTK_ENTRY(entry),smt->base_name);
+    GtkWidget *btn_select = gtk_button_new_from_stock(GTK_STOCK_OPEN);
+
+    g_signal_connect(btn_select,"clicked",G_CALLBACK(factory_open_file_dialog),smt);
+    gtk_widget_set_size_request(btn_select,60,-1);
+    gtk_box_pack_start(GTK_BOX(hbox),first,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),spbox,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),entry,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),btn_select,TRUE,TRUE,0);
+
+    swt->wid_colum2 = spbox ;
+    swt->wid_colum3 = entry;
+
+    return hbox;
+}
+
+void factory_add_item_to_idlist(GtkButton *self,gpointer user_data)
+{
+    GList **list = user_data;
+    GtkWidget *twidget = gtk_widget_get_toplevel(GTK_WIDGET(self));
+    GtkWidget *vbox  = gtk_widget_get_parent(GTK_WIDGET(self));
     GList *clist =  gtk_container_get_children(GTK_CONTAINER(vbox));
+
     int len = g_list_length(clist);
-    GtkWidget *nitem = factory_get_new_item(len-1);
-    GtkAllocation *acat = &self->allocation;
+
+    SaveIdWidget *swt = g_new0(SaveIdWidget,1);
+    SaveIdList *sdt = g_new0(SaveIdList,1);
+    sdt->id_addr = -1;
+    swt->save_data = sdt;
+    swt->id_index =  len-1;
+    GtkWidget *nitem = factory_get_new_iditem(swt);
+
+    *list = g_list_append(*list,swt);
+    GtkAllocation *acat = &((GtkWidget*)self)->allocation;
     gtk_box_pack_start(GTK_BOX(vbox),nitem,FALSE,FALSE,0);
     gtk_box_reorder_child(GTK_BOX(vbox),self,len); /* 交换两行的位置 */
     gtk_widget_set_size_request (twidget,acat->width,-1);
     gtk_widget_show_all(vbox);
 }
 
-void factory_open_file_dialog(GtkWidget *widget,GtkWidget *entry)
+GtkWidget *opendlg = NULL;
+typedef void* (* FilterGuessFunc) (const gchar* filename);
+
+void factory_choose_musicfile_callback(GtkWidget *dlg,
+                                       gint       response,
+                                       gpointer   user_data)
 {
-    GtkWidget *opendlg = NULL;
+    SaveMusicItem *smt = user_data;
+    if (response == GTK_RESPONSE_ACCEPT)
+    {
+        smt->full_name  = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg));
+        gchar **split = g_strsplit(smt->full_name,"\\",-1);
+        int len = g_strv_length(split);
+        smt->base_name = g_strdup(split[len-1]);
+        gtk_entry_set_text(GTK_ENTRY(smt->entry),smt->base_name);
+        g_strfreev(split);
+    }
+    gtk_widget_destroy(dlg);
+}
+
+
+void factory_open_file_dialog(GtkWidget *widget,gpointer user_data)
+{
     opendlg = gtk_file_chooser_dialog_new_with_backend(_("打开音乐文件"), NULL,
-					  GTK_FILE_CHOOSER_ACTION_OPEN,
-					  "default", /* default, not gnome-vfs */
-					  GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-					  GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-					  NULL);
+              GTK_FILE_CHOOSER_ACTION_OPEN,
+              "default", /* default, not gnome-vfs */
+              GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+              GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+              NULL);
     gtk_dialog_set_default_response(GTK_DIALOG(opendlg), GTK_RESPONSE_ACCEPT);
 //    gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(opendlg), fnabs);
-     g_signal_connect(GTK_OBJECT(opendlg), "destroy",
-		     G_CALLBACK(gtk_widget_destroyed), &opendlg);
+    g_signal_connect(GTK_OBJECT(opendlg), "destroy",
+                     G_CALLBACK(gtk_widget_destroyed), &opendlg);
 
-     if (!gtk_file_chooser_get_extra_widget(GTK_FILE_CHOOSER(opendlg))) {
-    GtkWidget *hbox, *label, *omenu, *options;
-    GtkFileFilter* filter;
+    if (!gtk_file_chooser_get_extra_widget(GTK_FILE_CHOOSER(opendlg)))
+    {
+        GtkWidget *omenu= gtk_combo_box_new();
+        GtkFileFilter* filter;
 
-    options = gtk_frame_new(_("Open Options"));
-    gtk_frame_set_shadow_type(GTK_FRAME(options), GTK_SHADOW_ETCHED_IN);
+        /* set up the gtk file (name) filters */
+        /* 0 = by extension */
 
-    hbox = gtk_hbox_new(FALSE, 1);
-    gtk_container_set_border_width(GTK_CONTAINER(hbox), 5);
-    gtk_container_add(GTK_CONTAINER(options), hbox);
-    gtk_widget_show(hbox);
-
-    label = gtk_label_new (_("Determine file type:"));
-    gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
-    gtk_widget_show (label);
-
-    omenu = create_open_menu();
-    gtk_box_pack_start(GTK_BOX(hbox), omenu, TRUE, TRUE, 0);
-    gtk_widget_show(omenu);
-
-    gtk_file_chooser_set_extra_widget(GTK_FILE_CHOOSER(opendlg),
-				      options);
-
-    gtk_widget_show(options);
-
-
-    /* set up the gtk file (name) filters */
-    /* 0 = by extension */
-    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (opendlg),
-	                         build_gtk_file_filter_from_index (0));
         filter = gtk_file_filter_new ();
-    gtk_file_filter_set_name (filter, _("All Files"));
-    gtk_file_filter_add_pattern (filter, "*");
-    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (opendlg), filter);
+        gtk_file_filter_set_name (filter, _("Music Files"));
+        gtk_file_filter_add_pattern (filter, "*.wav");
+        gtk_file_filter_add_pattern (filter, "*.wma");
+        gtk_file_filter_add_pattern (filter, "*.mp3");
+        gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (opendlg), filter);
 
-    gtk_combo_box_set_active (GTK_COMBO_BOX (omenu), persistence_get_integer ("import-filter"));
-  }
+        filter = gtk_file_filter_new ();
+        gtk_file_filter_set_name (filter, _("All Files"));
+        gtk_file_filter_add_pattern (filter, "*");
+
+        gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (opendlg), filter);
+
+//        gtk_combo_box_set_active (GTK_COMBO_BOX (omenu), persistence_get_integer ("import-filter"));
+        g_signal_connect(GTK_FILE_CHOOSER(opendlg),
+                         "response", G_CALLBACK(factory_choose_musicfile_callback), user_data);
+    }
 
     gtk_widget_show(opendlg);
 }
 
-void factory_add_item_to_music_manager(GtkWidget *self)
+
+void factory_add_item_to_music_manager(GtkButton *self,gpointer user_data)
 {
+    GList **list = user_data;
     GtkWidget *vbox  = gtk_widget_get_parent(self);
     GList *clist =  gtk_container_get_children(GTK_CONTAINER(vbox));
     int len = g_list_length(clist);
-    GtkWidget *hbox = gtk_hbox_new(FALSE,1);
-    GtkWidget *first = gtk_label_new(g_strdup_printf("%d",len-1));
-    gtk_widget_set_size_request(first,50,-1);
-    GtkWidget *spbox = gtk_spin_button_new_with_range(-1,65535,2);
-    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spbox),-1);
-    GtkWidget *entry = gtk_entry_new();
-    GtkWidget *btn_select = gtk_button_new_from_stock(GTK_STOCK_OPEN);
-
-    g_signal_connect(btn_select,"clicked",G_CALLBACK(factory_open_file_dialog),entry);
-    gtk_box_pack_start(GTK_BOX(hbox),first,TRUE,TRUE,0);
-    gtk_box_pack_start(GTK_BOX(hbox),spbox,TRUE,TRUE,0);
-    gtk_box_pack_start(GTK_BOX(hbox),entry,TRUE,TRUE,0);
-    gtk_box_pack_start(GTK_BOX(hbox),btn_select,TRUE,TRUE,0);
-
-
-    gtk_box_pack_start(GTK_BOX(vbox),hbox,FALSE,FALSE,0);
+    SaveIdWidget *swt = g_new0(SaveIdWidget,1);
+    SaveMusicItem *smt = g_new0(SaveMusicItem,1);
+    smt->music_addr = -1;
+    swt->id_index =  len-1;
+    swt->save_data = smt;
+    GtkWidget *nitem = factory_get_new_musicitem(swt);
+    smt->entry = swt->wid_colum3;
+    *list = g_list_append(*list,swt);
+    gtk_box_pack_start(GTK_BOX(vbox),nitem,FALSE,FALSE,0);
     gtk_box_reorder_child(GTK_BOX(vbox),self,len);
 
-
     GtkWidget *topwid = gtk_widget_get_toplevel(vbox);
-    GtkAllocation *acat = &self->allocation;
+    GtkAllocation *acat = &((GtkWidget*)self)->allocation;
     gtk_widget_set_size_request(topwid,acat->width,-1);
     gtk_widget_show_all(vbox);
 
 }
 
-GtkWidget *factory_new_add_button(factory_button_callback *callback)
+GtkWidget *factory_new_add_button(factory_button_callback *callback,gpointer list)
 {
     GtkWidget *btn = gtk_button_new_from_stock (GTK_STOCK_ADD);
     gtk_widget_set_name (btn,"add_button");
     g_signal_connect (G_OBJECT (btn), "clicked",
                       G_CALLBACK (callback),
-                      NULL);
+                      list);
     return btn;
 }
 
 
-GtkWidget *factory_get_new_item(int id)
+GtkWidget *factory_get_new_iditem(SaveIdWidget *swt)
 {
+
+    SaveIdList *sdt = swt->save_data;
     GtkWidget *hbox = gtk_hbox_new(FALSE,1);
-    GtkWidget *first = gtk_label_new(g_strdup_printf("%d",id));
+    GtkWidget *first = gtk_label_new(g_strdup_printf("%d",swt->id_index));
     gtk_widget_set_size_request(first,50,-1);
     GtkWidget *spbox = gtk_spin_button_new_with_range(-1,65536,2);
-    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spbox),-1);
-//    gtk_widget_set_size_request(spbox,50,-1);
+
+    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spbox),sdt->id_addr);
+
     GtkWidget *cbox = gtk_combo_box_new_text();
+
 
     gtk_combo_box_popdown(GTK_COMBO_BOX(cbox));
     GList *p = curLayer->defnames;
@@ -3672,19 +3761,19 @@ GtkWidget *factory_get_new_item(int id)
     {
         gtk_combo_box_append_text(GTK_COMBO_BOX(cbox),p->data);
     }
-    gtk_combo_box_set_active(GTK_COMBO_BOX(cbox),0);
+    gtk_combo_box_set_active(GTK_COMBO_BOX(cbox),sdt->id_nextid);
 
-//    GtkWidget *btn_del = gtk_button_new_from_stock(GTK_STOCK_DELETE);
-//    gtk_widget_set_size_request(btn_del,100,-1);
     gtk_box_pack_start(GTK_BOX(hbox),first,TRUE,TRUE,0);
     gtk_box_pack_start(GTK_BOX(hbox),spbox,TRUE,TRUE,0);
     gtk_box_pack_start(GTK_BOX(hbox),cbox,TRUE,TRUE,0);
 //    gtk_box_pack_start(GTK_BOX(hbox),btn_del,TRUE,TRUE,0);
 
+    swt->wid_colum2 = spbox;
+    swt->wid_colum3 = cbox;
     return hbox;
 }
 
-void factory_idlist_dialog(gchar *title,GtkWidget *parent)
+void factory_idlist_dialog(gchar *title,GtkWidget *parent,GList **savelist)
 {
     gtk_window_set_title (GTK_WINDOW (parent),title);
     gtk_window_set_resizable (GTK_WINDOW (parent),TRUE);
@@ -3696,14 +3785,25 @@ void factory_idlist_dialog(gchar *title,GtkWidget *parent)
     GtkWidget *vbox  = gtk_vbox_new(FALSE,0);
     gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(wid_idlist),vbox);
     gtk_box_pack_start(GTK_BOX(vbox),factory_get_new_item_head(),FALSE,FALSE,0);
-    gtk_box_pack_start(GTK_BOX(vbox),factory_new_add_button(factory_add_item_to_idlist),FALSE,FALSE,0);
 
+    if(*savelist)
+    {
+        GList *tlist = *savelist;
+        int n = 1;
+        for(; tlist; tlist = tlist->next,n++)
+        {
+            SaveIdWidget *swt = tlist->data;
+            GtkWidget *nbox =  factory_get_new_iditem(swt);
+            gtk_box_pack_start(GTK_BOX(vbox),nbox,FALSE,FALSE,0);
+        }
+    }
+    gtk_box_pack_start(GTK_BOX(vbox),factory_new_add_button(factory_add_item_to_idlist,savelist),FALSE,FALSE,0);
     gtk_box_pack_start(GTK_BOX(parent),wid_idlist,TRUE,TRUE,0);
 
 //    gtk_widget_show_all(newdialog);
 }
 
-void factory_music_filemanager_dialog(gchar *title,GtkWidget *parent)
+void factory_music_filemanager_dialog(gchar *title,GtkWidget *parent,GList **savelist)
 {
     gtk_window_set_title (GTK_WINDOW (parent),title);
     gtk_window_set_resizable (GTK_WINDOW (parent),TRUE);
@@ -3711,14 +3811,23 @@ void factory_music_filemanager_dialog(gchar *title,GtkWidget *parent)
 
     GtkWidget  *wid_idlist = gtk_scrolled_window_new (NULL,NULL);
 
-
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(wid_idlist),
                                    GTK_POLICY_NEVER,GTK_POLICY_ALWAYS);
 
     GtkWidget *vbox  = gtk_vbox_new(FALSE,5);
     gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(wid_idlist),vbox);
     gtk_box_pack_start(GTK_BOX(vbox),factory_get_new_item_head(),FALSE,FALSE,0);
-    gtk_box_pack_start(GTK_BOX(vbox),factory_new_add_button(factory_add_item_to_music_manager),FALSE,FALSE,0);
+    if(*savelist)
+    {
+        GList *tlist = *savelist;
+        for(; tlist; tlist = tlist->next)
+        {
+            SaveIdWidget *swt = tlist->data;
+            GtkWidget *nbox =  factory_get_new_musicitem(swt);
+            gtk_box_pack_start(GTK_BOX(vbox),nbox,FALSE,FALSE,0);
+        }
+    }
+    gtk_box_pack_start(GTK_BOX(vbox),factory_new_add_button(factory_add_item_to_music_manager,savelist),FALSE,FALSE,0);
 
     gtk_box_pack_start(GTK_BOX(parent),wid_idlist,TRUE,TRUE,0);
 

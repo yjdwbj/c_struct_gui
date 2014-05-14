@@ -3227,7 +3227,40 @@ void factory_delete_line_between_two_objects(STRUCTClass *startc,const gchar *en
 ObjectChange *
 factory_apply_props_from_dialog(STRUCTClass *fclass, GtkWidget *widget)
 {
-    g_hash_table_foreach(fclass->widgetmap,factory_read_props_from_widget,(gpointer)fclass);
+//    g_hash_table_foreach(fclass->widgetmap,factory_read_props_from_widget,(gpointer)fclass);
+    GList *applist = NULL;
+    if(factory_is_special_object(fclass->element.object.name))
+    {
+        applist = fclass->widgetSave;
+        for(; applist; applist = applist->next)
+        {
+            SaveIdWidget *swt = applist->data;
+            if(!g_ascii_strcasecmp(fclass->element.object.name,"IDLIST"))
+            {
+                SaveIdList *sdt = swt->save_data;
+                sdt->id_addr = gtk_spin_button_get_value(GTK_SPIN_BUTTON(swt->wid_colum2));
+                sdt->id_nextid = gtk_combo_box_get_active(GTK_COMBO_BOX(swt->wid_colum3));
+                sdt->id_curtxt = gtk_combo_box_get_active_text(GTK_COMBO_BOX(swt->wid_colum3));
+
+            }
+            else
+            {
+                SaveMusicItem *smt = swt->save_data;
+                smt->music_addr = gtk_spin_button_get_value(GTK_SPIN_BUTTON(swt->wid_colum2));
+            }
+
+
+        }
+
+        return NULL;
+    }
+
+    applist = fclass->widgetSave;
+    for(; applist; applist = applist->next)
+    {
+        factory_read_props_from_widget(NULL,applist->data,NULL);
+    }
+
     PublicSection *pps = fclass->pps;
     if(!pps)
         return NULL;
@@ -3469,8 +3502,7 @@ static GtkWidget *factory_create_variant_object(SaveStruct *sss)
     /* 这个函数可能会被递归调用 */
     FactoryStructItem *item = sss->org;
     GtkWidget *columTwo = NULL;
-//        if(item->Itype == BT)
-//        {
+
     switch(sss->celltype)
     {
     case ENTRY:
@@ -3487,16 +3519,20 @@ static GtkWidget *factory_create_variant_object(SaveStruct *sss)
     break;
     case SPINBOX:
     {
+
+
         gint v = 0;
         if(!g_ascii_strncasecmp(sss->value.vnumber,"-1",2))
             v = -1;
         else
             v = g_strtod(sss->value.vnumber,NULL);
+
+
         gint vmin =  g_strtod(item->Min,NULL);
         gint vmax = g_strtod(item->Max,NULL);
-//        if(v<0)
-//            v = vmax+1;
+
         columTwo = factory_create_spbinbox_widget(v,vmin,vmax);
+
     }
     break;
     case UCOMBO:
@@ -3630,6 +3666,7 @@ void factory_set_savestruct_widgets(SaveStruct *sss)
         /* 创建多样性的对像控件  */
 
         columTwo = factory_create_variant_object(sss);
+        gtk_widget_set_sensitive(columTwo,sss->isSensitive);
         gtk_tooltips_set_tip(tool_tips,columTwo,g_strdup(comment),NULL);
 //        sss->widget2 = columTwo;
         sss->widget1 = Name;
@@ -3982,6 +4019,8 @@ CFIRST:
         {
             /* 初始化要保存的值 */
             SaveUbtn *sbtn = &existS->value.ssubtn;
+            g_list_free1(sbtn->savelist);
+            sbtn->savelist = NULL;
             if(sbtn->structlist)
             {
                 GList *slist = sbtn->structlist;
@@ -4263,8 +4302,7 @@ GList * factory_get_objects_from_layer(Layer *layer)
             continue;
         STRUCTClass* objclass = objlist->data;
         if(!g_ascii_strcasecmp(objclass->name,"SYS_DATA")
-                || !g_ascii_strcasecmp(objclass->name,"IDLIST")
-                || !g_ascii_strcasecmp(objclass->name,"MUSICLIST"))
+                || factory_is_special_object(objclass->element.object.name))
             continue;
         list = g_list_append(list,objclass->name);
     }
@@ -4398,6 +4436,8 @@ void factory_create_unionbutton_dialog(gpointer item,SaveStruct *sst)
     {
         if(sbtn->structlist)
         {
+            g_list_free1(sbtn->savelist);
+            sbtn->savelist = NULL;
             GList *slist = sbtn->structlist;
             for(; slist; slist = slist->next)
             {
@@ -4582,10 +4622,9 @@ void factory_create_struct_dialog(GtkWidget *dialog,GList *datalist)
     for(; item  ; item = item->next)
     {
         SaveStruct *sst  = item->data;
-        gchar *lname = g_locale_from_utf8(sst->org->Cname,-1,NULL,NULL,NULL);
-        if(g_ascii_strcasecmp(lname,_("保留"))) /* 保留的不显示出来 */
+        factory_set_savestruct_widgets(sst);
+        if(g_ascii_strcasecmp(factory_locale(sst->org->Cname),_("保留"))) /* 保留的不显示出来 */
         {
-            factory_set_savestruct_widgets(sst);
             factory_set_twoxtwo_table(dialog,sst->widget1,sst->widget2,row++);
         }
 
@@ -4634,34 +4673,34 @@ void factory_create_and_fill_dialog(STRUCTClass *fclass, gboolean is_default)
     DDisplay *ddsp = ddisplay_active();
     curLayer = ddsp->diagram->data->active_layer;
     STRUCTClassDialog *prop_dialog = fclass->properties_dialog;
-//    GList *targetlist = g_hash_table_get_values(fclass->widgetmap);
-    GList *targetlist = fclass->widgetSave;
-    if(!targetlist)
-    {
-        factory_read_initial_to_struct(fclass);
-    }
-    int num = g_list_length(targetlist);
-    prop_dialog->mainTable = gtk_table_new(num,4,FALSE);  // 2014-3-19 lcy 根据要链表的数量,创建多少行列表.
-    factory_create_struct_dialog(prop_dialog->mainTable,targetlist);
-    gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),prop_dialog->mainTable);
 
+    if(!g_ascii_strcasecmp(fclass->element.object.name,"IDLIST"))
+    {
+        factory_idlist_dialog(factory_utf8("ID列表"),prop_dialog->dialog,&fclass->widgetSave);
+    }
+    else if(!g_ascii_strcasecmp(fclass->element.object.name,"MUSICLIST"))
+    {
+        factory_music_filemanager_dialog(factory_utf8("音乐文件管理"),prop_dialog->dialog,&fclass->widgetSave);
+    }
+    else
+    {
+        GList *targetlist = fclass->widgetSave;
+        if(!targetlist)
+        {
+            factory_read_initial_to_struct(fclass);
+        }
+        int num = g_list_length(targetlist);
+        prop_dialog->mainTable = gtk_table_new(num,4,FALSE);  // 2014-3-19 lcy 根据要链表的数量,创建多少行列表.
+        factory_create_struct_dialog(prop_dialog->mainTable,targetlist);
+        gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),prop_dialog->mainTable);
+        if(g_ascii_strcasecmp(fclass->name,"SYS_DATA"))
+        {
 
-    if(!g_ascii_strcasecmp(fclass->name,"IDLIST"))
-    {
-        gtk_container_remove(GTK_CONTAINER(prop_dialog->dialog),prop_dialog->mainTable);
-        factory_idlist_dialog("ID列表",prop_dialog->dialog);
+            factory_append_public_info(prop_dialog->dialog,fclass);
+            gtk_table_set_col_spacing(GTK_TABLE(prop_dialog->mainTable),1,20);
+        }
     }
-    else if(!g_ascii_strcasecmp(fclass->name,"MUSICLIST"))
-    {
-        gtk_container_remove(GTK_CONTAINER(prop_dialog->dialog),prop_dialog->mainTable);
-        factory_music_filemanager_dialog("音乐文件管理",prop_dialog->dialog);
-    }
-    else if(g_ascii_strcasecmp(fclass->name,"SYS_DATA"))
-    {
 
-        factory_append_public_info(prop_dialog->dialog,fclass);
-        gtk_table_set_col_spacing(GTK_TABLE(prop_dialog->mainTable),1,20);
-    }
 
 
 

@@ -521,7 +521,7 @@ struct _DiaObject {
   /** Metainfo of the object, should not be manipulated directy */
   GHashTable       *meta;
   gchar *name; /* 2014-4-2 lcy 加一个名字做调试 */
-  guint32 index; /*2014-5-4 lcy 这里是控件唯一编号*/
+  guint32 oindex; /*2014-5-4 lcy 这里是控件唯一编号*/
 };
 
 /*!

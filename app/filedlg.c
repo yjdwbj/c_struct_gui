@@ -122,7 +122,7 @@ diagram_removed (Diagram* dia, GtkWidget* dialog)
 }
 #endif
 
-GtkFileFilter *
+static GtkFileFilter *
 build_gtk_file_filter_from_index (int index)
 {
   DiaImportFilter *ifilter = NULL;
