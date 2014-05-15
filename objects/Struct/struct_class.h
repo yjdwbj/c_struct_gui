@@ -153,13 +153,37 @@ struct _SaveIdList
     gchar *id_curtxt;
 };
 
+
+typedef struct _SaveMusicTableRow SaveMusicTableRow;
+struct _SaveMusicTableRow
+{
+    int index;
+    int addr;
+    int basename;
+    int fullname;
+    int downname;
+
+};
+
+typedef struct _SaveMusicDialog SaveMusicDialog;
+struct _SaveMusicDialog{
+    int number; //ÐÐÊý
+    GList *itemlist;
+    GtkWidget *wid_offset;
+    GtkWidget *wid_clist;
+};
+
 typedef struct _SaveMusicItem SaveMusicItem;
 struct _SaveMusicItem{
     int music_addr;
     gchar *base_name;
     gchar *full_name;
     GtkWidget *entry;
+    SaveMusicDialog *smd;
 };
+
+
+
 
 typedef struct _SaveIdWidget SaveIdWidget;
 struct _SaveIdWidget
@@ -461,7 +485,7 @@ void factory_create_toolbar_button(const gint8 *icon,gchar *tips,GtkToolbar  *to
                                           gpointer *callback);
 
 void factory_idlist_dialog(gchar *title,GtkWidget *parent,GList **savelist);
-void factory_music_filemanager_dialog(gchar *title,GtkWidget *parent,GList **savelist);
+void factory_file_id_manager_dialog(gchar *title,GtkWidget *parent,GList **savelist);
 
 
 typedef void (*factory_button_callback)(GtkWidget *self);
@@ -472,8 +496,10 @@ GtkWidget *factory_get_new_iditem(SaveIdWidget *swt);
 GtkWidget *factory_get_new_musicitem( SaveIdWidget *swt);
 
 gboolean factory_is_special_object(const gchar *name);
+GtkWidget *factory_music_file_manager(GtkWidget *parent,gchar *title);
 
 
+static void factory_choose_musicfile_callback(GtkWidget *dlg,gint       response,gpointer   user_data);
 void factory_open_file_dialog(GtkWidget *widget,gpointer user_data);
 
 //void factoryReadDataFromFile(STRUCTClass *structclass);

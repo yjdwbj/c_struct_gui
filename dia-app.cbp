@@ -102,6 +102,7 @@
 				<Linker>
 					<Add option="-ldia" />
 					<Add option="-ldia-app" />
+					<Add option="-lgio-2.0" />
 				</Linker>
 			</Target>
 			<Target title="debub_lib">
@@ -214,6 +215,7 @@
 				<Linker>
 					<Add option="-ldia" />
 					<Add option="-ldia-app" />
+					<Add option="-lgio-2.0" />
 				</Linker>
 			</Target>
 		</Build>

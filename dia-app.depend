@@ -1678,7 +1678,7 @@
 	<gtk/gtk.h>
 	<glib.h>
 
-1399979759 source:o:\tool\dvs50\app\filedlg.c
+1400118168 source:o:\tool\dvs50\app\filedlg.c
 	<config.h>
 	<sys/types.h>
 	<sys/stat.h>
@@ -2376,7 +2376,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1400069524 source:o:\tool\dvs50\objects\struct\struct_class.c
+1400145865 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2393,7 +2393,7 @@
 	"sheet.h"
 	"filedlg.h"
 
-1400070131 o:\tool\dvs50\objects\struct\struct_class.h
+1400146652 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2409,7 +2409,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1400069860 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1400152919 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
