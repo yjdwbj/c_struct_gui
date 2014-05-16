@@ -3232,25 +3232,32 @@ factory_apply_props_from_dialog(STRUCTClass *fclass, GtkWidget *widget)
     if(factory_is_special_object(fclass->element.object.name))
     {
         applist = fclass->widgetSave;
-        for(; applist; applist = applist->next)
+
+//            SaveIdWidget *swt = applist->data;
+//            if(!g_ascii_strcasecmp(fclass->element.object.name,"IDLIST"))
+//            {
+//                SaveIdList *sdt = swt->save_data;
+//                sdt->id_addr = gtk_spin_button_get_value(GTK_SPIN_BUTTON(swt->wid_colum2));
+//                sdt->id_nextid = gtk_combo_box_get_active(GTK_COMBO_BOX(swt->wid_colum3));
+//                sdt->id_curtxt = gtk_combo_box_get_active_text(GTK_COMBO_BOX(swt->wid_colum3));
+//
+//            }
+//            else
         {
-            SaveIdWidget *swt = applist->data;
-            if(!g_ascii_strcasecmp(fclass->element.object.name,"IDLIST"))
+            SaveMusicDialog *smd = fclass->widgetSave->data;
+            if(smd) /*　左边的界面保存 */
             {
-                SaveIdList *sdt = swt->save_data;
-                sdt->id_addr = gtk_spin_button_get_value(GTK_SPIN_BUTTON(swt->wid_colum2));
-                sdt->id_nextid = gtk_combo_box_get_active(GTK_COMBO_BOX(swt->wid_colum3));
-                sdt->id_curtxt = gtk_combo_box_get_active_text(GTK_COMBO_BOX(swt->wid_colum3));
-
+                GList *tlist = smd->itemlist;
+                for(; tlist; tlist = tlist->next)
+                {
+                    SaveMusicItem *smi = tlist->data;
+                    smi->active = gtk_combo_box_get_active(GTK_COMBO_BOX(smi->wid_colum3));
+                    smi->dname = gtk_combo_box_get_active_text(GTK_COMBO_BOX(smi->wid_colum3));
+                }
             }
-            else
-            {
-                SaveMusicItem *smt = swt->save_data;
-                smt->music_addr = gtk_spin_button_get_value(GTK_SPIN_BUTTON(swt->wid_colum2));
-            }
-
-
         }
+
+
 
         return NULL;
     }
@@ -3527,12 +3534,9 @@ static GtkWidget *factory_create_variant_object(SaveStruct *sss)
         else
             v = g_strtod(sss->value.vnumber,NULL);
 
-
         gint vmin =  g_strtod(item->Min,NULL);
         gint vmax = g_strtod(item->Max,NULL);
-
         columTwo = factory_create_spbinbox_widget(v,vmin,vmax);
-
     }
     break;
     case UCOMBO:
@@ -4054,19 +4058,20 @@ void factory_strjoin(gchar **dst,const gchar *prefix,const gchar *sep)
 
 
 /* 这里数组显示  */
-void factory_create_basebutton_dialog(gpointer item,SaveStruct *sss)
+void factory_create_basebutton_dialog(GtkWidget *button,SaveStruct *sss)
 {
-    GtkWidget *parent = gtk_widget_get_ancestor(item,GTK_TYPE_WINDOW);
-    GtkWidget*  subdig = gtk_dialog_new_with_buttons(_(sss->name),
-                         GTK_WINDOW(parent),
-                         GTK_DIALOG_MODAL,
-                         GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
-                         GTK_STOCK_OK, GTK_RESPONSE_OK,NULL);
+
+    GtkWidget *sdialog = gtk_hbox_new(FALSE,0);
+    GtkWidget *subdig = factory_create_new_dialog_with_buttons(sss->name,gtk_widget_get_toplevel(button));
+    GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
+    gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
+    gtk_window_set_modal(GTK_WINDOW(subdig),TRUE);
+
 
     /* 行列式的控件输入框 */
 //    GtkWidget *sdialog = gtk_vbox_new(FALSE,0);
     gtk_dialog_set_default_response (GTK_DIALOG(subdig), GTK_RESPONSE_OK);
-    GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
+
 //    gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
 
 //    g_signal_connect(G_OBJECT (subdig), "destroy",G_CALLBACK(gtk_widget_destroyed), &subdig);
@@ -4087,7 +4092,7 @@ void factory_create_basebutton_dialog(gpointer item,SaveStruct *sss)
 //    }
 //    else
     {
-        gtk_box_pack_start(GTK_BOX(dialog_vbox),factory_create_many_entry_box(sss),FALSE,FALSE,0);
+        gtk_box_pack_start(GTK_BOX(sdialog),factory_create_many_entry_box(sss),FALSE,FALSE,0);
         g_signal_connect(G_OBJECT(subdig), "response",G_CALLBACK(sss->close_func),sey);
     }
     g_strfreev(vvv);
@@ -4097,13 +4102,13 @@ void factory_create_basebutton_dialog(gpointer item,SaveStruct *sss)
 
 
 
-void factory_create_enumbutton_dialog(gpointer item,SaveStruct *sst)
+void factory_create_enumbutton_dialog(GtkWidget *button,SaveStruct *sst)
 {
     GtkWidget *sdialog = gtk_hbox_new(FALSE,0);
-    GtkWidget *newdialog = factory_create_new_dialog_with_buttons(sst->name,NULL);
+    GtkWidget *newdialog = factory_create_new_dialog_with_buttons(sst->name,gtk_widget_get_toplevel(button));
     GtkWidget *dialog_vbox = GTK_DIALOG(newdialog)->vbox;
     gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
-
+    gtk_window_set_modal(GTK_WINDOW(newdialog),TRUE);
     SaveEbtn *sebtn  = &sst->value.ssebtn;
 //    GList *nixlist = sebtn->ebtnwlist;
 //    int n = 0;
@@ -4115,8 +4120,6 @@ void factory_create_enumbutton_dialog(gpointer item,SaveStruct *sst)
     int pos = 0;
     int tnum = 0;
     ArrayBaseProp *abp = sebtn->arr_base;
-
-
 
     for(; r < abp->row ; r++)
     {
@@ -4150,15 +4153,14 @@ void factory_create_enumbutton_dialog(gpointer item,SaveStruct *sst)
 }
 
 
-void factory_create_objectbutton_dialog(gpointer item,SaveStruct *sst)
+void factory_create_objectbutton_dialog(GtkWidget *button,SaveStruct *sst)
 {
-//    GtkWidget *parent = gtk_widget_get_ancestor(item,GTK_TYPE_WINDOW);
     /* 这里是多个 数组 */
     GtkWidget *sdialog = gtk_hbox_new(FALSE,0);
-    GtkWidget *subdig = factory_create_new_dialog_with_buttons(sst->name,NULL);
+    GtkWidget *subdig = factory_create_new_dialog_with_buttons(sst->name,button->window);
     GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
     gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
-
+    gtk_window_set_modal(GTK_WINDOW(subdig),TRUE);
 
     NextID *nextid = &sst->value.nextid;
     STRUCTClass *orgclass = sst->sclass;
@@ -4301,7 +4303,7 @@ GList * factory_get_objects_from_layer(Layer *layer)
         if(!factory_is_valid_type(objlist->data))
             continue;
         STRUCTClass* objclass = objlist->data;
-        if(!g_ascii_strcasecmp(objclass->name,"SYS_DATA")
+        if(!g_ascii_strcasecmp(objclass->element.object.name,"SYS_DATA")
                 || factory_is_special_object(objclass->element.object.name))
             continue;
         list = g_list_append(list,objclass->name);
@@ -4398,32 +4400,26 @@ GList * factory_get_objects_from_layer(Layer *layer)
 //}
 
 
-void factory_create_unionbutton_dialog(gpointer item,SaveStruct *sst)
+void factory_create_unionbutton_dialog(GtkWidget *button,SaveStruct *sst)
 {
-//    GtkWidget *parent = gtk_widget_get_ancestor(item,GTK_TYPE_WINDOW);
-//    SaveUnion *suptr  = &sst->value.sunion;
+
     SaveUbtn *sbtn = &sst->value.ssubtn;
-    // g_hash_table_insert(suptr->saveTable,g_strjoin("##",nextobj->FType,nextobj->Name,NULL),tsst);
     /* 通按钮事件,创建属性对话框*/
-    GtkWidget*  subdig = gtk_dialog_new_with_buttons(
-                             _(sst->name),
-                             NULL,
-                             GTK_DIALOG_DESTROY_WITH_PARENT,
-                             GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
-                             GTK_STOCK_OK, GTK_RESPONSE_OK,
-                             NULL);
-//    FactoryStructItem *fsi = sst->org;
-    gtk_dialog_set_default_response (GTK_DIALOG(subdig), GTK_RESPONSE_OK);
+//    GtkWidget *sdialog = gtk_hbox_new(FALSE,0);
+    GtkWidget *subdig = factory_create_new_dialog_with_buttons(sst->name,button->window);
     GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
+
+    gtk_window_set_modal(GTK_WINDOW(subdig),TRUE);
+
+    gtk_dialog_set_default_response (GTK_DIALOG(subdig), GTK_RESPONSE_OK);
     gtk_window_set_resizable (GTK_WINDOW(subdig),FALSE);
     gtk_window_set_position (GTK_WINDOW(subdig),GTK_WIN_POS_MOUSE);
-    gtk_window_present (GTK_WINDOW(subdig));
-
 
     int num = g_list_length(sbtn->structlist);
     GtkTable *table = gtk_table_new(num,4,FALSE);  // 2014-3-19 lcy 根据要链表的数量,创建多少行列表.
 
     STRUCTClassDialog *sdialog = g_new0(STRUCTClassDialog,1);
+    gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
     sdialog->dialog = gtk_vbox_new(TRUE,0);
     sdialog->mainTable = table;
     gtk_container_add(GTK_CONTAINER(sdialog->dialog),sdialog->mainTable);
@@ -4676,11 +4672,25 @@ void factory_create_and_fill_dialog(STRUCTClass *fclass, gboolean is_default)
 
     if(!g_ascii_strcasecmp(fclass->element.object.name,"IDLIST"))
     {
-        factory_idlist_dialog(factory_utf8("ID列表"),prop_dialog->dialog,&fclass->widgetSave);
+//        factory_idlist_dialog(factory_utf8("ID列表"),prop_dialog->dialog,&fclass->widgetSave);
     }
     else if(!g_ascii_strcasecmp(fclass->element.object.name,"FILELIST"))
     {
-        factory_file_id_manager_dialog(factory_utf8("文件管理"),prop_dialog->dialog,&fclass->widgetSave);
+        if(!fclass->widgetSave)
+        {
+            SaveMusicDialog *smd = g_new0(SaveMusicDialog,1);
+            g_signal_connect(smd,"item_added",G_CALLBACK(factory_music_file_manager_new_item_added),smd);
+            smd = g_new0(SaveMusicDialog,1);
+           music_file_added_signals = g_signal_new("item_added", /* 自定义一个信号*/
+                         G_TYPE_FROM_CLASS(smd),
+                         G_SIGNAL_RUN_FIRST,
+                          G_STRUCT_OFFSET (SaveMusicDialog, item_added),
+                          NULL, NULL,
+                         g_cclosure_marshal_VOID__VOID,
+                         G_TYPE_NONE, 0,G_TYPE_POINTER);
+            fclass->widgetSave = g_list_append(fclass->widgetSave,smd);
+        }
+        factory_file_manager_dialog(factory_utf8("文件管理"),prop_dialog->dialog,fclass->widgetSave);
     }
     else
     {
@@ -4693,7 +4703,7 @@ void factory_create_and_fill_dialog(STRUCTClass *fclass, gboolean is_default)
         prop_dialog->mainTable = gtk_table_new(num,4,FALSE);  // 2014-3-19 lcy 根据要链表的数量,创建多少行列表.
         factory_create_struct_dialog(prop_dialog->mainTable,targetlist);
         gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),prop_dialog->mainTable);
-        if(g_ascii_strcasecmp(fclass->name,"SYS_DATA"))
+        if(g_ascii_strcasecmp(fclass->element.object.name,"SYS_DATA"))
         {
             factory_append_public_info(prop_dialog->dialog,fclass);
             gtk_table_set_col_spacing(GTK_TABLE(prop_dialog->mainTable),1,20);
@@ -4705,8 +4715,17 @@ void factory_create_and_fill_dialog(STRUCTClass *fclass, gboolean is_default)
 
 /**** 这里添加了两个特殊控件　***/
 
-gchar *lastDir= NULL;
-static SaveMusicDialog *smd = NULL;
+
+void factory_music_file_manager_new_item_added(SaveMusicDialog *smd)
+{
+    GList *tlist = smd->itemlist;
+    GList *newflist = smd->cboxlist;
+    for(;tlist ; tlist = tlist->next)
+    {
+        SaveMusicItem *smi = tlist->data;
+        gtk_combo_box_append_text(smi->wid_colum3,"test");
+    }
+}
 
 
 gboolean factory_is_special_object(const gchar *name)
@@ -4748,138 +4767,141 @@ GtkWidget *factory_file_id_manager_head()
     return hbox;
 }
 
-GtkWidget *factory_get_new_musicitem(SaveIdWidget *swt)
+GtkWidget *factory_get_new_musicitem(SaveMusicItem *smt,GList *fillist)
 {
     /* 这里的文件管理 */
-    SaveMusicItem *smt = swt->save_data;
+
     GtkWidget *hbox = gtk_hbox_new(FALSE,1);
-    GtkWidget *first = gtk_label_new(g_strdup_printf("%d",swt->id_index));
+    GtkWidget *first = gtk_label_new(g_strdup_printf("%d",smt->id_index));
     gtk_widget_set_size_request(first,50,-1);
     GtkWidget *spbox = gtk_spin_button_new_with_range(-1,65535,2);
-    gtk_widget_set_size_request(spbox,60,-1);
+    gtk_widget_set_size_request(spbox,50,-1);
     gtk_widget_set_sensitive(spbox,FALSE);
-    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spbox),smt->music_addr);
-//    GtkWidget *btn_select = gtk_button_new_from_stock(GTK_STOCK_OPEN);
-    GtkWidget *cbox = gtk_combo_box_new();
+    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spbox),smt->id_addr);
 
+    GtkWidget *cbox = gtk_combo_box_text_new();
 
-    gtk_combo_box_popdown(GTK_COMBO_BOX(cbox));
-//    GList *p = curLayer->defnames;
     gtk_combo_box_append_text(GTK_COMBO_BOX(cbox),"");
-//    for(; p ; p = p->next)
-//    {
-//        gtk_combo_box_append_text(GTK_COMBO_BOX(cbox),p->data);
-//    }
-//    gtk_combo_box_set_active(GTK_COMBO_BOX(cbox),sdt->id_nextid);
-
-//    g_signal_connect(btn_select,"clicked",G_CALLBACK(factory_open_file_dialog),swt);
-//    g_signal_connect(btn_select,"clicked",G_CALLBACK(factory_music_file_manager),NULL);
-//    gtk_widget_set_size_request(btn_select,60,-1);
-    gtk_box_pack_start(GTK_BOX(hbox),first,TRUE,TRUE,0);
-    gtk_box_pack_start(GTK_BOX(hbox),spbox,TRUE,TRUE,0);
-    gtk_box_pack_start(GTK_BOX(hbox),cbox,TRUE,TRUE,0);
-
-    swt->wid_colum2 = spbox ;
-    swt->wid_colum3 = cbox;
-
+    GList *tlist = fillist;
+    for(; tlist; tlist = tlist->next)
+    {
+        gtk_combo_box_append_text(GTK_COMBO_BOX(cbox),_(tlist->data));
+    }
+    gtk_combo_box_set_active(GTK_COMBO_BOX(cbox),smt->active);
+    gtk_box_pack_start(GTK_BOX(hbox),first,FALSE,FALSE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),spbox,FALSE,FALSE,0);
+    gtk_box_pack_start(GTK_BOX(hbox),cbox ,TRUE,TRUE,0);
+    gtk_combo_box_popdown(GTK_COMBO_BOX(cbox));
+    smt->wid_colum2 = spbox ;
+    smt->wid_colum3 = cbox;
+    gtk_widget_show_all(hbox);
     return hbox;
 }
 
-void factory_add_item_to_idlist(GtkButton *self,gpointer user_data)
-{
-    GList **list = user_data;
-//    GtkWidget *twidget = gtk_widget_get_toplevel(GTK_WIDGET(self));
-    GtkWidget *vbox  = gtk_widget_get_parent(GTK_WIDGET(self));
-    GList *clist =  gtk_container_get_children(GTK_CONTAINER(vbox));
-
-    int len = g_list_length(clist);
-
-    SaveIdWidget *swt = g_new0(SaveIdWidget,1);
-    SaveIdList *sdt = g_new0(SaveIdList,1);
-
-    swt->save_data = sdt;
-    swt->id_index =  len-1;
-    sdt->id_addr = (swt->id_index-1)*2;
-    GtkWidget *nitem = factory_get_new_iditem(swt);
-
-    *list = g_list_append(*list,swt);
-
-//    GtkAllocation *acat = &((GtkWidget*)self)->allocation;
-    gtk_box_pack_start(GTK_BOX(vbox),nitem,TRUE,TRUE,0);
-    gtk_box_reorder_child(GTK_BOX(vbox),GTK_WIDGET(self),len); /* 交换两行的位置 */
-//    gtk_widget_set_size_request (vbox,acat->width,-1);
-    gtk_widget_show_all(vbox);
-}
+//void factory_add_item_to_idlist(GtkButton *self,gpointer user_data)
+//{
+//    GList **list = user_data;
+////    GtkWidget *twidget = gtk_widget_get_toplevel(GTK_WIDGET(self));
+//    GtkWidget *vbox  = gtk_widget_get_parent(GTK_WIDGET(self));
+//    GList *clist =  gtk_container_get_children(GTK_CONTAINER(vbox));
+//
+//    int len = g_list_length(clist);
+//
+//    SaveIdWidget *swt = g_new0(SaveIdWidget,1);
+//    SaveIdList *sdt = g_new0(SaveIdList,1);
+//
+//    swt->save_data = sdt;
+//    swt->id_index =  len-1;
+//    sdt->id_addr = (swt->id_index-1)*2;
+//    GtkWidget *nitem = factory_get_new_iditem(swt);
+//
+//    *list = g_list_append(*list,swt);
+//
+////    GtkAllocation *acat = &((GtkWidget*)self)->allocation;
+//    gtk_box_pack_start(GTK_BOX(vbox),nitem,TRUE,TRUE,0);
+//    gtk_box_reorder_child(GTK_BOX(vbox),GTK_WIDGET(self),len); /* 交换两行的位置 */
+////    gtk_widget_set_size_request (vbox,acat->width,-1);
+//    gtk_widget_show_all(vbox);
+//}
 
 //GtkWidget *opendlg = NULL;
 
+static void factory_file_manager_append(GtkWidget *clist,SaveMusicFile *smf)
+{
+    gchar *first = g_strdup_printf("%d",smf->index);
+    gchar *second = g_strdup_printf("%d",smf->file_addr);
+    gchar *third =smf->base_name;
+    gchar *four = smf->down_name;
+    gchar *row[] = {first,second,third,four};
+
+    gtk_clist_append(GTK_CLIST(clist),row);
+}
 
 static void factory_choose_musicfile_callback(GtkWidget *dlg,
-                                       gint       response,
-                                       gpointer   user_data)
+        gint       response,
+        gpointer   user_data)
 {
-
+    SaveMusicDialog *smd = user_data;
+    SaveMusicFileMan *smfm = smd->smfm;
     if (response == GTK_RESPONSE_ACCEPT)
     {
-        int offset = gtk_spin_button_get_value(GTK_SPIN_BUTTON(smd->wid_offset));
-        int num = smd->number;
+        int offset = gtk_spin_button_get_value(GTK_SPIN_BUTTON(smfm->wid_offset));
+        int num = smfm->number;
 
         GSList *flists =  gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(dlg));
+        smfm->lastDir = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(dlg));
         for(; flists; flists = flists->next,num++)
         {
-            SaveMusicTableRow *smtr = g_new0(SaveMusicTableRow,1);
-            smtr->index = num;
-            smtr->addr = num + offset;
-            smtr->fullname = g_strdup((gchar *)flists->data);
-            gchar **split = g_strsplit(smtr->fullname,"\\",-1);
+            SaveMusicFile *smf = g_new0(SaveMusicFile,1);
+            smf->index = num;
+            smf->file_addr = num + offset;
+            smf->full_name = g_strdup((gchar *)flists->data);
+            gchar **split = g_strsplit(smf->full_name,"\\",-1);
             int len = g_strv_length(split);
-            smtr->basename = g_strdup(split[len-1]);
+            smf->base_name = g_strdup(split[len-1]);
             g_strfreev(split);
-            smtr->downname = g_strdup_printf("file_%d",smtr->index);
-            smd->itemlist = g_list_append(smd->itemlist,smtr);
+            smf->down_name = g_strdup_printf("file_%d",smf->index);
+            smfm->filelist = g_list_append(smfm->filelist,smf);
+            smd->cboxlist = g_list_append(smd->cboxlist,smf->down_name);
 
-            gchar *first = g_strdup_printf("%d",smtr->index);
-            gchar *second = g_strdup_printf("%d",smtr->addr);
-            gchar *third =smtr->basename;
-            gchar *four = smtr->downname;
-            gchar *row[] = {first,second,third,four};
-
-            gtk_clist_append(GTK_CLIST(smd->wid_clist),row);
+            factory_file_manager_append(smfm->wid_clist,smf);
 
         }
-        int width =  gtk_clist_columns_autosize (GTK_CLIST(smd->wid_clist));
-        GtkWidget *cparent = gtk_widget_get_parent(smd->wid_clist);
-        gtk_widget_set_size_request(cparent,width,-1);
+        smfm->number = g_list_length(smfm->filelist);
+        g_signal_emit(smd,music_file_added_signals,0,smd);
+//        int width =  gtk_clist_columns_autosize (GTK_CLIST(smfm->wid_clist));
+//        GtkWidget *cparent = gtk_widget_get_parent(smfm->wid_clist);
+//        gtk_widget_set_size_request(cparent,width,-1);
     }
     gtk_widget_destroy(dlg);
 }
 
 
+
 void factory_open_file_dialog(GtkWidget *widget,gpointer user_data)
 {
-
-//    SaveIdWidget *swt = (SaveIdWidget *)user_data;
-//    SaveMusicItem *smt = swt->save_data;
-    GtkWidget *opendlg = NULL;
-    if(!opendlg)
+    SaveMusicDialog *smd =(SaveMusicDialog *) user_data;
+    SaveMusicFileMan *smfm = smd->smfm;
+    if(!smfm->opendlg)
     {
-        opendlg = gtk_file_chooser_dialog_new_with_backend(_("打开音乐文件"), NULL,
-                  GTK_FILE_CHOOSER_ACTION_OPEN,
-                  "default", /* default, not gnome-vfs */
-                  GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                  GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-                  NULL);
-        gtk_dialog_set_default_response(GTK_DIALOG(opendlg), GTK_RESPONSE_ACCEPT);
-        gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER (opendlg), TRUE);
-        if(lastDir)
-            gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(opendlg),lastDir);
+        smfm->opendlg = gtk_file_chooser_dialog_new_with_backend(_("打开音乐文件"), widget,
+                        GTK_FILE_CHOOSER_ACTION_OPEN,
+                        "default", /* default, not gnome-vfs */
+                        GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                        GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                        NULL);
+        gtk_dialog_set_default_response(GTK_DIALOG(smfm->opendlg), GTK_RESPONSE_ACCEPT);
+        gtk_window_set_modal(GTK_WINDOW(smfm->opendlg),TRUE);
+        gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER (smfm->opendlg), TRUE);
+        if(smfm->lastDir )
+            gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(smfm->opendlg),smfm->lastDir);
 //
 //        if(smt->full_name)
 //            gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(opendlg), smt->full_name);
-        g_signal_connect(GTK_OBJECT(opendlg), "destroy",
-                         G_CALLBACK(gtk_widget_destroy), &opendlg);
+        g_signal_connect(GTK_OBJECT(smfm->opendlg), "destroy",
+                         G_CALLBACK(gtk_widget_destroyed), &smfm->opendlg);
 
-        if (!gtk_file_chooser_get_extra_widget(GTK_FILE_CHOOSER(opendlg)))
+        if (!gtk_file_chooser_get_extra_widget(GTK_FILE_CHOOSER(smfm->opendlg)))
         {
             GtkWidget *omenu= gtk_combo_box_new();
             GtkFileFilter* filter;
@@ -4892,56 +4914,48 @@ void factory_open_file_dialog(GtkWidget *widget,gpointer user_data)
             gtk_file_filter_add_pattern (filter, "*.wav");
             gtk_file_filter_add_pattern (filter, "*.wma");
             gtk_file_filter_add_pattern (filter, "*.mp3");
-            gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (opendlg), filter);
+            gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (smfm->opendlg), filter);
 
             filter = gtk_file_filter_new ();
             gtk_file_filter_set_name (filter, _("All Files"));
             gtk_file_filter_add_pattern (filter, "*");
 
-            gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (opendlg), filter);
+            gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (smfm->opendlg), filter);
 
 //        gtk_combo_box_set_active (GTK_COMBO_BOX (omenu), persistence_get_integer ("import-filter"));
-            g_signal_connect(GTK_FILE_CHOOSER(opendlg),
+            g_signal_connect(GTK_FILE_CHOOSER(smfm->opendlg),
                              "response", G_CALLBACK(factory_choose_musicfile_callback), smd);
         }
     }
     else
     {
+        if(smfm->lastDir )
+            gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(smfm->opendlg),smfm->lastDir);
 //        if(smt->full_name)
 //            gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(opendlg), smt->full_name);
-        gtk_widget_set_sensitive(opendlg, TRUE);
-        if (GTK_WIDGET_VISIBLE(opendlg))
+        gtk_widget_set_sensitive(smfm->opendlg, TRUE);
+        if (GTK_WIDGET_VISIBLE(smfm->opendlg))
             return;
     }
-    gtk_widget_show(opendlg);
+    gtk_widget_show(smfm->opendlg);
 }
 
 
 void factory_add_item_to_music_manager(GtkButton *self,gpointer user_data)
 {
-    GList **list = user_data;
-    GtkWidget *vbox  = gtk_widget_get_parent(self);
-    GList *clist =  gtk_container_get_children(GTK_CONTAINER(vbox));
-    int len = g_list_length(clist);
-    SaveIdWidget *swt = g_new0(SaveIdWidget,1);
+    SaveMusicDialog *smd = user_data;
+    SaveMusicFileMan *smfm = smd->smfm;
+
     SaveMusicItem *smt = g_new0(SaveMusicItem,1);
+    smt->id_index = g_list_length(smd->itemlist);
+    smt->id_addr = smt->id_index * 2;
 
-    smt->base_name = NULL;
-    smt->full_name = NULL;
-    swt->id_index =  len-1;
-    smt->music_addr = (swt->id_index-1)*2;
-    swt->save_data = smt;
-    GtkWidget *nitem = factory_get_new_musicitem(swt);
-    smt->entry = swt->wid_colum3;
-    *list = g_list_append(*list,swt);
-    gtk_box_pack_start(GTK_BOX(vbox),nitem,FALSE,FALSE,0);
-    gtk_box_reorder_child(GTK_BOX(vbox),self,len);
+    GtkWidget *nitem = factory_get_new_musicitem(smt,smd->cboxlist);
 
-    GtkWidget *topwid = gtk_widget_get_toplevel(vbox);
-    GtkAllocation *acat = &((GtkWidget*)self)->allocation;
-    GtkWidget *selfparent = gtk_widget_get_parent(self);
-    gtk_widget_set_size_request(selfparent,acat->width,-1);
-    gtk_widget_show_all(vbox);
+    smd->itemlist= g_list_append(smd->itemlist,smt);
+    gtk_box_pack_start(GTK_BOX(smd->leftvbox),nitem,FALSE,FALSE,0);
+
+    gtk_widget_show_all(smd->leftvbox);
 
 }
 
@@ -4956,77 +4970,75 @@ GtkWidget *factory_new_add_button(factory_button_callback *callback,gpointer lis
 }
 
 
-GtkWidget *factory_get_new_iditem(SaveIdWidget *swt)
+//GtkWidget *factory_get_new_iditem(SaveIdWidget *swt)
+//{
+//
+//    SaveIdList *sdt = swt->save_data;
+//    GtkWidget *hbox = gtk_hbox_new(FALSE,1);
+//    GtkWidget *first = gtk_label_new(g_strdup_printf("%d",swt->id_index));
+//    gtk_widget_set_size_request(first,50,-1);
+//    GtkWidget *spbox = gtk_spin_button_new_with_range(0,65536,2);
+//    gtk_widget_set_sensitive(spbox,FALSE);
+//
+//    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spbox),sdt->id_addr);
+//
+//    GtkWidget *cbox = gtk_combo_box_new_text();
+//
+//
+//    gtk_combo_box_popdown(GTK_COMBO_BOX(cbox));
+//    GList *p = curLayer->defnames;
+//    gtk_combo_box_append_text(GTK_COMBO_BOX(cbox),"");
+//    for(; p ; p = p->next)
+//    {
+//        gtk_combo_box_append_text(GTK_COMBO_BOX(cbox),p->data);
+//    }
+//    gtk_combo_box_set_active(GTK_COMBO_BOX(cbox),sdt->id_nextid);
+//
+//    gtk_box_pack_start(GTK_BOX(hbox),first,TRUE,TRUE,0);
+//    gtk_box_pack_start(GTK_BOX(hbox),spbox,TRUE,TRUE,0);
+//    gtk_box_pack_start(GTK_BOX(hbox),cbox,TRUE,TRUE,0);
+////    gtk_box_pack_start(GTK_BOX(hbox),btn_del,TRUE,TRUE,0);
+//
+//    swt->wid_colum2 = spbox;
+//    swt->wid_colum3 = cbox;
+//    return hbox;
+//}
+
+//void factory_idlist_dialog(gchar *title,GtkWidget *parent,GList **savelist)
+//{
+//    gtk_window_set_title (GTK_WINDOW (parent),title);
+//    gtk_window_set_resizable (GTK_WINDOW (parent),TRUE);
+//    gtk_widget_set_size_request (parent,-1,500);
+//    GtkWidget  *wid_idlist = gtk_scrolled_window_new (NULL,NULL);
+//    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(wid_idlist),
+//                                   GTK_POLICY_NEVER,GTK_POLICY_ALWAYS);
+//
+//    GtkWidget *vbox  = gtk_vbox_new(FALSE,0);
+//    gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(wid_idlist),vbox);
+//    gtk_box_pack_start(GTK_BOX(vbox),factory_get_new_item_head(),FALSE,FALSE,0);
+//
+//    if(*savelist)
+//    {
+//        GList *tlist = *savelist;
+//        int n = 1;
+//        for(; tlist; tlist = tlist->next,n++)
+//        {
+//            SaveIdWidget *swt = tlist->data;
+//            GtkWidget *nbox =  factory_get_new_iditem(swt);
+//            gtk_box_pack_start(GTK_BOX(vbox),nbox,FALSE,FALSE,0);
+//        }
+//    }
+//    gtk_box_pack_start(GTK_BOX(vbox),factory_new_add_button(factory_add_item_to_idlist,savelist),FALSE,FALSE,0);
+//    gtk_box_pack_start(GTK_BOX(parent),wid_idlist,TRUE,TRUE,0);
+//
+////    gtk_widget_show_all(newdialog);
+//}
+
+
+/*　左边的界面　*/
+GtkWidget *factory_download_file_manager(GtkWidget *parent,SaveMusicDialog *smd)
 {
-
-    SaveIdList *sdt = swt->save_data;
-    GtkWidget *hbox = gtk_hbox_new(FALSE,1);
-    GtkWidget *first = gtk_label_new(g_strdup_printf("%d",swt->id_index));
-    gtk_widget_set_size_request(first,50,-1);
-    GtkWidget *spbox = gtk_spin_button_new_with_range(0,65536,2);
-    gtk_widget_set_sensitive(spbox,FALSE);
-
-    gtk_spin_button_set_value(GTK_SPIN_BUTTON(spbox),sdt->id_addr);
-
-    GtkWidget *cbox = gtk_combo_box_new_text();
-
-
-    gtk_combo_box_popdown(GTK_COMBO_BOX(cbox));
-    GList *p = curLayer->defnames;
-    gtk_combo_box_append_text(GTK_COMBO_BOX(cbox),"");
-    for(; p ; p = p->next)
-    {
-        gtk_combo_box_append_text(GTK_COMBO_BOX(cbox),p->data);
-    }
-    gtk_combo_box_set_active(GTK_COMBO_BOX(cbox),sdt->id_nextid);
-
-    gtk_box_pack_start(GTK_BOX(hbox),first,TRUE,TRUE,0);
-    gtk_box_pack_start(GTK_BOX(hbox),spbox,TRUE,TRUE,0);
-    gtk_box_pack_start(GTK_BOX(hbox),cbox,TRUE,TRUE,0);
-//    gtk_box_pack_start(GTK_BOX(hbox),btn_del,TRUE,TRUE,0);
-
-    swt->wid_colum2 = spbox;
-    swt->wid_colum3 = cbox;
-    return hbox;
-}
-
-void factory_idlist_dialog(gchar *title,GtkWidget *parent,GList **savelist)
-{
-    gtk_window_set_title (GTK_WINDOW (parent),title);
-    gtk_window_set_resizable (GTK_WINDOW (parent),TRUE);
-    gtk_widget_set_size_request (parent,-1,500);
-    GtkWidget  *wid_idlist = gtk_scrolled_window_new (NULL,NULL);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(wid_idlist),
-                                   GTK_POLICY_NEVER,GTK_POLICY_ALWAYS);
-
-    GtkWidget *vbox  = gtk_vbox_new(FALSE,0);
-    gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(wid_idlist),vbox);
-    gtk_box_pack_start(GTK_BOX(vbox),factory_get_new_item_head(),FALSE,FALSE,0);
-
-    if(*savelist)
-    {
-        GList *tlist = *savelist;
-        int n = 1;
-        for(; tlist; tlist = tlist->next,n++)
-        {
-            SaveIdWidget *swt = tlist->data;
-            GtkWidget *nbox =  factory_get_new_iditem(swt);
-            gtk_box_pack_start(GTK_BOX(vbox),nbox,FALSE,FALSE,0);
-        }
-    }
-    gtk_box_pack_start(GTK_BOX(vbox),factory_new_add_button(factory_add_item_to_idlist,savelist),FALSE,FALSE,0);
-    gtk_box_pack_start(GTK_BOX(parent),wid_idlist,TRUE,TRUE,0);
-
-//    gtk_widget_show_all(newdialog);
-}
-
-void factory_file_id_manager_dialog(gchar *title,GtkWidget *parent,GList **savelist)
-{
-    GtkWidget *mainHbox = gtk_hbox_new(FALSE,10);
-    gtk_window_set_title (GTK_WINDOW (parent),title);
-    gtk_window_set_resizable (GTK_WINDOW (parent),FALSE);
-    gtk_widget_set_size_request (GTK_WINDOW (parent),800,500);
-
+    GtkWidget *leftvbox = gtk_vbox_new(FALSE,5);
 
     GtkWidget  *wid_idlist = gtk_scrolled_window_new (NULL,NULL);
 
@@ -5036,35 +5048,53 @@ void factory_file_id_manager_dialog(gchar *title,GtkWidget *parent,GList **savel
     GtkWidget *vbox  = gtk_vbox_new(FALSE,5);
     gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(wid_idlist),vbox);
     gtk_box_pack_start(GTK_BOX(vbox),factory_file_id_manager_head(),FALSE,FALSE,0);
-    if(*savelist)
+    smd->leftvbox = vbox;
+
+    if(g_list_length(smd->itemlist)>0) /* 显示原有的数据　*/
     {
-        GList *tlist = *savelist;
-        for(; tlist; tlist = tlist->next)
+        GList *tlist = smd->itemlist;
+        for(; tlist ; tlist = tlist->next)
         {
-            SaveIdWidget *swt = tlist->data;
-            GtkWidget *nbox =  factory_get_new_musicitem(swt);
-            gtk_box_pack_start(GTK_BOX(vbox),nbox,TRUE,TRUE,0);
+            SaveMusicItem *smt = tlist->data;
+            GtkWidget *nitem = factory_get_new_musicitem(smt,smd->cboxlist);
+            gtk_box_pack_start(GTK_BOX(smd->leftvbox),nitem,FALSE,FALSE,0);
         }
     }
-    gtk_box_pack_start(GTK_BOX(vbox),factory_new_add_button(factory_add_item_to_music_manager,savelist),FALSE,FALSE,0);
+
+    gtk_box_pack_start(GTK_BOX(leftvbox),wid_idlist,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(leftvbox),factory_new_add_button(factory_add_item_to_music_manager,smd),FALSE,FALSE,0);
+    return leftvbox;
+}
+
+void factory_file_manager_dialog(gchar *title,GtkWidget *parent,GList *savelist)
+{
+    SaveMusicDialog *smd = NULL;
+    if(savelist)
+    {
+        smd = savelist->data;
+    }
+    GtkWidget *mainHbox = gtk_hbox_new(FALSE,10);
+    gtk_window_set_title (GTK_WINDOW (parent),title);
+    gtk_window_set_resizable (GTK_WINDOW (parent),FALSE);
+    gtk_widget_set_size_request (GTK_WINDOW (parent),800,500);
 
     /* 这里按三列布局，左一列表框，中间线，右一列表框*/
 
-    gtk_box_pack_start(GTK_BOX(mainHbox),wid_idlist,TRUE,TRUE,1);
-    GtkWidget *hsep = gtk_vseparator_new();
+    gtk_box_pack_start(GTK_BOX(mainHbox),factory_download_file_manager(parent,smd),TRUE,TRUE,1);
+//    GtkWidget *hsep = gtk_vseparator_new();
 //    gtk_box_pack_start(GTK_BOX(mainHbox),hsep,TRUE,TRUE,0);
 
-    gtk_box_pack_start(GTK_BOX(mainHbox),factory_music_file_manager(parent,title),TRUE,TRUE,1);
+    gtk_box_pack_start(GTK_BOX(mainHbox),factory_music_file_manager(parent,smd),TRUE,TRUE,1);
     gtk_box_pack_start(GTK_BOX(parent),mainHbox,TRUE,TRUE,0);
-    GtkWidget *vsep = gtk_hseparator_new();
-    gtk_box_pack_start(GTK_BOX(parent),vsep,FALSE,FALSE,0);
+//    GtkWidget *vsep = gtk_hseparator_new();
+//    gtk_box_pack_start(GTK_BOX(parent),vsep,FALSE,FALSE,0);
 }
 
 
 
 GtkWidget *factory_music_table_head()
 {
-      GtkWidget *hbox_head = gtk_hbox_new(FALSE,5);
+    GtkWidget *hbox_head = gtk_hbox_new(FALSE,5);
     GtkWidget *first = gtk_label_new(factory_utf8("序号"));
     GtkWidget *sec = gtk_label_new(factory_utf8("物理文件号"));
     GtkWidget *third = gtk_label_new(factory_utf8("音乐文件"));
@@ -5078,23 +5108,75 @@ GtkWidget *factory_music_table_head()
     return hbox_head;
 }
 
-void factory_music_add_table_item(GtkWidget *widget,gpointer user_data)
-{
-    SaveMusicTableRow *smtr = (SaveMusicTableRow *)user_data;
-    gchar *first = g_strdup_printf("%d",smtr->index);
-    gchar *second = g_strdup_printf("%d",smtr->addr);
-    gchar *third = g_strdup(smtr->basename);
-    gchar *four  = g_strdup(smtr->downname);
+typedef void (*MusicFileManagerFunc)(GtkWidget *btn,gpointer user_data);
 
-    gchar *rows[] = {first,second,third,four};
-    gtk_clist_append(GTK_CLIST(smd->wid_clist),rows);
+typedef struct _MusicFileManagerOperation MusicFileManagerOperation;
+
+struct _MusicFileManagerOperation
+{
+    GtkWidget *btn;
+    gchar *name;
+    int stack;
+    MusicFileManagerFunc mfmf;
+};
+
+
+void factory_delete_file_manager_item(GtkWidget *widget,gpointer user_data)
+{
+
+}
+void factory_clean_file_manager_item(GtkWidget *widget,gpointer user_data)
+{
+
+}
+void factory_insert_file_manager_item(GtkWidget *widget,gpointer user_data)
+{
+
 }
 
 
-GtkWidget *factory_music_file_manager(GtkWidget *parent,gchar *title)
-{
-    GtkWidget *sdialog = gtk_vbox_new(FALSE,0);
 
+GtkWidget *factory_music_file_manager_operator(SaveMusicDialog *smd)
+{
+    /* 要添加操作选项，在这里修改　*/
+
+    MusicFileManagerOperation mfmo[] = {{NULL,"add",GTK_STOCK_ADD,factory_open_file_dialog},
+        {NULL,"delete",GTK_STOCK_DELETE,factory_delete_file_manager_item},
+        {NULL,"insert",NULL,factory_insert_file_manager_item},
+        {NULL,"clean",GTK_STOCK_CLEAR,factory_clean_file_manager_item}
+    };
+
+    GtkWidget *operatorhbox = gtk_hbox_new(FALSE,2);
+
+    int num =sizeof(mfmo)/sizeof(MusicFileManagerOperation);
+    int n = 0;
+    for(; n < num; n++)
+    {
+        GtkWidget *wid = NULL;
+        if(!mfmo[n].stack)
+            wid = gtk_button_new_with_label(mfmo[n].name);
+        else
+            wid = gtk_button_new_from_stock(mfmo[n].stack);
+        g_signal_connect(wid,"clicked",G_CALLBACK(mfmo[n].mfmf),smd);
+        mfmo[n].btn = wid;
+        gtk_box_pack_start(GTK_BOX(operatorhbox),wid,FALSE,FALSE,0);
+    }
+
+    return operatorhbox;
+}
+
+void factoy_clist_init(GtkWidget *clist)
+{
+    gtk_clist_set_selection_mode(GTK_CLIST(clist),GTK_SELECTION_MULTIPLE);
+    gtk_clist_set_column_width(GTK_CLIST(clist),0,50);
+    gtk_clist_set_column_width(GTK_CLIST(clist),1,50);
+    gtk_clist_set_column_auto_resize(GTK_CLIST(clist),2,TRUE);
+}
+
+GtkWidget *factory_music_file_manager(GtkWidget *parent,SaveMusicDialog *smd)
+{
+
+    GtkWidget *sdialog = gtk_vbox_new(FALSE,0);
     GtkWidget *label = gtk_label_new(factory_utf8("物理文件号偏移:"));
     GtkWidget *spbox = gtk_spin_button_new_with_range(0,65536,1);
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(spbox),5);
@@ -5103,37 +5185,47 @@ GtkWidget *factory_music_file_manager(GtkWidget *parent,gchar *title)
     gtk_box_pack_start(GTK_BOX(hbox),spbox,FALSE,FALSE,0);
     GtkWidget *sep = gtk_hseparator_new();
 
-    gchar *titles[] = {factory_utf8("序号"),factory_utf8("物理文件号"),factory_utf8("音乐文件"),
-    factory_utf8("下载文件名")};
+    gchar *titles[] = {factory_utf8("序号"),
+                       factory_utf8("物理文件号"),
+                       factory_utf8("音乐文件"),
+                       factory_utf8("下载文件名")
+                      };
+    GtkWidget  *wid_idlist = gtk_scrolled_window_new (NULL,NULL);
 
-     GtkWidget  *wid_idlist = gtk_scrolled_window_new (NULL,NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(wid_idlist),GTK_POLICY_NEVER,GTK_POLICY_ALWAYS);
 
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(wid_idlist),
-                                   GTK_POLICY_NEVER,GTK_POLICY_ALWAYS);
-
-   GtkWidget *clist = gtk_clist_new_with_titles(4,titles);
+    GtkWidget *clist = gtk_clist_new_with_titles(4,titles);
+    factoy_clist_init(clist);
     gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(wid_idlist),clist);
-
-
-    gtk_clist_set_column_auto_resize(GTK_CLIST(clist),2,TRUE);
-    gtk_clist_set_selection_mode(GTK_CLIST(clist),GTK_SELECTION_SINGLE);
-    if(!smd)
+    SaveMusicFileMan *smfm = smd->smfm;
+    if(!smfm)
     {
-        smd = g_new0(SaveMusicDialog,1);
-        smd->number = 0;
-        smd->wid_clist = clist;
-        smd->wid_offset = spbox;
+        smfm = g_new0(SaveMusicFileMan,1);
+        smd->smfm = smfm;
     }
-
-    GtkWidget *addbtn = gtk_button_new_from_stock(GTK_STOCK_ADD);
-    g_signal_connect(addbtn,"clicked",G_CALLBACK(factory_open_file_dialog),smd);
+    else
+    {
+        if(smfm->filelist)
+        {
+            GList *flist = smfm->filelist;
+            for(; flist; flist = flist->next)
+            {
+                factory_file_manager_append(clist,flist->data);
+            }
+        }
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(spbox),smfm->offset);
+    }
+    smfm->wid_clist = clist;
+    smfm->wid_offset = spbox;
+    smfm->offset = gtk_spin_button_get_value(GTK_SPIN_BUTTON(spbox));
+    smfm->number = GTK_CLIST(clist)->rows;
 
     /* 创建四行布局*/
 
     gtk_box_pack_start(GTK_BOX(sdialog),hbox,FALSE,FALSE,0);
     gtk_box_pack_start(GTK_BOX(sdialog),sep,FALSE,FALSE,0);
     gtk_box_pack_start(GTK_BOX(sdialog),wid_idlist,TRUE,TRUE,0);
-    gtk_box_pack_start(GTK_BOX(sdialog),addbtn,FALSE,FALSE,0);
+    gtk_box_pack_start(GTK_BOX(sdialog),factory_music_file_manager_operator(smd),FALSE,FALSE,0);
 
     gtk_widget_show_all(sdialog);
 

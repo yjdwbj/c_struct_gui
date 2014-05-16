@@ -2741,7 +2741,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
                     sss->celltype = BBTN;
                     sss->newdlg_func = factory_create_basebutton_dialog;
                     sss->close_func = factory_save_basebutton_dialog;
-                    if( 2 == strlen(fst->SType) && !g_ascii_strncasecmp(fst->SType,"u1",2))
+                    if( 2 == strlen(fst->SType) && !g_ascii_strcasecmp(fst->SType,"u1"))
                     {
                         int n = 0 ;
                         int maxi = sey->arr_base->reallen;
@@ -2754,26 +2754,34 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
                     else
                     {
                         gchar *fmt = NULL;
+                        int len = 2;
                         switch(sey->width)
                         {
                         case 1:
-                            fmt = g_strdup("0x02%d");
+                            fmt = g_strdup("0x%02x");
+                            len = 4;
                             break;
                         case 2:
-                            fmt = g_strdup("0x04%d");
+                            fmt = g_strdup("0x%04x");
+                            len = 6;
                             break;
                         case 4:
-                            fmt = g_strdup("0x04%d");
+                            fmt = g_strdup("0x%08x");
+                            len = 6;
                             break;
                         default:
-                            fmt = g_strdup("0x02%d");
+                            fmt = g_strdup("0x%02x");
                         }
                         int n = 0 ;
                         int maxi = sey->arr_base->reallen;
+                        int first = g_strtod(fst->Value,NULL);
                         for( ; n < maxi; n++)
                         {
                             /* 初始值 */
-                            sey->data =  g_list_append(sey->data,g_strdup_printf(fmt,0));
+                            gchar *tmp = g_strdup_printf(fmt,first);
+                            tmp[len]='\0';
+                            sey->data =  g_list_append(sey->data,g_strdup(tmp));
+                            g_free(tmp);
                         }
                         g_free(fmt);
                     }
@@ -2841,8 +2849,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             sbtn->savelist = NULL;
             sss->newdlg_func = factory_create_unionbutton_dialog;
             sss->close_func = factory_save_unionbutton_dialog;
-//            sbtn->htoflist = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-            //fst->datalist = g_list_copy(fst->datalist);
+
         }
         break;
         case UT:
@@ -2856,6 +2863,37 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             suptr->index = 0;
             suptr->comobox = NULL;
             suptr->structlist = fst->datalist;
+            GList *p = suptr->structlist;
+            /* nextobj 就是当前下拉框所显示的 */
+            FactoryStructItem *nextobj =  g_list_nth_data(suptr->structlist,suptr->index);
+            if(!nextobj)
+                break;
+            suptr->curkey = g_strjoin("##",nextobj->FType,nextobj->Name,NULL);
+            SaveStruct *tsst = factory_get_savestruct(nextobj);
+            if(!tsst)
+                break;
+            tsst->sclass = sss->sclass;
+            factory_strjoin(&tsst->name,sss->name,".");
+            /* 把当前选择的成员初始化保存到哈希表 */
+            g_hash_table_insert(suptr->saveVal,suptr->curkey,tsst);
+            if(tsst->isPointer )
+            {
+                SaveUbtn *sbtn = &tsst->value.ssubtn;
+                if(/*!g_hash_table_size(sbtn->htoflist)*/ !g_list_length(sbtn->savelist) && sbtn->structlist)
+                {
+
+//                sbtn->htoflist = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+                    GList *slist = sbtn->structlist;
+                    for(; slist; slist = slist->next)
+                    {
+                        FactoryStructItem *o = slist->data;
+                        SaveStruct *s  = factory_get_savestruct(o);
+                        s->sclass = sss->sclass;
+                        factory_strjoin(&s->name,sss->name,".");
+                        sbtn->savelist = g_list_append(sbtn->savelist,s);
+                    }
+                }
+            }
         }
         break;
         default:
@@ -2938,7 +2976,7 @@ factory_handle_entry_item(SaveEntry* sey,FactoryStructItem *fst)
     int num = g_strv_length(ooo);
 
     sey->width = 0;
-    if(!g_ascii_isalnum(fst->SType[1]))
+    if(g_ascii_isalnum(fst->SType[1]))
         sey->width = g_strtod(&fst->SType[1],NULL) / 8; /* u32,u8, 这里取里面的数字*/
 
 
@@ -3548,32 +3586,32 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
     GList *saveList = structclass->widgetSave;
     if(factory_is_special_object(objname))
     {
-        if(!g_ascii_strcasecmp(objname,"IDLIST"))
-        {
-            for(; saveList; saveList = saveList->next)
-            {
-                SaveIdWidget *swt = saveList->data;
-                SaveIdList *sdt = swt->save_data;
-                ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
-                xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",swt->id_index));
-                xmlSetProp(ccc, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",sdt->id_addr));
-                xmlSetProp(ccc, (const xmlChar *)"id", (xmlChar *)g_strdup_printf("%d",sdt->id_nextid));
-                xmlSetProp(ccc, (const xmlChar *)"vname", (xmlChar *)sdt->id_curtxt);
-            }
-        }
-        else
-        {
-            for(; saveList; saveList = saveList->next)
-            {
-                SaveIdWidget *swt = saveList->data;
-                SaveMusicItem *smt = swt->save_data;
-                ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
-                xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",swt->id_index));
-                xmlSetProp(ccc, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",smt->music_addr));
-//                xmlSetProp(ccc, (const xmlChar *)"bname", (xmlChar *)smt->base_name);
-                xmlSetProp(ccc, (const xmlChar *)"fname", (xmlChar *)smt->full_name);
-            }
-        }
+//        if(!g_ascii_strcasecmp(objname,"IDLIST"))
+//        {
+//            for(; saveList; saveList = saveList->next)
+//            {
+//                SaveIdItem *swt = saveList->data;
+//                SaveIdList *sdt = swt->save_data;
+//                ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+//                xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",swt->id_index));
+//                xmlSetProp(ccc, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",sdt->id_addr));
+//                xmlSetProp(ccc, (const xmlChar *)"id", (xmlChar *)g_strdup_printf("%d",sdt->id_nextid));
+//                xmlSetProp(ccc, (const xmlChar *)"vname", (xmlChar *)sdt->id_curtxt);
+//            }
+//        }
+//        else\
+//        {
+//            for(; saveList; saveList = saveList->next)
+//            {
+//                SaveIdItem *swt = saveList->data;
+//                SaveMusicItem *smt = swt->save_data;
+//                ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+//                xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",swt->id_index));
+//                xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)g_strdup_printf("%d",smt->music_addr));
+////                xmlSetProp(ccc, (const xmlChar *)"bname", (xmlChar *)smt->base_name);
+//                xmlSetProp(ccc, (const xmlChar *)"dname", (xmlChar *)smt->downname);
+//            }
+//        }
         return ;
     }
     else
