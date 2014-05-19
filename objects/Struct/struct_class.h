@@ -108,7 +108,8 @@ typedef enum
     BBTN,
     UBTN,
     OBTN,/* 这里是按键按钮 */
-    EBTN /* 枚举也有数组 */
+    EBTN,/* 枚举也有数组 */
+    SBTN /* 文件管理与ID管理 */
 } CellType;
 
 typedef struct _ActionId ActionID;
@@ -153,6 +154,10 @@ struct _SaveIdList
     gchar *id_curtxt;
 };
 
+
+
+
+
 /* 文件管理界面的结构体　start*/
 
 typedef struct _SaveMusicFile SaveMusicFile;
@@ -169,41 +174,84 @@ struct _SaveMusicFile
 typedef struct _SaveMusicFileMan  SaveMusicFileMan;
 struct _SaveMusicFileMan
 {
-
     int number;
     int offset;
+    int selected;
     gchar *lastDir;
     GtkWidget *opendlg;
     GList *filelist; /* 右边界面的链表　内容是　SaveMusicFile　*/
     GtkWidget *wid_offset;
     GtkWidget *wid_clist;
+    enum
+    {
+        OPT_APPEND,
+        OPT_INSERT,
+    } man_opt;
 };
 
-static guint music_file_added_signals = 0;
 
+
+typedef struct _MusicFileManagerOpts MusicFileManagerOpts; /* 专为这个界面做的一些操作函数集合*/
 typedef struct _SaveMusicDialog SaveMusicDialog; /* 主界面　*/
 struct _SaveMusicDialog
 {
-
+    gchar *title;
+    gchar *btnname;
+    gchar *parent;
+    gchar **dvalue; /* 默认值，与SaveStruct.value.vnumber 绑定 */
     GtkWidget *leftvbox;
+    GSList *grouplist;   /* 记录Radio 的单选链表　*/
     GList *itemlist; /* 左边界面的链表　内容是　SaveMusicItem */
     GList *cboxlist; /* 右边下载名的链表　内容是 gchar */
+    GtkWidget *window; /* 它本身的窗口*/
     SaveMusicFileMan *smfm; /* 右边界面 */
-    void (*item_added) (SaveMusicDialog*);
+    MusicFileManagerOpts *mfmos;
 };
 
+
+
+typedef   void (*OpenDialog)(SaveMusicDialog*);
+typedef   void (*ApplyDialog)(SaveMusicDialog*);
+
+typedef   void (*Item_Added) (SaveMusicDialog*);
+typedef   void (*Clear_All) (SaveMusicFileMan*);
+
+
+struct _MusicFileManagerOpts
+{
+    OpenDialog  m_opendilog;
+    ApplyDialog m_applydialog;
+    Item_Added m_itemadded;
+    Clear_All m_clearall;
+    void      (*(unused[4]))(gpointer obj,...);
+};
+
+
+
+SaveMusicDialog *MusicManagerDialog ;
+
 typedef struct _SaveMusicItem SaveMusicItem;
-struct _SaveMusicItem{
+struct _SaveMusicItem
+{
     int id_index;
     int id_addr;
     int active;
     gchar *dname;
+    GtkWidget *wid_colum0;
     GtkWidget *wid_colum2;
     GtkWidget *wid_colum3;
 };
 
-typedef struct _SaveMusicItem SaveIdItem;
-
+typedef struct _SaveIdWidget SaveIdItem;
+struct _SaveIdWidget
+{
+    int id_index;
+    int id_addr;
+    int id_active;
+    gchar *id_text;
+    GtkWidget *id_widget2;
+    GtkWidget *id_widget3;
+};
 
 /* 文件管理界面的结构体　end*/
 
@@ -495,10 +543,10 @@ factory_apple_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
 
 
 void factory_create_toolbar_button(const gint8 *icon,gchar *tips,GtkToolbar  *toolbar,
-                                          gpointer *callback);
+                                   gpointer *callback);
 
 void factory_idlist_dialog(gchar *title,GtkWidget *parent,GList **savelist);
-void factory_file_manager_dialog(gchar *title,GtkWidget *parent,GList *savelist);
+void factory_file_manager_dialog(GtkWidget *btn,gchar **vnumber);
 
 
 
@@ -507,7 +555,7 @@ typedef void (*factory_button_callback)(GtkWidget *self);
 void factory_add_item_to_music_manager(GtkButton *self,gpointer user_data);
 GtkWidget *factory_new_add_button(factory_button_callback *callback,gpointer list);
 GtkWidget *factory_get_new_iditem(SaveIdItem *swt);
-GtkWidget *factory_get_new_musicitem( SaveMusicItem *swt,GList *fillist);
+GtkWidget *factory_get_new_musicitem( SaveMusicItem *swt,GList *fillist,GSList **grouplist);
 
 gboolean factory_is_special_object(const gchar *name);
 GtkWidget *factory_music_file_manager(GtkWidget *parent,SaveMusicDialog *smd);
@@ -515,13 +563,26 @@ GtkWidget *factory_download_file_manager(GtkWidget *parent,SaveMusicDialog *smd)
 GtkWidget *factory_file_id_manager();
 
 
+void factory_add_item_to_idlist(GtkButton *self,gpointer user_data);
+
+
 static void factory_choose_musicfile_callback(GtkWidget *dlg,gint       response,gpointer   user_data);
 void factory_open_file_dialog(GtkWidget *widget,gpointer user_data);
 void factory_delete_file_manager_item(GtkWidget *widget,gpointer user_data);
-void factory_clean_file_manager_item(GtkWidget *widget,gpointer user_data);
+void factory_cleanall_file_manager_item(GtkWidget *widget,gpointer user_data);
 void factory_insert_file_manager_item(GtkWidget *widget,gpointer user_data);
 
 void factory_music_file_manager_new_item_added(SaveMusicDialog *smd);
+void factory_music_file_manager_remove_all(SaveMusicDialog *smd);
+void factory_music_file_manager_apply(GtkWidget *widget,
+                                        gint       response_id,
+                                        SaveMusicDialog *smd);
+
+void factory_music_file_manager_select_callback(GtkWidget *clist,
+        gint row,gint column,
+        GdkEventButton *event,
+        gint  *ret);
+
 
 //void factoryReadDataFromFile(STRUCTClass *structclass);
 

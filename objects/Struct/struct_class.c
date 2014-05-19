@@ -53,6 +53,16 @@ extern FactoryStructItemAll *factoryContainer;
 #define STRUCTCLASS_TEMPLATE_OVERLAY_X 2.3
 #define STRUCTCLASS_TEMPLATE_OVERLAY_Y 0.3
 
+static MusicFileManagerOpts  mfmo_opts =
+{
+    (OpenDialog) factory_file_manager_dialog,
+    (ApplyDialog) factory_music_file_manager_apply,
+    (Item_Added) factory_music_file_manager_new_item_added,
+    (Clear_All) factory_music_file_manager_remove_all
+};
+
+
+
 static real structclass_distance_from(STRUCTClass *structclass, Point *point);
 static void structclass_select(STRUCTClass *structclass, Point *clicked_point,
                                DiaRenderer *interactive_renderer);
@@ -170,6 +180,9 @@ static ObjectOps structclass_ops =
     (ConnectionTwoObject) 0,
     (UpdateObjectIndex)   factory_update_index
 };
+
+
+
 
 //extern PropDescDArrayExtra structattribute_extra;
 //extern PropDescDArrayExtra structoperation_extra;
@@ -2681,6 +2694,10 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
     else
         sss->isSensitive = TRUE;
 
+    /* 这里添加两个特别的判断 */
+
+
+
     /* 2014-3-26 lcy 通过名字去哈希表里找链表*/
     if(!g_ascii_strncasecmp(sss->name,ACTION_ID,ACT_SIZE))
     {
@@ -2788,6 +2805,22 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
 
                 }
             }
+            else if(!g_ascii_strncasecmp(sss->name,"aFile_Number",strlen("aFile_Number")))
+            {
+                sss->celltype = SBTN;
+                sss->newdlg_func = factory_file_manager_dialog;
+                sss->close_func = factory_music_file_manager_apply;
+                sss->value.vnumber = g_strdup(fst->Value);
+                if(!MusicManagerDialog)
+                {
+                    MusicManagerDialog = g_new0(SaveMusicDialog,1);
+                    MusicManagerDialog->title = factory_utf8("文件管理");
+                    MusicManagerDialog->smfm = NULL;
+                    MusicManagerDialog->mfmos = &mfmo_opts;
+                }
+                MusicManagerDialog->btnname = g_strdup(fst->Cname);
+//                MusicManagerDialog->dvalue = &sss->value.vnumber;
+            }
             else
             {
                 sss->celltype = SPINBOX;
@@ -2798,6 +2831,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
                     sss->value.vnumber = g_strdup_printf("%d",sclass->element.object.oindex);
                     sss->isSensitive = FALSE;
                 }
+
                 else
                     sss->value.vnumber = g_strdup(fst->Value);
             }
@@ -3338,6 +3372,7 @@ static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
         xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)ret);
     }
     break;
+    case SBTN:
     case SPINBOX:
         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"SPINBOX");
         xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.vnumber);
@@ -3368,6 +3403,7 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
     case BBTN:
     case EBTN:
     case SPINBOX:
+    case SBTN:
     {
         ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
         factory_base_item_save(sss,ccc);
@@ -3584,37 +3620,7 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
         xmlSetProp(obj_node, (const xmlChar *)"file", (xmlChar *)fsi->sfile);
     //g_hash_table_foreach(structclass->widgetmap,factory_struct_save_to_xml,(gpointer)obj_node);
     GList *saveList = structclass->widgetSave;
-    if(factory_is_special_object(objname))
-    {
-//        if(!g_ascii_strcasecmp(objname,"IDLIST"))
-//        {
-//            for(; saveList; saveList = saveList->next)
-//            {
-//                SaveIdItem *swt = saveList->data;
-//                SaveIdList *sdt = swt->save_data;
-//                ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
-//                xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",swt->id_index));
-//                xmlSetProp(ccc, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",sdt->id_addr));
-//                xmlSetProp(ccc, (const xmlChar *)"id", (xmlChar *)g_strdup_printf("%d",sdt->id_nextid));
-//                xmlSetProp(ccc, (const xmlChar *)"vname", (xmlChar *)sdt->id_curtxt);
-//            }
-//        }
-//        else\
-//        {
-//            for(; saveList; saveList = saveList->next)
-//            {
-//                SaveIdItem *swt = saveList->data;
-//                SaveMusicItem *smt = swt->save_data;
-//                ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
-//                xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",swt->id_index));
-//                xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)g_strdup_printf("%d",smt->music_addr));
-////                xmlSetProp(ccc, (const xmlChar *)"bname", (xmlChar *)smt->base_name);
-//                xmlSetProp(ccc, (const xmlChar *)"dname", (xmlChar *)smt->downname);
-//            }
-//        }
-        return ;
-    }
-    else
+
         for(; saveList; saveList = saveList->next)
         {
             factory_base_struct_save_to_file(saveList->data,obj_node);
