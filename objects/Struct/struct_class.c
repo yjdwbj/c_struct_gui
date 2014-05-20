@@ -57,7 +57,7 @@ static MusicFileManagerOpts  mfmo_opts =
 {
     (OpenDialog) factory_file_manager_dialog,
     (ApplyDialog) factory_music_file_manager_apply,
-    (Item_Added) factory_music_file_manager_new_item_added,
+    (Item_Added) factory_music_file_manager_new_item_changed,
     (Clear_All) factory_music_file_manager_remove_all
 };
 
@@ -2805,22 +2805,6 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
 
                 }
             }
-            else if(!g_ascii_strncasecmp(sss->name,"aFile_Number",strlen("aFile_Number")))
-            {
-                sss->celltype = SBTN;
-                sss->newdlg_func = factory_file_manager_dialog;
-                sss->close_func = factory_music_file_manager_apply;
-                sss->value.vnumber = g_strdup(fst->Value);
-                if(!MusicManagerDialog)
-                {
-                    MusicManagerDialog = g_new0(SaveMusicDialog,1);
-                    MusicManagerDialog->title = factory_utf8("文件管理");
-                    MusicManagerDialog->smfm = NULL;
-                    MusicManagerDialog->mfmos = &mfmo_opts;
-                }
-                MusicManagerDialog->btnname = g_strdup(fst->Cname);
-//                MusicManagerDialog->dvalue = &sss->value.vnumber;
-            }
             else
             {
                 sss->celltype = SPINBOX;
@@ -2881,9 +2865,29 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             SaveUbtn *sbtn = &sss->value.ssubtn;
             sbtn->structlist = fst->datalist;
             sbtn->savelist = NULL;
-            sss->newdlg_func = factory_create_unionbutton_dialog;
-            sss->close_func = factory_save_unionbutton_dialog;
+            if(!g_strcasecmp(fst->SType,"FILELST")) /*　 特殊的控件,音乐文件管理　*/
+            {
+                if(!MusicManagerDialog)
+                {
+                    MusicManagerDialog = g_new0(SaveMusicDialog,1);
+                    MusicManagerDialog->title = factory_utf8("文件管理");
+                    MusicManagerDialog->smfm = NULL;
+                    MusicManagerDialog->mfmos = &mfmo_opts;
+                    MusicManagerDialog->radindex = -1;
+                }
+                MusicManagerDialog->btnname = g_strdup(fst->Cname);
+                sss->newdlg_func = factory_file_manager_dialog;
+                sss->close_func = factory_music_file_manager_apply;
+            }
+            else if(!g_strcasecmp(fst->SType,"IDLST"))
+            {
 
+            }
+            else
+            {
+                sss->newdlg_func = factory_create_unionbutton_dialog;
+                sss->close_func = factory_save_unionbutton_dialog;
+            }
         }
         break;
         case UT:
@@ -3372,7 +3376,7 @@ static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
         xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)ret);
     }
     break;
-    case SBTN:
+//    case SBTN:
     case SPINBOX:
         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"SPINBOX");
         xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.vnumber);
@@ -3403,7 +3407,7 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
     case BBTN:
     case EBTN:
     case SPINBOX:
-    case SBTN:
+//    case SBTN:
     {
         ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
         factory_base_item_save(sss,ccc);
@@ -3425,10 +3429,8 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
             {
                 aid->value = g_strdup_printf("%d",fclass->element.object.oindex);
             }
-
         }
         factory_write_object_comobox(aid,ccc);
-
     }
     break;
     case OBTN:
@@ -3451,7 +3453,6 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
                 SaveStruct *tmp = fclass->widgetSave->data;
                 aid->value = g_strdup(tmp->value.vnumber);
             }
-
             factory_write_object_comobox(tlist->data,ccc);
         }
     }
@@ -3483,18 +3484,29 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
     break;
     case UBTN:
     {
-
-        SaveUbtn *sbtn = &sss->value.ssubtn;
-//        GList *slist = g_hash_table_get_values(sbtn->htoflist);
-        GList *slist = sbtn->savelist;
-        if(slist)
+        if(factory_music_fm_get_type(sss->name)) /* 特殊控件 */
         {
-            for(; slist; slist = slist->next)
+            ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+            xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
+            xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
+            xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.vnumber);
+        }
+        else
+        {
+            SaveUbtn *sbtn = &sss->value.ssubtn;
+//        GList *slist = g_hash_table_get_values(sbtn->htoflist);
+            GList *slist = sbtn->savelist;
+            if(slist)
             {
-                SaveStruct *s = slist->data;
-                factory_base_struct_save_to_file(s,obj_node);
+                for(; slist; slist = slist->next)
+                {
+                    SaveStruct *s = slist->data;
+                    factory_base_struct_save_to_file(s,obj_node);
+                }
             }
         }
+
+
 
     }
     break;
@@ -3619,12 +3631,34 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
     if(fsi) /* 写入到指定文件名 */
         xmlSetProp(obj_node, (const xmlChar *)"file", (xmlChar *)fsi->sfile);
     //g_hash_table_foreach(structclass->widgetmap,factory_struct_save_to_xml,(gpointer)obj_node);
-    GList *saveList = structclass->widgetSave;
+    if(!g_strcasecmp(fsi->sname,"FILELST"))
+    {
+        gchar *rows = g_strdup_printf("%d",g_list_length(MusicManagerDialog->itemlist));
+        xmlSetProp(obj_node, (const xmlChar *)"rows", (xmlChar *)rows);
+        g_free(rows);
+        GList *flist = MusicManagerDialog->itemlist;
+        for(;flist; flist = flist->next)
+        {
+            SaveMusicItem *smi = flist->data;
+            ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+//            xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"ID");
+            xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)g_strdup_printf("%d",smi->active));
+            xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf("%d",smi->id_index));
+            xmlSetProp(ccc, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",smi->id_addr));
+        }
+
+    }
+    else
+    {
+        GList *saveList = structclass->widgetSave;
 
         for(; saveList; saveList = saveList->next)
         {
             factory_base_struct_save_to_file(saveList->data,obj_node);
         }
+    }
+
+
 }
 
 

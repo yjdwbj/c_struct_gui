@@ -774,6 +774,14 @@ write_objects(GList *objects, xmlNodePtr objects_node,
     GList *list;
 
     list = objects;
+    /* 这里要创建一个用来　File.lst 的文件的结构体,保存完了就要删掉的*/
+    DiaObjectType *otype = object_get_type("STRUCT - Class");
+    FactoryStructItemList *fsil= g_hash_table_lookup(factoryContainer->structTable,"FILELST");
+    Point startpoint = {0.0,0.0};
+    Handle *h1,*h2;
+    DiaObject *diaobj = otype->ops->create(&startpoint,&fsil->number,&h1,&h2);
+    diaobj->name = g_strdup(fsil->sname);
+    list = g_list_append(list,diaobj);
     while (list != NULL)
     {
         DiaObject *obj = (DiaObject *) list->data;
@@ -827,6 +835,7 @@ write_objects(GList *objects, xmlNodePtr objects_node,
 
         list = g_list_next(list);
     }
+    objects = g_list_remove(objects,diaobj);
     return TRUE;
 }
 

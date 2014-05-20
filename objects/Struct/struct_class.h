@@ -185,9 +185,17 @@ struct _SaveMusicFileMan
     enum
     {
         OPT_APPEND,
-        OPT_INSERT,
+        OPT_INSERT
     } man_opt;
 };
+
+typedef   enum{
+        SEQUENCE, /*序号*/
+        INDEX, /*索引*/
+        PHY/*物理号*/
+}FMSaveType; /* 索引号 序号或者偏移量　*/;
+
+
 
 
 
@@ -197,12 +205,14 @@ struct _SaveMusicDialog
 {
     gchar *title;
     gchar *btnname;
-    gchar *parent;
+    FMSaveType fmst;
+    int radindex; /* radio 单选所在的位置　*/
     gchar **dvalue; /* 默认值，与SaveStruct.value.vnumber 绑定 */
     GtkWidget *leftvbox;
     GSList *grouplist;   /* 记录Radio 的单选链表　*/
     GList *itemlist; /* 左边界面的链表　内容是　SaveMusicItem */
     GList *cboxlist; /* 右边下载名的链表　内容是 gchar */
+    GtkWidget *parent_btn;
     GtkWidget *window; /* 它本身的窗口*/
     SaveMusicFileMan *smfm; /* 右边界面 */
     MusicFileManagerOpts *mfmos;
@@ -546,7 +556,7 @@ void factory_create_toolbar_button(const gint8 *icon,gchar *tips,GtkToolbar  *to
                                    gpointer *callback);
 
 void factory_idlist_dialog(gchar *title,GtkWidget *parent,GList **savelist);
-void factory_file_manager_dialog(GtkWidget *btn,gchar **vnumber);
+void factory_file_manager_dialog(GtkWidget *btn,gchar **value);
 
 
 
@@ -572,7 +582,7 @@ void factory_delete_file_manager_item(GtkWidget *widget,gpointer user_data);
 void factory_cleanall_file_manager_item(GtkWidget *widget,gpointer user_data);
 void factory_insert_file_manager_item(GtkWidget *widget,gpointer user_data);
 
-void factory_music_file_manager_new_item_added(SaveMusicDialog *smd);
+void factory_music_file_manager_new_item_changed(SaveMusicDialog *smd);
 void factory_music_file_manager_remove_all(SaveMusicDialog *smd);
 void factory_music_file_manager_apply(GtkWidget *widget,
                                         gint       response_id,
@@ -582,6 +592,8 @@ void factory_music_file_manager_select_callback(GtkWidget *clist,
         gint row,gint column,
         GdkEventButton *event,
         gint  *ret);
+
+gboolean factory_music_fm_get_type(const gchar* str);
 
 
 //void factoryReadDataFromFile(STRUCTClass *structclass);
