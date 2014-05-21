@@ -779,9 +779,13 @@ write_objects(GList *objects, xmlNodePtr objects_node,
     FactoryStructItemList *fsil= g_hash_table_lookup(factoryContainer->structTable,"FILELST");
     Point startpoint = {0.0,0.0};
     Handle *h1,*h2;
-    DiaObject *diaobj = otype->ops->create(&startpoint,&fsil->number,&h1,&h2);
-    diaobj->name = g_strdup(fsil->sname);
-    list = g_list_append(list,diaobj);
+    DiaObject *fileobj = otype->ops->create(&startpoint,&fsil->number,&h1,&h2);
+    FactoryStructItemList *fsil2= g_hash_table_lookup(factoryContainer->structTable,"IDLST");
+    DiaObject *idobj = otype->ops->create(&startpoint,&fsil2->number,&h1,&h2);
+    fileobj->name = g_strdup(fsil->sname);
+    idobj->name = g_strdup(fsil2->sname);
+    list = g_list_append(list,fileobj);
+    list = g_list_append(list,idobj);
     while (list != NULL)
     {
         DiaObject *obj = (DiaObject *) list->data;
@@ -835,7 +839,10 @@ write_objects(GList *objects, xmlNodePtr objects_node,
 
         list = g_list_next(list);
     }
-    objects = g_list_remove(objects,diaobj);
+    objects = g_list_remove(objects,fileobj);
+    fileobj->ops->destroy(fileobj);
+    objects = g_list_remove(objects,idobj);
+    idobj->ops->destroy(idobj);
     return TRUE;
 }
 

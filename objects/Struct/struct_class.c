@@ -2179,7 +2179,8 @@ factory_struct_items_create(Point *startpoint,
             g_free(tstr);
         }
 
-        curLayer->defnames = g_list_append(curLayer->defnames,structclass->name);
+        if(!factory_is_system_data(obj->name))
+            curLayer->defnames = g_list_append(curLayer->defnames,structclass->name);
 
 
     }
@@ -2864,9 +2865,11 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             sss->isPointer = TRUE; /* 这里是一个按键*/
             SaveUbtn *sbtn = &sss->value.ssubtn;
             sbtn->structlist = fst->datalist;
+
             sbtn->savelist = NULL;
             if(!g_strcasecmp(fst->SType,"FILELST")) /*　 特殊的控件,音乐文件管理　*/
             {
+                sss->value.vnumber = g_strdup(fst->Value);
                 if(!MusicManagerDialog)
                 {
                     MusicManagerDialog = g_new0(SaveMusicDialog,1);
@@ -2881,7 +2884,13 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             }
             else if(!g_strcasecmp(fst->SType,"IDLST"))
             {
-
+                sss->value.vnumber = g_strdup(fst->Value);
+                if(!IdDialog)
+                {
+                    IdDialog = g_new0(SaveIdDialog,1);
+                }
+                sss->newdlg_func = factory_new_idlist_dialog;
+                sss->close_func = factory_save_idlist_dialog;
             }
             else
             {
@@ -3484,13 +3493,20 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
     break;
     case UBTN:
     {
-        if(factory_music_fm_get_type(sss->name)) /* 特殊控件 */
+        if(factory_is_special_object(sss->type)) /* 特殊控件 */
         {
             ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
             xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
             xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
             xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.vnumber);
         }
+//        else if(!g_ascii_strcasecmp(sss->type,"IDLST") || !g_ascii_strcasecmp(sss->type,"IDLST") )
+//        {
+//             ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+//            xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
+//            xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
+//            xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.vnumber);
+//        }
         else
         {
             SaveUbtn *sbtn = &sss->value.ssubtn;
@@ -3616,11 +3632,8 @@ static void
 factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
                           const char *filename)
 {
-
     element_save(&structclass->element, obj_node);
-
     /*  2014-3-22 lcy 这里保存自定义控件的数据 */
-
     /* 2014-3-25 lcy 这里添加一个自定义节点名来安置这个结构体的成员*/
     gchar *objname = structclass->element.object.name;
     obj_node = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_struct", NULL);
@@ -3633,20 +3646,50 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
     //g_hash_table_foreach(structclass->widgetmap,factory_struct_save_to_xml,(gpointer)obj_node);
     if(!g_strcasecmp(fsi->sname,"FILELST"))
     {
+        if(!MusicManagerDialog || !MusicManagerDialog->itemlist)
+            return;
         gchar *rows = g_strdup_printf("%d",g_list_length(MusicManagerDialog->itemlist));
         xmlSetProp(obj_node, (const xmlChar *)"rows", (xmlChar *)rows);
         g_free(rows);
         GList *flist = MusicManagerDialog->itemlist;
-        for(;flist; flist = flist->next)
+        for(; flist; flist = flist->next)
         {
             SaveMusicItem *smi = flist->data;
             ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
-//            xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"ID");
-            xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)g_strdup_printf("%d",smi->active));
-            xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf("%d",smi->id_index));
+            xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",smi->id_index));
+            xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
+            xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)g_strdup_printf("%d",smi->active ? smi->active : -1));
             xmlSetProp(ccc, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",smi->id_addr));
         }
 
+    }
+    else if(!g_strcasecmp(fsi->sname,"IDLST"))
+    {
+        if(!IdDialog || !IdDialog->idlists)
+            return;
+        gchar *rows = g_strdup_printf("%d",g_list_length(IdDialog->idlists));
+        xmlSetProp(obj_node, (const xmlChar *)"rows", (xmlChar *)rows);
+        g_free(rows);
+        GList *idlist = IdDialog->idlists;
+        for(;idlist; idlist = idlist->next)
+        {
+            SaveIdItem *sit =idlist->data;
+            ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+            xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",sit->id_index));
+            xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
+            gchar *val = "-1";
+            if(sit->active>0)
+            {
+                STRUCTClass *tcalss = factory_get_object_from_layer(curLayer,sit->dname);
+                if(tcalss)
+                {
+                    SaveStruct *sst = tcalss->widgetSave->data;
+                    val = g_strdup(sst->value.vnumber);
+                }
+            }
+            xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)val);
+            xmlSetProp(ccc, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",sit->id_addr));
+        }
     }
     else
     {

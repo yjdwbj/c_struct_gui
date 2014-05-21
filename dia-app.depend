@@ -14,7 +14,7 @@
 	"widgets.h"
 	"intl.h"
 
-1399880185 o:\tool\dvs50\config.h
+1400662597 o:\tool\dvs50\config.h
 
 1394617928 o:\tool\dvs50\lib\message.h
 	<stdarg.h>
@@ -767,7 +767,7 @@
 	<config.h>
 	"object.h"
 
-1400240895 source:o:\tool\dvs50\lib\object.c
+1400662140 source:o:\tool\dvs50\lib\object.c
 	<config.h>
 	<stdio.h>
 	<string.h>
@@ -1829,7 +1829,7 @@
 	"intl.h"
 	<math.h>
 
-1400586728 source:o:\tool\dvs50\app\load_save.c
+1400659447 source:o:\tool\dvs50\app\load_save.c
 	<config.h>
 	<sys/stat.h>
 	<unistd.h>
@@ -1865,7 +1865,7 @@
 	"magnify.h"
 	"cursor.h"
 
-1399965609 source:o:\tool\dvs50\app\menus.c
+1400671089 source:o:\tool\dvs50\app\menus.c
 	<config.h>
 	<gtk/gtk.h>
 	<gdk/gdkkeysyms.h>
@@ -2376,36 +2376,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1400584023 source:o:\tool\dvs50\objects\struct\struct_dialog.c
-	<config.h>
-	<assert.h>
-	<gtk/gtk.h>
-	<math.h>
-	<string.h>
-	"diagram.h"
-	"object.h"
-	"objchange.h"
-	"intl.h"
-	"struct_class.h"
-	"sheet.h"
-	"diagramdata.h"
-	"connpoint_line.h"
-
-1400583890 o:\tool\dvs50\objects\struct\struct_class.h
-	"object.h"
-	"element.h"
-	"connectionpoint.h"
-	"widgets.h"
-	"struct.h"
-	"display.h"
-
-1396670493 o:\tool\dvs50\objects\struct\struct.h
-	<glib.h>
-	"intl.h"
-	"connectionpoint.h"
-	"dia_xml.h"
-
-1400586844 source:o:\tool\dvs50\objects\struct\struct_class.c
+1400661060 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2422,5 +2393,34 @@
 	"sheet.h"
 	"filedlg.h"
 
+1400652788 o:\tool\dvs50\objects\struct\struct_class.h
+	"object.h"
+	"element.h"
+	"connectionpoint.h"
+	"widgets.h"
+	"struct.h"
+	"display.h"
+
+1396670493 o:\tool\dvs50\objects\struct\struct.h
+	<glib.h>
+	"intl.h"
+	"connectionpoint.h"
+	"dia_xml.h"
+
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
+
+1400662187 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+	<config.h>
+	<assert.h>
+	<gtk/gtk.h>
+	<math.h>
+	<string.h>
+	"diagram.h"
+	"object.h"
+	"objchange.h"
+	"intl.h"
+	"struct_class.h"
+	"sheet.h"
+	"diagramdata.h"
+	"connpoint_line.h"
 

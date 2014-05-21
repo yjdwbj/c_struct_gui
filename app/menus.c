@@ -646,11 +646,12 @@ create_integrated_ui_toolbar (void)
     gtk_toolbar_insert (toolbar, sep, -1);
     /* 新建三个按钮 */
 
+    GtkWidget *btn = gtk_button_new_with_label(factory_utf8("音乐转换"));
+    integrated_ui_toolbar_add_custom_item(toolbar,btn);
 //    factory_create_toolbar_button(systemdata_on,"系统数据",toolbar,factory_systemdata_dialog);
 //
 //    factory_create_toolbar_button(globe_on,"全局变量",toolbar,NULL);
-
-//    factory_create_toolbar_button(audio_list,"音频文件管理",toolbar,factory_music_filemanager_dialog);
+//        factory_create_toolbar_button(audio_list,"音乐转换",toolbar,NULL);
 //
 //    factory_create_toolbar_button(idlist,"ID 列表",toolbar,factory_idlist_dialog);
 

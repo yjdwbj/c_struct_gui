@@ -1135,7 +1135,7 @@ GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent
     /* 创建对话框 */
     GtkWidget*  subdig = gtk_dialog_new_with_buttons(_(title),
                          GTK_WINDOW(parent),
-                         GTK_DIALOG_DESTROY_WITH_PARENT,
+                         GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                          GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
                          GTK_STOCK_OK, GTK_RESPONSE_OK,NULL);
 //    GtkWidget *sdialog = gtk_hbox_new(FALSE,0);
@@ -1145,6 +1145,10 @@ GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent
     gtk_window_set_resizable (GTK_WINDOW(subdig),FALSE);
     gtk_window_set_position (GTK_WINDOW(subdig),GTK_WIN_POS_CENTER_ALWAYS);
     gtk_window_present(GTK_WINDOW(subdig));
+     g_signal_connect(G_OBJECT(subdig), "delete_event",
+		   G_CALLBACK(gtk_widget_hide), NULL);
+    g_signal_connect(GTK_OBJECT(subdig), "delete_event",
+		   G_CALLBACK(gtk_true), NULL);
     return subdig;
 }
 
