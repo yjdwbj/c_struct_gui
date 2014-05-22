@@ -3075,7 +3075,11 @@ static void factory_connection_two_object(STRUCTClass *fclass, /* start pointer*
     {
         factory_connectionto_object(ddisp,obj,objclass,1);
     }
-    diagram_select(ddisp->diagram,obj);
+
+    diagram_unselect_objects(ddisp->diagram,ddisp->diagram->data->selected);
+    diagram_select(ddisp->diagram,fclass);
+    diagram_flush(ddisp->diagram);
+
 }
 
 static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer user_data)
@@ -3150,7 +3154,7 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
 
 static void factory_get_value_from_comobox(STRUCTClass *startclass,GtkWidget *comobox,ActionID *aid)
 {
-
+     DDisplay *ddisp =  ddisplay_active();
     int  curindex = gtk_combo_box_get_active(GTK_COMBO_BOX(comobox));
     gchar *pname = gtk_combo_box_get_active_text(GTK_COMBO_BOX(comobox));
 
@@ -3158,11 +3162,22 @@ static void factory_get_value_from_comobox(STRUCTClass *startclass,GtkWidget *co
         goto DELL;
     else
     {
-        if(!g_ascii_strcasecmp(pname,startclass->name)) /* 是自己就不连线 */
-            goto SETV ;
         Layer *p = startclass->element.object.parent_layer;
+        STRUCTClass *objclass =NULL;
+        if(!g_ascii_strcasecmp(pname,startclass->name)) /* 是自己就不连线,如果上次有连线现在要删除 */
+        {
+            objclass = factory_find_diaobject_by_name(p,aid->pre_name);
+            if(objclass && factory_is_connected(&objclass->connections[8],&startclass->connections[8]))
+             {
+                 factory_delete_line_between_two_objects(startclass,aid->pre_name);
 
-        STRUCTClass *objclass = factory_find_diaobject_by_name(p,pname);
+             }
+            goto SETV ;
+        }
+
+
+
+        objclass = factory_find_diaobject_by_name(p,pname);
         if(objclass && factory_is_connected(&objclass->connections[8],&startclass->connections[8]))
             goto SETV; /* 已经有连线了 */
         else
@@ -3192,6 +3207,7 @@ DELL:
 SETV:
     aid->pre_name = g_strdup(pname);
     aid->index  = curindex;
+    diagram_flush(ddisp->diagram);
     g_free(pname);
 }
 
@@ -3209,16 +3225,22 @@ void factory_delete_line_between_two_objects(STRUCTClass *startc,const gchar *en
         if(line && factory_is_connected(cpend,cpstart))
         {
             /* 上次的连线,到此要删掉它,重新连线 */
-            diagram_select(ddisp->diagram,line);
+//            diagram_select(ddisp->diagram,line);
             cpstart->connected  = g_list_remove(cpstart->connected,line); /* 删掉对方链表里的对像.*/
             cpend->connected = g_list_remove(cpend->connected,line);
-            g_list_free(line->connections[0]->connected);
+            g_list_free1(line->connections[0]->connected);
             line->connections[0]->connected = NULL;
             line->connections[0]->object = NULL;
-            layer_remove_object(curLayer,line); // 在当前的画布里面删除连线对像.
-            diagram_flush(ddisp->diagram);
-        }
 
+//            line->ops->move(line,&cpstart->pos);
+            layer_remove_object(curLayer,line); // 在当前的画布里面删除连线对像.
+             line->ops->destroy(line);
+            diagram_flush(ddisp->diagram);
+//            line->ops->destroy(line);
+        }
+        diagram_select(ddisp->diagram,objclass);
+        diagram_unselect_objects(ddisp->diagram,ddisp->diagram->data->selected);
+        diagram_select(ddisp->diagram,startc);
     }
 }
 
@@ -3404,12 +3426,14 @@ factory_get_properties(STRUCTClass *fclass, gboolean is_default)
     STRUCTClassDialog *prop_dialog;
     GtkWidget *vbox;
 //    GtkTable *mainTable;
+
     if (fclass->properties_dialog == NULL)
     {
         prop_dialog = g_new(STRUCTClassDialog, 1);
         fclass->properties_dialog = prop_dialog;
     }
-
+    GtkWindow *window=  gtk_widget_get_toplevel(fclass->properties_dialog);
+    gtk_window_set_modal(window,TRUE);
     vbox = gtk_vbox_new(FALSE, 0);
     prop_dialog->dialog = vbox;
 
@@ -3608,17 +3632,11 @@ FIRST:
     {
         columTwo =gtk_button_new_with_label(item->Name);
         FactoryStructItem *fsi = sss->org;
-        if(factory_music_fm_get_type(item->Name))
+        if(factory_is_special_object(item->SType))
         {
-            gtk_button_set_label(GTK_BUTTON(columTwo),fsi->Value);
-            sss->value.vnumber = g_strdup(fsi->Value);
-            g_signal_connect (G_OBJECT (columTwo), "clicked",G_CALLBACK (MusicManagerDialog->mfmos->m_opendilog),
-                              sss);
-        }
-        else if(!g_strcasecmp(item->Name,"IDLST"))
-        {
-            sss->value.vnumber = g_strdup(fsi->Value);
-            g_signal_connect (G_OBJECT (columTwo), "clicked",G_CALLBACK (sss->newdlg_func), &sss->value.vnumber);
+            SaveKV *skv = sss->value.vnumber;
+            gtk_button_set_label(GTK_BUTTON(columTwo), skv->value );
+            g_signal_connect (G_OBJECT (columTwo), "clicked",G_CALLBACK (sss->newdlg_func),sss);
         }
         else
         {
@@ -4758,14 +4776,7 @@ void factory_music_file_manager_new_item_changed(SaveMusicDialog *smd)
 }
 
 
-gboolean factory_is_special_object(const gchar *name)
-{
-    gboolean b = FALSE;
-    if(!g_strcasecmp(name,"IDLST") ||
-            !g_strcasecmp(name,"FILELST"))
-        b = TRUE;
-    return b;
-}
+
 
 gboolean factory_is_system_data(const gchar *name)
 {
@@ -5089,8 +5100,11 @@ GtkWidget *factory_get_new_iditem(SaveIdItem *swt,GSList **grouplist)
 void factory_new_idlist_dialog(GtkWidget *parent,SaveStruct *sst)
 {
     GtkWidget *mainBox = gtk_vbox_new(FALSE,0);
-    gtk_button_set_label(GTK_BUTTON(parent),sst->value.vnumber);
-    IdDialog->dvalue = &sst->value.vnumber;
+
+//    IdDialog->dvalue = &sst->value.vnumber;
+    IdDialog->skv = sst->value.vnumber;
+     gtk_button_set_label(GTK_BUTTON(parent),IdDialog->skv->value);
+    IdDialog->parent_btn = parent;
     GtkWidget *subdig = factory_create_new_dialog_with_buttons(factory_utf8("ID列表"),parent->window);
     GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
 
@@ -5107,14 +5121,16 @@ void factory_new_idlist_dialog(GtkWidget *parent,SaveStruct *sst)
     gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(wid_idlist),vbox);
     gtk_box_pack_start(GTK_BOX(vbox),factory_get_new_item_head(),FALSE,FALSE,0);
     IdDialog->vbox = vbox;
-    if(IdDialog->idlists)
+    if(IdDialog->idlists) /* 设置回原来的值　*/
     {
         GList *tlist = IdDialog->idlists;
-        int n = 1;
+        int n = 0;
         for(; tlist; tlist = tlist->next,n++)
         {
             SaveIdItem *swt = tlist->data;
             GtkWidget *nbox =  factory_get_new_iditem(swt,&IdDialog->grouplist);
+            if(n == IdDialog->skv->radindex)
+                gtk_toggle_button_set_state(GTK_TOGGLE_BUTTON(swt->wid_colum0),TRUE);
             gtk_box_pack_start(GTK_BOX(vbox),nbox,FALSE,FALSE,0);
         }
     }
@@ -5178,7 +5194,7 @@ GtkWidget *factory_download_file_manager(GtkWidget *parent,SaveMusicDialog *smd)
             gtk_box_pack_start(GTK_BOX(smd->leftvbox),nitem,FALSE,FALSE,0);
         }
         /* 设置默认值 */
-        SaveMusicItem *smit = g_list_nth_data(smd->itemlist,smd->radindex);
+        SaveMusicItem *smit = g_list_nth_data(smd->itemlist,smd->skv->radindex);
         if(smit)
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(smit->wid_colum0), TRUE);
     }
@@ -5197,6 +5213,7 @@ void factory_save_idlist_dialog(GtkWidget *widget,
             || response_id == GTK_RESPONSE_OK)
     {
         GList *p = sid->idlists;
+        SaveKV *skv = sid->skv;
         for(;p ; p = p->next)
         {
             SaveIdItem *sil = p->data;
@@ -5204,22 +5221,17 @@ void factory_save_idlist_dialog(GtkWidget *widget,
             sil->active = gtk_combo_box_get_active(GTK_COMBO_BOX(sil->wid_colum3));
             if(gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(sil->wid_colum0)))
             {
+                skv->radindex  = g_list_index(sid->idlists,sil);
                 STRUCTClass *fclass = factory_find_diaobject_by_name(curLayer,sil->dname);
                 if(fclass){
                 SaveStruct *tmp = fclass->widgetSave->data;
-                *sid->dvalue = g_strdup(tmp->value.vnumber);
+//                *sid->dvalue = g_strdup(tmp->value.vnumber);
+                skv->value = g_strdup(tmp->value.vnumber);
                 }
 
             }
         }
-        gchar *oname = gtk_button_get_label(GTK_BUTTON(sid->parent_btn));
-        if(oname && g_ascii_strcasecmp(oname,*sid->dvalue))
-        {
-            gtk_button_set_label(GTK_BUTTON(sid->parent_btn),*sid->dvalue);
-            free(oname);
-        }
-
-
+        gtk_button_set_label(GTK_BUTTON(sid->parent_btn),skv->value);
     }
 
     gtk_widget_hide_all(widget);
@@ -5237,6 +5249,7 @@ void factory_music_file_manager_apply(GtkWidget *widget,
 
         gint v = -1;
         GList *list = smd->itemlist;
+        SaveKV *skv = smd->skv;
         for(; list ; list = list->next)
         {
             SaveMusicItem *smi = list->data;
@@ -5261,11 +5274,11 @@ void factory_music_file_manager_apply(GtkWidget *widget,
                     if(smf)
                     v = smf->file_addr;
                 }
-                smd->radindex = g_list_index(smd->itemlist,smi);
+                skv->radindex = g_list_index(smd->itemlist,smi);
             }
         }
-        *smd->dvalue = g_strdup_printf("%d",v);
-        gtk_button_set_label(GTK_BUTTON(smd->parent_btn),*smd->dvalue);/* 更改按钮标签*/
+        skv->value = g_strdup_printf("%d",v);
+        gtk_button_set_label(GTK_BUTTON(smd->parent_btn),skv->value);/* 更改按钮标签*/
 
     }
 
@@ -5278,7 +5291,8 @@ void factory_file_manager_dialog(GtkWidget *btn,SaveStruct *sst)
     SaveMusicDialog *smd = MusicManagerDialog;
     smd->parent_btn = btn;
 
-    smd->dvalue = &sst->value.vnumber;
+//    smd->dvalue = &sst->value.vnumber;
+    smd->skv = sst->value.vnumber;
     GtkWidget *mainHbox = gtk_hbox_new(FALSE,0);
     GtkWidget *window = factory_create_new_dialog_with_buttons(smd->title,smd->parent_btn);
     GtkWidget *dialog_vbox = GTK_DIALOG(window)->vbox;

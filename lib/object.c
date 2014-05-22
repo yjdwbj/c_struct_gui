@@ -1125,7 +1125,14 @@ gchar *factory_locale(gchar *str)
     return g_locale_from_utf8(_(str),-1,NULL,NULL,NULL);
 }
 
-
+gboolean factory_is_special_object(const gchar *name)
+{
+    gboolean b = FALSE;
+    if(!g_strcasecmp(name,"IDLST") ||
+            !g_strcasecmp(name,"FILELST"))
+        b = TRUE;
+    return b;
+}
 
 
 
@@ -1135,13 +1142,10 @@ GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent
     /* 创建对话框 */
     GtkWidget*  subdig = gtk_dialog_new_with_buttons(_(title),
                          GTK_WINDOW(parent),
-                         GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                         GTK_DIALOG_DESTROY_WITH_PARENT,
                          GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
                          GTK_STOCK_OK, GTK_RESPONSE_OK,NULL);
-//    GtkWidget *sdialog = gtk_hbox_new(FALSE,0);
     gtk_dialog_set_default_response (GTK_DIALOG(subdig), GTK_RESPONSE_OK);
-//    GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
-//    gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
     gtk_window_set_resizable (GTK_WINDOW(subdig),FALSE);
     gtk_window_set_position (GTK_WINDOW(subdig),GTK_WIN_POS_CENTER_ALWAYS);
     gtk_window_present(GTK_WINDOW(subdig));

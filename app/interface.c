@@ -1661,7 +1661,10 @@ create_integrated_ui (void)
   /* hint to window manager on X so the wm can put the window in the same
      as it was when the application shut down                             */
   gtk_window_set_role (GTK_WINDOW (window), DIA_MAIN_WINDOW);
+/* hint 去掉最小化，最大化，只有一个关闭，因为最小化之后恢复回来的，文本框里的值不见了*/
+  gtk_window_set_type_hint(window,GDK_WINDOW_TYPE_HINT_MENU);
 
+//    gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
   gtk_window_set_default_size (GTK_WINDOW (window), 146, 349);
 
   app_set_icon (GTK_WINDOW (window));

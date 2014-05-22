@@ -161,6 +161,14 @@ struct _CheckSave
 //    GtkWidget *wid_column2; /* 最后那一列　*/
 //};
 
+typedef struct _SaveKV SaveKV;
+struct _SaveKV
+{
+    gchar *value;
+    int radindex; /* radio index */
+};
+
+
 typedef struct _SaveIdDialog SaveIdDialog;
 struct _SaveIdDialog
 {
@@ -168,7 +176,8 @@ struct _SaveIdDialog
     GtkWidget *vbox;
     GList *idlists; /* SaveIdList 内容*/
     gchar *title;
-    gchar **dvalue;
+    SaveKV *skv;
+//    gchar **dvalue;
     GSList *grouplist; /* GtkRadio */
 };
 
@@ -223,8 +232,9 @@ struct _SaveMusicDialog
     gchar *title;
     gchar *btnname;
     FMSaveType fmst;
-    int radindex; /* radio 单选所在的位置　*/
-    gchar **dvalue; /* 默认值，与SaveStruct.value.vnumber 绑定 */
+//    int radindex; /* radio 单选所在的位置　*/
+//    gchar **dvalue; /* 默认值，与SaveStruct.value.vnumber 绑定 */
+    SaveKV *skv;
     GtkWidget *leftvbox;
     GSList *grouplist;   /* 记录Radio 的单选链表　*/
     GList *itemlist; /* 左边界面的链表　内容是　SaveMusicItem */
@@ -234,6 +244,7 @@ struct _SaveMusicDialog
     SaveMusicFileMan *smfm; /* 右边界面 */
     MusicFileManagerOpts *mfmos;
 };
+
 
 
 
@@ -580,6 +591,8 @@ void factory_save_idlist_dialog(GtkWidget *widget,
 void factory_file_manager_dialog(GtkWidget *btn,SaveStruct *sst);
 
 
+void factory_select(STRUCTClass *structclass, Point *clicked_point,
+                           DiaRenderer *interactive_renderer);
 
 typedef void (*factory_button_callback)(GtkWidget *self);
 
@@ -588,7 +601,7 @@ GtkWidget *factory_new_add_button(factory_button_callback *callback,gpointer lis
 GtkWidget *factory_get_new_iditem(SaveIdItem *swt,GSList **grouplist);
 GtkWidget *factory_get_new_musicitem( SaveMusicItem *swt,GList *fillist,GSList **grouplist);
 
-gboolean factory_is_special_object(const gchar *name);
+
 gboolean factory_is_system_data(const gchar *name);
 
 GtkWidget *factory_music_file_manager(GtkWidget *parent,SaveMusicDialog *smd);

@@ -92,10 +92,10 @@ void diagram_add_ddisplay(Diagram *dia, DDisplay *ddisp);
 void diagram_remove_ddisplay(Diagram *dia, DDisplay *ddisp);
 void diagram_add_object(Diagram *dia, DiaObject *obj);
 void diagram_add_object_list(Diagram *dia, GList *list);
-void diagram_selected_break_external(Diagram *dia);
+DIAVAR void diagram_selected_break_external(Diagram *dia);
 DIAVAR void diagram_remove_all_selected(Diagram *diagram, int delete_empty);
 void diagram_unselect_object(Diagram *dia, DiaObject *obj);
-void diagram_unselect_objects(Diagram *dia, GList *obj_list);
+DIAVAR void diagram_unselect_objects(Diagram *dia, GList *obj_list);
 DIAVAR void diagram_select(Diagram *diagram, DiaObject *obj);
 void diagram_select_list(Diagram *diagram, GList *list);
 int diagram_is_selected(Diagram *diagram, DiaObject *obj);
@@ -105,7 +105,7 @@ GList *diagram_get_sorted_selected_remove(Diagram *dia);
 void diagram_add_update(Diagram *dia, Rectangle *update);
 void diagram_add_update_with_border(Diagram *dia, Rectangle *update,
 				    int pixel_border);
-void diagram_add_update_all(Diagram *dia);
+DIAVAR void diagram_add_update_all(Diagram *dia);
 void diagram_add_update_all_all_and_flush();
 void diagram_add_update_pixels(Diagram *dia, Point *point,
 			       int pixel_width, int pixel_height);

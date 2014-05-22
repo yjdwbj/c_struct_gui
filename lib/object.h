@@ -608,6 +608,7 @@ DIAVAR gchar *dia_object_get_meta (DiaObject *obj, const gchar *key);
 
 DIAVAR gchar *factory_utf8(gchar *str);
 DIAVAR gchar *factory_locale(gchar *str);
+DIAVAR gboolean factory_is_special_object(const gchar *name);
 DIAVAR GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent);
 
 

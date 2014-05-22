@@ -124,6 +124,7 @@ read_objects(xmlNodePtr objects,
     char *typestr;
     char *versionstr;
     char *idd;
+    char *objname;
     int version;
     xmlNodePtr child_node;
 
@@ -146,7 +147,15 @@ read_objects(xmlNodePtr objects,
             typestr = (char *) xmlGetProp(obj_node, (const xmlChar *)"type");
             versionstr = (char *) xmlGetProp(obj_node, (const xmlChar *)"version");
             idd = (char *) xmlGetProp(obj_node, (const xmlChar *)"id");
-
+//            objname = (gchar*)xmlGetProp(obj_node,(const xmlChar*)"name");
+//            if(objname)
+//            {
+//                if(factory_is_special_object(objname)) /*特殊控件不需要加载的*/
+//                {
+//                    obj_node = obj_node->next;
+//                    continue;
+//                }
+//            }
             version = 0;
             if (versionstr != NULL && g_ascii_strncasecmp(versionstr,factoryContainer->file_version,strlen(versionstr)))
             {
@@ -169,6 +178,15 @@ read_objects(xmlNodePtr objects,
             else
             {
                 obj = type->ops->load(obj_node, version, filename);
+                objname = (gchar*)xmlGetProp(obj_node,(const xmlChar*)"name");
+                if(objname) /*不会加载它,只是用它读取数据*/
+                {
+                    if(factory_is_special_object(objname)) /*特殊控件不需要加载的*/
+                    {
+                        obj_node = obj_node->next;
+                        continue;
+                    }
+                }
                 list = g_list_append(list, obj);
 
                 if (parent)
@@ -818,6 +836,7 @@ write_objects(GList *objects, xmlNodePtr objects_node,
 
             g_snprintf(buffer, 30, "O%d", *obj_nr);
             xmlSetProp(obj_node, (const xmlChar *)"id", (xmlChar *)buffer);
+            xmlSetProp(obj_node, (const xmlChar *)"name", (xmlChar *)obj->name); /* 添加名字来确认那些个节点用不用加载　*/
 
             (*obj->type->ops->save)(obj, obj_node, filename);
 
