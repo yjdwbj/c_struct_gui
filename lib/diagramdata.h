@@ -119,6 +119,8 @@ struct _Layer {
 				  to the diagram, and accessed via
 				  layer_get_parent_diagram() */
   GList *defnames; /* 所有控件显示的名字的链表.*/
+  gpointer smd; /* SaveMusicDialog 这用存放音乐文件管理的数据，这个在当前层是公有的*/
+  gpointer sid;  /* SaveIdDialog 这用存放行为ID管理的数据，这个在当前层是公有的*/
 };
 
 DIAVAR Layer *new_layer (char *name, DiagramData *parent);

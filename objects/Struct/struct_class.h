@@ -148,28 +148,16 @@ struct _CheckSave
 
 
 
-
-//typedef struct _SaveIdList SaveIdList;
-//struct _SaveIdList
-//{
-//    int id_index;
-//    int id_addr
-//    int id_nextid;
-//    int id_active;
-//    gchar *id_curtxt;
-//    GtkWidget *wid_radio;
-//    GtkWidget *wid_column2; /* 最后那一列　*/
-//};
-
 typedef struct _SaveKV SaveKV;
 struct _SaveKV
 {
     gchar *value;
+    gchar *vname;
     int radindex; /* radio index */
 };
 
 
-typedef struct _SaveIdDialog SaveIdDialog;
+
 struct _SaveIdDialog
 {
     GtkWidget *parent_btn;
@@ -181,7 +169,7 @@ struct _SaveIdDialog
     GSList *grouplist; /* GtkRadio */
 };
 
-SaveIdDialog *IdDialog;
+//SaveIdDialog *IdDialog;
 
 
 /* 文件管理界面的结构体　start*/
@@ -226,7 +214,8 @@ typedef   enum{
 
 
 typedef struct _MusicFileManagerOpts MusicFileManagerOpts; /* 专为这个界面做的一些操作函数集合*/
-typedef struct _SaveMusicDialog SaveMusicDialog; /* 主界面　*/
+
+
 struct _SaveMusicDialog
 {
     gchar *title;
@@ -266,7 +255,7 @@ struct _MusicFileManagerOpts
 
 
 
-SaveMusicDialog *MusicManagerDialog ;
+//SaveMusicDialog *MusicManagerDialog ;
 
 typedef struct _SaveMusicItem SaveMusicItem;
 struct _SaveMusicItem
@@ -281,15 +270,7 @@ struct _SaveMusicItem
 };
 
 typedef struct _SaveMusicItem SaveIdItem;
-//struct _SaveIdWidget
-//{
-//    int id_index;
-//    int id_addr;
-//    int id_active;
-//    gchar *id_text;
-//    GtkWidget *id_widget2;
-//    GtkWidget *id_widget3;
-//};
+
 
 /* 文件管理界面的结构体　end*/
 
@@ -631,6 +612,7 @@ void factory_music_file_manager_select_callback(GtkWidget *clist,
 
 gboolean factory_music_fm_get_type(const gchar* str);
 
+void factory_fm_get_cboxlist(SaveMusicDialog *smd);
 
 //void factoryReadDataFromFile(STRUCTClass *structclass);
 

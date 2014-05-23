@@ -194,6 +194,10 @@ typedef struct _DiaFileSelector       DiaFileSelector;
 typedef struct _DiaFileSelectorClass  DiaFileSelectorClass;
 
 
+
+typedef struct _SaveIdDialog SaveIdDialog; /*ID列表界面*/
+typedef struct _SaveMusicDialog SaveMusicDialog; /* 主界面　*/
+
 typedef struct _FactoryStructItem FactoryStructItem;
 typedef struct _FactoryStructEnum FactoryStructEnum;
 //typedef struct _FactoryStructEnumList FactoryStructEnumList;
@@ -215,6 +219,7 @@ struct _FactoryStructItemAll{
     GHashTable *unionTable;
     GList* structList; // 2014-3-25 lcy 这里存放 FactoryStructItemList 的链表。
     gchar *file_version;
+    Layer *curLayer;
 
 };
 

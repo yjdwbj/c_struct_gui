@@ -3432,8 +3432,7 @@ factory_get_properties(STRUCTClass *fclass, gboolean is_default)
         prop_dialog = g_new(STRUCTClassDialog, 1);
         fclass->properties_dialog = prop_dialog;
     }
-    GtkWindow *window=  gtk_widget_get_toplevel(fclass->properties_dialog);
-    gtk_window_set_modal(window,TRUE);
+
     vbox = gtk_vbox_new(FALSE, 0);
     prop_dialog->dialog = vbox;
 
@@ -3657,22 +3656,23 @@ FIRST:
 
 gboolean factory_music_fm_get_type(const gchar* name)
 {
+    SaveMusicDialog *smd = factoryContainer->curLayer->smd;
     gboolean flag = FALSE;
     if(!g_ascii_strncasecmp(name,"aIndex_Number",strlen("aIndex_Number")))
     {
-        MusicManagerDialog->fmst = SEQUENCE;
+        smd->fmst = SEQUENCE;
         flag = TRUE;
     }
 
     else if(!g_ascii_strncasecmp(name,"aFile_Number",strlen("aFile_Number")))
     {
-        MusicManagerDialog->fmst = INDEX;
+        smd->fmst = INDEX;
         flag = TRUE;
     }
 
     else if(!g_ascii_strncasecmp(name,"aPhy_Number",strlen("aPhy_Number")))
     {
-        MusicManagerDialog->fmst = PHY;
+        smd->fmst = PHY;
         flag = TRUE;
     }
     return flag;
@@ -3697,14 +3697,13 @@ void factory_set_savestruct_widgets(SaveStruct *sss)
     /* 2014-3-26 lcy 用两个区间做键值。*/
     if(sss && sss->org )
     {
-        gchar *comment = sss->org->Comment;
         Name = gtk_label_new(sss->org->Cname);
-        gtk_tooltips_set_tip(tool_tips,Name,g_strdup(comment),NULL);
+        gtk_tooltips_set_tip(tool_tips,Name,g_strdup(sss->org->Comment),NULL);
         /* 创建多样性的对像控件  */
 
         columTwo = factory_create_variant_object(sss);
         gtk_widget_set_sensitive(columTwo,sss->isSensitive);
-        gtk_tooltips_set_tip(tool_tips,columTwo,g_strdup(comment),NULL);
+        gtk_tooltips_set_tip(tool_tips,columTwo,g_strdup(sss->org->Comment),NULL);
 //        sss->widget2 = columTwo;
         sss->widget1 = Name;
     }
@@ -3855,7 +3854,8 @@ void factory_save_unionbutton_dialog(GtkWidget *widget,
         {
             SaveStruct *vss = wlist->data;
             if(vss)
-                factory_save_value_from_widget(vss);
+                factory_read_props_from_widget(NULL,vss,NULL);
+//                factory_save_value_from_widget(vss);
         }
     }
     gtk_widget_hide(widget);
@@ -4699,8 +4699,8 @@ void factory_append_public_info(GtkWidget *dialog,STRUCTClass *fclass)
 /* 显示控件上的属性对话框 */
 void factory_create_and_fill_dialog(STRUCTClass *fclass, gboolean is_default)
 {
-    DDisplay *ddsp = ddisplay_active();
-    curLayer = ddsp->diagram->data->active_layer;
+
+    curLayer = factoryContainer->curLayer;
     STRUCTClassDialog *prop_dialog = fclass->properties_dialog;
 
 //    if(!g_ascii_strcasecmp(fclass->element.object.name,"IDLIST"))
@@ -4863,6 +4863,16 @@ static void factory_file_manager_insert(GtkWidget *clist,SaveMusicFile *smf,gint
     gchar *four = smf->down_name;
     gchar *row[] = {first,second,third,four};
     gtk_clist_insert(GTK_CLIST(clist),pos,row);
+}
+
+void factory_fm_get_cboxlist(SaveMusicDialog *smd)
+{
+    GList *flist = smd->smfm->filelist;
+    for(;flist;flist = flist->next)
+    {
+          SaveMusicFile *smf = flist->data;
+                smd->cboxlist = g_list_append(smd->cboxlist,smf->base_name);
+    }
 }
 
 static void factory_file_manager_append(GtkWidget *clist,SaveMusicFile *smf)
@@ -5100,11 +5110,11 @@ GtkWidget *factory_get_new_iditem(SaveIdItem *swt,GSList **grouplist)
 void factory_new_idlist_dialog(GtkWidget *parent,SaveStruct *sst)
 {
     GtkWidget *mainBox = gtk_vbox_new(FALSE,0);
-
+    SaveIdDialog *sid = factoryContainer->curLayer->sid;
 //    IdDialog->dvalue = &sst->value.vnumber;
-    IdDialog->skv = sst->value.vnumber;
-     gtk_button_set_label(GTK_BUTTON(parent),IdDialog->skv->value);
-    IdDialog->parent_btn = parent;
+    sid->skv = sst->value.vnumber;
+     gtk_button_set_label(GTK_BUTTON(parent),sid->skv->value);
+    sid->parent_btn = parent;
     GtkWidget *subdig = factory_create_new_dialog_with_buttons(factory_utf8("ID列表"),parent->window);
     GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
 
@@ -5120,16 +5130,16 @@ void factory_new_idlist_dialog(GtkWidget *parent,SaveStruct *sst)
     GtkWidget *vbox  = gtk_vbox_new(FALSE,0);
     gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(wid_idlist),vbox);
     gtk_box_pack_start(GTK_BOX(vbox),factory_get_new_item_head(),FALSE,FALSE,0);
-    IdDialog->vbox = vbox;
-    if(IdDialog->idlists) /* 设置回原来的值　*/
+    sid->vbox = vbox;
+    if(sid->idlists) /* 设置回原来的值　*/
     {
-        GList *tlist = IdDialog->idlists;
+        GList *tlist = sid->idlists;
         int n = 0;
         for(; tlist; tlist = tlist->next,n++)
         {
             SaveIdItem *swt = tlist->data;
-            GtkWidget *nbox =  factory_get_new_iditem(swt,&IdDialog->grouplist);
-            if(n == IdDialog->skv->radindex)
+            GtkWidget *nbox =  factory_get_new_iditem(swt,&sid->grouplist);
+            if(n == sid->skv->radindex)
                 gtk_toggle_button_set_state(GTK_TOGGLE_BUTTON(swt->wid_colum0),TRUE);
             gtk_box_pack_start(GTK_BOX(vbox),nbox,FALSE,FALSE,0);
         }
@@ -5137,9 +5147,9 @@ void factory_new_idlist_dialog(GtkWidget *parent,SaveStruct *sst)
 
     gtk_box_pack_start(GTK_BOX(mainBox),wid_idlist,TRUE,TRUE,0);
     gtk_box_pack_start(GTK_BOX(mainBox),
-                       factory_new_add_button(factory_add_item_to_idlist,IdDialog),FALSE,FALSE,0);
+                       factory_new_add_button(factory_add_item_to_idlist,sid),FALSE,FALSE,0);
 
-    g_signal_connect(G_OBJECT (subdig), "response",G_CALLBACK (sst->close_func), IdDialog); /* 保存关闭 */
+    g_signal_connect(G_OBJECT (subdig), "response",G_CALLBACK (sst->close_func), sid); /* 保存关闭 */
     g_signal_connect(G_OBJECT (subdig), "destroy",G_CALLBACK(gtk_widget_destroyed), &subdig);
     g_signal_connect(G_OBJECT (mainBox), "destroy",G_CALLBACK(gtk_widget_destroyed),&dialog_vbox);
 
@@ -5159,7 +5169,7 @@ void factory_add_item_to_idlist(GtkButton *self,gpointer user_data)
     swt->id_addr = (swt->id_index)*2;
     swt->active = 0;
 
-    GtkWidget *nitem = factory_get_new_iditem(swt,&IdDialog->grouplist);
+    GtkWidget *nitem = factory_get_new_iditem(swt,&sid->grouplist);
 
     sid->idlists = g_list_append(sid->idlists,swt);
 
@@ -5208,7 +5218,7 @@ void factory_save_idlist_dialog(GtkWidget *widget,
                                 gint response_id,
                                 gpointer user_data)
 {
-   SaveIdDialog *sid = IdDialog;
+   SaveIdDialog *sid = factoryContainer->curLayer->sid;
        if (   response_id == GTK_RESPONSE_APPLY
             || response_id == GTK_RESPONSE_OK)
     {
@@ -5227,6 +5237,7 @@ void factory_save_idlist_dialog(GtkWidget *widget,
                 SaveStruct *tmp = fclass->widgetSave->data;
 //                *sid->dvalue = g_strdup(tmp->value.vnumber);
                 skv->value = g_strdup(tmp->value.vnumber);
+                skv->vname = g_strdup(fclass->name);
                 }
 
             }
@@ -5288,7 +5299,7 @@ void factory_music_file_manager_apply(GtkWidget *widget,
 void factory_file_manager_dialog(GtkWidget *btn,SaveStruct *sst)
 {
     factory_music_fm_get_type(sst->name);
-    SaveMusicDialog *smd = MusicManagerDialog;
+    SaveMusicDialog *smd = factoryContainer->curLayer->smd;
     smd->parent_btn = btn;
 
 //    smd->dvalue = &sst->value.vnumber;
@@ -5483,26 +5494,25 @@ GtkWidget *factory_music_file_manager(GtkWidget *parent,SaveMusicDialog *smd)
     factoy_clist_init(clist);
 
     gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(wid_idlist),clist);
-    SaveMusicFileMan *smfm = smd->smfm;
-    if(!smfm)
+
+    if(!smd->smfm)
     {
-        smfm = g_new0(SaveMusicFileMan,1);
-        smd->grouplist = NULL;
-        smfm->selected = -1;
-        smd->smfm = smfm;
+        smd->smfm = g_new0(SaveMusicFileMan,1);
+        smd->smfm->selected = -1;
     }
-    else
-    {
-        if(smfm->filelist)
+    SaveMusicFileMan *smfm  = smd->smfm;
+
+    if(smfm->filelist)
         {
             GList *flist = smfm->filelist;
             for(; flist; flist = flist->next)
             {
                 factory_file_manager_append(clist,flist->data);
             }
+             gtk_spin_button_set_value(GTK_SPIN_BUTTON(spbox),smfm->offset);
         }
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(spbox),smfm->offset);
-    }
+
+
     smfm->wid_clist = clist;
     smfm->wid_offset = spbox;
     smfm->offset = gtk_spin_button_get_value(GTK_SPIN_BUTTON(spbox));

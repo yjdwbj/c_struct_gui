@@ -728,6 +728,7 @@ diagram_data_load(const char *filename, DiagramData *data, void* user_data)
             if (strcmp(visible, "true")==0)
                 layer->visible = TRUE;
             xmlFree(visible);
+            factoryContainer->curLayer = layer;
         }
         /* Read in all objects: */
 

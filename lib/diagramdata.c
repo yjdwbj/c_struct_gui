@@ -33,6 +33,7 @@
 #include "dynamic_obj.h"
 #include "diamarshal.h"
 
+extern FactoryStructItemAll *factoryContainer ;
 
 static const Rectangle invalid_extents = { -1.0,-1.0,-1.0,-1.0 };
 
@@ -214,8 +215,11 @@ new_layer(gchar *name, DiagramData *parent)
   layer->extents.right = 10.0;
   layer->extents.top = 0.0;
   layer->extents.bottom = 10.0;
+  layer->sid = NULL;
+  layer->smd = NULL;
 
 
+  factoryContainer->curLayer = layer;
   return layer;
 }
 
@@ -339,6 +343,7 @@ data_layer_get_index (const DiagramData *data, const Layer *layer)
 void
 data_set_active_layer(DiagramData *data, Layer *layer)
 {
+  factoryContainer->curLayer = layer;
   data->active_layer = layer;
 }
 
