@@ -215,9 +215,10 @@ layer_add_objects_first(Layer *layer, GList *obj_list)
 void
 layer_remove_object(Layer *layer, DiaObject *obj)
 {
-    int pos = g_list_index(layer->objects,obj);
-    gpointer rm = g_list_nth_data(layer->defnames,pos);
-   layer->defnames = g_list_remove(layer->defnames,rm);
+//    int pos = g_list_index(layer->objects,obj);
+//    gpointer rm = g_list_nth_data(layer->defnames,pos);
+//   layer->defnames = g_list_remove(layer->defnames,rm);
+    obj->ops->update_vname(obj);
    /*　这里要更新一下中文名链表　*/
 
   layer->objects = g_list_remove(layer->objects, obj);
@@ -240,9 +241,10 @@ layer_remove_objects(Layer *layer, GList *obj_list)
   DiaObject *obj;
   while (obj_list != NULL) {
     obj = (DiaObject *) obj_list->data;
-     int pos = g_list_index(layer->objects,obj);
-    gpointer rm = g_list_nth_data(layer->defnames,pos);
-   layer->defnames = g_list_remove(layer->defnames,rm);
+//     int pos = g_list_index(layer->objects,obj);
+//    gpointer rm = g_list_nth_data(layer->defnames,pos);
+//   layer->defnames = g_list_remove(layer->defnames,rm);
+    obj->ops->update_vname(obj);
    /*　这里要更新一下中文名链表　*/
 
     layer->objects = g_list_remove(layer->objects, obj);

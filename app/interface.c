@@ -1662,11 +1662,15 @@ create_integrated_ui (void)
      as it was when the application shut down                             */
   gtk_window_set_role (GTK_WINDOW (window), DIA_MAIN_WINDOW);
 /* hint 去掉最小化，最大化，只有一个关闭，因为最小化之后恢复回来的，文本框里的值不见了*/
-  gtk_window_set_type_hint(window,GDK_WINDOW_TYPE_HINT_MENU);
+  gtk_window_set_type_hint(window,GDK_WINDOW_TYPE_HINT_TOOLBAR);
 
 //    gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
-  gtk_window_set_default_size (GTK_WINDOW (window), 146, 349);
+//    GdkScreen*  scr = gtk_window_get_screen( GTK_WINDOW( window));
+//  gtk_window_set_default_size (GTK_WINDOW (window),gdk_screen_get_width( scr),gdk_screen_get_height( scr));
+//    gtk_window_fullscreen( GTK_WINDOW( window));
 
+    gtk_window_maximize (GTK_WINDOW( window));
+    gtk_window_set_resizable (GTK_WINDOW( window),TRUE);
   app_set_icon (GTK_WINDOW (window));
 
   g_signal_connect (GTK_OBJECT (window), "delete_event",
@@ -1676,6 +1680,9 @@ create_integrated_ui (void)
   g_signal_connect (GTK_OBJECT (window), "destroy",
 		    G_CALLBACK (toolbox_destroy),
 		      window);
+
+
+
 
   main_vbox = gtk_vbox_new (FALSE, 1);
   gtk_container_set_border_width (GTK_CONTAINER (main_vbox), 1);

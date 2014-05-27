@@ -1000,6 +1000,7 @@ DiaObject *
 ddisplay_drop_object(DDisplay *ddisp, gint x, gint y, DiaObjectType *otype,
 		     gpointer user_data)
 {
+    /*lcy 2014-5-27 ÍÏ·Å¿Ø¼ş*/
   Point droppoint;
   Point droppoint_orig;
   Handle *handle1, *handle2;
@@ -1089,6 +1090,7 @@ ddisplay_drop_object(DDisplay *ddisp, gint x, gint y, DiaObjectType *otype,
   }
 
   diagram_add_object(ddisp->diagram, obj);
+
   diagram_remove_all_selected(ddisp->diagram, TRUE); /* unselect all */
   diagram_select(ddisp->diagram, obj);
   obj->ops->selectf(obj, &droppoint, ddisp->renderer);

@@ -74,6 +74,7 @@ create_object_button_press(CreateObjectTool *tool, GdkEventButton *event,
 
   diagram_add_object(ddisp->diagram, obj);
 
+
   /* Try a connect */
   if (handle1 != NULL &&
       handle1->connect_type != HANDLE_NONCONNECTABLE) {
@@ -121,6 +122,7 @@ static void
 create_object_double_click(CreateObjectTool *tool, GdkEventMotion *event,
 			   DDisplay *ddisp)
 {
+    /*Ë«»÷Ìí¼Ó¿Ø¼þ*/
 }
 
 static void

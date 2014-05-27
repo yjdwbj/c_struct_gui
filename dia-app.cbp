@@ -61,6 +61,7 @@
 				</Compiler>
 				<Linker>
 					<Add option="-ldia" />
+					<Add option="-mwindows" />
 				</Linker>
 			</Target>
 			<Target title="standard">

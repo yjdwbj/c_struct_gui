@@ -658,6 +658,7 @@ diagram_add_object(Diagram *dia, DiaObject *obj)
 {
   layer_add_object(dia->data->active_layer, obj);
 
+
   diagram_modified(dia);
 
   diagram_tree_add_object(diagram_tree(), dia, obj);

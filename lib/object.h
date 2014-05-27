@@ -348,7 +348,8 @@ typedef void  (*UpdateData)(DiaObject *obj);
 typedef void  (*ConnectionTwoObject)(DiaObject *obj,gpointer data,int num);
 
 typedef void (*UpdateObjectIndex)(DiaObject *obj);
-
+typedef void (*ObjectRename)(DiaObject *obj);
+typedef void (*UpdateObjectVName)(DiaObject *obj);
 /*************************************
  **  The functions provided in object.c
  *************************************/
@@ -458,6 +459,8 @@ struct _ObjectOps {
   UpdateData update_data;
   ConnectionTwoObject connection_two_obj;
   UpdateObjectIndex   update_index;
+  ObjectRename  obj_rename;
+  UpdateObjectVName  update_vname;
   void      (*(unused[4]))(DiaObject *obj,...);
 };
 

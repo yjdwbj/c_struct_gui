@@ -119,6 +119,9 @@ static void fill_in_fontdata(STRUCTClass *structclass);
 static int structclass_num_dynamic_connectionpoints(STRUCTClass *class);
 void factory_delete_line_between_two_objects(STRUCTClass *startc,const gchar *endc);
 
+void factory_rename_structclass(STRUCTClass *fclass);
+void factory_update_view_names(STRUCTClass *fclass);
+
 
 //static ObjectChange *_structclass_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
 ObjectChange *factory_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
@@ -177,7 +180,9 @@ static ObjectOps structclass_ops =
     (ApplyPropertiesListFunc) object_apply_props,
     (UpdateData) 0,
     (ConnectionTwoObject) 0,
-    (UpdateObjectIndex)   factory_update_index
+    (UpdateObjectIndex)   factory_update_index,
+    (ObjectRename) factory_rename_structclass,
+    (UpdateObjectVName) factory_update_view_names
 };
 
 
@@ -556,6 +561,7 @@ static void factory_update_index(STRUCTClass *fclass)
     Layer *curlay = obj->parent_layer;
     GList *list = curlay->objects;
     obj->oindex  = g_list_index(list,obj);
+//    factory_rename_structclass(fclass);
 
 
 //    gchar **tmp =  g_strsplit(fclass->name,"(",-1);
@@ -2108,6 +2114,45 @@ fill_in_fontdata(STRUCTClass *structclass)
 //  return &structclass->element.object;
 //}
 
+void factory_rename_structclass(STRUCTClass *structclass)
+{
+    DiaObject *obj = &structclass->element.object;
+    if( !curLayer ||  factory_is_special_object(obj->name)
+            || factory_is_system_data(obj->name))
+        return ;
+
+    STRUCTClass *oldclass =  g_hash_table_lookup(curLayer->defnames,structclass->name);
+    if(!oldclass)
+    {
+        g_hash_table_insert(curLayer->defnames,structclass->name,structclass);
+        return ;
+    }
+
+    int n = 0;
+    gchar *key = NULL;
+    for(; n < 1024; n++)
+    {
+        gchar **split = g_strsplit(structclass->name,"(",-1);
+        key = g_strconcat(split[0],g_strdup_printf("(%d)",n),NULL);
+        g_strfreev(split);
+        gpointer ptr = g_hash_table_lookup(curLayer->defnames,key);
+
+        if(!ptr)
+            break;
+        g_free(key);
+    }
+    if(n >= 1024)
+    {
+        message_error(_("µ¥¸ö¿Ø¼þ±àºÅ³¬³öÏÞÖÆÁË"));
+    }
+
+    g_free(structclass->name);
+    structclass->name = g_strdup(key);
+    g_hash_table_insert(curLayer->defnames,structclass->name,structclass);
+    g_free(key);
+
+}
+
 static DiaObject *  // 2014-3-19 lcy ÕâÀï³õÊ¼»¯½á¹¹
 factory_struct_items_create(Point *startpoint,
                             void *user_data,
@@ -2157,35 +2202,7 @@ factory_struct_items_create(Point *startpoint,
             break;
         }
     }
-
-    if(curLayer && !factory_is_special_object(obj->name))
-    {
-        GList *list = curLayer->defnames;
-        int num = 0;
-        for(; list; list = list->next)
-        {
-            gchar *str = list->data; /* Í¬ÃûµÄ¼ÓÐòºÅ */
-            if(!g_ascii_strncasecmp(str,structclass->name,strlen(structclass->name)))
-                num++;
-        }
-
-
-        if(num>0)
-        {
-            gchar *tstr = g_strdup(structclass->name);
-            g_free(structclass->name);
-            structclass->name =g_strconcat(tstr,g_strdup_printf("(%d)",num),NULL);
-            g_free(tstr);
-        }
-
-        if(!factory_is_system_data(obj->name))
-            curLayer->defnames = g_list_append(curLayer->defnames,structclass->name);
-
-
-    }
-
-
-
+    factory_rename_structclass(structclass);
 
 
     /* 2014-3-26 lcy  ÕâÀï³õÊ¼¹þÏ£±íÓÃ´æwidgetÓëËüµÄÖµ*/
@@ -2569,7 +2586,7 @@ void factory_read_specific_object_from_file(STRUCTClass *fclass,ObjectNode obj_n
     gchar *objname = fclass->element.object.name;
     if(!g_ascii_strcasecmp(objname,"FILELST"))
     {
-        SaveMusicDialog *smd = factoryContainer->curLayer->smd;
+        SaveMusicDialog *smd = curLayer->smd;
         AttributeNode attr_node = obj_node;
         while(attr_node = data_next(attr_node))
         {
@@ -2615,7 +2632,7 @@ void factory_read_specific_object_from_file(STRUCTClass *fclass,ObjectNode obj_n
     }
     else
     {
-        SaveIdDialog *sid = factoryContainer->curLayer->sid;
+        SaveIdDialog *sid = (SaveIdDialog *)curLayer->sid;
         AttributeNode attr_node = obj_node;
         while(attr_node = data_next(attr_node))
         {
@@ -2641,7 +2658,7 @@ void factory_read_specific_object_from_file(STRUCTClass *fclass,ObjectNode obj_n
 void factory_read_file_list_from_xml(ObjectNode obj_node)
 {
     /*¡¡ÕâÀï¶ÁÎÄ¼þÁÐ±í¡¡*/
-    SaveMusicDialog *smd = factoryContainer->curLayer->smd;
+    SaveMusicDialog *smd = curLayer->smd;
     SaveMusicFileMan  *smfm = smd->smfm;
     AttributeNode attr_node = obj_node;
     while(attr_node = data_next(attr_node))
@@ -2756,6 +2773,11 @@ gpointer *factory_read_object_comobox_value_from_file(AttributeNode attr_node)
         xmlFree(key);
     }
     return aid;
+}
+
+void factory_update_view_names(STRUCTClass *fclass)
+{
+    g_hash_table_remove(curLayer->defnames,fclass->name);
 }
 
 void factory_inital_ebtn(SaveStruct *sss,const FactoryStructItem *fst)
@@ -2940,16 +2962,15 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             else
             {
                 sss->celltype = SPINBOX;
-                if(!g_ascii_strcasecmp(fst->Name,"wActID")) /*ÕâÀïÒ»¸ö¹Ø¼ü×ÖÅÐ¶ÏÊÇ·ñÊÇ£É£Ä*/
-                {
-                    STRUCTClass *sclass = fst->orgclass;
-
-                    sss->value.vnumber = g_strdup_printf("%d",sclass->element.object.oindex);
-                    sss->isSensitive = FALSE;
-                }
-
-                else
-                    sss->value.vnumber = g_strdup(fst->Value);
+//                if(!g_ascii_strcasecmp(fst->Name,"wActID")) /*ÕâÀïÒ»¸ö¹Ø¼ü×ÖÅÐ¶ÏÊÇ·ñÊÇ£É£Ä*/
+//                {
+//                    STRUCTClass *sclass = fst->orgclass;
+//                    sss->value.vnumber = g_strdup_printf("%d",sclass->element.object.oindex);
+//                    sss->isSensitive = FALSE;
+//                }
+//
+//                else
+                sss->value.vnumber = g_strdup(fst->Value);
             }
             break;
         case ET:
@@ -2998,16 +3019,16 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             if(!g_strcasecmp(fst->SType,"FILELST")) /*¡¡ ÌØÊâµÄ¿Ø¼þ,ÒôÀÖÎÄ¼þ¹ÜÀí¡¡*/
             {
                 SaveMusicDialog *smd = NULL;
-                if(!factoryContainer->curLayer->smd)
+                if(!curLayer->smd)
                 {
-                    factoryContainer->curLayer->smd = g_new0(SaveMusicDialog,1);
-                    smd =factoryContainer->curLayer->smd;
+                    curLayer->smd = g_new0(SaveMusicDialog,1);
+                    smd =curLayer->smd;
                     smd->smfm = NULL;
                     smd->mfmos = &mfmo_opts;
                     smd->title = factory_utf8("ÎÄ¼þ¹ÜÀí");
                 }
-                else
-                    smd = factoryContainer->curLayer->smd;
+
+                smd = curLayer->smd;
 
                 /* sss->value.vnumber  Ô­¶¨ÒåÎªÒ»¸ögchar Ö¸Õë£¬ÔÚÕâÀïµ±×ögpointer ÓÃÁË*/
                 SaveKV *skv = g_new0(SaveKV,1);
@@ -3022,10 +3043,10 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             else if(!g_strcasecmp(fst->SType,"IDLST"))
             {
                 SaveIdDialog   *sid = NULL;
-                if(!factoryContainer->curLayer->sid)
-                    factoryContainer->curLayer->sid = g_new0(SaveIdDialog,1);
-                else
-                    sid = factoryContainer->curLayer->sid;
+                if(!curLayer->sid)
+                    curLayer->sid = g_new0(SaveIdDialog,1);
+
+                sid =(SaveIdDialog*)(curLayer->sid);
                 SaveKV *skv = g_new0(SaveKV,1);
                 sid->skv = skv;
                 skv->value = g_strdup(fst->Value);
@@ -3123,19 +3144,24 @@ void factory_set_all_factoryclass(STRUCTClass *fclass,gchar *name)
         fst->orgclass = fclass;
     }
 }
-
-void factory_read_initial_to_struct(STRUCTClass *fclass) /*2014-3-26 lcy ÍÏÈë¿Ø¼þÊ±È¡µÃËüµÄÖµ*/
+void factory_set_original_class(STRUCTClass *fclass)
 {
-    /* ÕâÀï´ÓÔ­¹þÏ£±í¸´ÖÆÒ»·Ý³öÀ´ */
-//    gchar **tmp =  g_strsplit(fclass->name,"(",-1);
-    GList *tttt = factory_get_list_from_hashtable(fclass);
-    GList * tlist = tttt ;
+    GList *tlist = factory_get_list_from_hashtable(fclass);
     for(; tlist; tlist = tlist->next)
     {
         FactoryStructItem *fst = tlist->data;
         fst->orgclass = fclass;
     }
+}
 
+
+void factory_read_initial_to_struct(STRUCTClass *fclass) /*2014-3-26 lcy ÍÏÈë¿Ø¼þÊ±È¡µÃËüµÄÖµ*/
+{
+    /* ÕâÀï´ÓÔ­¹þÏ£±í¸´ÖÆÒ»·Ý³öÀ´ */
+//    gchar **tmp =  g_strsplit(fclass->name,"(",-1);
+
+    factory_set_original_class(fclass);
+    GList *tttt = factory_get_list_from_hashtable(fclass);
     for(; tttt != NULL ; tttt = tttt->next)
     {
         FactoryStructItem *fst = tttt->data;
@@ -3143,15 +3169,7 @@ void factory_read_initial_to_struct(STRUCTClass *fclass) /*2014-3-26 lcy ÍÏÈë¿Ø¼
         g_hash_table_insert(fclass->widgetmap,g_strjoin("##",fst->FType,fst->Name,NULL),sst);
         fclass->widgetSave = g_list_append(fclass->widgetSave,sst);
     }
-//    factory_initial_origin_struct(fclass->widgetmap,tttt,fclass->name);
-//    int s = g_list_length(tlist);
-//    if(tlist)
-//    for(;tlist != NULL ; tlist = tlist->next)
-//    {
-//        FactoryStructItem *fst = tlist->data;
-//        SaveStruct *sst= factory_get_savestruct(fst);
-//        g_hash_table_insert(fclass->widgetmap,g_strjoin("##",fst->FType,fst->Name,NULL),sst);
-//    }
+
 }
 
 
@@ -3313,7 +3331,8 @@ structclass_copy(STRUCTClass *structclass)
     newstructclass = g_malloc0(sizeof(STRUCTClass));
     newelem = &newstructclass->element;
     newobj = &newelem->object;
-
+    newobj->name = g_strdup(elem->object.name);
+    newobj->oindex = g_list_length(curLayer->objects);
     element_copy(elem, newelem);
 
     newstructclass->font_height = structclass->font_height;
@@ -3337,8 +3356,9 @@ structclass_copy(STRUCTClass *structclass)
 //          dia_font_copy(structclass->abstract_classname_font);
 //  newstructclass->comment_font =
 //          dia_font_copy(structclass->comment_font);
-
     newstructclass->name = g_strdup(structclass->name);
+    //  factory_rename_structclass(newstructclass);
+//    newstructclass->name = g_strdup(structclass->name);
 //  if (structclass->stereotype != NULL && structclass->stereotype[0] != '\0')
 //    newstructclass->stereotype = g_strdup(structclass->stereotype);
 //  else
@@ -3453,14 +3473,15 @@ structclass_copy(STRUCTClass *structclass)
 
     structclass_update_data(newstructclass);
 
-#ifdef DEBUG
-    structclass_sanity_check(newstructclass, "Copied");
-#endif
+
+
     newstructclass->EnumsAndStructs = factoryContainer;
     newstructclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-    g_hash_table_foreach(structclass->widgetmap,factory_hashtable_copy,newstructclass->widgetmap);
+    newstructclass->widgetSave = NULL;
+//    g_hash_table_foreach(structclass->widgetmap,factory_hashtable_copy,newstructclass->widgetmap);
     newstructclass->properties_dialog = NULL;
 
+//    factory_set_original_class(newstructclass);
     return &newstructclass->element.object;
 }
 
@@ -3602,12 +3623,18 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
             xmlSetProp(obtn, (const xmlChar *)"name", (xmlChar *)sss->name);
             xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
             xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
-            STRUCTClass *fclass = factory_find_diaobject_by_name(curLayer,aid->pre_name);
-            if(fclass && fclass->widgetSave->data) /* ·ÀÖ¹×ÔÉí£É£Ä¸üÐÂ */
+            if(!strlen(aid->pre_name))
+                aid->value ="-1";
+            else
             {
-                SaveStruct *tmp = fclass->widgetSave->data;
-                aid->value = g_strdup(tmp->value.vnumber);
+                STRUCTClass *fclass = factory_find_diaobject_by_name(curLayer,aid->pre_name);
+                if(fclass && fclass->widgetSave->data) /* ·ÀÖ¹×ÔÉí£É£Ä¸üÐÂ */
+                {
+                    SaveStruct *tmp = fclass->widgetSave->data;
+                    aid->value = g_strdup(tmp->value.vnumber);
+                }
             }
+
             factory_write_object_comobox(tlist->data,ccc);
         }
     }
@@ -3778,19 +3805,19 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
     if(factory_is_special_object(obj->name))
     {
 
-        if(!factoryContainer->curLayer->smd)
+        if(!curLayer->smd)
         {
-            factoryContainer->curLayer->smd = g_new0(SaveMusicDialog,1);
+            curLayer->smd = g_new0(SaveMusicDialog,1);
         }
-        SaveMusicDialog *smd = factoryContainer->curLayer->smd;
+        SaveMusicDialog *smd = curLayer->smd;
         smd->title = factory_utf8("ÎÄ¼þ¹ÜÀí");
         smd->smfm = NULL;
         smd->mfmos = &mfmo_opts;
-        if(!factoryContainer->curLayer->sid)
+        if(!curLayer->sid)
         {
-            factoryContainer->curLayer->sid = g_new0(SaveIdDialog,1);
+            curLayer->sid = g_new0(SaveIdDialog,1);
         }
-        SaveIdDialog *sid = factoryContainer->curLayer->sid;
+        SaveIdDialog *sid = (SaveIdDialog *)curLayer->sid;
         factory_read_specific_object_from_file(structclass,attr_node->xmlChildrenNode);
         structclass_destroy(structclass) ;
         return NULL;
@@ -3799,7 +3826,8 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
         factory_read_value_from_xml(structclass,attr_node->xmlChildrenNode);
 
     if(!factory_is_system_data(obj->name))
-        curLayer->defnames = g_list_append(curLayer->defnames,structclass->name);
+        g_hash_table_insert(curLayer->defnames,structclass->name,structclass);
+    // curLayer->defnames = g_list_append(curLayer->defnames,structclass->name);
     return &structclass->element.object;
 }
 
@@ -3807,7 +3835,7 @@ static void
 factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
                           const char *filename)
 {
-    SaveMusicDialog *smd = factoryContainer->curLayer->smd;
+    SaveMusicDialog *smd = curLayer->smd;
     element_save(&structclass->element, obj_node);
     /*  2014-3-22 lcy ÕâÀï±£´æ×Ô¶¨Òå¿Ø¼þµÄÊý¾Ý */
     /* 2014-3-25 lcy ÕâÀïÌí¼ÓÒ»¸ö×Ô¶¨Òå½ÚµãÃûÀ´°²ÖÃÕâ¸ö½á¹¹ÌåµÄ³ÉÔ±*/
@@ -3859,7 +3887,7 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
     }
     else if(!g_strcasecmp(fsi->sname,"IDLST"))
     {
-        SaveIdDialog *sid = factoryContainer->curLayer->sid;
+        SaveIdDialog *sid = (SaveIdDialog *)curLayer->sid;
         if(!sid || !sid->idlists)
             return;
         gchar *rows = g_strdup_printf("%d",g_list_length(sid->idlists));

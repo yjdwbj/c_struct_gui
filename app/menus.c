@@ -550,7 +550,13 @@ ensure_menu_path (GtkUIManager *ui_manager, GtkActionGroup *actions, const gchar
     return id;
 }
 
+void factory_callback_muisc_convert(GtkWidget *btn,gpointer user_data)
+{
+   // g_spawn_command_line_async("music_convert.exe",NULL);
+  // WinExec("music_convert.exe",0);
 
+    system("music_convert.exe");
+}
 
 
 /**
@@ -648,6 +654,7 @@ create_integrated_ui_toolbar (void)
 
     GtkWidget *btn = gtk_button_new_with_label(factory_utf8("音乐转换"));
     integrated_ui_toolbar_add_custom_item(toolbar,btn);
+    g_signal_connect(btn,"clicked",G_CALLBACK(factory_callback_muisc_convert),NULL);
 //    factory_create_toolbar_button(systemdata_on,"系统数据",toolbar,factory_systemdata_dialog);
 //
 //    factory_create_toolbar_button(globe_on,"全局变量",toolbar,NULL);

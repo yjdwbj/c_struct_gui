@@ -128,7 +128,7 @@
 	"orth_conn.h"
 	"autoroute.h"
 
-1400724269 o:\tool\dvs50\lib\object.h
+1401180349 o:\tool\dvs50\lib\object.h
 	"diatypes.h"
 	<gtk/gtk.h>
 	"geometry.h"
@@ -293,7 +293,7 @@
 	<glib.h>
 	<diagramdata.h>
 
-1400848038 o:\tool\dvs50\lib\diagramdata.h
+1401181570 o:\tool\dvs50\lib\diagramdata.h
 	<glib.h>
 	<string.h>
 	"diatypes.h"
@@ -528,7 +528,7 @@
 	"properties.h"
 	"diavar.h"
 
-1400846049 source:o:\tool\dvs50\lib\diagramdata.c
+1401179775 source:o:\tool\dvs50\lib\diagramdata.c
 	<config.h>
 	"intl.h"
 	"diagramdata.h"
@@ -696,7 +696,7 @@
 	<stdlib.h>
 	<string.h>
 
-1400827320 source:o:\tool\dvs50\lib\layer.c
+1401184418 source:o:\tool\dvs50\lib\layer.c
 	<config.h>
 	"intl.h"
 	"diagramdata.h"
@@ -1321,7 +1321,7 @@
 	"attributes.h"
 	"persistence.h"
 
-1398411893 source:o:\tool\dvs50\app\commands.c
+1401187781 source:o:\tool\dvs50\app\commands.c
 	<config.h>
 	<unistd.h>
 	<stdlib.h>
@@ -1412,7 +1412,7 @@
 	"object_ops.h"
 	"color.h"
 
-1396403582 source:o:\tool\dvs50\app\create_object.c
+1401183272 source:o:\tool\dvs50\app\create_object.c
 	<config.h>
 	"create_object.h"
 	"connectionpoint_ops.h"
@@ -1511,7 +1511,7 @@
 	<gdk/gdk.h>
 	<gtk/gtkcontainer.h>
 
-1398146636 source:o:\tool\dvs50\app\diagram.c
+1401183998 source:o:\tool\dvs50\app\diagram.c
 	<config.h>
 	<assert.h>
 	<string.h>
@@ -1598,7 +1598,7 @@
 
 1257604114 o:\tool\dvs50\app\pixmaps\landscape.xpm
 
-1398328300 source:o:\tool\dvs50\app\disp_callbacks.c
+1401183272 source:o:\tool\dvs50\app\disp_callbacks.c
 	<config.h>
 	<stdio.h>
 	<string.h>
@@ -1764,7 +1764,7 @@
 	"object_ops.h"
 	"group.h"
 
-1400747483 source:o:\tool\dvs50\app\interface.c
+1401191747 source:o:\tool\dvs50\app\interface.c
 	<config.h>
 	<gnome.h>
 	<gtk/gtk.h>
@@ -1865,7 +1865,7 @@
 	"magnify.h"
 	"cursor.h"
 
-1400671089 source:o:\tool\dvs50\app\menus.c
+1401156649 source:o:\tool\dvs50\app\menus.c
 	<config.h>
 	<gtk/gtk.h>
 	<gdk/gdkkeysyms.h>
@@ -2376,7 +2376,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1400848475 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1401183754 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2391,7 +2391,7 @@
 	"diagramdata.h"
 	"connpoint_line.h"
 
-1400847782 o:\tool\dvs50\objects\struct\struct_class.h
+1401192328 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2405,7 +2405,7 @@
 	"connectionpoint.h"
 	"dia_xml.h"
 
-1400848964 source:o:\tool\dvs50\objects\struct\struct_class.c
+1401187718 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>

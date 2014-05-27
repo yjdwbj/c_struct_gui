@@ -366,6 +366,14 @@ edit_paste_callback (GtkAction *action)
     diagram_remove_all_selected(ddisp->diagram, TRUE);
     diagram_select_list(ddisp->diagram, paste_list);
 
+    /*杩欓噷鐢ㄥ仛閲嶅懡鍚嶏紝淇濊瘉鍚嶅瓧鍞竴*/
+    GList *plist = paste_list;
+    for(;plist;plist=plist->next)
+    {
+        DiaObject *obj = plist->data;
+        obj->ops->obj_rename(obj);
+    }
+
     diagram_update_extents(ddisp->diagram);
     diagram_flush(ddisp->diagram);
   }
@@ -1129,7 +1137,7 @@ dialogs_properties_callback (GtkAction *action)
   if (!dia || textedit_mode(ddisplay_active())) return;
 
   if (dia->data->selected != NULL) {
-   object_list_properties_show(dia, dia->data->selected); // 2014-3-21 lcy 这里是右键属性.
+   object_list_properties_show(dia, dia->data->selected); // 2014-3-21 lcy 脮芒脌茂脢脟脫脪录眉脢么脨脭.
   } else {
     diagram_properties_show(dia);
   }

@@ -610,6 +610,8 @@ void factory_music_file_manager_select_callback(GtkWidget *clist,
         GdkEventButton *event,
         gint  *ret);
 
+void factory_set_original_class(STRUCTClass *fclass);
+
 gboolean factory_music_fm_get_type(const gchar* str);
 
 void factory_fm_get_cboxlist(SaveMusicDialog *smd);
