@@ -527,7 +527,7 @@ void factory_inital_ebtn(SaveStruct *sss,const FactoryStructItem *fst);
 
 
 GList* factory_get_objects_from_layer(Layer *layer);
-STRUCTClass* factory_get_object_from_layer(Layer *layer,const gchar *name);
+//STRUCTClass* factory_get_object_from_layer(Layer *layer,const gchar *name);
 static void factory_get_value_from_comobox(STRUCTClass *startclass,GtkWidget *comobox,ActionID *aid);
 
 void factory_strjoin(gchar **dst,const gchar *prefix,const gchar *sep);
@@ -618,6 +618,8 @@ gboolean factory_music_fm_get_type(const gchar* str);
 void factory_fm_get_cboxlist(SaveMusicDialog *smd);
 
 void factory_update_ActionId_object(GtkWidget *comobox,ActionID *aid);
+
+void factory_setting_systemdata(STRUCTClass *structclass);
 //void factoryReadDataFromFile(STRUCTClass *structclass);
 
 

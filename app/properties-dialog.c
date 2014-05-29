@@ -252,7 +252,12 @@ object_list_properties_show(Diagram *dia, GList *objects)
     if (one_obj)
         properties = one_obj->ops->get_properties(one_obj, FALSE);
     else
-        properties = object_list_create_props_dialog(one_obj, FALSE);
+    {
+        message_error(factory_utf8(_("不支持多个控件的属性对话框.")));
+        return;
+        properties =  NULL; /*object_list_create_props_dialog(one_obj, FALSE); 　选择多个控件显示它们的属性对话框是不可能．*/
+
+    }
     if (properties == NULL)
     {
         properties = no_properties_dialog;

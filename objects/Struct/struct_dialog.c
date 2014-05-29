@@ -3039,7 +3039,6 @@ DiaObject *factory_find_same_diaobject_via_glist(GList *flist,GList *comprelist)
             obj = samelist->data;
             break;
         }
-
     }
     return obj;
 }
@@ -3050,8 +3049,8 @@ static void factory_connection_two_object(STRUCTClass *fclass, /* start pointer*
         gchar *objname /* end pointer */)
 {
 
-    Layer *curlayer = fclass->element.object.parent_layer;
-    STRUCTClass *objclass = factory_find_diaobject_by_name(curlayer,objname);
+//    Layer *curlayer = fclass->element.object.parent_layer;
+    STRUCTClass *objclass = g_hash_table_lookup(curLayer->defnames,objname);
     if(!objclass)
         return;
     if(factory_is_connected(&objclass->connections[8],&fclass->connections[8])) /* 已经有连线了 */
@@ -3068,13 +3067,12 @@ static void factory_connection_two_object(STRUCTClass *fclass, /* start pointer*
     //obj->ops->move(obj,&fclass->connections[8].pos);
 
     factory_connectionto_object(ddisp,obj,fclass,0);
-
     if(objclass)
     {
         factory_connectionto_object(ddisp,obj,objclass,1);
     }
     diagram_unselect_objects(ddisp->diagram,ddisp->diagram->data->selected);
-    diagram_select(ddisp->diagram,fclass);
+    diagram_select(ddisp->diagram,(DiaObject*)fclass);
     diagram_flush(ddisp->diagram);
 
 }
@@ -3151,27 +3149,30 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
 
 static void factory_get_value_from_comobox(STRUCTClass *startclass,GtkWidget *comobox,ActionID *aid)
 {
-     DDisplay *ddisp =  ddisplay_active();
+    DDisplay *ddisp =  ddisplay_active();
     int  curindex = gtk_combo_box_get_active(GTK_COMBO_BOX(comobox));
     gchar *pname = gtk_combo_box_get_active_text(GTK_COMBO_BOX(comobox));
+    if(!strlen(pname))
+        return;
 
     if(!curindex)
         goto DELL;
     else
     {
-        Layer *p = startclass->element.object.parent_layer;
+
         STRUCTClass *objclass =NULL;
         if(!g_ascii_strcasecmp(pname,startclass->name)) /* 是自己就不连线,如果上次有连线现在要删除 */
         {
-            objclass = factory_find_diaobject_by_name(p,aid->pre_name);
+            objclass = factory_find_diaobject_by_name(curLayer,aid->pre_name);
             if(objclass && factory_is_connected(&objclass->connections[8],&startclass->connections[8]))
-             {
-                 factory_delete_line_between_two_objects(startclass,aid->pre_name);
-             }
+            {
+                factory_delete_line_between_two_objects(startclass,aid->pre_name);
+            }
             goto SETV ;
         }
 
-        objclass = factory_find_diaobject_by_name(p,pname);
+//        objclass = factory_find_diaobject_by_name(p,pname);
+        objclass = g_hash_table_lookup(curLayer->defnames,pname);
         if(objclass && factory_is_connected(&objclass->connections[8],&startclass->connections[8]))
             goto SETV; /* 已经有连线了 */
         else
@@ -3210,7 +3211,7 @@ void factory_delete_line_between_two_objects(STRUCTClass *startc,const gchar *en
 {
     DDisplay *ddisp =  ddisplay_active();
 //    Layer *curlayer = startc->element.object.parent_layer;
-    STRUCTClass *objclass = factory_find_diaobject_by_name(curLayer,endc);
+    STRUCTClass *objclass = g_hash_table_lookup(curLayer->defnames,endc);
     if(objclass)
     {
         ConnectionPoint *cpstart = &startc->connections[8];
@@ -3229,7 +3230,7 @@ void factory_delete_line_between_two_objects(STRUCTClass *startc,const gchar *en
 
             diagram_flush(ddisp->diagram);
         }
-        diagram_select(ddisp->diagram,objclass);
+        diagram_select(ddisp->diagram,(DiaObject*)objclass);
         diagram_unselect_objects(ddisp->diagram,ddisp->diagram->data->selected);
         diagram_select(ddisp->diagram,startc);
     }
@@ -3252,7 +3253,7 @@ factory_apply_props_from_dialog(STRUCTClass *fclass, GtkWidget *widget)
     PublicSection *pps = fclass->pps;
     if(!pps)
         return NULL;
-    pps->hasfinished = gtk_toggle_tool_button_get_active(GTK_TOGGLE_BUTTON(pps->wid_hasfinished));
+    pps->hasfinished = gtk_toggle_tool_button_get_active(GTK_TOGGLE_TOOL_BUTTON(pps->wid_hasfinished));
     gchar *txt = gtk_entry_get_text(GTK_ENTRY(pps->wid_rename_entry));
     if(g_utf8_validate(txt,-1,NULL))
         pps->name = g_strdup(txt);
@@ -3586,7 +3587,7 @@ FIRST:
         gtk_combo_box_popdown(GTK_COMBO_BOX(columTwo));
 //        Layer *curlayer = orgclass->element.object.parent_layer;
 //        GList *objlist = curlayer->objects;
-        g_list_free(nextid->itemlist);
+        g_list_free1(nextid->itemlist);
         nextid->itemlist = NULL;
 
         nextid->itemlist = factory_get_objects_from_layer(curLayer);
@@ -3631,7 +3632,10 @@ FIRST:
 gboolean factory_music_fm_get_type(const gchar* name)
 {
     SaveMusicDialog *smd = curLayer->smd;
+
     gboolean flag = FALSE;
+    if(!smd)
+        return flag;
     if(!g_ascii_strncasecmp(name,"aIndex_Number",strlen("aIndex_Number")))
     {
         smd->fmst = SEQUENCE;
@@ -4281,41 +4285,11 @@ gboolean factory_is_connected(ConnectionPoint *cpend,ConnectionPoint *cpstart)
     }
     return isconnected;
 }
-STRUCTClass* factory_get_object_from_layer(Layer *layer,const gchar *name)
-{
-    GList *objlist = NULL;
-    STRUCTClass *fclass = NULL;
-    if(curLayer)
-        objlist = layer->objects ;
-    for(; objlist ; objlist =  objlist->next )
-    {
-        if(!factory_is_valid_type(objlist->data))
-            continue;
-        fclass = objlist->data;
-        if(!g_ascii_strcasecmp(fclass->name,name))
-        {
-            break;
-        }
-    }
-    return fclass;
-}
 
+
+/* 这里是画布所有可见的控件名，除去特殊与线条之外的．*/
 GList * factory_get_objects_from_layer(Layer *layer)
 {
-//    GList *objlist = NULL;
-//    if(curLayer)
-//        objlist = layer->objects ;
-//    GList *list = NULL;
-//    for(; objlist ; objlist =  objlist->next )
-//    {
-//        if(!factory_is_valid_type(objlist->data))
-//            continue;
-//        STRUCTClass* objclass = objlist->data;
-//        if(!g_ascii_strcasecmp(objclass->element.object.name,"SYS_DATA")
-//                || factory_is_special_object(objclass->element.object.name))
-//            continue;
-//        list = g_list_append(list,objclass->name);
-//    }
     GList *list = NULL;
     if(curLayer)
     {
@@ -4334,7 +4308,7 @@ void factory_create_unionbutton_dialog(GtkWidget *button,SaveStruct *sst)
     SaveUbtn *sbtn = &sst->value.ssubtn;
     /* 通按钮事件,创建属性对话框*/
 //    GtkWidget *sdialog = gtk_hbox_new(FALSE,0);
-    GtkWidget *subdig = factory_create_new_dialog_with_buttons(sst->name,button->window);
+    GtkWidget *subdig = factory_create_new_dialog_with_buttons(sst->name,(GtkWidget*)button->window);
     GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
 
     gtk_window_set_modal(GTK_WINDOW(subdig),TRUE);
@@ -4536,8 +4510,6 @@ void factory_editable_insert_callback(GtkEntry *entry,
 }
 
 
-
-
 void factory_create_struct_dialog(GtkWidget *dialog,GList *datalist)
 {
     /* 通链表创建控件 SaveStruct *sst */
@@ -4546,7 +4518,6 @@ void factory_create_struct_dialog(GtkWidget *dialog,GList *datalist)
     for(; item  ; item = item->next)
     {
         SaveStruct *sst  = item->data;
-
 
         factory_set_savestruct_widgets(sst);
         if(g_ascii_strcasecmp(factory_locale(sst->org->Cname),_("保留"))) /* 保留的不显示出来 */
@@ -4595,19 +4566,21 @@ void factory_append_public_info(GtkWidget *dialog,STRUCTClass *fclass)
 
 void factory_update_ActionId_object(GtkWidget *comobox,ActionID *aid)
 {
-            gpointer exists = g_hash_table_lookup(curLayer->defnames,aid->pre_name);
-            if(!exists)
-            {
-                g_free(aid->pre_name);
-                aid->pre_name = g_strdup("");
-                aid->index = 0;
-                gtk_combo_box_set_active(GTK_COMBO_BOX(comobox),aid->index);
-                return;
-            }
-            GList *vlist = g_hash_table_get_values(curLayer->defnames);
-            int pos  = g_list_index(vlist,exists);
-            aid->index = pos+1;
-            gtk_combo_box_set_active(GTK_COMBO_BOX(comobox),aid->index);
+    if(!aid->pre_name)
+        return;
+    gpointer exists = g_hash_table_lookup(curLayer->defnames,aid->pre_name);
+    if(!exists)
+    {
+        g_free(aid->pre_name);
+        aid->pre_name = g_strdup("");
+        aid->index = 0;
+        gtk_combo_box_set_active(GTK_COMBO_BOX(comobox),aid->index);
+        return;
+    }
+    GList *vlist = g_hash_table_get_values(curLayer->defnames);
+    int pos  = g_list_index(vlist,exists);
+    aid->index = pos+1;
+    gtk_combo_box_set_active(GTK_COMBO_BOX(comobox),aid->index);
 }
 
 /* 显示控件上的属性对话框 */
@@ -4617,39 +4590,21 @@ void factory_create_and_fill_dialog(STRUCTClass *fclass, gboolean is_default)
     curLayer = factoryContainer->curLayer;
     STRUCTClassDialog *prop_dialog = fclass->properties_dialog;
 
-//    if(!g_ascii_strcasecmp(fclass->element.object.name,"IDLIST"))
-//    {
-//        factory_idlist_dialog(factory_utf8("ID列表"),prop_dialog->dialog,&fclass->widgetSave);
-//    }
-//    else if(!g_ascii_strcasecmp(fclass->element.object.name,"FILELIST"))
-//    {
-//        if(!fclass->widgetSave)
-//        {
-//            SaveMusicDialog *smd = g_new0(SaveMusicDialog,1);
-//
-//            smd = g_new0(SaveMusicDialog,1);
-//
-//            fclass->widgetSave = g_list_append(fclass->widgetSave,smd);
-//        }
-////        factory_file_manager_dialog(factory_utf8("文件管理"),prop_dialog->dialog,fclass->widgetSave);
-//    }
-//    else
+    GList *targetlist = fclass->widgetSave;
+    if(!targetlist)
     {
-        GList *targetlist = fclass->widgetSave;
-        if(!targetlist)
-        {
-            factory_read_initial_to_struct(fclass);
-        }
-        int num = g_list_length(targetlist);
-        prop_dialog->mainTable = gtk_table_new(num,4,FALSE);  // 2014-3-19 lcy 根据要链表的数量,创建多少行列表.
-        factory_create_struct_dialog(prop_dialog->mainTable,targetlist);
-        gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),prop_dialog->mainTable);
-        if(g_ascii_strcasecmp(fclass->element.object.name,"SYS_DATA"))
-        {
-            factory_append_public_info(prop_dialog->dialog,fclass);
-            gtk_table_set_col_spacing(GTK_TABLE(prop_dialog->mainTable),1,20);
-        }
+        factory_read_initial_to_struct(fclass);
     }
+    int num = g_list_length(targetlist);
+    prop_dialog->mainTable = gtk_table_new(num,4,FALSE);  // 2014-3-19 lcy 根据要链表的数量,创建多少行列表.
+    factory_create_struct_dialog(prop_dialog->mainTable,targetlist);
+    gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),prop_dialog->mainTable);
+    if(g_ascii_strcasecmp(fclass->element.object.name,"SYS_DATA"))
+    {
+        factory_append_public_info(prop_dialog->dialog,fclass);
+        gtk_table_set_col_spacing(GTK_TABLE(prop_dialog->mainTable),1,20);
+    }
+
 }
 
 
@@ -4682,14 +4637,12 @@ void factory_music_file_manager_new_item_changed(SaveMusicDialog *smd)
         gtk_combo_box_append_text(smi->wid_colum3,"");
         for(; newflist ; newflist = newflist->next)
         {
-            gtk_combo_box_append_text(smi->wid_colum3,newflist->data);
+            gtk_combo_box_append_text(GTK_COMBO_BOX(smi->wid_colum3),newflist->data);
             gtk_combo_box_set_active(GTK_COMBO_BOX(smi->wid_colum3),smi->active);
         }
 
     }
 }
-
-
 
 
 gboolean factory_is_system_data(const gchar *name)
@@ -4736,7 +4689,7 @@ GtkWidget *factory_get_new_musicitem(SaveMusicItem *smt,GList *fillist,GSList **
     /* 这里的文件管理 */
     GtkWidget *hbox = gtk_hbox_new(FALSE,1);
     GtkWidget *radio = gtk_radio_button_new(*grouplist);
-    *grouplist = gtk_radio_button_get_group(GTK_TOGGLE_BUTTON(radio));
+    *grouplist = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio));
 
     GtkWidget *first = gtk_label_new(g_strdup_printf("%d",smt->id_index));
     gtk_widget_set_size_request(first,50,-1);
@@ -4782,10 +4735,10 @@ static void factory_file_manager_insert(GtkWidget *clist,SaveMusicFile *smf,gint
 void factory_fm_get_cboxlist(SaveMusicDialog *smd)
 {
     GList *flist = smd->smfm->filelist;
-    for(;flist;flist = flist->next)
+    for(; flist; flist = flist->next)
     {
-          SaveMusicFile *smf = flist->data;
-                smd->cboxlist = g_list_append(smd->cboxlist,smf->base_name);
+        SaveMusicFile *smf = flist->data;
+        smd->cboxlist = g_list_append(smd->cboxlist,smf->base_name);
     }
 }
 
@@ -4962,6 +4915,7 @@ void factory_add_item_to_music_manager(GtkButton *self,gpointer user_data)
     SaveMusicItem *smt = g_new0(SaveMusicItem,1);
     smt->id_index = g_list_length(smd->itemlist);
     smt->id_addr = smt->id_index * 2;
+    smt->dname = g_strdup("");
 
     GtkWidget *nitem = factory_get_new_musicitem(smt,smd->cboxlist,&smd->grouplist);
 
@@ -5013,7 +4967,6 @@ GtkWidget *factory_get_new_iditem(SaveIdItem *swt,GSList **grouplist)
     gtk_box_pack_start(GTK_BOX(hbox),first,FALSE,FALSE,0);
     gtk_box_pack_start(GTK_BOX(hbox),spbox,FALSE,FALSE,0);
     gtk_box_pack_start(GTK_BOX(hbox),cbox,TRUE,TRUE,0);
-//    gtk_box_pack_start(GTK_BOX(hbox),btn_del,TRUE,TRUE,0);
 
     swt->wid_colum0 = radio;
     swt->wid_colum2 = spbox;
@@ -5027,7 +4980,7 @@ void factory_new_idlist_dialog(GtkWidget *parent,SaveStruct *sst)
     SaveIdDialog *sid = (SaveIdDialog *)curLayer->sid;
 //    IdDialog->dvalue = &sst->value.vnumber;
     sid->skv = (SaveKV*)(sst->value.vnumber);
-     gtk_button_set_label(GTK_BUTTON(parent),sid->skv->value);
+    gtk_button_set_label(GTK_BUTTON(parent),sid->skv->value);
     sid->parent_btn = parent;
     GtkWidget *subdig = factory_create_new_dialog_with_buttons(factory_utf8("ID列表"),parent->window);
     GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
@@ -5082,13 +5035,10 @@ void factory_add_item_to_idlist(GtkButton *self,gpointer user_data)
     swt->id_index =  len-1;
     swt->id_addr = (swt->id_index)*2;
     swt->active = 0;
-
+    swt->dname = g_strdup("");
     GtkWidget *nitem = factory_get_new_iditem(swt,&sid->grouplist);
-
     sid->idlists = g_list_append(sid->idlists,swt);
-
     gtk_box_pack_start(GTK_BOX(sid->vbox),nitem,FALSE,TRUE,0);
-//    gtk_box_reorder_child(GTK_BOX(vbox),GTK_WIDGET(self),len); /* 交换两行的位置 */
 
     gtk_widget_show_all(sid->vbox);
 }
@@ -5132,13 +5082,13 @@ void factory_save_idlist_dialog(GtkWidget *widget,
                                 gint response_id,
                                 gpointer user_data)
 {
-   SaveIdDialog *sid = (SaveIdDialog *)curLayer->sid;
-       if (   response_id == GTK_RESPONSE_APPLY
+    SaveIdDialog *sid = (SaveIdDialog *)curLayer->sid;
+    if (   response_id == GTK_RESPONSE_APPLY
             || response_id == GTK_RESPONSE_OK)
     {
         GList *p = sid->idlists;
         SaveKV *skv = sid->skv;
-        for(;p ; p = p->next)
+        for(; p ; p = p->next)
         {
             SaveIdItem *sil = p->data;
             sil->dname  = gtk_combo_box_get_active_text(GTK_COMBO_BOX(sil->wid_colum3));
@@ -5146,12 +5096,14 @@ void factory_save_idlist_dialog(GtkWidget *widget,
             if(gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(sil->wid_colum0)))
             {
                 skv->radindex  = g_list_index(sid->idlists,sil);
-                STRUCTClass *fclass = factory_find_diaobject_by_name(curLayer,sil->dname);
-                if(fclass){
-                SaveStruct *tmp = fclass->widgetSave->data;
+//                STRUCTClass *fclass = factory_find_diaobject_by_name(curLayer,sil->dname);
+                STRUCTClass *fclass = g_hash_table_lookup(curLayer->defnames,sil->dname);
+                if(fclass)
+                {
+//                SaveStruct *tmp = fclass->widgetSave->data;
 //                *sid->dvalue = g_strdup(tmp->value.vnumber);
-                skv->value = g_strdup(tmp->value.vnumber);
-                skv->vname = g_strdup(fclass->name);
+                    skv->value = g_strdup_printf("%d",g_list_index(curLayer->objects,fclass));
+                    skv->vname = g_strdup(fclass->name);
                 }
 
             }
@@ -5191,13 +5143,13 @@ void factory_music_file_manager_apply(GtkWidget *widget,
                 {
                     SaveMusicFile *smf = g_list_nth_data(smd->smfm->filelist,smi->active-1);
                     if(smf)
-                    v = g_list_index(smd->smfm->filelist,smf);
+                        v = g_list_index(smd->smfm->filelist,smf);
                 }
                 else if(smd->fmst == PHY)
                 {
                     SaveMusicFile *smf = g_list_nth_data(smd->smfm->filelist,smi->active-1);
                     if(smf)
-                    v = smf->file_addr;
+                        v = smf->file_addr;
                 }
                 skv->radindex = g_list_index(smd->itemlist,smi);
             }
@@ -5417,14 +5369,14 @@ GtkWidget *factory_music_file_manager(GtkWidget *parent,SaveMusicDialog *smd)
     SaveMusicFileMan *smfm  = smd->smfm;
 
     if(smfm->filelist)
+    {
+        GList *flist = smfm->filelist;
+        for(; flist; flist = flist->next)
         {
-            GList *flist = smfm->filelist;
-            for(; flist; flist = flist->next)
-            {
-                factory_file_manager_append(clist,flist->data);
-            }
-             gtk_spin_button_set_value(GTK_SPIN_BUTTON(spbox),smfm->offset);
+            factory_file_manager_append(clist,flist->data);
         }
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(spbox),smfm->offset);
+    }
 
 
     smfm->wid_clist = clist;

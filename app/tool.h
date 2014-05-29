@@ -33,6 +33,7 @@ typedef void (* DoubleClickFunc)   (Tool *, GdkEventButton *, DDisplay *ddisp);
 typedef void (* ButtonReleaseFunc) (Tool *, GdkEventButton *, DDisplay *ddisp);
 typedef void (* MotionFunc)        (Tool *, GdkEventMotion *, DDisplay *ddisp);
 
+
 enum _ToolType {
   CREATE_OBJECT_TOOL,
   MAGNIFY_TOOL,
@@ -43,7 +44,7 @@ enum _ToolType {
 
 struct _Tool {
   ToolType type;
-  
+
   /*  Action functions  */
   ButtonPressFunc    button_press_func;
   ButtonHoldFunc     button_hold_func;
@@ -69,7 +70,7 @@ void tool_select(ToolType type, gpointer extra_data, gpointer user_date,
                  GtkWidget *button, int invert_persistence);
 void tool_select_former(void);
 void tool_reset(void);
-void tool_options_dialog_show(ToolType type, gpointer extra_data, 
+void tool_options_dialog_show(ToolType type, gpointer extra_data,
 			      gpointer user_data,GtkWidget *button,
                               int invert_persistence);
 

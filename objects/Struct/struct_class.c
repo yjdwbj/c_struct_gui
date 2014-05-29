@@ -2130,7 +2130,7 @@ void factory_rename_structclass(STRUCTClass *structclass)
 
     int n = 0;
     gchar *key = NULL;
-    for(; n < 1024; n++)
+    for(; n < 2048; n++)
     {
         gchar **split = g_strsplit(structclass->name,"(",-1);
         key = g_strconcat(split[0],g_strdup_printf("(%d)",n),NULL);
@@ -2141,9 +2141,9 @@ void factory_rename_structclass(STRUCTClass *structclass)
             break;
         g_free(key);
     }
-    if(n >= 1024)
+    if(n >= 2048)
     {
-        message_error(_("单个控件编号超出限制了"));
+        message_error(_("单个控件编号超出2048个限制了"));
     }
 
     g_free(structclass->name);
@@ -2153,6 +2153,7 @@ void factory_rename_structclass(STRUCTClass *structclass)
 
 }
 
+
 static DiaObject *  // 2014-3-19 lcy 这里初始化结构
 factory_struct_items_create(Point *startpoint,
                             void *user_data,
@@ -2160,7 +2161,7 @@ factory_struct_items_create(Point *startpoint,
                             Handle **handle2)
 {
 
-    if(!curLayer)
+    if(curLayer != factoryContainer->curLayer)
         curLayer = factoryContainer->curLayer;
     STRUCTClass *structclass;
 //  STRUCTClassDialog *properties_dialog;
@@ -2173,6 +2174,7 @@ factory_struct_items_create(Point *startpoint,
 
     elem = &structclass->element;
     obj = &elem->object;
+    obj->name = g_strdup("");
 
     elem->corner = *startpoint;
 
@@ -2194,13 +2196,21 @@ factory_struct_items_create(Point *startpoint,
     GList *sstruct = factoryContainer->structList;
     for(; sstruct !=NULL; sstruct = sstruct->next)
     {
-        FactoryStructItemList *i = sstruct->data;
+        FactoryStructItemList *i = (FactoryStructItemList *)sstruct->data;
         if(i->number == index)
         {
             structclass->name = g_strdup(i->vname) ;
             obj->name = g_strdup(_(i->sname));
             break;
         }
+    }
+
+    if(factory_is_system_data(obj->name))
+    {
+        if(factoryContainer->otp_obj)
+            return NULL;
+        else
+            factoryContainer->otp_obj = structclass;
     }
     factory_rename_structclass(structclass);
 
@@ -2603,6 +2613,7 @@ void factory_read_specific_object_from_file(STRUCTClass *fclass,ObjectNode obj_n
 
                 smi->active = g_strtod((gchar*)key,NULL);
                 smd->itemlist = g_list_append(smd->itemlist,smi);
+                smi->dname = g_strdup("");
 
             }
             xmlFree(key);
@@ -2763,6 +2774,12 @@ gpointer *factory_read_object_comobox_value_from_file(AttributeNode attr_node)
 
 void factory_update_view_names(STRUCTClass *fclass)
 {
+    DiaObject *obj = &fclass->element.object;
+    if(factory_is_system_data(obj->name))
+    {
+        factoryContainer->otp_obj = NULL;
+        return;  /* 系统信息删掉了 */
+    }
     g_hash_table_remove(curLayer->defnames,fclass->name);
     GList *connlist = fclass->connections[8].connected; /* 本对像连接多少条线 */
     for(; connlist; connlist = connlist->next)
@@ -3345,6 +3362,11 @@ structclass_copy(STRUCTClass *structclass)
     newelem = &newstructclass->element;
     newobj = &newelem->object;
     newobj->name = g_strdup(elem->object.name);
+    if(factory_is_system_data(newobj->name))
+    {
+        return NULL;
+    }
+
     newobj->oindex = g_list_length(curLayer->objects);
     element_copy(elem, newelem);
 
@@ -3370,6 +3392,10 @@ structclass_copy(STRUCTClass *structclass)
 //  newstructclass->comment_font =
 //          dia_font_copy(structclass->comment_font);
     newstructclass->name = g_strdup(structclass->name);
+    newstructclass->isInitial = FALSE;
+
+
+
     //  factory_rename_structclass(newstructclass);
 //    newstructclass->name = g_strdup(structclass->name);
 //  if (structclass->stereotype != NULL && structclass->stereotype[0] != '\0')
@@ -3486,8 +3512,6 @@ structclass_copy(STRUCTClass *structclass)
 
     structclass_update_data(newstructclass);
 
-
-
     newstructclass->EnumsAndStructs = factoryContainer;
     newstructclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
     newstructclass->widgetSave = NULL;
@@ -3577,7 +3601,7 @@ static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
         xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.vnumber);
         break;
     }
-    /* 这里要不是加一个OCOMBO 控件识别呢? */
+    /* 这里是不是要加一个OCOMBO 控件识别呢? */
 }
 
 static void factory_write_object_comobox(ActionID *aid,ObjectNode ccc )
@@ -3585,11 +3609,7 @@ static void factory_write_object_comobox(ActionID *aid,ObjectNode ccc )
     xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)aid->title_name);
 //                    xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
     xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf(_("%d"),aid->index));
-
-
     xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)aid->value);
-
-
     xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)aid->pre_name);
 }
 
@@ -3621,7 +3641,7 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
         ActionID *aid = g_list_first(tlist)->data;
         if(aid && strlen(aid->pre_name )> 0)
         {
-            STRUCTClass *fclass = factory_find_diaobject_by_name(curLayer,aid->pre_name);
+            STRUCTClass *fclass = g_hash_table_lookup(curLayer->defnames,aid->pre_name);
             if(fclass ) /* 防止自身ＩＤ更新 */
             {
                 aid->value = g_strdup_printf("%d",fclass->element.object.oindex);
@@ -3644,16 +3664,20 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
             xmlSetProp(obtn, (const xmlChar *)"name", (xmlChar *)sss->name);
             xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
             xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
+            if(!aid->pre_name)
+                aid->pre_name = g_strdup("");
             if(!strlen(aid->pre_name))
                 aid->value ="-1";
             else
             {
-                STRUCTClass *fclass = factory_find_diaobject_by_name(curLayer,aid->pre_name);
-                if(fclass && fclass->widgetSave->data) /* 防止自身ＩＤ更新 */
-                {
-                    SaveStruct *tmp = fclass->widgetSave->data;
-                    aid->value = g_strdup(tmp->value.vnumber);
-                }
+//                STRUCTClass *fclass = factory_find_diaobject_by_name(curLayer,aid->pre_name);
+                STRUCTClass *fclass = g_hash_table_lookup(curLayer->defnames,aid->pre_name);
+                aid->value = g_strdup_printf("%d",g_list_index(curLayer->objects,fclass));
+//                if(fclass && fclass->widgetSave->data) /* 防止自身ＩＤ更新 */
+//                {
+//                    SaveStruct *tmp = fclass->widgetSave->data;
+//                    aid->value = g_strdup(tmp->value.vnumber);
+//                }
             }
 
             factory_write_object_comobox(tlist->data,ccc);
@@ -3750,7 +3774,7 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
 //    obj->selectable = TRUE;
     obj->type->version = g_strdup(factoryContainer->file_version);
     element_load(elem, obj_node);
-    if(!curLayer)
+    if(curLayer != factoryContainer->curLayer)
         curLayer = factoryContainer->curLayer;
 #ifdef STRUCT_MAINPOINT
     element_init(elem, 8, STRUCTCLASS_CONNECTIONPOINTS + 1);
@@ -3856,6 +3880,8 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
         else
             g_hash_table_insert(curLayer->defnames,structclass->name,structclass);
     }
+    else
+        factoryContainer->otp_obj = structclass;
 
     // curLayer->defnames = g_list_append(curLayer->defnames,structclass->name);
     return &structclass->element.object;
@@ -3931,22 +3957,24 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
             xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",sit->id_index));
             xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
             gchar *val = "-1";
-            gchar *vname = g_strdup("");
+
+            if(!sit->dname)
+                sit->dname = g_strdup("");;
             if(sit->active>0)
             {
-                STRUCTClass *tcalss = factory_get_object_from_layer(curLayer,sit->dname);
+//                STRUCTClass *tcalss = factory_get_object_from_layer(curLayer,sit->dname);
+                STRUCTClass *tcalss = g_hash_table_lookup(curLayer->defnames,sit->dname);
                 if(tcalss)
                 {
                     SaveStruct *sst = tcalss->widgetSave->data;
-                    val = g_strdup(sst->value.vnumber);
-                    vname = g_strdup(tcalss->name);
+                    val = g_strdup_printf("%d",g_list_index(curLayer->objects,tcalss));
+                    sit->dname = g_strdup(tcalss->name);
                 }
             }
             xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)val);
             xmlSetProp(ccc, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",sit->id_addr));
-            xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)vname);
+            xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)sit->dname);
             xmlSetProp(ccc, (const xmlChar *)"active", (xmlChar *)g_strdup_printf("%d",sit->active));
-            g_free(vname);
         }
     }
     else

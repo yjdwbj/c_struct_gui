@@ -37,12 +37,30 @@ static void create_object_motion(CreateObjectTool *tool, GdkEventMotion *event,
 				 DDisplay *ddisp);
 static void create_object_double_click(CreateObjectTool *tool, GdkEventMotion *event,
 				       DDisplay *ddisp);
+static void factory_object_move_to_newpos(CreateObjectTool *tool,GList *list);
 
+static void factory_object_move_to_newpos(CreateObjectTool *tool,GList *list)
+{
+    GList *olist = list;
+    DiaObject *nobj = tool->obj;
+    for(;olist;olist = olist->next)
+    {
+        DiaObject *obj = (DiaObject*)olist->data;
+        if( ( nobj->position.x == obj->position.x) && (nobj->position.y == obj->position.y))
+        {
+            nobj->position.x +=5;
+            nobj->position.y +=5;
+        }
+    }
+
+
+}
 
 static void
 create_object_button_press(CreateObjectTool *tool, GdkEventButton *event,
 			   DDisplay *ddisp)
 {
+    /*µ¥»÷»­°åÌí¼Ó¿Ø¼ş*/
   Point clickedpoint, origpoint;
   Handle *handle1;
   Handle *handle2;
@@ -62,7 +80,8 @@ create_object_button_press(CreateObjectTool *tool, GdkEventButton *event,
   obj = dia_object_default_create (tool->objtype, &clickedpoint,
                                    tool->user_data,
                                    &handle1, &handle2);
-
+  if(!obj)
+    return;
   tool->obj = obj; /* ensure that tool->obj is initialised in case we
 		      return early. */
   if (!obj) {
@@ -122,13 +141,15 @@ static void
 create_object_double_click(CreateObjectTool *tool, GdkEventMotion *event,
 			   DDisplay *ddisp)
 {
-    /*Ë«»÷Ìí¼Ó¿Ø¼ş*/
+    /*Ë«»÷»­°åÌí¼Ó¿Ø¼ş*/
+
 }
 
 static void
 create_object_button_release(CreateObjectTool *tool, GdkEventButton *event,
 			     DDisplay *ddisp)
 {
+
   GList *list = NULL;
   DiaObject *obj = tool->obj;
   gboolean reset;
@@ -288,6 +309,7 @@ create_create_object_tool(DiaObjectType *objtype, void *user_data,
   tool->tool.button_release_func = (ButtonReleaseFunc) &create_object_button_release;
   tool->tool.motion_func = (MotionFunc) &create_object_motion;
   tool->tool.double_click_func = (DoubleClickFunc) &create_object_double_click;
+
 
   tool->objtype = objtype;
   tool->user_data = user_data;

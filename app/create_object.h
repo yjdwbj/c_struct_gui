@@ -29,7 +29,7 @@ struct _CreateObjectTool {
 
   DiaObjectType *objtype;
   void *user_data;
-  
+
   int moving;
   Handle *handle;
   DiaObject *obj;
@@ -39,6 +39,8 @@ struct _CreateObjectTool {
 
 
 Tool *create_create_object_tool(DiaObjectType *objtype, void *user_date, int invert_persistence);
+
+void factory_move_object();
 void free_create_object_tool(Tool *tool);
 
 #endif /* CREATE_OBJECT_H */

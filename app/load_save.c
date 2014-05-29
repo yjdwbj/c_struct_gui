@@ -798,9 +798,9 @@ write_objects(GList *objects, xmlNodePtr objects_node,
     FactoryStructItemList *fsil= g_hash_table_lookup(factoryContainer->structTable,"FILELST");
     Point startpoint = {0.0,0.0};
     Handle *h1,*h2;
-    DiaObject *fileobj = otype->ops->create(&startpoint,&fsil->number,&h1,&h2);
+    DiaObject *fileobj = otype->ops->create(&startpoint,(void*)fsil->number,&h1,&h2);
     FactoryStructItemList *fsil2= g_hash_table_lookup(factoryContainer->structTable,"IDLST");
-    DiaObject *idobj = otype->ops->create(&startpoint,&fsil2->number,&h1,&h2);
+    DiaObject *idobj = otype->ops->create(&startpoint,(void*)fsil2->number,&h1,&h2);
     fileobj->name = g_strdup(fsil->sname);
     idobj->name = g_strdup(fsil2->sname);
     list = g_list_append(list,fileobj);
