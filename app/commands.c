@@ -594,7 +594,8 @@ edit_delete_callback (GtkAction *action)
     object_add_updates(focus->obj, ddisp->diagram);
   } else {
     Change *change = NULL;
-    diagram_selected_break_external(ddisp->diagram);
+    /* 这里注释掉，是为了后面自动删线功能　 */
+//   diagram_selected_break_external(ddisp->diagram);
 
     delete_list = diagram_get_sorted_selected(ddisp->diagram);
     change = undo_delete_objects_children(ddisp->diagram, delete_list);

@@ -179,7 +179,7 @@ read_objects(xmlNodePtr objects,
             {
                 obj = type->ops->load(obj_node, version, filename);
                 objname = (gchar*)xmlGetProp(obj_node,(const xmlChar*)"name");
-                if(objname) /*不会加载它,只是用它读取数据*/
+                if(objname && (strlen(objname) > 1)) /*不会加载它,只是用它读取数据*/
                 {
                     if(factory_is_special_object(objname)) /*特殊控件不需要加载的*/
                     {

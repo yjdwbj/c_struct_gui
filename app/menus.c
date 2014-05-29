@@ -559,6 +559,11 @@ void factory_callback_muisc_convert(GtkWidget *btn,gpointer user_data)
 }
 
 
+void factory_callback_download_to_device(GtkWidget *btn,gpointer user_data)
+{
+
+}
+
 /**
  * Create the toolbar for the integrated UI
  * @return Main toolbar (GtkToolbar*) for the integrated UI main window
@@ -655,6 +660,13 @@ create_integrated_ui_toolbar (void)
     GtkWidget *btn = gtk_button_new_with_label(factory_utf8("音乐转换"));
     integrated_ui_toolbar_add_custom_item(toolbar,btn);
     g_signal_connect(btn,"clicked",G_CALLBACK(factory_callback_muisc_convert),NULL);
+
+     sep = gtk_separator_tool_item_new ();
+    gtk_toolbar_insert (toolbar, sep, -1);
+
+    GtkWidget *dbtn = gtk_button_new_with_label(factory_utf8("下载到设备"));
+     integrated_ui_toolbar_add_custom_item(toolbar,dbtn);
+     g_signal_connect(dbtn,"clicked",G_CALLBACK(factory_callback_download_to_device),NULL);
 //    factory_create_toolbar_button(systemdata_on,"系统数据",toolbar,factory_systemdata_dialog);
 //
 //    factory_create_toolbar_button(globe_on,"全局变量",toolbar,NULL);

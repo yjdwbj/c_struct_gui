@@ -2212,7 +2212,7 @@ factory_struct_items_create(Point *startpoint,
     obj->type = &structclass_type;
     obj->type->version  = g_strdup(factoryContainer->file_version);
     obj->ops = &structclass_ops;
-
+//    obj->selectable = TRUE;
     structclass->line_width = attributes_get_default_linewidth();
     structclass->text_color = color_black;
     structclass->line_color = attributes_get_foreground();
@@ -2251,33 +2251,7 @@ factory_struct_items_create(Point *startpoint,
     return &structclass->element.object;
 }
 
-//AttributeNode *factory_get_xml_next_node(AttributeNode  obj_node,const gchar *comprename)
-//{
-//     AttributeNode attr_node = obj_node;
-//     while(attr_node = data_next(attr_node))
-//        {
-//            xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
-//            if(key)
-//            {
-//                if(0 == g_ascii_strncasecmp((gchar*)key,comprename,strlen((gchar*)key)))
-//                {
-//                    sss->name = g_strdup(comprename);
-//                    break;
-//                }
-//            }
-//            xmlFree(key);
-//
-//        }
-//        return attr_node;
-//}
-gchar *factory_get_last_section(const gchar *src,const gchar *delimiter)
-{
-    gchar **split = g_strsplit(src,".",-1);
-    int section = g_strv_length(split);
-    gchar *ret = g_strdup(split[section-1]);
-    g_strfreev(split);
-    return ret;
-}
+
 FactoryStructItem *factory_get_factorystructitem(GList *inlist,const gchar *name)
 {
     FactoryStructItem *fst = NULL;
@@ -2327,32 +2301,45 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
 
     STRUCTClass *fclass = fst->orgclass;
     xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"wtype");
-    if( key  && factory_is_special_object((gchar*)key) )
+    if( factory_is_special_object(fst->FType) )
     {
         /* 这里是id列表与音乐文件列表的数据读取 */
         sss->celltype = UBTN;
 //        key = xmlGetProp(attr_node,(xmlChar *)"wtype");
-        sss->type = g_strdup((gchar*)key);
-        xmlFree(key);
+//        sss->type = g_strdup((gchar*)key);
+//        xmlFree(key);
         key = xmlGetProp(attr_node,(xmlChar *)"value");
-        SaveKV *skv = g_new0(SaveKV,1);
 
+        SaveKV *skv = g_new0(SaveKV,1);
+        if(!key)
+        {
+          skv->value = g_strdup("-1");
+        }
         skv->value = g_strdup((gchar*)key);
+        xmlFree(key);
         key = xmlGetProp(attr_node,(xmlChar*)"index");
+        if(!key)
+        {
+            skv->radindex = 0;
+        }
         skv->radindex = g_strtod((gchar*)key,NULL);
         sss->value.vnumber = skv;
         xmlFree(key);
         return;
     }
-    else
-        key = xmlGetProp(attr_node,(xmlChar *)"type");
-
-    if (key)
-    {
-        sss->type  =  g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);/* 找到数据类型 */
-        xmlFree (key);
-    }
-    key = xmlGetProp(attr_node,(xmlChar *)"wtype"); /* 显示控件类型 */
+//    else
+//        key = xmlGetProp(attr_node,(xmlChar *)"type");
+//
+//    if (key)
+//    {
+//        //g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);/* 找到数据类型 */
+////        if(g_ascii_strcasecmp((gchar*)key,fst->FType))
+////            sss->type = g_strdup(fst->FType);
+////        else
+//        sss->type  = factory_utf8((gchar*)key);
+//        xmlFree (key);
+//    }
+//    key = xmlGetProp(attr_node,(xmlChar *)"wtype"); /* 显示控件类型 */
     if(!key) return NULL;
 
     if(!g_ascii_strncasecmp((gchar*)key,"ECOMBO",6))
@@ -2595,19 +2582,15 @@ void factory_read_specific_object_from_file(STRUCTClass *fclass,ObjectNode obj_n
             {
                 if(!g_ascii_strcasecmp((gchar*)key,"Music_File"))
                 {
-                    SaveMusicFileMan *smfm = NULL;
                     if(!smd->smfm)
                     {
                         smd->smfm = g_new0(SaveMusicFileMan,1);
-                        smfm = smd->smfm;
-                        smfm->selected = -1;
+                        smd->smfm->selected = -1;
                     }
-                    else
-                        smfm = smd->smfm;
 
                     factory_read_file_list_from_xml(attr_node->xmlChildrenNode);
                     factory_fm_get_cboxlist(smd);
-                    continue;
+                    break;
                 }
                 /* 这里读取左边布局的数据 */
                 SaveMusicItem *smi = g_new0(SaveMusicItem,1);
@@ -2630,7 +2613,7 @@ void factory_read_specific_object_from_file(STRUCTClass *fclass,ObjectNode obj_n
             return;
 
     }
-    else
+    else /*IDLST*/
     {
         SaveIdDialog *sid = (SaveIdDialog *)curLayer->sid;
         AttributeNode attr_node = obj_node;
@@ -2697,7 +2680,7 @@ void factory_read_value_from_xml(STRUCTClass *fclass,ObjectNode obj_node)
 
     GList *tlist = factory_get_list_from_hashtable(fclass);
     GList *tttt = tlist;
-
+    AttributeNode attr_node = obj_node;
     for(; tttt != NULL ; tttt = tttt->next)
     {
         FactoryStructItem *fst = tttt->data;
@@ -2707,23 +2690,26 @@ void factory_read_value_from_xml(STRUCTClass *fclass,ObjectNode obj_node)
         sss->widget2 = NULL;
         sss->org = fst;
         sss->sclass = fclass;
-        AttributeNode attr_node = obj_node;
-        while(attr_node = data_next(attr_node))
-        {
-            xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
-            if(key)
-            {
-                if(0 == g_ascii_strcasecmp((gchar*)key,fst->Name))
-                {
-                    sss->name = g_strdup(fst->Name);
-                    break;
-                }
-            }
-            xmlFree(key);
 
-        }
+        xmlChar *key = NULL;
+        attr_node = data_next(attr_node);
         if(!attr_node)
             continue;
+        key = xmlGetProp(attr_node,(xmlChar *)"name");
+        if(!key) continue;
+
+        if(g_ascii_strcasecmp((gchar*)key,fst->Name))
+            continue;
+
+        xmlFree(key);
+        key =  xmlGetProp(attr_node,(xmlChar *)"type");
+        if(!key) continue;
+//        if(g_ascii_strcasecmp((gchar*)key,fst->FType) && !factory_is_special_object(fst->FType) )
+//            continue;
+        /* 添加完整类型名比较 */
+        sss->name = g_strdup(fst->Name);
+        sss->type = g_strdup(fst->FType);
+        xmlFree(key);
 
         gchar *hkey =  g_strjoin("##",fst->FType,fst->Name,NULL);
         factory_read_object_value_from_file(sss,fst,attr_node);
@@ -2778,6 +2764,33 @@ gpointer *factory_read_object_comobox_value_from_file(AttributeNode attr_node)
 void factory_update_view_names(STRUCTClass *fclass)
 {
     g_hash_table_remove(curLayer->defnames,fclass->name);
+    GList *connlist = fclass->connections[8].connected; /* 本对像连接多少条线 */
+    for(; connlist; connlist = connlist->next)
+    {
+        Connection *connection  = (Connection *)connlist->data;
+        ConnectionPoint *start_cp, *end_cp;
+        start_cp = connection->endpoint_handles[0].connected_to;
+        end_cp = connection->endpoint_handles[1].connected_to;
+        STRUCTClass *tclass = NULL;
+        if(start_cp)
+        {
+            /* 把这条线从对像里删掉*/
+            tclass = start_cp->object;
+            if(tclass != fclass)
+                tclass->connections[8].connected =g_list_remove(tclass->connections[8].connected,connection);
+        }
+        if(end_cp)
+        {
+            tclass = end_cp->object;
+            if(tclass != fclass)
+                tclass->connections[8].connected =g_list_remove(tclass->connections[8].connected,connection);
+        }
+//        connection->object.selectable = TRUE;
+//        diagram_select(ddisplay_active()->diagram,connection);
+//        edit_delete_callback(NULL); /*调用一个现有的函数删除线条*/
+        layer_remove_object(curLayer,connection);
+        diagram_flush(ddisplay_active()->diagram);
+    }
 }
 
 void factory_inital_ebtn(SaveStruct *sss,const FactoryStructItem *fst)
@@ -3554,6 +3567,12 @@ static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
     break;
 //    case SBTN:
     case SPINBOX:
+        if(!g_ascii_strncasecmp(sss->org->Name,"wActID",6)) /*这里一个关键字判断是否是ＩＤ*/
+        {
+            STRUCTClass *sclass = sss->sclass;
+            sclass->element.object.oindex = g_list_index(curLayer->objects,sclass);
+            sss->value.vnumber = g_strdup_printf("%d",sclass->element.object.oindex);
+        }
         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"SPINBOX");
         xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.vnumber);
         break;
@@ -3576,6 +3595,8 @@ static void factory_write_object_comobox(ActionID *aid,ObjectNode ccc )
 
 static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node)
 {
+
+
     switch(sss->celltype)
     {
     case ECOMBO:
@@ -3726,6 +3747,7 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
     obj = &elem->object;
     obj->type = &structclass_type;
     obj->ops = &structclass_ops;
+//    obj->selectable = TRUE;
     obj->type->version = g_strdup(factoryContainer->file_version);
     element_load(elem, obj_node);
     if(!curLayer)
@@ -3808,16 +3830,16 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
         if(!curLayer->smd)
         {
             curLayer->smd = g_new0(SaveMusicDialog,1);
+            SaveMusicDialog *smd = curLayer->smd;
+            smd->title = factory_utf8("文件管理");
+            smd->smfm = NULL;
+            smd->mfmos = &mfmo_opts;
         }
-        SaveMusicDialog *smd = curLayer->smd;
-        smd->title = factory_utf8("文件管理");
-        smd->smfm = NULL;
-        smd->mfmos = &mfmo_opts;
+
         if(!curLayer->sid)
         {
             curLayer->sid = g_new0(SaveIdDialog,1);
         }
-        SaveIdDialog *sid = (SaveIdDialog *)curLayer->sid;
         factory_read_specific_object_from_file(structclass,attr_node->xmlChildrenNode);
         structclass_destroy(structclass) ;
         return NULL;
@@ -3826,7 +3848,15 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
         factory_read_value_from_xml(structclass,attr_node->xmlChildrenNode);
 
     if(!factory_is_system_data(obj->name))
-        g_hash_table_insert(curLayer->defnames,structclass->name,structclass);
+    {
+
+        gpointer ptr = g_hash_table_lookup(curLayer->defnames,structclass->name);
+        if(ptr !=structclass )
+            factory_rename_structclass(structclass);
+        else
+            g_hash_table_insert(curLayer->defnames,structclass->name,structclass);
+    }
+
     // curLayer->defnames = g_list_append(curLayer->defnames,structclass->name);
     return &structclass->element.object;
 }

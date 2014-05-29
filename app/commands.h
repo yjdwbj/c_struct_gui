@@ -34,7 +34,7 @@ void edit_copy_callback       (GtkAction *action);
 void edit_cut_callback        (GtkAction *action);
 void edit_paste_callback      (GtkAction *action);
 void edit_duplicate_callback  (GtkAction *action);
-void edit_delete_callback     (GtkAction *action);
+DIAVAR void edit_delete_callback     (GtkAction *action);
 void edit_undo_callback       (GtkAction *action);
 void edit_redo_callback       (GtkAction *action);
 void edit_paste_text_callback (GtkAction *action);

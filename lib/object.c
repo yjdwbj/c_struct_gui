@@ -1125,12 +1125,36 @@ gchar *factory_locale(gchar *str)
     return g_locale_from_utf8(_(str),-1,NULL,NULL,NULL);
 }
 
+gboolean factory_is_valid_type(gpointer data)
+{
+    DiaObject *otype = (DiaObject *)data;
+    char *n1 = g_strdup("STRUCT - Class");
+    gboolean ftype = g_ascii_strncasecmp(otype->type->name,n1,strlen(n1));
+    g_free(n1);
+    return !ftype;
+}
+
+gchar *factory_get_last_section(const gchar *src,const gchar *delimiter)
+{
+    if(!src)
+        return NULL;
+    gchar **split = g_strsplit(src,".",-1);
+    int section = g_strv_length(split);
+    gchar *ret = g_strdup(split[section > 0 ? section-1 : section]);
+    g_strfreev(split);
+    return ret;
+}
+
+
+
 gboolean factory_is_special_object(const gchar *name)
 {
     gboolean b = FALSE;
-    if(!g_strcasecmp(name,"IDLST") ||
-            !g_strcasecmp(name,"FILELST"))
+    gchar *cmp = factory_get_last_section(name,".");
+    if(!g_strcasecmp(cmp,"IDLST") ||
+            !g_strcasecmp(cmp,"FILELST"))
         b = TRUE;
+    g_free(cmp);
     return b;
 }
 

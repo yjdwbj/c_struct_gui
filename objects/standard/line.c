@@ -410,7 +410,7 @@ line_create(Point *startpoint,
 
   obj->type = &line_type;
   obj->ops = &line_ops;
-
+//    obj->selectable = FALSE;
   connection_init(conn, 2, 0);
 
   line->cpl = connpointline_create(obj,1);

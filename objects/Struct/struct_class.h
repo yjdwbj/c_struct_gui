@@ -27,6 +27,7 @@
 #include "object.h"
 #include "element.h"
 #include "connectionpoint.h"
+#include "connection.h"
 #include "widgets.h"
 
 #include "struct.h"
@@ -616,6 +617,7 @@ gboolean factory_music_fm_get_type(const gchar* str);
 
 void factory_fm_get_cboxlist(SaveMusicDialog *smd);
 
+void factory_update_ActionId_object(GtkWidget *comobox,ActionID *aid);
 //void factoryReadDataFromFile(STRUCTClass *structclass);
 
 

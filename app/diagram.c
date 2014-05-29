@@ -789,6 +789,12 @@ diagram_unselect_objects(Diagram *dia, GList *obj_list)
 void
 diagram_select(Diagram *diagram, DiaObject *obj)
 {
+//    if(!obj->selectable)
+//        return;
+    gchar name[] =  "Standard - Line";
+    if(!g_ascii_strcasecmp(name,obj->type->name))
+        return;
+
   if (dia_object_is_selectable(obj)) {
     data_select(diagram->data, obj);
     obj->ops->selectf(obj, NULL, NULL);

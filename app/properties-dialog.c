@@ -67,6 +67,7 @@ static void create_dialog()
 
     gtk_window_set_role(GTK_WINDOW (dialog), "properties_window");
 
+
     g_signal_connect(G_OBJECT (dialog), "response",
                      G_CALLBACK (properties_respond), NULL);
     g_signal_connect(G_OBJECT (dialog), "delete_event",

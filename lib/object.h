@@ -525,6 +525,7 @@ struct _DiaObject {
   GHashTable       *meta;
   gchar *name; /* 2014-4-2 lcy 加一个名字做调试 */
   guint32 oindex; /*2014-5-4 lcy 这里是控件唯一编号*/
+  gboolean selectable; /* 2014-5-28 添加一个可选与不可选的变量，比如，像线条是不可选的，可选的时候就是要删除的时候 */
 };
 
 /*!
@@ -612,6 +613,8 @@ DIAVAR gchar *dia_object_get_meta (DiaObject *obj, const gchar *key);
 DIAVAR gchar *factory_utf8(gchar *str);
 DIAVAR gchar *factory_locale(gchar *str);
 DIAVAR gboolean factory_is_special_object(const gchar *name);
+DIAVAR gchar *factory_get_last_section(const gchar *src,const gchar *delimiter);
+DIAVAR gboolean factory_is_valid_type(gpointer data);
 DIAVAR GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent);
 
 
