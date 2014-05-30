@@ -181,7 +181,8 @@ read_objects(xmlNodePtr objects,
                 objname = (gchar*)xmlGetProp(obj_node,(const xmlChar*)"name");
                 if(objname && (strlen(objname) > 1)) /*不会加载它,只是用它读取数据*/
                 {
-                    if(factory_is_special_object(objname)) /*特殊控件不需要加载的*/
+                    if(factory_is_special_object(objname) ||
+                       factory_is_system_data(objname)) /*特殊控件不需要加载的*/
                     {
                         obj_node = obj_node->next;
                         continue;
@@ -502,7 +503,7 @@ diagram_data_load(const char *filename, DiagramData *data, void* user_data)
     else
     {
         /* Couldn't read a single char?  Set to default. */
-        data->is_compressed = prefs.new_diagram.compress_save;
+        data->is_compressed = 0 /* prefs.new_diagram.compress_save*/;
     }
 
     /* Note that this closing and opening means we can't read from a pipe */
@@ -799,12 +800,20 @@ write_objects(GList *objects, xmlNodePtr objects_node,
     Point startpoint = {0.0,0.0};
     Handle *h1,*h2;
     DiaObject *fileobj = otype->ops->create(&startpoint,(void*)fsil->number,&h1,&h2);
+
     FactoryStructItemList *fsil2= g_hash_table_lookup(factoryContainer->structTable,"IDLST");
     DiaObject *idobj = otype->ops->create(&startpoint,(void*)fsil2->number,&h1,&h2);
+
+      FactoryStructItemList *fsil3= g_hash_table_lookup(factoryContainer->structTable,"SYS_DATA");
+    DiaObject *sysinfoobj = otype->ops->create(&startpoint,(void*)fsil3->number,&h1,&h2);
+
     fileobj->name = g_strdup(fsil->sname);
     idobj->name = g_strdup(fsil2->sname);
+    sysinfoobj->name = g_strdup(fsil3->sname);
+
     list = g_list_append(list,fileobj);
     list = g_list_append(list,idobj);
+    list = g_list_append(list,sysinfoobj);
     while (list != NULL)
     {
         DiaObject *obj = (DiaObject *) list->data;
@@ -863,6 +872,8 @@ write_objects(GList *objects, xmlNodePtr objects_node,
     fileobj->ops->destroy(fileobj);
     objects = g_list_remove(objects,idobj);
     idobj->ops->destroy(idobj);
+     objects = g_list_remove(objects,sysinfoobj);
+    sysinfoobj->ops->destroy(sysinfoobj);
     return TRUE;
 }
 

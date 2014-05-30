@@ -24,7 +24,7 @@
 DIAVAR FactoryStructItemAll *factoryContainer;
 struct _SheetObject {
   char *object_type;
-  char *description;
+  char *description;    /*中文名字*/
   char **pixmap; /* in xpm format */
 
   void *user_data;
@@ -33,7 +33,7 @@ struct _SheetObject {
   gboolean line_break;
 
   char *pixmap_file; /* fallback if pixmap is NULL */
-  gboolean has_icon_on_sheet;
+  gboolean has_icon_on_sheet; /* 是否显示　*/
 };
 
 typedef enum

@@ -511,7 +511,7 @@ dia_layer_deselect_callback(GtkWidget *widget, gpointer data)
                                  lw->connect_on);
     internal_call = FALSE;
 }
-
+typedef void (*system_info_callback)();
 
 static void
 layer_dialog_new_callback(GtkWidget *widget, gpointer gdata)

@@ -62,6 +62,9 @@
 
 #define ZOOM_FIT        _("Fit")
 
+
+extern FactoryStructItemAll *factoryContainer ;
+
 static void plugin_callback (GtkWidget *widget, gpointer data);
 
 static GtkWidget *
@@ -564,6 +567,16 @@ void factory_callback_download_to_device(GtkWidget *btn,gpointer user_data)
 
 }
 
+void factory_callback_system_data(GtkWidget *btn,gpointer user_data)
+{
+    if(factoryContainer->sys_info)
+    {
+        FactorySystemType *fstype = factoryContainer->sys_info->fstype;
+        fstype->sysinfo_callback(); /* 系统设置 */
+    }
+}
+
+
 /**
  * Create the toolbar for the integrated UI
  * @return Main toolbar (GtkToolbar*) for the integrated UI main window
@@ -656,6 +669,14 @@ create_integrated_ui_toolbar (void)
     sep = gtk_separator_tool_item_new ();
     gtk_toolbar_insert (toolbar, sep, -1);
     /* 新建三个按钮 */
+    gtk_widget_show (GTK_WIDGET (sep));
+      GtkWidget *sbtn = gtk_button_new_with_label(factory_utf8("系统设置"));
+    integrated_ui_toolbar_add_custom_item(toolbar,sbtn);
+    g_signal_connect(sbtn,"clicked",G_CALLBACK(factory_callback_system_data),ddisplay_active());
+
+    sep = gtk_separator_tool_item_new ();
+    gtk_toolbar_insert (toolbar, sep, -1);
+    gtk_widget_show (GTK_WIDGET (sep));
 
     GtkWidget *btn = gtk_button_new_with_label(factory_utf8("音乐转换"));
     integrated_ui_toolbar_add_custom_item(toolbar,btn);
@@ -663,6 +684,7 @@ create_integrated_ui_toolbar (void)
 
      sep = gtk_separator_tool_item_new ();
     gtk_toolbar_insert (toolbar, sep, -1);
+
 
     GtkWidget *dbtn = gtk_button_new_with_label(factory_utf8("下载到设备"));
      integrated_ui_toolbar_add_custom_item(toolbar,dbtn);

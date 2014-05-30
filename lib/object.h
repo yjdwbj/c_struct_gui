@@ -570,6 +570,25 @@ struct _DiaObjectType {
                 the .sheet file */
 };
 
+typedef void (*system_info_callback)(); /*!< pointer to the vtable */
+
+struct _FactorySystemType{
+    char *name; /*!< The type name should follow a pattern of '<module> - <class>' like "UML - Class" */
+//  int version; /*!< DiaObjects must be backward compatible, i.e. support possibly older versions formats */
+    int version;
+
+
+    char **pixmap; /* Also put a pixmap in the sheet_object.
+		    This one is used if not in sheet but in toolbar.
+		    Stored in xpm format */
+
+    system_info_callback  sysinfo_callback;
+
+    char *pixmap_file; /* fallback if pixmap is NULL */
+    void *default_user_data; /* use this if no user data is specified in
+                the .sheet file */
+};
+
 /* base property stuff ... */
 #define OBJECT_COMMON_PROPERTIES \
   { "obj_pos", PROP_TYPE_POINT, PROP_FLAG_OPTIONAL, \
@@ -617,7 +636,8 @@ DIAVAR gchar *factory_get_last_section(const gchar *src,const gchar *delimiter);
 DIAVAR gboolean factory_is_valid_type(gpointer data);
 DIAVAR GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent);
 
-
+DIAVAR void factory_callback_system_data();
+DIAVAR gboolean factory_is_system_data(const gchar *name);
 
 
 

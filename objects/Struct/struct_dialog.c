@@ -3236,20 +3236,8 @@ void factory_delete_line_between_two_objects(STRUCTClass *startc,const gchar *en
     }
 }
 
-
-/* 2014-3-25 lcy 这里是更新界面上的值*/
-ObjectChange *
-factory_apply_props_from_dialog(STRUCTClass *fclass, GtkWidget *widget)
+void factory_change_view_name(STRUCTClass *fclass)
 {
-//    g_hash_table_foreach(fclass->widgetmap,factory_read_props_from_widget,(gpointer)fclass);
-    GList *applist = NULL;
-
-    applist = fclass->widgetSave;
-    for(; applist; applist = applist->next)
-    {
-        factory_read_props_from_widget(NULL,applist->data,NULL);
-    }
-
     PublicSection *pps = fclass->pps;
     if(!pps)
         return NULL;
@@ -3300,9 +3288,24 @@ factory_apply_props_from_dialog(STRUCTClass *fclass, GtkWidget *widget)
         Color w = {255,255,255};
         fclass->fill_color = w;
     }
+}
 
 
 
+/* 2014-3-25 lcy 这里是更新界面上的值*/
+ObjectChange *
+factory_apply_props_from_dialog(STRUCTClass *fclass, GtkWidget *widget)
+{
+//    g_hash_table_foreach(fclass->widgetmap,factory_read_props_from_widget,(gpointer)fclass);
+    GList *applist = NULL;
+
+    applist = fclass->widgetSave;
+    for(; applist; applist = applist->next)
+    {
+        factory_read_props_from_widget(NULL,applist->data,NULL);
+    }
+    diagram_set_modified(ddisplay_active_diagram(),TRUE);
+    factory_change_view_name(fclass);
     return  NULL;
 }
 
@@ -3730,6 +3733,7 @@ void factory_save_enumbutton_dialog(GtkWidget *widget,gint response_id,gpointer 
                 }
             }
         }
+        diagram_set_modified(ddisplay_active_diagram(),TRUE);
     }
     gtk_widget_hide(widget);
 //    if(widget)
@@ -3754,6 +3758,7 @@ void factory_save_objectbutton_dialog(GtkWidget *widget,
             ActionID *act = g_list_nth_data(nid->actlist,n);
             factory_get_value_from_comobox(sst->sclass,wid,act);
         }
+        diagram_set_modified(ddisplay_active_diagram(),TRUE);
     }
     gtk_widget_hide(widget);
 //    gtk_widget_destroy(widget);
@@ -3834,6 +3839,7 @@ void factory_save_unionbutton_dialog(GtkWidget *widget,
                 factory_read_props_from_widget(NULL,vss,NULL);
 //                factory_save_value_from_widget(vss);
         }
+        diagram_set_modified(ddisplay_active_diagram(),TRUE);
     }
     gtk_widget_hide(widget);
     gtk_widget_destroy(widget);
@@ -4599,12 +4605,93 @@ void factory_create_and_fill_dialog(STRUCTClass *fclass, gboolean is_default)
     prop_dialog->mainTable = gtk_table_new(num,4,FALSE);  // 2014-3-19 lcy 根据要链表的数量,创建多少行列表.
     factory_create_struct_dialog(prop_dialog->mainTable,targetlist);
     gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),prop_dialog->mainTable);
-    if(g_ascii_strcasecmp(fclass->element.object.name,"SYS_DATA"))
-    {
+//    if(!factory_is_system_data(fclass->element.object.name))
+//    {
         factory_append_public_info(prop_dialog->dialog,fclass);
         gtk_table_set_col_spacing(GTK_TABLE(prop_dialog->mainTable),1,20);
-    }
+//    }
 
+}
+
+/*** 系统设置调用入口处***/
+
+
+void factory_systeminfo_apply_dialog(GtkWidget *widget,
+                             gint       response_id,
+                             gpointer   user_data)
+{
+    if (   response_id == GTK_RESPONSE_APPLY
+            || response_id == GTK_RESPONSE_OK)
+    {
+
+        GList *applist = user_data;
+        for(; applist; applist = applist->next)
+        {
+            factory_read_props_from_widget(NULL,applist->data,NULL);
+        }
+
+        diagram_set_modified(ddisplay_active_diagram(),TRUE);
+
+    }
+    gtk_widget_hide(widget);
+}
+
+
+void factory_systeminfo_callback()
+{
+    if(curLayer != factoryContainer->curLayer)
+        curLayer = factoryContainer->curLayer;
+
+    FactorySystemInfo  *fsio = factoryContainer->sys_info;
+    if(!fsio->system_info) /* 打开过第一次了 */
+    {
+        FactoryStructItemList *fsil = g_hash_table_lookup(factoryContainer->structTable,"SYS_DATA");
+        GList *itemlist = fsil->list;
+        for(; itemlist != NULL ; itemlist = itemlist->next)
+        {
+            FactoryStructItem *fst = itemlist->data;
+            SaveStruct *sst= factory_get_savestruct(fst);
+            fsio->system_info = g_list_append(fsio->system_info,sst);
+        }
+    }
+    factory_system_dialog(fsio->system_info);
+
+}
+
+void factory_system_dialog(GList *list)
+{
+    GtkWidget *parent = ddisplay_active();
+    if(!parent)
+        parent = NULL;
+    else
+        parent = ddisplay_active()->shell;
+
+
+    GList *targetlist = list;
+    GtkWidget *subdig = factory_create_new_dialog_with_buttons(factory_utf8("系统信息"),parent);
+    GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
+
+    gtk_window_set_modal(GTK_WINDOW(subdig),TRUE);
+
+    gtk_dialog_set_default_response (GTK_DIALOG(subdig), GTK_RESPONSE_OK);
+    gtk_window_set_resizable (GTK_WINDOW(subdig),FALSE);
+//    gtk_window_set_position (GTK_WINDOW(subdig),GTK_POS_BOTTOM);
+
+    int num = g_list_length(targetlist);
+
+    GtkWidget *table = gtk_table_new(num,4,FALSE);  // 2014-3-19 lcy 根据要链表的数量,创建多少行列表.
+
+    gtk_container_add(GTK_CONTAINER(dialog_vbox),table);
+
+    factory_create_struct_dialog(table,targetlist); /* 这里调用跟类其它控件一样的操作 */
+
+    g_signal_connect(G_OBJECT (subdig), "response",
+                     G_CALLBACK (factory_systeminfo_apply_dialog), list); /* 保存关闭 */
+
+    g_signal_connect(G_OBJECT (subdig), "destroy",G_CALLBACK(gtk_widget_destroyed), &subdig);
+//    g_signal_connect(G_OBJECT (sdialog), "destroy",G_CALLBACK(gtk_widget_destroyed),&dialog_vbox);
+
+    gtk_widget_show_all(subdig);
 }
 
 
@@ -4645,13 +4732,7 @@ void factory_music_file_manager_new_item_changed(SaveMusicDialog *smd)
 }
 
 
-gboolean factory_is_system_data(const gchar *name)
-{
-    gboolean *b = FALSE;
-    if(!g_ascii_strcasecmp(name,"SYS_DATA"))
-        b = TRUE;
-    return b;
-}
+
 
 
 GtkWidget *factory_get_new_item_head()
@@ -5109,6 +5190,7 @@ void factory_save_idlist_dialog(GtkWidget *widget,
             }
         }
         gtk_button_set_label(GTK_BUTTON(sid->parent_btn),skv->value);
+        diagram_set_modified(ddisplay_active_diagram(),TRUE);
     }
 
     gtk_widget_hide_all(widget);

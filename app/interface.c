@@ -263,7 +263,7 @@ ToolButton tool_data[] =
 const int num_tools = NUM_TOOLS;
 
 #define COLUMNS   4
-#define ROWS      3
+#define ROWS      4
 
 static GtkWidget *toolbox_shell = NULL;
 static GtkWidget *diagramtree = NULL; // 2014-4-3 lcy 把树结构集成进来显示.
@@ -1308,11 +1308,13 @@ fill_sheet_wbox(Sheet *sheet)
     interface_current_sheet_name = sheet->name;
 
     /* set the aspect ratio on the wbox */
-    rows = ceil(g_slist_length(sheet->objects) / (double)COLUMNS);
+//    rows = ceil(g_slist_length(sheet->objects) / (double)COLUMNS);
+    rows = g_slist_length(sheet->objects); /* 每项占一行显示　*/
     if (rows<1) rows = 1;
     gtk_wrap_box_set_aspect_ratio(GTK_WRAP_BOX(sheet_wbox),
                                   COLUMNS * 1.0 / rows);
-    style = gtk_widget_get_style(sheet_wbox);
+
+//    style = gtk_widget_get_style(sheet_wbox);
     for (tmp = sheet->objects; tmp != NULL; tmp = tmp->next)
     {
         SheetObject *sheet_obj = tmp->data;
@@ -1322,74 +1324,74 @@ fill_sheet_wbox(Sheet *sheet)
         GtkWidget *button;
         ToolButtonData *data;
 
-        if (sheet_obj->pixmap != NULL)
-        {
-            pixmap = gdk_pixmap_colormap_create_from_xpm_d(NULL,
-                     gtk_widget_get_colormap(sheet_wbox), &mask,
-                     &style->bg[GTK_STATE_NORMAL], sheet_obj->pixmap);
-        }
-        else if (sheet_obj->pixmap_file != NULL)
-        {
-            GdkPixbuf *pixbuf;
-            GError* gerror = NULL;
+//        if (sheet_obj->pixmap != NULL)
+//        {
+//            pixmap = gdk_pixmap_colormap_create_from_xpm_d(NULL,
+//                     gtk_widget_get_colormap(sheet_wbox), &mask,
+//                     &style->bg[GTK_STATE_NORMAL], sheet_obj->pixmap);
+//        }
+//        else if (sheet_obj->pixmap_file != NULL)
+//        {
+//            GdkPixbuf *pixbuf;
+//            GError* gerror = NULL;
+//
+//            pixbuf = gdk_pixbuf_new_from_file(sheet_obj->pixmap_file, &gerror);
+//            if (pixbuf != NULL)
+//            {
+//                int width = gdk_pixbuf_get_width (pixbuf);
+//                int height = gdk_pixbuf_get_height (pixbuf);
+//                if (width > 22)
+//                {
+//                    GdkPixbuf *cropped;
+//                    g_warning ("Shape icon '%s' size wrong, cropped.", sheet_obj->pixmap_file);
+//                    cropped = gdk_pixbuf_new_subpixbuf (pixbuf,
+//                                                        (width - 22) / 2, height > 22 ? (height - 22) / 2 : 0,
+//                                                        22, height > 22 ? 22 : height);
+//                    g_object_unref (pixbuf);
+//                    pixbuf = cropped;
+//                }
+//                gdk_pixbuf_render_pixmap_and_mask_for_colormap(pixbuf, gtk_widget_get_colormap(sheet_wbox), &pixmap, &mask, 1.0);
+//                gdk_pixbuf_unref(pixbuf);
+//            }
+//            else
+//            {
+//                pixmap = gdk_pixmap_colormap_create_from_xpm_d(NULL,
+//                         gtk_widget_get_colormap(sheet_wbox), &mask,
+//                         &style->bg[GTK_STATE_NORMAL], missing);
+//
+//                message_warning("failed to load icon for file\n %s\n cause=%s",
+//                                sheet_obj->pixmap_file,gerror?gerror->message:"[NULL]");
+//            }
+//        }
+//        else
+//        {
+//            DiaObjectType *type;
+//            type = object_get_type(sheet_obj->object_type);
+//            pixmap = gdk_pixmap_colormap_create_from_xpm_d(NULL,
+//                     gtk_widget_get_colormap(sheet_wbox), &mask,
+//                     &style->bg[GTK_STATE_NORMAL], type->pixmap);
+//        }
+//        if (pixmap)
+//        {
+//            pixmapwidget = gtk_pixmap_new(pixmap, mask);
+//            gdk_pixmap_unref(pixmap);
+//            if (mask) gdk_bitmap_unref(mask);
+//        }
+//        else
+//        {
+//            pixmapwidget = gtk_type_new(gtk_pixmap_get_type());
+//        }
 
-            pixbuf = gdk_pixbuf_new_from_file(sheet_obj->pixmap_file, &gerror);
-            if (pixbuf != NULL)
-            {
-                int width = gdk_pixbuf_get_width (pixbuf);
-                int height = gdk_pixbuf_get_height (pixbuf);
-                if (width > 22)
-                {
-                    GdkPixbuf *cropped;
-                    g_warning ("Shape icon '%s' size wrong, cropped.", sheet_obj->pixmap_file);
-                    cropped = gdk_pixbuf_new_subpixbuf (pixbuf,
-                                                        (width - 22) / 2, height > 22 ? (height - 22) / 2 : 0,
-                                                        22, height > 22 ? 22 : height);
-                    g_object_unref (pixbuf);
-                    pixbuf = cropped;
-                }
-                gdk_pixbuf_render_pixmap_and_mask_for_colormap(pixbuf, gtk_widget_get_colormap(sheet_wbox), &pixmap, &mask, 1.0);
-                gdk_pixbuf_unref(pixbuf);
-            }
-            else
-            {
-                pixmap = gdk_pixmap_colormap_create_from_xpm_d(NULL,
-                         gtk_widget_get_colormap(sheet_wbox), &mask,
-                         &style->bg[GTK_STATE_NORMAL], missing);
-
-                message_warning("failed to load icon for file\n %s\n cause=%s",
-                                sheet_obj->pixmap_file,gerror?gerror->message:"[NULL]");
-            }
-        }
-        else
-        {
-            DiaObjectType *type;
-            type = object_get_type(sheet_obj->object_type);
-            pixmap = gdk_pixmap_colormap_create_from_xpm_d(NULL,
-                     gtk_widget_get_colormap(sheet_wbox), &mask,
-                     &style->bg[GTK_STATE_NORMAL], type->pixmap);
-        }
-        if (pixmap)
-        {
-            pixmapwidget = gtk_pixmap_new(pixmap, mask);
-            gdk_pixmap_unref(pixmap);
-            if (mask) gdk_bitmap_unref(mask);
-        }
-        else
-        {
-            pixmapwidget = gtk_type_new(gtk_pixmap_get_type());
-        }
-
-        button = gtk_radio_button_new (tool_group);
+        button = gtk_radio_button_new_with_label (tool_group,sheet_obj->description);
         gtk_toggle_button_set_mode (GTK_TOGGLE_BUTTON (button), FALSE);
         gtk_container_set_border_width (GTK_CONTAINER (button), 0);
         tool_group = gtk_radio_button_group (GTK_RADIO_BUTTON (button));
 
-        gtk_container_add (GTK_CONTAINER (button), pixmapwidget);
-        gtk_widget_show(pixmapwidget);
+//      gtk_container_add (GTK_CONTAINER (button), pixmapwidget);
+//        gtk_widget_show(pixmapwidget);
 
         gtk_wrap_box_pack_wrapped(GTK_WRAP_BOX(sheet_wbox), button,
-                                  FALSE, TRUE, FALSE, TRUE, sheet_obj->line_break);
+                                  TRUE, TRUE, FALSE, TRUE, sheet_obj->line_break);
         gtk_widget_show(button);
 
         data = g_new(ToolButtonData, 1);

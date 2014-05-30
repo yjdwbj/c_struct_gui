@@ -152,7 +152,7 @@ void ddisplay_resize_canvas(DDisplay *ddisp,
 void ddisplay_render_pixmap(DDisplay *ddisp, Rectangle *update);
 
 DIAVAR DDisplay *ddisplay_active(void);
-Diagram *ddisplay_active_diagram(void);
+DIAVAR Diagram *ddisplay_active_diagram(void);
 
 void ddisplay_close(DDisplay *ddisp);
 

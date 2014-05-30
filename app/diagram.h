@@ -87,7 +87,7 @@ void diagram_set_current(Diagram *diagram);
 void diagram_destroy(Diagram *dia);
 gboolean diagram_is_modified(Diagram *dia);
 DIAVAR void diagram_modified(Diagram *dia);
-void diagram_set_modified(Diagram *dia, int modified);
+DIAVAR void diagram_set_modified(Diagram *dia, int modified);
 void diagram_add_ddisplay(Diagram *dia, DDisplay *ddisp);
 void diagram_remove_ddisplay(Diagram *dia, DDisplay *ddisp);
 void diagram_add_object(Diagram *dia, DiaObject *obj);

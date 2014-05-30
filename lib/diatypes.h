@@ -126,6 +126,8 @@ typedef struct _ObjectChange ObjectChange;
 typedef struct _DiaObject DiaObject;
 typedef struct _ObjectOps ObjectOps;
 typedef struct _DiaObjectType DiaObjectType;
+typedef struct _FactorySystemType FactorySystemType;
+
 typedef struct _ObjectTypeOps ObjectTypeOps;
 
 /* In orth_conn.h: */
@@ -211,6 +213,26 @@ struct _FactoryStructItemList{
     gboolean isvisible; /* 是否显示到时面板上 */
 };
 
+typedef void (*FactorySystemInfoFunc)(gpointer user_data);
+typedef void (*FactorySystemInfoCallBack)();
+
+//typedef struct _FactorySysInfoOps FactorySysInfoOps;
+//
+//struct _FactorySysInfoOps
+//{
+//    FactorySystemInfoFunc sysinfo_create;
+//    FactorySystemInfoFunc sysinfo_save;
+//    FactorySystemInfoFunc sysinfo_load;
+//    FactorySystemInfoFunc sysinfo_dialog;
+//};
+
+typedef struct _FactorySystemInfo FactorySystemInfo;
+struct _FactorySystemInfo
+{
+    FactorySystemType *fstype;
+    gpointer *system_info; /*系统信息*/
+};
+
 typedef struct _FactoryStructItemAll  FactoryStructItemAll; // 2014-3-20 lcy 存放整个文件的结果,第一个为枚举,第二个存结构体
 struct _FactoryStructItemAll{
     GHashTable *enumTable;
@@ -220,7 +242,8 @@ struct _FactoryStructItemAll{
     GList* structList; // 2014-3-25 lcy 这里存放 FactoryStructItemList 的链表。
     gchar *file_version;
     Layer *curLayer;
-    gpointer *otp_obj; /*这里用来放系统信息，只能有唯一个*/
+//    gpointer *otp_obj; /*这里用来放系统信息，只能有唯一个*/
+    FactorySystemInfo *sys_info; /*系统信息*/
 
 };
 

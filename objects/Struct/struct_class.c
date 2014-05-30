@@ -127,6 +127,8 @@ void factory_update_view_names(STRUCTClass *fclass);
 ObjectChange *factory_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
 void factory_delete_line_between_two_objects(STRUCTClass *startc,const gchar *endc);
 
+void factory_change_view_name(STRUCTClass *startc);
+
 static ObjectTypeOps structclass_type_ops =
 {
     (CreateFunc) factory_struct_items_create,
@@ -154,6 +156,18 @@ DiaObjectType structclass_type =
     (char **) structclass_xpm,  /* pixmap */
 
     &structclass_type_ops,       /* ops */
+    NULL,
+    (void*)0
+};
+
+/* 这里专为系统信息做了一个类型　*/
+FactorySystemType factory_systeminfo_type =
+{
+    "SystemInfo",
+    NULL,
+    (char **) structclass_xpm,  /* pixmap */
+
+    factory_systeminfo_callback,       /* ops */
     NULL,
     (void*)0
 };
@@ -2205,13 +2219,13 @@ factory_struct_items_create(Point *startpoint,
         }
     }
 
-    if(factory_is_system_data(obj->name))
-    {
-        if(factoryContainer->otp_obj)
-            return NULL;
-        else
-            factoryContainer->otp_obj = structclass;
-    }
+//    if(factory_is_system_data(obj->name))
+//    {
+//        if(factoryContainer->otp_obj)
+//            return NULL;
+//        else
+//            factoryContainer->otp_obj = structclass;
+//    }
     factory_rename_structclass(structclass);
 
 
@@ -2323,7 +2337,7 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         SaveKV *skv = g_new0(SaveKV,1);
         if(!key)
         {
-          skv->value = g_strdup("-1");
+            skv->value = g_strdup("-1");
         }
         skv->value = g_strdup((gchar*)key);
         xmlFree(key);
@@ -2337,19 +2351,7 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         xmlFree(key);
         return;
     }
-//    else
-//        key = xmlGetProp(attr_node,(xmlChar *)"type");
-//
-//    if (key)
-//    {
-//        //g_locale_to_utf8((gchar*)key,-1,NULL,NULL,NULL);/* 找到数据类型 */
-////        if(g_ascii_strcasecmp((gchar*)key,fst->FType))
-////            sss->type = g_strdup(fst->FType);
-////        else
-//        sss->type  = factory_utf8((gchar*)key);
-//        xmlFree (key);
-//    }
-//    key = xmlGetProp(attr_node,(xmlChar *)"wtype"); /* 显示控件类型 */
+
     if(!key) return NULL;
 
     if(!g_ascii_strncasecmp((gchar*)key,"ECOMBO",6))
@@ -2449,23 +2451,28 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
             xmlFree(key);
         }
         GList *slist;
-        key = xmlGetProp(attr_node,(xmlChar *)"type");
-        if(key)
-        {
-            sss->type = g_strdup((gchar*)key);
-            /* 通过类型名 找到对应的联合体 */
-            slist =  g_hash_table_lookup(fclass->EnumsAndStructs->unionTable,(gchar*)sss->type);
-            xmlFree(key);
-        }
-
+//        key = xmlGetProp(attr_node,(xmlChar *)"type");
+//        if(key)
+//        {
+//            if(sss->type) g_free(sss->type);
+//            sss->type = g_strdup((gchar*)key);
+//            /* 通过类型名 找到对应的联合体 */
+//            slist =  g_hash_table_lookup(fclass->EnumsAndStructs->unionTable,(gchar*)sss->type);
+//            xmlFree(key);
+//        }
+        slist =  g_hash_table_lookup(fclass->EnumsAndStructs->unionTable,(gchar*)sss->type);
         /* 下面下拉框当面名字　*/
         FactoryStructItem *nextobj =  g_list_nth_data(slist,suptr->index);
-        suptr->structlist = slist;
+//        suptr->structlist = slist;
 
         if(!nextobj)
             return ; /* 没有找到控件原型,可能出错了. */
-        suptr->curkey = g_strjoin("##",nextobj->FType,nextobj->Name,NULL);
-        suptr->curtext = g_strdup(nextobj->Name);
+
+//        if(suptr->curkey) g_free(suptr->curkey);
+//        suptr->curkey = g_strjoin("##",nextobj->FType,nextobj->Name,NULL);
+
+//        if(suptr->curtext) g_free(suptr->curtext);
+//        suptr->curtext = g_strdup(nextobj->Name);
         SaveStruct *nsitm = factory_get_savestruct(nextobj);/* 紧跟它下面的控件名 */
         if(nsitm)
         {
@@ -2477,7 +2484,7 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
             sbtn->savelist = NULL;
             /* 读它下面的子节点 */
             factory_read_union_button_from_file(sss->sclass, attr_node->xmlChildrenNode,sbtn);
-            g_hash_table_insert(suptr->saveVal,suptr->curkey,nsitm);
+//            g_hash_table_insert(suptr->saveVal,suptr->curkey,nsitm);
         }
 
     }
@@ -2774,12 +2781,12 @@ gpointer *factory_read_object_comobox_value_from_file(AttributeNode attr_node)
 
 void factory_update_view_names(STRUCTClass *fclass)
 {
-    DiaObject *obj = &fclass->element.object;
-    if(factory_is_system_data(obj->name))
-    {
-        factoryContainer->otp_obj = NULL;
-        return;  /* 系统信息删掉了 */
-    }
+//    DiaObject *obj = &fclass->element.object;
+//    if(factory_is_system_data(obj->name))
+//    {
+//        factoryContainer->otp_obj = NULL;
+//        return;  /* 系统信息删掉了 */
+//    }
     g_hash_table_remove(curLayer->defnames,fclass->name);
     GList *connlist = fclass->connections[8].connected; /* 本对像连接多少条线 */
     for(; connlist; connlist = connlist->next)
@@ -3112,6 +3119,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             FactoryStructItem *nextobj =  g_list_nth_data(suptr->structlist,suptr->index);
             if(!nextobj)
                 break;
+            suptr->curtext = g_strdup(nextobj->Name);
             suptr->curkey = g_strjoin("##",nextobj->FType,nextobj->Name,NULL);
             SaveStruct *tsst = factory_get_savestruct(nextobj);
             if(!tsst)
@@ -3693,6 +3701,7 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
             ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_union", NULL);
             xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
             xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
+            xmlSetProp(ccc,(const xmlChar *)"idname",(xmlChar*)suptr->curtext);
             if(tsst->isPointer)
             {
                 xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"UBTN");
@@ -3871,17 +3880,16 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
     else
         factory_read_value_from_xml(structclass,attr_node->xmlChildrenNode);
 
-    if(!factory_is_system_data(obj->name))
+    if(factory_is_system_data(obj->name))
+        factoryContainer->sys_info->system_info = g_list_copy(structclass->widgetSave);
+    else
     {
-
         gpointer ptr = g_hash_table_lookup(curLayer->defnames,structclass->name);
         if(ptr !=structclass )
             factory_rename_structclass(structclass);
         else
             g_hash_table_insert(curLayer->defnames,structclass->name,structclass);
     }
-    else
-        factoryContainer->otp_obj = structclass;
 
     // curLayer->defnames = g_list_append(curLayer->defnames,structclass->name);
     return &structclass->element.object;
@@ -3904,6 +3912,9 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
     if(fsi) /* 写入到指定文件名 */
         xmlSetProp(obj_node, (const xmlChar *)"file", (xmlChar *)fsi->sfile);
     //g_hash_table_foreach(structclass->widgetmap,factory_struct_save_to_xml,(gpointer)obj_node);
+    if(factory_is_system_data(fsi->sname))
+        structclass->widgetSave = factoryContainer->sys_info->system_info;
+
     if(!g_strcasecmp(fsi->sname,"FILELST"))
     {
         /* 这里写音乐管理界面上的数据 */
@@ -3992,304 +4003,6 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
 
 
 
-//void factory_get_enum_values(GList* src,GList *dst)
-//{
-//    /* 2014-3-26 lcy 这里处理控件上的值，用来做保存文件时的数据源。*/
-//    GList *thisstruct = src;
-//    for(; thisstruct != NULL; thisstruct = thisstruct->next)
-//    {
-//        SaveStruct *ss = g_new0(SaveStruct,1);
-//        FactoryStructItem *item = thisstruct->data;
-//        gchar **split = g_strsplit(item->FType,".",-1);
-//        int section = g_strv_length(split);
-//        /* 查询枚举哈希表的值*/
-//        GList *enumitem =  g_hash_table_lookup(factoryContainer->enumTable,(gpointer)split[section-1]);
-//        if(enumitem)
-//        {
-////                             GList *tmp  = enumitem;
-////                             ss->celltype = ENUM;
-////                             FactoryStructEnum *cur =  factory_find_list_node(tmp,item->Value);
-////                             ss->value.index = g_list_index(tmp,cur);
-//        }
-//        else if(factory_find_array_flag(item->Name))
-//        {
-//            ss->celltype = ENTRY;
-//        }
-//        else
-//        {
-//            ss->celltype = SPINBOX;
-//        }
-//        ss->name = item->Name;
-//        ss->type = item->FType;
-//        g_strfreev(split);
-//        dst = g_list_append(dst,ss);
-//    }
-//}
-
-//static void
-//structclass_save(STRUCTClass *structclass, ObjectNode obj_node,
-//	      const char *filename)
-//{
-//  STRUCTAttribute *attr;
-//  STRUCTOperation *op;
-//  STRUCTFormalParameter *formal_param;
-//  GList *list;
-//  AttributeNode attr_node;
-//
-//#ifdef DEBUG
-//  structclass_sanity_check(structclass, "Saving");
-//#endif
-//
-//  element_save(&structclass->element, obj_node);
-//fclass->name
-//  /* Class info: */
-//  data_add_string(new_attribute(obj_node, "name"),
-//		  structclass->name);
-//  data_add_string(new_attribute(obj_node, "stereotype"),
-//		  structclass->stereotype);
-//  data_add_string(new_attribute(obj_node, "comment"),
-//                  structclass->comment);
-//  data_add_boolean(new_attribute(obj_node, "abstract"),
-//		   structclass->abstract);
-//  data_add_boolean(new_attribute(obj_node, "suppress_attributes"),
-//		   structclass->suppress_attributes);
-//  data_add_boolean(new_attribute(obj_node, "suppress_operations"),
-//		   structclass->suppress_operations);
-//  data_add_boolean(new_attribute(obj_node, "visible_attributes"),
-//		   structclass->visible_attributes);
-//  data_add_boolean(new_attribute(obj_node, "visible_operations"),
-//		   structclass->visible_operations);
-//  data_add_boolean(new_attribute(obj_node, "visible_comments"),
-//		   structclass->visible_comments);
-//  data_add_boolean(new_attribute(obj_node, "wrap_operations"),
-//		   structclass->wrap_operations);
-//  data_add_int(new_attribute(obj_node, "wrap_after_char"),
-//		   structclass->wrap_after_char);
-//  data_add_int(new_attribute(obj_node, "comment_line_length"),
-//                   structclass->comment_line_length);
-//  data_add_boolean(new_attribute(obj_node, "comment_tagging"),
-//                   structclass->comment_tagging);
-//  data_add_real(new_attribute(obj_node, PROP_STDNAME_LINE_WIDTH),
-//		   structclass->line_width);
-//  data_add_color(new_attribute(obj_node, "line_color"),
-//		   &structclass->line_color);
-//  data_add_color(new_attribute(obj_node, "fill_color"),
-//		   &structclass->fill_color);
-//  data_add_color(new_attribute(obj_node, "text_color"),
-//		   &structclass->text_color);
-//  data_add_font (new_attribute (obj_node, "normal_font"),
-//                 structclass->normal_font);
-//  data_add_font (new_attribute (obj_node, "abstract_font"),
-//                 structclass->abstract_font);
-//  data_add_font (new_attribute (obj_node, "polymorphic_font"),
-//                 structclass->polymorphic_font);
-//  data_add_font (new_attribute (obj_node, "classname_font"),
-//                 structclass->classname_font);
-//  data_add_font (new_attribute (obj_node, "abstract_classname_font"),
-//                 structclass->abstract_classname_font);
-//  data_add_font (new_attribute (obj_node, "comment_font"),
-//                 structclass->comment_font);
-//  data_add_real (new_attribute (obj_node, "normal_font_height"),
-//                 structclass->font_height);
-//  data_add_real (new_attribute (obj_node, "polymorphic_font_height"),
-//                 structclass->polymorphic_font_height);
-//  data_add_real (new_attribute (obj_node, "abstract_font_height"),
-//                 structclass->abstract_font_height);
-//  data_add_real (new_attribute (obj_node, "classname_font_height"),
-//                 structclass->classname_font_height);
-//  data_add_real (new_attribute (obj_node, "abstract_classname_font_height"),
-//                 structclass->abstract_classname_font_height);
-//  data_add_real (new_attribute (obj_node, "comment_font_height"),
-//                 structclass->comment_font_height);
-//
-//  /* Attribute info: */
-//  attr_node = new_attribute(obj_node, "attributes");
-//  list = structclass->attributes;
-//  while (list != NULL) {
-//    attr = (STRUCTAttribute *) list->data;
-//    struct_attribute_write(attr_node, attr);
-//    list = g_list_next(list);
-//  }
-//
-//  /* Operations info: */
-//  attr_node = new_attribute(obj_node, "operations");
-//  list = structclass->operations;
-//  while (list != NULL) {
-//    op = (STRUCTOperation *) list->data;
-//    struct_operation_write(attr_node, op);
-//    list = g_list_next(list);
-//  }
-//
-//  /* Template info: */
-//  data_add_boolean(new_attribute(obj_node, "template"),
-//		   structclass->template);
-//
-//  attr_node = new_attribute(obj_node, "templates");
-//  list = structclass->formal_params;
-//  while (list != NULL) {
-//    formal_param = (STRUCTFormalParameter *) list->data;
-//    struct_formalparameter_write(attr_node, formal_param);
-//    list = g_list_next(list);
-//  }
-//}
-
-//static DiaObject *structclass_load(ObjectNode obj_node, int version,
-//			     const char *filename)
-//{
-//  STRUCTClass *structclass;
-//  Element *elem;
-//  DiaObject *obj;
-//  AttributeNode attr_node;
-//  int i;
-//  GList *list;
-//
-//
-//  structclass = g_malloc0(sizeof(STRUCTClass));
-//
-//  elem = &structclass->element;
-//  obj = &elem->object;
-//
-//  obj->type = &structclass_type;
-//  obj->ops = &structclass_ops;
-//
-//  element_load(elem, obj_node);
-//
-//#ifdef STRUCT_MAINPOINT
-//  element_init(elem, 8, STRUCTCLASS_CONNECTIONPOINTS + 1);
-//#else
-//  element_init(elem, 8, STRUCTCLASS_CONNECTIONPOINTS);
-//#endif
-//
-//  structclass->properties_dialog =  NULL;
-//
-//  for (i=0;i<STRUCTCLASS_CONNECTIONPOINTS;i++) {
-//    obj->connections[i] = &structclass->connections[i];
-//    structclass->connections[i].object = obj;
-//    structclass->connections[i].connected = NULL;
-//  }
-//
-//  fill_in_fontdata(structclass);
-//
-//  /* kind of dirty, object_load_props() may leave us in an inconsistent state --hb */
-//  object_load_props(obj,obj_node);
-//
-//  /* parameters loaded via StdProp dont belong here anymore. In case of strings they
-//   * will produce leaks. Otherwise the are just wasteing time (at runtime and while
-//   * reading the code). Except maybe for some compatibility stuff.
-//   * Although that *could* probably done via StdProp too.                      --hb
-//   */
-//
-//  /* new since 0.94, don't wrap by default to keep old diagrams intact */
-//    attr_node  =   factory_find_custom_node(obj_node,"JL_struct");
-//  if(attr_node)
-//  {
-//      xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
-//      if (key) {
-//           structclass->name =  g_locale_to_utf8(key,-1,NULL,NULL,NULL);
-//            xmlFree (key);
-//        }
-//  }
-//
-//  structclass->wrap_operations = FALSE;
-//  attr_node = object_find_attribute(obj_node, "wrap_operations");
-//  if (attr_node != NULL)
-//    structclass->wrap_operations = data_boolean(attribute_first_data(attr_node));
-//
-//  structclass->wrap_after_char = STRUCTCLASS_WRAP_AFTER_CHAR;
-//  attr_node = object_find_attribute(obj_node, "wrap_after_char");
-//  if (attr_node != NULL)
-//    structclass->wrap_after_char = data_int(attribute_first_data(attr_node));
-//
-//  /* if it uses the new name the value is already set by object_load_props() above */
-//  structclass->comment_line_length = STRUCTCLASS_COMMENT_LINE_LENGTH;
-//  attr_node = object_find_attribute(obj_node,"comment_line_length");
-//  /* support the unusal cased name, although it only existed in cvs version */
-//  if (attr_node == NULL)
-//    attr_node = object_find_attribute(obj_node,"Comment_line_length");
-//  if (attr_node != NULL)
-//    structclass->comment_line_length = data_int(attribute_first_data(attr_node));
-//
-//  /* compatibility with 0.94 and before as well as the temporary state with only 'comment_line_length' */
-//  structclass->comment_tagging = (attr_node != NULL);
-//  attr_node = object_find_attribute(obj_node, "comment_tagging");
-//  if (attr_node != NULL)
-//    structclass->comment_tagging = data_boolean(attribute_first_data(attr_node));
-//
-//  /* Loads the line width */
-//  structclass->line_width = STRUCTCLASS_BORDER;
-//  attr_node = object_find_attribute(obj_node, PROP_STDNAME_LINE_WIDTH);
-//  if(attr_node != NULL)
-//    structclass->line_width = data_real(attribute_first_data(attr_node));
-//
-//  structclass->line_color = color_black;
-//  /* support the old name ... */
-//  attr_node = object_find_attribute(obj_node, "foreground_color");
-//  if(attr_node != NULL)
-//    data_color(attribute_first_data(attr_node), &structclass->line_color);
-//  structclass->text_color = structclass->line_color;
-//  /* ... but prefer the new one */
-//  attr_node = object_find_attribute(obj_node, "line_color");
-//  if(attr_node != NULL)
-//    data_color(attribute_first_data(attr_node), &structclass->line_color);
-//  attr_node = object_find_attribute(obj_node, "text_color");
-//  if(attr_node != NULL)
-//    data_color(attribute_first_data(attr_node), &structclass->text_color);
-//
-//  structclass->fill_color = color_white;
-//  /* support the old name ... */
-//  attr_node = object_find_attribute(obj_node, "background_color");
-//  if(attr_node != NULL)
-//    data_color(attribute_first_data(attr_node), &structclass->fill_color);
-//  /* ... but prefer the new one */
-//  attr_node = object_find_attribute(obj_node, "fill_color");
-//  if(attr_node != NULL)
-//    data_color(attribute_first_data(attr_node), &structclass->fill_color);
-//
-//  /* Attribute info: */
-//  list = structclass->attributes;
-//  while (list) {
-//    STRUCTAttribute *attr = list->data;
-//    g_assert(attr);
-//
-//    struct_attribute_ensure_connection_points (attr, obj);
-//    list = g_list_next(list);
-//  }
-//
-//  /* Operations info: */
-//  list = structclass->operations;
-//  while (list) {
-//    STRUCTOperation *op = (STRUCTOperation *)list->data;
-//    g_assert(op);
-//
-//    struct_operation_ensure_connection_points (op, obj);
-//    list = g_list_next(list);
-//  }
-//
-//  /* Template info: */
-//  structclass->template = FALSE;
-//  attr_node = object_find_attribute(obj_node, "template");
-//  if (attr_node != NULL)
-//    structclass->template = data_boolean(attribute_first_data(attr_node));
-//
-//  fill_in_fontdata(structclass);
-//
-//  structclass->stereotype_string = NULL;
-//
-//  structclass_calculate_data(structclass);
-//
-//  elem->extra_spacing.border_trans = structclass->line_width/2.0;
-//  structclass_update_data(structclass);
-//
-//  for (i=0;i<8;i++) {
-//    obj->handles[i]->type = HANDLE_NON_MOVABLE;
-//  }
-//
-//#ifdef DEBUG
-//  structclass_sanity_check(structclass, "Loaded class");
-//#endif
-//
-//  return &structclass->element.object;
-//}
 
 /** Returns the number of connection points used by the attributes and
  * connections in the current state of the object.

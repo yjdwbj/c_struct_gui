@@ -1158,6 +1158,13 @@ gboolean factory_is_special_object(const gchar *name)
     return b;
 }
 
+gboolean factory_is_system_data(const gchar *name)
+{
+    gboolean *b = FALSE;
+    if(!g_ascii_strcasecmp(name,"SYS_DATA"))
+        b = TRUE;
+    return b;
+}
 
 
 

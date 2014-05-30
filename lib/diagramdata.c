@@ -98,7 +98,9 @@ static void
 diagram_data_init(DiagramData *data)
 {
   Color* color = persistence_register_color ("new_diagram_bgcolour", &color_white);
-  gboolean compress = persistence_register_boolean ("compress_save", TRUE);
+  /* 这里默认保存的不是压缩格式 */
+  gboolean compress = persistence_register_boolean ("compress_save", FALSE);
+
   Layer *first_layer;
 
   data->extents.left = 0.0;
@@ -119,7 +121,7 @@ diagram_data_init(DiagramData *data)
   data->selected_count_private = 0;
   data->selected = NULL;
 
-  data->is_compressed = compress; /* Overridden by doc */
+  data->is_compressed = 0 ; /*compress;  Overridden by doc */
 
   data->text_edits = NULL;
   data->active_text_edit = NULL;
@@ -220,6 +222,8 @@ new_layer(gchar *name, DiagramData *parent)
 
 
   factoryContainer->curLayer = layer;
+  factoryContainer->sys_info = g_new0(FactorySystemInfo,1);
+  factoryContainer->sys_info->fstype  =(FactorySystemType*) object_get_type("SystemInfo");
   return layer;
 }
 

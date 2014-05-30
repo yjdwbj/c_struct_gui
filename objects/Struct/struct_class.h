@@ -584,7 +584,7 @@ GtkWidget *factory_get_new_iditem(SaveIdItem *swt,GSList **grouplist);
 GtkWidget *factory_get_new_musicitem( SaveMusicItem *swt,GList *fillist,GSList **grouplist);
 
 
-gboolean factory_is_system_data(const gchar *name);
+
 
 GtkWidget *factory_music_file_manager(GtkWidget *parent,SaveMusicDialog *smd);
 GtkWidget *factory_download_file_manager(GtkWidget *parent,SaveMusicDialog *smd);
@@ -620,6 +620,15 @@ void factory_fm_get_cboxlist(SaveMusicDialog *smd);
 void factory_update_ActionId_object(GtkWidget *comobox,ActionID *aid);
 
 void factory_setting_systemdata(STRUCTClass *structclass);
+
+void factory_systeminfo_create();
+void factory_systeminfo_apply_dialog(GtkWidget *widget,gint       response_id,gpointer   user_data);
+void factory_systeminfo_load();
+void factory_system_dialog(GList *list);
+
+void factory_systeminfo_callback();
+
+
 //void factoryReadDataFromFile(STRUCTClass *structclass);
 
 

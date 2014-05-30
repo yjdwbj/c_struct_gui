@@ -31,6 +31,7 @@
 #include "sheets.h"
 
 extern DiaObjectType structclass_type;
+extern DiaObjectType factory_systeminfo_type;
 
 
 
@@ -48,6 +49,7 @@ dia_plugin_init(PluginInfo *info)
     return DIA_PLUGIN_INIT_ERROR;
 
    object_register_type(&structclass_type);
+   object_register_type(&factory_systeminfo_type); /* 这里为系统信息注册一个类型，这里可以单独做一个动态链接库的 */
 
   return DIA_PLUGIN_INIT_OK;
 }
