@@ -57,6 +57,8 @@ ShellExecuteA (long        hwnd,
                const char* lpParameters,
                const char* lpDirectory,
                int         nShowCmd);
+
+
 #endif
 
 #include "intl.h"

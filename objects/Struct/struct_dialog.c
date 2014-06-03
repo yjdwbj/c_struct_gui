@@ -3080,6 +3080,7 @@ static void factory_connection_two_object(STRUCTClass *fclass, /* start pointer*
 static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer user_data)
 {
     SaveStruct *sss = (SaveStruct *)value;
+    g_return_if_fail(sss);
     switch(sss->celltype)
     {
     case ECOMBO:
@@ -3212,37 +3213,40 @@ void factory_delete_line_between_two_objects(STRUCTClass *startc,const gchar *en
     DDisplay *ddisp =  ddisplay_active();
 //    Layer *curlayer = startc->element.object.parent_layer;
     STRUCTClass *objclass = g_hash_table_lookup(curLayer->defnames,endc);
-    if(objclass)
+    g_return_if_fail(objclass);
+
+    ConnectionPoint *cpstart = &startc->connections[8];
+    ConnectionPoint *cpend = &objclass->connections[8];
+    DiaObject *line =  factory_find_same_diaobject_via_glist(cpend->connected,cpstart->connected);
+    if(line && factory_is_connected(cpend,cpstart))
     {
-        ConnectionPoint *cpstart = &startc->connections[8];
-        ConnectionPoint *cpend = &objclass->connections[8];
-        DiaObject *line =  factory_find_same_diaobject_via_glist(cpend->connected,cpstart->connected);
-        if(line && factory_is_connected(cpend,cpstart))
-        {
-            /* 上次的连线,到此要删掉它,重新连线 */
-            cpstart->connected  = g_list_remove(cpstart->connected,line); /* 删掉对方链表里的对像.*/
-            cpend->connected = g_list_remove(cpend->connected,line);
-            g_list_free1(line->connections[0]->connected);
-            line->connections[0]->connected = NULL;
-            line->connections[0]->object = NULL;
+        /* 上次的连线,到此要删掉它,重新连线 */
+        cpstart->connected  = g_list_remove(cpstart->connected,line); /* 删掉对方链表里的对像.*/
+        cpend->connected = g_list_remove(cpend->connected,line);
+        g_list_free1(line->connections[0]->connected);
+        line->connections[0]->connected = NULL;
+        line->connections[0]->object = NULL;
 
-            layer_remove_object(curLayer,line); // 在当前的画布里面删除连线对像.
+        layer_remove_object(curLayer,line); // 在当前的画布里面删除连线对像.
 
-            diagram_flush(ddisp->diagram);
-        }
-        diagram_select(ddisp->diagram,(DiaObject*)objclass);
-        diagram_unselect_objects(ddisp->diagram,ddisp->diagram->data->selected);
-        diagram_select(ddisp->diagram,startc);
+        diagram_flush(ddisp->diagram);
     }
+    diagram_select(ddisp->diagram,(DiaObject*)objclass);
+    diagram_unselect_objects(ddisp->diagram,ddisp->diagram->data->selected);
+    diagram_select(ddisp->diagram,startc);
+
 }
 
 void factory_change_view_name(STRUCTClass *fclass)
 {
+    g_return_if_fail(fclass);
+    g_return_if_fail(fclass->pps);
     PublicSection *pps = fclass->pps;
-    if(!pps)
-        return NULL;
     pps->hasfinished = gtk_toggle_tool_button_get_active(GTK_TOGGLE_TOOL_BUTTON(pps->wid_hasfinished));
     gchar *txt = gtk_entry_get_text(GTK_ENTRY(pps->wid_rename_entry));
+
+    if(txt && !strlen(txt))
+        return NULL; /* 空字符不更改 */
     if(g_utf8_validate(txt,-1,NULL))
         pps->name = g_strdup(txt);
     else
@@ -3262,16 +3266,21 @@ void factory_change_view_name(STRUCTClass *fclass)
                 gchar *msg_err = g_locale_to_utf8(_("找到时有相同名字的控件,请更换名字!\n"),-1,NULL,NULL,NULL);
                 message_error(msg_err);
                 g_free(msg_err);
+                g_free(pps->name);
+                pps->name = g_strdup(fclass->name);
+                gtk_entry_set_text(GTK_ENTRY(pps->wid_rename_entry),pclass->name);
                 break;
             }
         }
 
         if(!exists && curLayer)
         {
+            g_return_if_fail(curLayer->defnames);
             g_hash_table_remove(curLayer->defnames,fclass->name);
             fclass->name = g_strdup(pps->name);
             g_hash_table_insert(curLayer->defnames,fclass->name,fclass);
         }
+
         structclass_calculate_data(fclass);
         structclass_update_data(fclass);
 
@@ -3819,8 +3828,6 @@ void factory_save_unionbutton_dialog(GtkWidget *widget,
                                      gpointer   user_data)
 {
     /* 联合体按钮 */
-
-
     if (   response_id == GTK_RESPONSE_APPLY
             || response_id == GTK_RESPONSE_OK)
     {
@@ -4560,7 +4567,7 @@ void factory_append_public_info(GtkWidget *dialog,STRUCTClass *fclass)
     pps->wid_rename_entry = entry;
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(chbox),pps->hasfinished);
     gtk_entry_set_text( GTK_ENTRY(pps->wid_rename_entry),pps->name);
-    gtk_entry_set_max_length(GTK_ENTRY(pps->wid_rename_entry),255);
+    gtk_entry_set_max_length(GTK_ENTRY(pps->wid_rename_entry),50);
     gtk_box_pack_start(GTK_BOX(hbox), name_lab, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(hbox), pps->wid_rename_entry, TRUE, TRUE, 0);
 
@@ -4607,8 +4614,8 @@ void factory_create_and_fill_dialog(STRUCTClass *fclass, gboolean is_default)
     gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),prop_dialog->mainTable);
 //    if(!factory_is_system_data(fclass->element.object.name))
 //    {
-        factory_append_public_info(prop_dialog->dialog,fclass);
-        gtk_table_set_col_spacing(GTK_TABLE(prop_dialog->mainTable),1,20);
+    factory_append_public_info(prop_dialog->dialog,fclass);
+    gtk_table_set_col_spacing(GTK_TABLE(prop_dialog->mainTable),1,20);
 //    }
 
 }
@@ -4617,8 +4624,8 @@ void factory_create_and_fill_dialog(STRUCTClass *fclass, gboolean is_default)
 
 
 void factory_systeminfo_apply_dialog(GtkWidget *widget,
-                             gint       response_id,
-                             gpointer   user_data)
+                                     gint       response_id,
+                                     gpointer   user_data)
 {
     if (   response_id == GTK_RESPONSE_APPLY
             || response_id == GTK_RESPONSE_OK)
@@ -4647,7 +4654,7 @@ void factory_systeminfo_callback()
     {
         FactoryStructItemList *fsil = g_hash_table_lookup(factoryContainer->structTable,"SYS_DATA");
         GList *itemlist = fsil->list;
-        for(; itemlist != NULL ; itemlist = itemlist->next)
+        for(; itemlist ; itemlist = itemlist->next)
         {
             FactoryStructItem *fst = itemlist->data;
             SaveStruct *sst= factory_get_savestruct(fst);
@@ -4839,6 +4846,7 @@ static void factory_choose_musicfile_callback(GtkWidget *dlg,
         gpointer   user_data)
 {
     SaveMusicDialog *smd = user_data;
+     g_return_if_fail(smd);
     SaveMusicFileMan *smfm = smd->smfm;
     if (response == GTK_RESPONSE_ACCEPT)
     {
@@ -4925,6 +4933,7 @@ static void factory_choose_musicfile_callback(GtkWidget *dlg,
 void factory_open_file_dialog(GtkWidget *widget,gpointer user_data)
 {
     SaveMusicDialog *smd =(SaveMusicDialog *) user_data;
+    g_return_if_fail(smd);
     SaveMusicFileMan *smfm = smd->smfm;
     if(!smfm->opendlg)
     {

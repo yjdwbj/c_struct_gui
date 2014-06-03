@@ -26,6 +26,7 @@
 #include <gdk/gdkkeysyms.h>
 #include <string.h>
 
+
 #include "intl.h"
 #include "menus.h"
 #include "tool.h"
@@ -64,6 +65,20 @@
 
 
 extern FactoryStructItemAll *factoryContainer ;
+
+
+typedef struct _DownloadVar DownloadVar;
+struct _DownloadVar
+{
+    gchar *name;
+    GtkWidget *wid_lab;
+    GtkWidget *wid_var;
+    gchar *value;
+};
+
+
+
+
 
 static void plugin_callback (GtkWidget *widget, gpointer data);
 
@@ -553,22 +568,130 @@ ensure_menu_path (GtkUIManager *ui_manager, GtkActionGroup *actions, const gchar
     return id;
 }
 
+int _get_output_format( void ){ return 0; }
 void factory_callback_muisc_convert(GtkWidget *btn,gpointer user_data)
 {
-   // g_spawn_command_line_async("music_convert.exe",NULL);
-  // WinExec("music_convert.exe",0);
 
-    system("music_convert.exe");
+    gchar *cmd = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "music_convert.exe",NULL);
+    gchar *argv[] = {cmd,NULL};
+    GPid pid;
+    g_spawn_async_with_pipes(dia_get_lib_directory("bin"),
+                             argv,NULL,G_SPAWN_SEARCH_PATH,NULL,NULL,&pid,NULL,NULL,NULL,NULL);
+
+    g_strfreev(argv);
+
 }
+
+
+
+//GList *downlist = NULL;
+//
+//void factory_get_initial_download_var(GList *downlist)
+//{
+//    GtkWidget *infoalign = gtk_label_new(factory_utf8(_("info文件对齐:")));
+//    GktWidget *infoaligncombox = gtk_combo_box_new();
+//    DownloadVar *dv = g_new0(DownloadVar,1);
+//    dv->name = g_strdup("-align");
+//    dv->wid_lab = infoalign;
+//    dv->wid_var = infoaligncombox;
+//    dv->value = g_strdup("1");
+//    downlist = g_list_append(downlist,dv);
+//    int n = 0 ;
+//    for(;n < g_strstr_len(vvv);n++)
+//    {
+//        gchar *num = g_strdup_printf("%d",pow(2,n));
+//        gtk_combo_box_append_text(GTK_COMBO_BOX(infoaligncombox),num);
+//        g_free(num);
+//    }
+//
+//    GtkWidget *normal_aline = gtk_label_new(factory_utf8("普通文件对齐:"));
+//    GtkWidget *normal_combox = gtk_combo_box_new();
+//     n = 0 ;
+//    for(;n < g_strstr_len(vvv);n++)
+//    {
+//        gchar *num = g_strdup_printf("%d",pow(2,n));
+//        gtk_combo_box_append_text(GTK_COMBO_BOX(normal_combox),num);
+//        g_free(num);
+//    }
+//    dv = g_new0(DownloadVar,1);
+//    dv->name = "-aline";
+//    dv->wid_lab = normal_aline;
+//    dv->wid_var = normal_combox;
+//    dv->value = g_strdup("");
+//
+//    downlist = g_list_append(downlist,dv);
+//
+//
+//    GtkWidget *copys = gtk_lable_new(factory_utf8("下载代码份数:"));
+//    GtkWidget *copyspbox =  gtk_spin_button_new_with_range(1,10,1);
+//
+//    dv = g_new0(DownloadVar,1);
+//    dv->name = "-codecnt";
+//    dv->wid_lab = copys;
+//    dv->wid_var = copyspbox;
+//    dv->value = g_strdup("");
+//    downlist = g_list_append(downlist,dv);
+//
+//
+//    GktWidget *device_name = gtk_lable_new(factory_utf8("设备名字(ascii):"));
+//    GtkWidget *device_entry = gtk_entry_new_with_lable("device");
+//    dv = g_new0(DownloadVar,1);
+//    dv->name = "-dev";
+//    dv->wid_lab = device_name;
+//    dv->wid_var = device_entry;
+//    dv->value = g_strdup("");
+//     downlist = g_list_append(downlist,dv);
+//
+//
+//    GtkWidget *key_lable = gtk_lable_new(factory_utf8("密码:"));
+//    GtkWidget *key_entry = gtk_entry_new();
+//       dv = g_new0(DownloadVar,1);
+//    dv->name = "-key";
+//    dv->wid_lab = key_lable;
+//    dv->wid_var = key_entry;
+//    dv->value = g_strdup("0xff39");
+//    gtk_entry_set_text(GTK_ENTRY(dv->wid_var),dv->value);
+//    downlist = g_list_append(downlist,dv);
+//
+//    GtkWidget *device_type = gtk_lable_new(factory_utf8("设备类型:"));
+//    GtkWidget *devtype_combox = gtk_combo_box_new();
+//    gtk_combo_box_append_text(GTK_COMBO_BOX(devtype_combox),"nor");
+//    gtk_combo_box_append_text(GTK_COMBO_BOX(devtype_combox),"nand");
+//    gtk_combo_box_append_text(GTK_COMBO_BOX(devtype_combox),"sd");
+//    dv = g_new0(DownloadVar,1);
+//    dv->name = "-todisk";
+//    dv->wid_lab = device_type;
+//    dv->wid_var = devtype_combox;
+//    dv->value = g_strdup("0xff39");
+//    downlist = g_list_append(downlist,dv);
+//
+//    GtkWidget *erase_label = gtk_lable_new(factory_utf8("擦除:"));
+//    GtkWidget *erase_checkbtn = gtk_check_button_new();
+//    dv = g_new0(DownloadVar,1);
+//    dv->name = "-erase";
+//    dv->wid_lab = erase_label;
+//    dv->wid_var = erase_checkbtn;
+//    dv->value = g_strdup("1");
+//    gtk_toggle_button_set_active( dv->value[0] == '1' ? TRUE : FALSE);
+//
+//    downlist = g_list_append(downlist,dv);
+//}
 
 
 void factory_callback_download_to_device(GtkWidget *btn,gpointer user_data)
 {
+    gchar *cmd = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "isdownload_gui.exe",NULL);
+    gchar *argv[] = {cmd,NULL};
+    GPid pid;
+    g_spawn_async_with_pipes(dia_get_lib_directory("bin"),
+                             argv,NULL,G_SPAWN_SEARCH_PATH,NULL,NULL,&pid,NULL,NULL,NULL,NULL);
 
+    g_strfreev(argv);
 }
 
 void factory_callback_system_data(GtkWidget *btn,gpointer user_data)
 {
+    g_return_if_fail(factoryContainer);
     if(factoryContainer->sys_info)
     {
         FactorySystemType *fstype = factoryContainer->sys_info->fstype;

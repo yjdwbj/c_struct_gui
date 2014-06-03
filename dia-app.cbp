@@ -61,7 +61,6 @@
 				</Compiler>
 				<Linker>
 					<Add option="-ldia" />
-					<Add option="-mwindows" />
 				</Linker>
 			</Target>
 			<Target title="standard">
@@ -79,7 +78,6 @@
 				</Compiler>
 				<Linker>
 					<Add option="-ldia" />
-					<Add library="user32" />
 				</Linker>
 			</Target>
 			<Target title="dia">

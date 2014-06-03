@@ -42,7 +42,7 @@
 
 FactoryStructItemAll *factoryContainer = NULL;
 static GSList *sheets = NULL;
-
+FILE *logfd;
 Sheet *
 new_sheet(char *name, gchar *description, char *filename, SheetScope scope,
           Sheet *shadowing)
@@ -357,7 +357,7 @@ static void factory_check_items_valid(gpointer key, gpointer value, gpointer use
 {
     gchar *keystr = (gchar *)key;
     GList *vallist = value;
-
+     g_return_if_fail(vallist);
     for(; vallist; vallist = vallist->next)
     {
         gpointer ret = NULL;
@@ -392,18 +392,16 @@ static void factory_check_items_valid(gpointer key, gpointer value, gpointer use
 
             if(item->Itype == NT)
             {
-                gchar *msg_err = g_locale_to_utf8(_("%s没有定义"),-1,NULL,NULL,NULL);
-                message_error(_(g_strdup_printf(msg_err,item->SType)));
+                gchar *msg_err = factory_utf8(g_strdup_printf(_("ERR:请检查配置文件, %s没有定义"),item->SType));
+                message_error(msg_err);
+                fwrite(msg_err,strlen(msg_err),1,logfd);
+                fclose(logfd);
                 g_free(msg_err);
+                exit(1);
+
             }
 
         }
-
-//        else if (!g_ascii_strncasecmp("ACTIONID_",item->Name,9))
-//        {
-//            item->Itype == NT;
-//        }
-
 
     }
 
@@ -412,6 +410,7 @@ static void factory_check_items_valid(gpointer key, gpointer value, gpointer use
 static void factory_check_struct_items_valid(gpointer key, gpointer value, gpointer user_data)
 {
     FactoryStructItemList *fsil = value;
+    g_return_if_fail(fsil);
     if(fsil)
         factory_check_items_valid(NULL,fsil->list,NULL);
 
@@ -442,8 +441,14 @@ void factoryReadDataFromFile(const gchar* filename)
     FILE *fd;
     if((fd =  fopen(filename,"r")) == NULL)
     {
-        message_error(_("Couldn't open filename "
-                        "object-libs; exiting...\n"));
+
+        gchar *msg_err = g_strdup_printf(_("Can't open output file %s: %s\n"),
+                      dia_message_filename(filename), strerror(errno));
+        fwrite(msg_err,strlen(msg_err),1,logfd);
+        fclose(logfd);
+        message_error(msg_err);
+        g_free(msg_err);
+        exit(1);
     }
 
 //    if(stat(filename,&statbuf) <0 )
@@ -466,6 +471,8 @@ void factoryReadDataFromFile(const gchar* filename)
     {
         gchar *msg_err = g_locale_to_utf8(_("文件格式错误,找不到文件上的版本信息!\n"),-1,NULL,NULL,NULL);
         message_error(msg_err);
+        fwrite(msg_err,strlen(msg_err),1,logfd);
+        fclose(logfd);
         g_free(msg_err);
         exit(1);
     }
@@ -512,7 +519,8 @@ void factoryReadDataFromFile(const gchar* filename)
         curline++;
 
         aline = g_strstrip(filetxt);
-
+        if(0 == strlen(aline))
+            continue;
         if(!g_ascii_strncasecmp(aline,_(":version="),9))
             continue;
         isutf8 = g_utf8_validate(aline,-1,NULL);
@@ -523,8 +531,11 @@ void factoryReadDataFromFile(const gchar* filename)
 
             if(g_strv_length(sbuf) < 3)
             {
-                message_error(_("This Header format is error."
-                                "object-libs; exiting...\n"));
+                gchar *msg_err = factory_utf8(g_strdup_printf(_("文件格式错误,配置文件:%d 行．\n"),curline));
+                message_error(msg_err);
+                fwrite(msg_err,strlen(msg_err),1,logfd);
+                g_free(msg_err);
+                exit(1);
             }
             if(0 == g_ascii_strncasecmp("Enum",sbuf[1],4)) // 2014-3-20 lcy 这里匹配到枚举名字.
             {

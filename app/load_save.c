@@ -160,11 +160,13 @@ read_objects(xmlNodePtr objects,
             if (versionstr != NULL && g_ascii_strncasecmp(versionstr,factoryContainer->file_version,strlen(versionstr)))
             {
                 //	version = atoi(versionstr);
-                gchar *msg_err =  g_locale_to_utf8(_("结构体文件的版本错误!无法打开."),-1,NULL,NULL,NULL);
+                gchar *msg_err =  factory_utf8(_("结构体文件的版本错误!无法打开."));
                 message_error(msg_err);
+                fwrite(msg_err,strlen(msg_err),1,logfd);
+                fclose(logfd);
                 g_free(msg_err);
                 xmlFree(versionstr);
-                return NULL;
+                exit(1);
             }
 
             type = object_get_type((char *)typestr);
@@ -182,7 +184,7 @@ read_objects(xmlNodePtr objects,
                 if(objname && (strlen(objname) > 1)) /*不会加载它,只是用它读取数据*/
                 {
                     if(factory_is_special_object(objname) ||
-                       factory_is_system_data(objname)) /*特殊控件不需要加载的*/
+                            factory_is_system_data(objname)) /*特殊控件不需要加载的*/
                     {
                         obj_node = obj_node->next;
                         continue;
@@ -804,7 +806,7 @@ write_objects(GList *objects, xmlNodePtr objects_node,
     FactoryStructItemList *fsil2= g_hash_table_lookup(factoryContainer->structTable,"IDLST");
     DiaObject *idobj = otype->ops->create(&startpoint,(void*)fsil2->number,&h1,&h2);
 
-      FactoryStructItemList *fsil3= g_hash_table_lookup(factoryContainer->structTable,"SYS_DATA");
+    FactoryStructItemList *fsil3= g_hash_table_lookup(factoryContainer->structTable,"SYS_DATA");
     DiaObject *sysinfoobj = otype->ops->create(&startpoint,(void*)fsil3->number,&h1,&h2);
 
     fileobj->name = g_strdup(fsil->sname);
@@ -872,7 +874,7 @@ write_objects(GList *objects, xmlNodePtr objects_node,
     fileobj->ops->destroy(fileobj);
     objects = g_list_remove(objects,idobj);
     idobj->ops->destroy(idobj);
-     objects = g_list_remove(objects,sysinfoobj);
+    objects = g_list_remove(objects,sysinfoobj);
     sysinfoobj->ops->destroy(sysinfoobj);
     return TRUE;
 }
@@ -1252,19 +1254,27 @@ CLEANUP:
     }
     else
     {
-        gchar *input = g_strdup_printf("-i=\"%s\"",user_filename);
+        gchar *input = g_strdup_printf("-i=%s",user_filename);
         int n = strlen(user_filename);
         gchar *newfile = g_strdup(user_filename);
         newfile[n-1] = 'n';
         newfile[n-2] = 'i';
         newfile[n-3] = 'b';
-        gchar *outfile = g_strdup_printf("-o=\"%s\"",newfile);
+        gchar *outfile = g_strdup_printf("-o=%s",newfile);
         /* 转换本地码,不然会有乱码的 */
         gchar *utf8f = g_convert(fullpath,-1,"GB2312","UTF-8",NULL,NULL,NULL);
         gchar *utf8i = g_convert(input,-1,"GB2312","UTF-8",NULL,NULL,NULL);
         gchar *utf8o = g_convert(outfile,-1,"GB2312","UTF-8",NULL,NULL,NULL);
         gchar *arg = g_strjoin(" ",utf8f,utf8i,utf8o,NULL);
-        system(arg);
+//        gchar *cmd = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "makebin.exe",NULL);
+        gchar *argv[] = {utf8f,utf8i,utf8o,NULL};
+        GPid pid;
+        g_spawn_async_with_pipes(dia_get_lib_directory("bin"),
+                                 argv,NULL,G_SPAWN_SEARCH_PATH,NULL,NULL,&pid,NULL,NULL,NULL,NULL);
+
+//        g_strfreev(argv);
+
+      //  system(arg);
         g_free(outfile);
         g_free(newfile);
         g_free(input);

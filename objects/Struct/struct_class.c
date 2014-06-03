@@ -2130,6 +2130,7 @@ fill_in_fontdata(STRUCTClass *structclass)
 
 void factory_rename_structclass(STRUCTClass *structclass)
 {
+    g_return_if_fail(structclass);
     DiaObject *obj = &structclass->element.object;
     if( !curLayer ||  factory_is_special_object(obj->name)
             || factory_is_system_data(obj->name))
@@ -2208,7 +2209,7 @@ factory_struct_items_create(Point *startpoint,
 //  structclass->template = FALSE;
     int index = GPOINTER_TO_INT(user_data);
     GList *sstruct = factoryContainer->structList;
-    for(; sstruct !=NULL; sstruct = sstruct->next)
+    for(; sstruct ; sstruct = sstruct->next)
     {
         FactoryStructItemList *i = (FactoryStructItemList *)sstruct->data;
         if(i->number == index)
@@ -2464,9 +2465,7 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         /* 下面下拉框当面名字　*/
         FactoryStructItem *nextobj =  g_list_nth_data(slist,suptr->index);
 //        suptr->structlist = slist;
-
-        if(!nextobj)
-            return ; /* 没有找到控件原型,可能出错了. */
+        g_return_if_fail(nextobj); /* 没有找到控件原型,可能出错了. */
 
 //        if(suptr->curkey) g_free(suptr->curkey);
 //        suptr->curkey = g_strjoin("##",nextobj->FType,nextobj->Name,NULL);
@@ -2588,6 +2587,7 @@ void factory_read_specific_object_from_file(STRUCTClass *fclass,ObjectNode obj_n
 {
 
     gchar *objname = fclass->element.object.name;
+    g_return_if_fail(objname);
     if(!g_ascii_strcasecmp(objname,"FILELST"))
     {
         SaveMusicDialog *smd = curLayer->smd;
@@ -2697,6 +2697,7 @@ void factory_read_value_from_xml(STRUCTClass *fclass,ObjectNode obj_node)
 {
 
     GList *tlist = factory_get_list_from_hashtable(fclass);
+    g_return_if_fail(tlist);
     GList *tttt = tlist;
     AttributeNode attr_node = obj_node;
     for(; tttt != NULL ; tttt = tttt->next)
@@ -2792,6 +2793,7 @@ void factory_update_view_names(STRUCTClass *fclass)
     for(; connlist; connlist = connlist->next)
     {
         Connection *connection  = (Connection *)connlist->data;
+        g_return_if_fail(connection);
         ConnectionPoint *start_cp, *end_cp;
         start_cp = connection->endpoint_handles[0].connected_to;
         end_cp = connection->endpoint_handles[1].connected_to;
@@ -2820,6 +2822,7 @@ void factory_update_view_names(STRUCTClass *fclass)
 void factory_inital_ebtn(SaveStruct *sss,const FactoryStructItem *fst)
 {
     SaveEbtn *sebtn = &sss->value.ssebtn;
+    g_return_if_fail(sebtn);
     sebtn->ebtnslist = g_hash_table_lookup(factoryContainer->enumTable,fst->SType);
     sebtn->ebtnwlist = NULL;
     sebtn->width = g_strdup(fst->Max);
@@ -2868,6 +2871,7 @@ void factory_inital_ebtn(SaveStruct *sss,const FactoryStructItem *fst)
 
 SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
 {
+    g_return_if_fail(fst);
     SaveStruct *sss = g_new0(SaveStruct,1);
     sss->widget1= NULL;
     sss->widget2 = NULL;
@@ -3342,10 +3346,7 @@ structclass_destroy(STRUCTClass *structclass)
     {
         structclass_dialog_free (structclass->properties_dialog);
     }
-
     g_list_free1(structclass->widgetSave);
-
-
 }
 
 static void factory_hashtable_copy(gpointer key,gpointer value,gpointer user_data)
@@ -3534,6 +3535,7 @@ structclass_copy(STRUCTClass *structclass)
 
 static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
 {
+    g_return_if_fail(sss);
     xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
     xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
 
@@ -3623,7 +3625,7 @@ static void factory_write_object_comobox(ActionID *aid,ObjectNode ccc )
 
 static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node)
 {
-
+    g_return_if_fail(sss);
 
     switch(sss->celltype)
     {
@@ -3645,6 +3647,7 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
         xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
         NextID *nid  = &sss->value.nextid;
+        g_return_if_fail(nid);
         GList *tlist = nid->actlist;
         ActionID *aid = g_list_first(tlist)->data;
         if(aid && strlen(aid->pre_name )> 0)
@@ -3661,6 +3664,7 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
     case OBTN:
     {
         NextID *nid  = &sss->value.nextid;
+        g_return_if_fail(nid);
         GList *tlist = nid->actlist;
         ObjectNode obtn = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_obtn", NULL);
         xmlSetProp(obtn, (const xmlChar *)"name", (xmlChar *)sss->name);
@@ -3695,6 +3699,7 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
     case UCOMBO:
     {
         SaveUnion *suptr = &sss->value.sunion;
+        g_return_if_fail(suptr);
         SaveStruct *tsst  =  g_hash_table_lookup(suptr->saveVal,suptr->curkey);
         if(tsst)
         {
@@ -3738,16 +3743,16 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
         else
         {
             SaveUbtn *sbtn = &sss->value.ssubtn;
+            g_return_if_fail(sbtn);
 //        GList *slist = g_hash_table_get_values(sbtn->htoflist);
-            GList *slist = sbtn->savelist;
-            if(slist)
-            {
+                GList *slist = sbtn->savelist;
+
                 for(; slist; slist = slist->next)
                 {
                     SaveStruct *s = slist->data;
                     factory_base_struct_save_to_file(s,obj_node);
                 }
-            }
+
         }
         g_strfreev(split);
 
@@ -3899,7 +3904,10 @@ static void
 factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
                           const char *filename)
 {
+    g_return_if_fail(curLayer);
+    g_return_if_fail(structclass);
     SaveMusicDialog *smd = curLayer->smd;
+    g_return_if_fail(smd);
     element_save(&structclass->element, obj_node);
     /*  2014-3-22 lcy 这里保存自定义控件的数据 */
     /* 2014-3-25 lcy 这里添加一个自定义节点名来安置这个结构体的成员*/
@@ -3909,11 +3917,12 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
     xmlSetProp(obj_node, (const xmlChar *)"vname", (xmlChar *)structclass->name);
     FactoryStructItemList *fsi = g_hash_table_lookup(structclass->EnumsAndStructs->structTable,
                                  objname);
+    g_return_if_fail(fsi);
     if(fsi) /* 写入到指定文件名 */
         xmlSetProp(obj_node, (const xmlChar *)"file", (xmlChar *)fsi->sfile);
     //g_hash_table_foreach(structclass->widgetmap,factory_struct_save_to_xml,(gpointer)obj_node);
     if(factory_is_system_data(fsi->sname))
-        structclass->widgetSave = factoryContainer->sys_info->system_info;
+        structclass->widgetSave = g_list_copy(factoryContainer->sys_info->system_info);
 
     if(!g_strcasecmp(fsi->sname,"FILELST"))
     {
