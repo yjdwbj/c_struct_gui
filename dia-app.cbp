@@ -61,6 +61,7 @@
 				</Compiler>
 				<Linker>
 					<Add option="-ldia" />
+					<Add option="-lgio-2.0" />
 				</Linker>
 			</Target>
 			<Target title="standard">

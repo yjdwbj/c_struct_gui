@@ -570,7 +570,7 @@ struct _DiaObjectType {
                 the .sheet file */
 };
 
-typedef void (*system_info_callback)(); /*!< pointer to the vtable */
+typedef void (*system_info_callback)(GtkWidget *parent); /*!< pointer to the vtable */
 
 struct _FactorySystemType{
     char *name; /*!< The type name should follow a pattern of '<module> - <class>' like "UML - Class" */
@@ -630,6 +630,7 @@ DIAVAR void   dia_object_set_meta (DiaObject *obj, const gchar *key, const gchar
 DIAVAR gchar *dia_object_get_meta (DiaObject *obj, const gchar *key);
 
 DIAVAR gchar *factory_utf8(gchar *str);
+DIAVAR gboolean factory_test_file_exist(const gchar *fname);
 DIAVAR gchar *factory_locale(gchar *str);
 DIAVAR gboolean factory_is_special_object(const gchar *name);
 DIAVAR gchar *factory_get_last_section(const gchar *src,const gchar *delimiter);

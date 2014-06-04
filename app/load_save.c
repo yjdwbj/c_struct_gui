@@ -1246,53 +1246,111 @@ CLEANUP:
     /*这里添加生成BIN文件*/
     gchar *exefile = dia_get_lib_directory("bin");
     gchar *fullpath = g_strconcat(exefile,G_DIR_SEPARATOR_S"makebin.exe",NULL);
-    if(!g_file_test(fullpath, G_FILE_TEST_EXISTS))
-    {
-        gchar *msg_utf8 = g_locale_to_utf8 (_("makebin.exe 找不到,没有生成bin文件."), -1, NULL, NULL, NULL);
-        message_error(msg_utf8);
-        g_free(msg_utf8);
-    }
-    else
-    {
-        gchar *input = g_strdup_printf("-i=%s",user_filename);
-        int n = strlen(user_filename);
-        gchar *newfile = g_strdup(user_filename);
-        newfile[n-1] = 'n';
-        newfile[n-2] = 'i';
-        newfile[n-3] = 'b';
-        gchar *outfile = g_strdup_printf("-o=%s",newfile);
-        /* 转换本地码,不然会有乱码的 */
-        gchar *utf8f = g_convert(fullpath,-1,"GB2312","UTF-8",NULL,NULL,NULL);
-        gchar *utf8i = g_convert(input,-1,"GB2312","UTF-8",NULL,NULL,NULL);
-        gchar *utf8o = g_convert(outfile,-1,"GB2312","UTF-8",NULL,NULL,NULL);
-        gchar *arg = g_strjoin(" ",utf8f,utf8i,utf8o,NULL);
+
+    g_return_if_fail(factory_test_file_exist(fullpath));
+
+    gchar *input = g_strdup_printf("-i=%s",user_filename);
+    int n = strlen(user_filename);
+    gchar *newfile = g_strdup(user_filename);
+    newfile[n-1] = 'n';
+    newfile[n-2] = 'i';
+    newfile[n-3] = 'b';
+    gchar *outfile = g_strdup_printf("-o=%s",newfile);
+    /* 转换本地码,不然会有乱码的 */
+    gchar *utf8f = g_convert(fullpath,-1,"GB2312","UTF-8",NULL,NULL,NULL);
+    gchar *utf8i = g_convert(input,-1,"GB2312","UTF-8",NULL,NULL,NULL);
+    gchar *utf8o = g_convert(outfile,-1,"GB2312","UTF-8",NULL,NULL,NULL);
+    gchar *arg = g_strjoin(" ",utf8f,utf8i,utf8o,NULL);
 //        gchar *cmd = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "makebin.exe",NULL);
-        gchar *argv[] = {utf8f,utf8i,utf8o,NULL};
-        GPid pid;
-        g_spawn_async_with_pipes(dia_get_lib_directory("bin"),
-                                 argv,NULL,G_SPAWN_SEARCH_PATH,NULL,NULL,&pid,NULL,NULL,NULL,NULL);
+    gchar *argv[] = {utf8f,utf8i,utf8o,NULL};
+    GPid pid;
+    g_spawn_sync(NULL,
+                 argv,NULL,
+                 G_SPAWN_LEAVE_DESCRIPTORS_OPEN,
+                 NULL,NULL,
+                 NULL,NULL,NULL,NULL);
 
-//        g_strfreev(argv);
+//    g_spawn_async_with_pipes(dia_get_lib_directory("bin"),
+//                             argv,NULL,G_SPAWN_SEARCH_PATH,NULL,NULL,&pid,NULL,NULL,NULL,NULL);
 
-      //  system(arg);
-        g_free(outfile);
-        g_free(newfile);
-        g_free(input);
-        g_free(arg);
-        g_free(utf8f);
-        g_free(utf8i);
-        g_free(utf8o);
-    }
+    g_free(outfile);
+    g_free(newfile);
+    g_free(input);
+    g_free(arg);
+    g_free(utf8f);
+    g_free(utf8i);
+    g_free(utf8o);
+
     g_free(fullpath);
     g_free(exefile);
     return (ret?FALSE:TRUE);
 }
 
+static void factory_call_isd_download()
+{
+    gchar *filename = g_strdup(ddisplay_active_diagram()->filename);
+    g_return_if_fail(filename);
+    gchar *path = strrchr((char *)filename,G_DIR_SEPARATOR);
+    if(path)
+        *(path+1) = 0;
+//    gchar *filename = g_get_current_dir();
+    g_return_if_fail(factoryContainer);
+
+    GList *dlist = factoryContainer->fgdn_func(filename); /* 取得最新的download 文件列表*/
+
+    int len = g_list_length(dlist);
+    gchar *isdownload_gui = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "isdownload_gui.exe",NULL);
+    gchar *isdownload = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "isd_download.exe",NULL);
+    g_return_if_fail(factory_test_file_exist(isdownload));
+    g_return_if_fail(factory_test_file_exist(isdownload_gui));
+    len +=6;
+    gchar **argv = g_new (gchar*, len+1);
+    argv[len] = NULL;
+    int l = g_strv_length(argv);
+
+    argv[0] =g_strdup(isdownload_gui);
+    argv[1] =g_strdup("code.app");
+    argv[2] =g_strdup("act.inf");
+    argv[3] =g_strdup("id.lst");
+    argv[4] =g_strdup("sysinfo.dat");
+    argv[5] =g_strdup("file.lst");
+    int n = 6;
+    GList *tlist = dlist;
+    for(; tlist; tlist=tlist->next,n++)
+    {
+        argv[n] = g_strdup(tlist->data);
+    }
+
+
+    g_spawn_sync(filename,
+                 argv,NULL,
+                 G_SPAWN_LEAVE_DESCRIPTORS_OPEN,
+                 NULL,NULL,
+                 NULL,NULL,NULL,NULL);
+//    GPid pid;
+//    g_spawn_async_with_pipes(filename,
+//                             argv,NULL,G_SPAWN_SEARCH_PATH,NULL,NULL,&pid,NULL,NULL,NULL,NULL);
+//    for(; dlist; dlist = dlist->next)
+//    {
+//        GFile *dst = g_file_new_for_path(g_strconcat(filename,dlist->data,NULL));
+//        g_file_delete(dst,NULL,NULL);
+//    }
+    g_free(isdownload_gui);
+    g_free(isdownload);
+    g_free(filename);
+    g_strfreev(argv);
+}
+
+
 int
 diagram_save(Diagram *dia, const char *filename)
 {
     gboolean res = diagram_data_save(dia->data, filename);
-
+    if(dia->data->readytodownload) /* 这里是下载到小机器的标志 */
+    {
+        dia->data->readytodownload = FALSE;
+        factory_call_isd_download();
+    }
     if (!res)
     {
         return res;

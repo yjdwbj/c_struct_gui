@@ -624,9 +624,10 @@ void factory_setting_systemdata(STRUCTClass *structclass);
 void factory_systeminfo_create();
 void factory_systeminfo_apply_dialog(GtkWidget *widget,gint       response_id,gpointer   user_data);
 void factory_systeminfo_load();
-void factory_system_dialog(GList *list);
+void factory_system_dialog(GList *list,GtkWidget *parent);
 
-void factory_systeminfo_callback();
+void factory_systeminfo_callback(GtkWidget *parent);
+gpointer factory_get_download_name_list(const gchar *path);
 
 
 //void factoryReadDataFromFile(STRUCTClass *structclass);

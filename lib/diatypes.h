@@ -213,18 +213,8 @@ struct _FactoryStructItemList{
     gboolean isvisible; /* 是否显示到时面板上 */
 };
 
-typedef void (*FactorySystemInfoFunc)(gpointer user_data);
-typedef void (*FactorySystemInfoCallBack)();
+typedef gpointer (*FactoryGetDownloadNameList)(const gchar* path);
 
-//typedef struct _FactorySysInfoOps FactorySysInfoOps;
-//
-//struct _FactorySysInfoOps
-//{
-//    FactorySystemInfoFunc sysinfo_create;
-//    FactorySystemInfoFunc sysinfo_save;
-//    FactorySystemInfoFunc sysinfo_load;
-//    FactorySystemInfoFunc sysinfo_dialog;
-//};
 
 typedef struct _FactorySystemInfo FactorySystemInfo;
 struct _FactorySystemInfo
@@ -244,6 +234,7 @@ struct _FactoryStructItemAll{
     Layer *curLayer;
 //    gpointer *otp_obj; /*这里用来放系统信息，只能有唯一个*/
     FactorySystemInfo *sys_info; /*系统信息*/
+    FactoryGetDownloadNameList fgdn_func;
 
 };
 

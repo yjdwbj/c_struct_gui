@@ -14,7 +14,7 @@
 	"widgets.h"
 	"intl.h"
 
-1401763865 o:\tool\dvs50\config.h
+1401884935 o:\tool\dvs50\config.h
 
 1394617928 o:\tool\dvs50\lib\message.h
 	<stdarg.h>
@@ -28,7 +28,7 @@
 	"diatypes.h"
 	"geometry.h"
 
-1401435845 o:\tool\dvs50\lib\diatypes.h
+1401873210 o:\tool\dvs50\lib\diatypes.h
 	"diavar.h"
 
 1394621090 o:\tool\dvs50\lib\geometry.h
@@ -129,7 +129,7 @@
 	"orth_conn.h"
 	"autoroute.h"
 
-1401441748 o:\tool\dvs50\lib\object.h
+1401871877 o:\tool\dvs50\lib\object.h
 	"diatypes.h"
 	<gtk/gtk.h>
 	"geometry.h"
@@ -294,7 +294,7 @@
 	<glib.h>
 	<diagramdata.h>
 
-1401181570 o:\tool\dvs50\lib\diagramdata.h
+1401883915 o:\tool\dvs50\lib\diagramdata.h
 	<glib.h>
 	<string.h>
 	"diatypes.h"
@@ -529,7 +529,7 @@
 	"properties.h"
 	"diavar.h"
 
-1401446747 source:o:\tool\dvs50\lib\diagramdata.c
+1401883936 source:o:\tool\dvs50\lib\diagramdata.c
 	<config.h>
 	"intl.h"
 	"diagramdata.h"
@@ -768,7 +768,7 @@
 	<config.h>
 	"object.h"
 
-1401436566 source:o:\tool\dvs50\lib\object.c
+1401845802 source:o:\tool\dvs50\lib\object.c
 	<config.h>
 	<stdio.h>
 	<string.h>
@@ -1052,7 +1052,7 @@
 	"message.h"
 	"diagdkrenderer.h"
 
-1401772722 source:o:\tool\dvs50\lib\sheet.c
+1401853072 source:o:\tool\dvs50\lib\sheet.c
 	<config.h>
 	<stdlib.h>
 	<string.h>
@@ -1138,7 +1138,7 @@
 	<time.h>
 	<gdk/gdkkeysyms.h>
 
-1401765163 source:o:\tool\dvs50\app\app_procs.c
+1401871357 source:o:\tool\dvs50\app\app_procs.c
 	<config.h>
 	<stdio.h>
 	<stdlib.h>
@@ -1322,7 +1322,7 @@
 	"attributes.h"
 	"persistence.h"
 
-1401794164 source:o:\tool\dvs50\app\commands.c
+1401872738 source:o:\tool\dvs50\app\commands.c
 	<config.h>
 	<unistd.h>
 	<stdlib.h>
@@ -1679,7 +1679,7 @@
 	<gtk/gtk.h>
 	<glib.h>
 
-1401446579 source:o:\tool\dvs50\app\filedlg.c
+1401879631 source:o:\tool\dvs50\app\filedlg.c
 	<config.h>
 	<sys/types.h>
 	<sys/stat.h>
@@ -1831,7 +1831,7 @@
 	"intl.h"
 	<math.h>
 
-1401798222 source:o:\tool\dvs50\app\load_save.c
+1401884896 source:o:\tool\dvs50\app\load_save.c
 	<config.h>
 	<sys/stat.h>
 	<unistd.h>
@@ -1867,7 +1867,7 @@
 	"magnify.h"
 	"cursor.h"
 
-1401798320 source:o:\tool\dvs50\app\menus.c
+1401884849 source:o:\tool\dvs50\app\menus.c
 	<config.h>
 	<gtk/gtk.h>
 	<gdk/gdkkeysyms.h>
@@ -2368,7 +2368,7 @@
 
 1398410525 source:o:\tool\dvs50\dia.rc
 
-1401431198 source:o:\tool\dvs50\objects\struct\struct.c
+1401873255 source:o:\tool\dvs50\objects\struct\struct.c
 	<config.h>
 	<string.h>
 	<stdio.h>
@@ -2378,7 +2378,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1401774246 source:o:\tool\dvs50\objects\struct\struct_class.c
+1401872999 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2395,7 +2395,7 @@
 	"sheet.h"
 	"filedlg.h"
 
-1401441711 o:\tool\dvs50\objects\struct\struct_class.h
+1401871994 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2412,7 +2412,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1401773112 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1401871994 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>

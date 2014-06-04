@@ -4644,7 +4644,30 @@ void factory_systeminfo_apply_dialog(GtkWidget *widget,
 }
 
 
-void factory_systeminfo_callback()
+gpointer factory_get_download_name_list(const gchar *path)
+{
+    GList *list = NULL;
+     g_return_if_fail(curLayer);
+     g_return_if_fail(curLayer->smd);
+     SaveMusicDialog *smd = curLayer->smd;
+     SaveMusicFileMan *smfm = smd->smfm;
+     g_return_if_fail(smfm);
+     GList *tlist = smfm->filelist;
+     for(;tlist;tlist = tlist->next)
+     {
+         SaveMusicFile *smf = tlist->data;
+         gchar *npc = g_strconcat(path,smf->down_name,NULL);
+         GFile *src = g_file_new_for_path(smf->full_name);
+         GFile *dst = g_file_new_for_path(npc);
+         g_file_copy(src,dst,G_FILE_COPY_OVERWRITE,NULL,NULL,NULL,NULL);
+         g_free(npc);
+         list = g_list_append(list,smf->down_name);
+     }
+     return (gpointer)list;
+}
+
+
+void factory_systeminfo_callback(GtkWidget *parent)
 {
     if(curLayer != factoryContainer->curLayer)
         curLayer = factoryContainer->curLayer;
@@ -4661,17 +4684,17 @@ void factory_systeminfo_callback()
             fsio->system_info = g_list_append(fsio->system_info,sst);
         }
     }
-    factory_system_dialog(fsio->system_info);
+    factory_system_dialog(fsio->system_info,parent);
 
 }
 
-void factory_system_dialog(GList *list)
+void factory_system_dialog(GList *list,GtkWidget *parent)
 {
-    GtkWidget *parent = ddisplay_active();
-    if(!parent)
-        parent = NULL;
-    else
-        parent = ddisplay_active()->shell;
+//    GtkWidget *parent = ddisplay_active();
+//    if(!parent)
+//        parent = NULL;
+//    else
+//        parent = ddisplay_active()->shell;
 
 
     GList *targetlist = list;
@@ -5218,11 +5241,13 @@ void factory_music_file_manager_apply(GtkWidget *widget,
         gint v = -1;
         GList *list = smd->itemlist;
         SaveKV *skv = smd->skv;
+
         for(; list ; list = list->next)
         {
             SaveMusicItem *smi = list->data;
             smi->active = gtk_combo_box_get_active(GTK_COMBO_BOX(smi->wid_colum3));
             smi->dname = gtk_combo_box_get_active_text(GTK_COMBO_BOX(smi->wid_colum3));
+
 
             if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(smi->wid_colum0)))
             {

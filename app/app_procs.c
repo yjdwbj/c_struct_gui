@@ -933,6 +933,15 @@ void  app_init (int argc, char **argv)
                       dia_message_filename(logfpath), strerror(errno));
         return;
     }
+    /* 检查一下依赖程序是否存在 */
+    gchar *isdownload_gui = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "isdownload_gui.exe",NULL);
+    gchar *isdownload = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "isd_download.exe",NULL);
+    gchar *makebin = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "makebin.exe",NULL);
+    gchar *music_convert = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "music_convert.exe",NULL);
+    factory_test_file_exist(makebin);
+    factory_test_file_exist(isdownload_gui);
+    factory_test_file_exist(isdownload);
+    factory_test_file_exist(music_convert);
 
 
     if (argv && dia_is_interactive && !version)
@@ -1135,6 +1144,10 @@ app_exit(void)
 {
     GList *list;
     GSList *slist;
+    if(logfd)
+    {
+        fclose(logfd);/* 关闭日志　*/
+    }
 
     /*
      * The following "solves" a crash related to a second call of app_exit,
@@ -1179,8 +1192,8 @@ app_exit(void)
             }
 
             result = exit_dialog_run (dialog, &items);
-
-            gtk_widget_destroy (dialog);
+            if(dialog)
+                gtk_widget_destroy (dialog);
 
             if (result == EXIT_DIALOG_EXIT_CANCEL)
             {
@@ -1273,9 +1286,12 @@ app_exit(void)
         while (slist!=NULL)
         {
             DDisplay *ddisp = (DDisplay *)slist->data;
-            slist = g_slist_next(slist);
 
-            gtk_widget_destroy(ddisp->shell);
+
+            if(ddisp && ddisp->shell)
+                gtk_widget_destroy(ddisp->shell);
+
+            slist = g_slist_next(slist);
         }
         /* The diagram is freed when the last display is destroyed */
     }

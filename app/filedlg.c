@@ -433,16 +433,22 @@ file_save_as_callback(gpointer data, guint action, GtkWidget *widget)
 
   if (!savedlg) {
     GtkWidget *compressbutton;
+    savedlg =  gtk_file_chooser_dialog_new (_("Save Diagram"), GTK_WINDOW(ddisp->shell),
+                                   GTK_FILE_CHOOSER_ACTION_SAVE,
+                                   GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+				   GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+				   NULL);
 
-    savedlg = gtk_file_chooser_dialog_new_with_backend(_("Save Diagram"),
-					  GTK_WINDOW(ddisp->shell),
-					  GTK_FILE_CHOOSER_ACTION_SAVE,
-					  "gtk+", /* default, not gnome-vfs */
-					  GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-					  GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
-					  NULL);
+//    savedlg = gtk_file_chooser_dialog_new_with_backend(_("Save Diagram"),
+//					  GTK_WINDOW(ddisp->shell),
+//					  GTK_FILE_CHOOSER_ACTION_SAVE,
+//					  "gtk+", /* default, not gnome-vfs */
+//					  GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+//					  GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+//					  NULL);
+    gtk_window_set_modal(GTK_WINDOW(savedlg),TRUE);
     gtk_dialog_set_default_response(GTK_DIALOG(savedlg), GTK_RESPONSE_ACCEPT);
-    gtk_window_set_role(GTK_WINDOW(savedlg), "save_diagram");
+//    gtk_window_set_role(GTK_WINDOW(savedlg), "save_diagram");
     /* Need better way to make it a reasonable size.  Isn't there some*/
     /* standard look for them (or is that just Gnome?)*/
     compressbutton = gtk_check_button_new_with_label(_("Compress diagram files"));

@@ -125,6 +125,7 @@ diagram_data_init(DiagramData *data)
 
   data->text_edits = NULL;
   data->active_text_edit = NULL;
+  data->readytodownload = FALSE;
 }
 
 /** Deallocate memory owned by a DiagramData object.

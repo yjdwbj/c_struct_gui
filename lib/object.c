@@ -1120,6 +1120,22 @@ gchar *factory_utf8(gchar *str)
     return g_locale_to_utf8(_(str),-1,NULL,NULL,NULL);
 }
 
+gboolean factory_test_file_exist(const gchar *fname)
+{
+    if(!g_file_test(fname,G_FILE_TEST_EXISTS))
+    {
+        gchar *msg_utf8 = factory_utf8(g_strdup_printf(_("找不到　%s,不能下载."),fname));
+        fwrite(msg_utf8,1,strlen(msg_utf8),logfd);
+        message_error(msg_utf8);
+        g_free(msg_utf8);
+        return  FALSE;
+    }
+
+
+    return TRUE;
+}
+
+
 gchar *factory_locale(gchar *str)
 {
     return g_locale_from_utf8(_(str),-1,NULL,NULL,NULL);
@@ -1180,10 +1196,10 @@ GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent
     gtk_window_set_resizable (GTK_WINDOW(subdig),FALSE);
     gtk_window_set_position (GTK_WINDOW(subdig),GTK_WIN_POS_CENTER_ALWAYS);
     gtk_window_present(GTK_WINDOW(subdig));
-     g_signal_connect(G_OBJECT(subdig), "delete_event",
-		   G_CALLBACK(gtk_widget_hide), NULL);
+    g_signal_connect(G_OBJECT(subdig), "delete_event",
+                     G_CALLBACK(gtk_widget_hide), NULL);
     g_signal_connect(GTK_OBJECT(subdig), "delete_event",
-		   G_CALLBACK(gtk_true), NULL);
+                     G_CALLBACK(gtk_true), NULL);
     return subdig;
 }
 

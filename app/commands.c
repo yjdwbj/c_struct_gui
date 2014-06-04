@@ -157,7 +157,8 @@ file_new_callback (GtkAction *action)
   diagram_tree_add(diagram_tree(), dia);
   g_free (name);
   g_free (filename);
-  factory_callback_system_data(NULL,NULL);
+  dia->unsaved = TRUE;
+  factory_callback_system_data(NULL,ddisp->shell);
 }
 
 void

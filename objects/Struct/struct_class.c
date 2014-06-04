@@ -2178,6 +2178,9 @@ factory_struct_items_create(Point *startpoint,
 
     if(curLayer != factoryContainer->curLayer)
         curLayer = factoryContainer->curLayer;
+
+//    if(!factoryContainer->fgdn_func)
+//        factoryContainer->fgdn_func =(FactoryGetDownloadNameList)factory_get_download_name_list;
     STRUCTClass *structclass;
 //  STRUCTClassDialog *properties_dialog;
     Element *elem;
@@ -3790,6 +3793,8 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
     element_load(elem, obj_node);
     if(curLayer != factoryContainer->curLayer)
         curLayer = factoryContainer->curLayer;
+//    if(!factoryContainer->fgdn_func)
+//        factoryContainer->fgdn_func =(FactoryGetDownloadNameList)factory_get_download_name_list;
 #ifdef STRUCT_MAINPOINT
     element_init(elem, 8, STRUCTCLASS_CONNECTIONPOINTS + 1);
 #else
@@ -3927,8 +3932,7 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
     if(!g_strcasecmp(fsi->sname,"FILELST"))
     {
         /* 这里写音乐管理界面上的数据 */
-        if(!smd || !smd->itemlist)
-            return;
+        g_return_if_fail(smd->itemlist);
         gchar *rows = g_strdup_printf("%d",g_list_length(smd->itemlist));
         xmlSetProp(obj_node, (const xmlChar *)"rows", (xmlChar *)rows);
         g_free(rows);
