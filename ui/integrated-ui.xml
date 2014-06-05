@@ -16,6 +16,8 @@
 			<separator name="FileSep3 "/>
 
 			<menuitem name="DiagramProperties" action="DiagramProperties" />
+			<menuitem name="FilePagesetup" action="FilePagesetup" />
+			<menuitem name="FilePrint" action="FilePrint" />
 			<separator name="FileSep4 "/>
 
 			<menuitem name="FileClose" action="FileClose" />
@@ -83,7 +85,13 @@
 			<menuitem name="ViewRedraw" action="ViewRedraw" />
 		</menu>
 
-		
+		<menu name="Layers" action="Layers">
+			<menuitem name="LayerAdd" action="LayerAdd" />
+			<menuitem name="LayerRename" action="LayerRename" />
+			<separator name="LayersSep1" />
+			<menuitem name="ObjectsLayerAbove" action="ObjectsLayerAbove" />
+			<menuitem name="ObjectsLayerBelow" action="ObjectsLayerBelow" />
+		</menu>
 
 		<menu name="Objects" action="Objects">
 			<menuitem name="ObjectsSendtoback" action="ObjectsSendtoback" />

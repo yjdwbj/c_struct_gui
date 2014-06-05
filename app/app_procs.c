@@ -1104,16 +1104,17 @@ void  app_init (int argc, char **argv)
     {
         if (use_integrated_ui)
         {
-            GList * list;
-
-            file_new_callback(NULL);
-            list = dia_open_diagrams();
-            if (list)
-            {
-                Diagram * diagram = list->data;
-                diagram_update_extents(diagram);
-                diagram->is_default = TRUE;
-            }
+            /* 这里是否打开软件就新建一个工程 */
+//            GList * list;
+//
+//            file_new_callback(NULL);
+//            list = dia_open_diagrams();
+//            if (list)
+//            {
+//                Diagram * diagram = list->data;
+//                diagram_update_extents(diagram);
+//                diagram->is_default = TRUE;
+//            }
         }
         else
         {

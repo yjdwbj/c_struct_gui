@@ -102,7 +102,7 @@ recent_file_history_make_menu()
     g_free (label);
     g_free (accel);
   }
-//  menus_set_recent (group); /* 不知道为什么会崩溃 */
+  menus_set_recent (group); /* 不知道为什么会崩溃 */
 }
 
 /** Add a new item to the file history list.
@@ -119,7 +119,7 @@ recent_file_history_add(const char *fname)
   g_free(absname);
   g_free(filename);
 
-//  recent_file_history_make_menu();
+  recent_file_history_make_menu();
 }
 
 /* load the recent file history */
@@ -130,7 +130,7 @@ recent_file_history_init()
 
   persistence_register_list("recent-files");
 
-//  recent_file_history_make_menu();
+  recent_file_history_make_menu();
 }
 
 /* remove a broken file from the history and update menu accordingly
@@ -147,7 +147,7 @@ recent_file_history_remove (const char *fname)
   g_free(absname);
   g_free(filename);
 
-//  recent_file_history_make_menu();
+  recent_file_history_make_menu();
 }
 
 static void

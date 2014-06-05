@@ -1064,33 +1064,37 @@ tool_button_press (GtkWidget      *w,
         if(active_tool)
         {
             /* 这里双击在画布上添加一个控件 */
-            Layer *layer = ddisplay_active_diagram()->data->active_layer;
+            Diagram *diagram = ddisplay_active_diagram();
+            g_return_if_fail(diagram);
+            Layer *layer = diagram->data->active_layer;
             GList *olist = g_hash_table_get_values(layer->defnames);
-            event->x = 60;
+//           g_return_if_fail(olist);
+            event->x  = 60;
             event->y = 60;
-
+            Point p = {0.0,0.0};
             DDisplay *ddisp = ddisplay_active();
-            Point clickedpoint;
-
+            int ox,oy;
             for(; olist ; olist = olist->next)
             {
-                Element *emt = (Element*)olist->data;
+                DiaObject *obj = (DiaObject*)olist->data;
                 ddisplay_untransform_coords(ddisp,
-                                            (int)event->x, (int)event->y,
-                                            &clickedpoint.x, &clickedpoint.y);
-                if( (clickedpoint.x == emt->corner.x) &&
-                        (clickedpoint.y == emt->corner.y))
-                {
-                    event->x += 40; /* 这里尽量移动不盖住原来的控件 */
-                    event->y += 40;
-                }
+			      (int)event->x, (int)event->y,
+			      &p.x, &p.y);
+                ox = (int)obj->position.x;
+                oy = (int)obj->position.y;
+                if( (int)p.x == ox)
+                    event->x += 60; /* 这里尽量移动不盖住原来的控件 */
+                if(oy == (int)p.y )
+                    event->y += 60;
+
 
             }
             /* 这里直接调用回调函数来新建一个控件 */
+
             active_tool->button_press_func(active_tool,event,ddisp);
             active_tool->button_release_func(active_tool,event,ddisp);
-//            ddisplay_set_all_cursor(default_cursor);
-//            tool_free(active_tool);
+
+
         }
 
 

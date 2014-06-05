@@ -122,6 +122,7 @@ struct _Layer {
   GHashTable *defnames; /* 所有控件显示的名字的链表.*/
   gpointer smd; /* SaveMusicDialog 这用存放音乐文件管理的数据，这个在当前层是公有的*/
   gpointer sid;  /* SaveIdDialog 这用存放行为ID管理的数据，这个在当前层是公有的*/
+  GArray *id_array; /* 2014-6-5 重新定义新的ID */
 };
 
 DIAVAR Layer *new_layer (char *name, DiagramData *parent);

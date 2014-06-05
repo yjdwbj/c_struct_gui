@@ -231,6 +231,7 @@ struct _FactoryStructItemAll{
     GHashTable *unionTable;
     GList* structList; // 2014-3-25 lcy 这里存放 FactoryStructItemList 的链表。
     gchar *file_version;
+    gchar *system_files;
     Layer *curLayer;
 //    gpointer *otp_obj; /*这里用来放系统信息，只能有唯一个*/
     FactorySystemInfo *sys_info; /*系统信息*/

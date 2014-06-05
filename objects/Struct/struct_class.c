@@ -574,7 +574,9 @@ static void factory_update_index(STRUCTClass *fclass)
     DiaObject *obj = &fclass->element.object;
     Layer *curlay = obj->parent_layer;
     GList *list = curlay->objects;
-    obj->oindex  = g_list_index(list,obj);
+
+
+    obj->oindex  = g_list_index(list,fclass);
 //    factory_rename_structclass(fclass);
 
 
@@ -2128,6 +2130,50 @@ fill_in_fontdata(STRUCTClass *structclass)
 //  return &structclass->element.object;
 //}
 
+gint factory_gint_compare(gpointer first, gpointer second)
+{
+    if( *(gint*)first == *(gint*)second )
+        return 0;
+    else if(*(gint*)first < *(gint*)second)
+        return -1;
+    else
+        return 1;
+}
+void factory_get_oindex_for_structclass(STRUCTClass *structclass)
+{
+    GList *p = g_hash_table_get_keys(curLayer->defnames);
+    if(!p)
+    {
+        structclass->element.object.oindex = 0;
+        return;
+    }
+
+    GList *numlist = NULL;
+
+    for(;p ; p = p->next)
+    {
+       DiaObject *eobj = (DiaObject *)p->data;
+       numlist = g_list_append(numlist,(gpointer)&eobj->oindex);
+    }
+
+    if(g_list_length(numlist) > 1)
+    {
+        numlist = g_list_sort(numlist,factory_gint_compare);
+    }
+
+    int n = 0;
+   while(numlist)
+   {
+       if(n < *(gint*)numlist->data)
+       {
+           break;
+       }
+       n++;
+       numlist = numlist->next;
+   }
+   structclass->element.object.oindex = n;
+}
+
 void factory_rename_structclass(STRUCTClass *structclass)
 {
     g_return_if_fail(structclass);
@@ -2135,11 +2181,18 @@ void factory_rename_structclass(STRUCTClass *structclass)
     if( !curLayer ||  factory_is_special_object(obj->name)
             || factory_is_system_data(obj->name))
         return ;
+     if(!structclass->hasIdnumber)
+     {
+         structclass->hasIdnumber = TRUE;
+         factory_get_oindex_for_structclass(structclass);
+     }
+
 
     STRUCTClass *oldclass =  g_hash_table_lookup(curLayer->defnames,structclass->name);
     if(!oldclass)
     {
         g_hash_table_insert(curLayer->defnames,structclass->name,structclass);
+
         return ;
     }
 
@@ -2189,6 +2242,7 @@ factory_struct_items_create(Point *startpoint,
 
     structclass = g_malloc0(sizeof(STRUCTClass));
     structclass->isInitial = FALSE;
+    structclass->hasIdnumber = FALSE;
 
     elem = &structclass->element;
     obj = &elem->object;
@@ -2240,7 +2294,8 @@ factory_struct_items_create(Point *startpoint,
     obj->type = &structclass_type;
     obj->type->version  = g_strdup(factoryContainer->file_version);
     obj->ops = &structclass_ops;
-//    obj->selectable = TRUE;
+
+
     structclass->line_width = attributes_get_default_linewidth();
     structclass->text_color = color_black;
     structclass->line_color = attributes_get_foreground();
@@ -3604,12 +3659,12 @@ static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
     break;
 //    case SBTN:
     case SPINBOX:
-        if(!g_ascii_strncasecmp(sss->org->Name,"wActID",6)) /*这里一个关键字判断是否是ＩＤ*/
-        {
-            STRUCTClass *sclass = sss->sclass;
-            sclass->element.object.oindex = g_list_index(curLayer->objects,sclass);
-            sss->value.vnumber = g_strdup_printf("%d",sclass->element.object.oindex);
-        }
+//        if(!g_ascii_strncasecmp(sss->org->Name,"wActID",6)) /*这里一个关键字判断是否是ＩＤ*/
+//        {
+//            STRUCTClass *sclass = sss->sclass;
+//            sclass->element.object.oindex = g_list_index(curLayer->objects,sclass);
+//            sss->value.vnumber = g_strdup_printf("%d",sclass->element.object.oindex);
+//        }
         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"SPINBOX");
         xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.vnumber);
         break;
@@ -3901,6 +3956,7 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
             g_hash_table_insert(curLayer->defnames,structclass->name,structclass);
     }
 
+
     // curLayer->defnames = g_list_append(curLayer->defnames,structclass->name);
     return &structclass->element.object;
 }
@@ -3995,7 +4051,7 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
                     sit->dname = g_strdup(tcalss->name);
                 }
             }
-            xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)val);
+            xmlSetProp(ccc, (const xmlChar *)"value", /*(xmlChar *)val*/(xmlChar *)g_strdup_printf("%d",sit->id_addr));
             xmlSetProp(ccc, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",sit->id_addr));
             xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)sit->dname);
             xmlSetProp(ccc, (const xmlChar *)"active", (xmlChar *)g_strdup_printf("%d",sit->active));

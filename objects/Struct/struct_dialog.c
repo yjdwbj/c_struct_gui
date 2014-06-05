@@ -3116,6 +3116,7 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
     case OCOMBO:
     {
         NextID *nid = &sss->value.nextid;
+        g_return_if_fail(nid);
         if( g_list_length(nid->actlist)>0)
         {
             ActionID *aid = nid->actlist->data;
@@ -3132,6 +3133,7 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
     case UCOMBO:
     {
         SaveUnion *suptr = &sss->value.sunion;
+        g_return_if_fail(suptr);
         if(!sss->isPointer)
         {
             SaveStruct *tsst  =  g_hash_table_lookup(suptr->saveVal,suptr->curkey);
@@ -3153,7 +3155,7 @@ static void factory_get_value_from_comobox(STRUCTClass *startclass,GtkWidget *co
     DDisplay *ddisp =  ddisplay_active();
     int  curindex = gtk_combo_box_get_active(GTK_COMBO_BOX(comobox));
     gchar *pname = gtk_combo_box_get_active_text(GTK_COMBO_BOX(comobox));
-    if(!strlen(pname))
+    if(!g_ascii_strcasecmp(pname,aid->pre_name))
         return;
 
     if(!curindex)
@@ -3178,15 +3180,15 @@ static void factory_get_value_from_comobox(STRUCTClass *startclass,GtkWidget *co
             goto SETV; /* 已经有连线了 */
         else
         {
-            if(objclass && objclass->widgetSave)
-            {
-                SaveStruct *sst =objclass->widgetSave->data; /* 对像的自身ID */
-                aid->value =   g_strdup(sst->value.vnumber);
-            }
-            else
-            {
-                aid->value = g_strdup("-1");
-            }
+//            if(objclass && objclass->widgetSave)
+//            {
+//                SaveStruct *sst =objclass->widgetSave->data; /* 对像的自身ID */
+//                aid->value =   g_strdup(sst->value.vnumber);
+//            }
+//            else
+//            {
+//                aid->value = g_strdup("-1");
+//            }
 
             factory_connection_two_object(startclass,g_strdup(pname));
         }
@@ -3686,6 +3688,7 @@ void factory_set_savestruct_widgets(SaveStruct *sss)
         if(!g_ascii_strncasecmp(sss->org->Name,"wActID",6)) /*这里一个关键字判断是否是ＩＤ*/
         {
             STRUCTClass *sclass = sss->sclass;
+            g_hash_table_get_values(curLayer->defnames);
             sclass->element.object.oindex = g_list_index(curLayer->objects,sclass);
             sss->value.vnumber = g_strdup_printf("%d",sclass->element.object.oindex);
             sss->isSensitive = FALSE;
@@ -5221,7 +5224,7 @@ void factory_save_idlist_dialog(GtkWidget *widget,
 
             }
         }
-        gtk_button_set_label(GTK_BUTTON(sid->parent_btn),skv->value);
+        gtk_button_set_label(GTK_BUTTON(sid->parent_btn),g_strdup_printf("%d",skv->radindex*2));
         diagram_set_modified(ddisplay_active_diagram(),TRUE);
     }
 

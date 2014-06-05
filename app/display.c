@@ -1410,7 +1410,7 @@ ddisplay_set_title(DDisplay  *ddisp, char *title)
     /* now modify the application window title */
     {
       const gchar *pname = g_get_prgname();
-      gchar *fulltitle = g_strdup_printf ("%s - %s", title, pname ? pname : "Dia");
+      gchar *fulltitle = g_strdup_printf ("%s - %s v%s", title, pname ? pname : "Dia",VERSION);
       gtk_window_set_title (GTK_WINDOW (ddisp->shell), fulltitle);
       g_free(fulltitle);
     }

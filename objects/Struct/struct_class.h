@@ -472,6 +472,7 @@ struct _STRUCTClass
      * This is to avoid a half-way destroyed list being updated.
      */
     gboolean isInitial; /* 初始化属性对话框*/
+    gboolean hasIdnumber;
     gboolean destroyed;
     GHashTable *widgetmap; // 2014-3-22 lcy 这里用一个哈希表来保存界面上所有的值。
     GList *widgetSave; // 2014-3-22 lcy 这里为顺序显示用链表保存.

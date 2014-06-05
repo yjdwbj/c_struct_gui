@@ -97,12 +97,12 @@ build_ui_filename (const gchar* name);
 static const GtkActionEntry common_entries[] =
 {
     { "File", NULL, N_("_File"), NULL, NULL, NULL },
-    { "FileNew", GTK_STOCK_NEW, NULL, "<control>N", NULL, G_CALLBACK (file_new_callback) },
-    { "FileOpen", GTK_STOCK_OPEN, NULL,"<control>O", NULL, G_CALLBACK (file_open_callback) },
-    { "FileQuit", GTK_STOCK_QUIT, NULL, "<control>Q", NULL, G_CALLBACK (file_quit_callback) },
-    { "Help", NULL, N_("_Help"), NULL, NULL, NULL },
-//    { "HelpContents", GTK_STOCK_HELP, NULL, "F1", NULL, G_CALLBACK (help_manual_callback) },
-    { "HelpAbout", GTK_STOCK_ABOUT, NULL, NULL, NULL, G_CALLBACK (help_about_callback) }
+        { "FileNew", GTK_STOCK_NEW, NULL, "<control>N", NULL, G_CALLBACK (file_new_callback) },
+        { "FileOpen", GTK_STOCK_OPEN, NULL,"<control>O", NULL, G_CALLBACK (file_open_callback) },
+        { "FileQuit", GTK_STOCK_QUIT, NULL, "<control>Q", NULL, G_CALLBACK (file_quit_callback) },
+    { "Help", NULL, N_("_Help"), NULL, NULL,NULL },
+        { "HelpContents", GTK_STOCK_HELP, NULL, "F1", NULL, G_CALLBACK (help_manual_callback) },
+        { "HelpAbout", GTK_STOCK_ABOUT, NULL, NULL, NULL, G_CALLBACK (help_about_callback) }
 };
 
 /* Actions for toolbox menu */
@@ -138,7 +138,7 @@ static const GtkActionEntry display_entries[] =
 //    { "FileExport", GTK_STOCK_CONVERT, N_("_Export ..."), NULL, NULL, G_CALLBACK (file_export_callback) },
 //    { "DiagramProperties", GTK_STOCK_PROPERTIES, N_("_Diagram Properties"), "<shift><alt>Return", NULL,G_CALLBACK (view_diagram_properties_callback)},
 //    { "FilePagesetup", NULL, N_("Page Set_up..."), NULL, NULL, G_CALLBACK (file_pagesetup_callback) },
-//    { "FilePrint", GTK_STOCK_PRINT, NULL, "<control>P", NULL, G_CALLBACK (file_print_callback) },
+    { "FilePrint", GTK_STOCK_PRINT, NULL, "<control>P", NULL, G_CALLBACK (file_print_callback) },
     { "FileClose", GTK_STOCK_CLOSE, NULL, "<control>W", NULL, G_CALLBACK (file_close_callback) },
 
     { "Edit", NULL, N_("_Edit"), NULL, NULL, NULL },
@@ -228,7 +228,7 @@ static const GtkActionEntry display_entries[] =
     { "SelectAll", NULL, N_("All"), "<control>A", NULL, G_CALLBACK (select_all_callback) },
     { "SelectNone", NULL, N_("None"), "<control><shift>A", NULL, G_CALLBACK (select_none_callback) },
     { "SelectInvert", NULL, N_("Invert"), "<control>I", NULL, G_CALLBACK (select_invert_callback) },
-
+//
     { "SelectTransitive", NULL, N_("Transitive"), "<control>T", NULL, G_CALLBACK (select_transitive_callback) },
     { "SelectConnected", NULL, N_("Connected"), "<control><shift>T", NULL, G_CALLBACK (select_connected_callback) },
     { "SelectSametype", NULL, N_("Same Type"), NULL, NULL, G_CALLBACK (select_same_type_callback) },

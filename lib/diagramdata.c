@@ -225,6 +225,7 @@ new_layer(gchar *name, DiagramData *parent)
   factoryContainer->curLayer = layer;
   factoryContainer->sys_info = g_new0(FactorySystemInfo,1);
   factoryContainer->sys_info->fstype  =(FactorySystemType*) object_get_type("SystemInfo");
+  layer->id_array = g_array_new (FALSE, FALSE, sizeof (gint));
   return layer;
 }
 
@@ -360,6 +361,7 @@ data_set_active_layer(DiagramData *data, Layer *layer)
 void
 data_delete_layer(DiagramData *data, Layer *layer)
 {
+
   if (data->layers->len<=1)
     return;
 
@@ -372,6 +374,9 @@ data_delete_layer(DiagramData *data, Layer *layer)
   if (data->active_layer == layer) {
     data->active_layer = g_ptr_array_index(data->layers, 0);
   }
+
+
+
 }
 
 /** Select an object in a diagram.  Note that this does not unselect other

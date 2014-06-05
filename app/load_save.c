@@ -1303,22 +1303,22 @@ static void factory_call_isd_download()
     gchar *isdownload = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "isd_download.exe",NULL);
     g_return_if_fail(factory_test_file_exist(isdownload));
     g_return_if_fail(factory_test_file_exist(isdownload_gui));
-    len +=6;
+    gchar **system_files = g_strsplit(factoryContainer->system_files,",",-1);
+    int slen = g_strv_length(system_files);
+    len +=slen;
     gchar **argv = g_new (gchar*, len+1);
     argv[len] = NULL;
-    int l = g_strv_length(argv);
-
-    argv[0] =g_strdup(isdownload_gui);
-    argv[1] =g_strdup("code.app");
-    argv[2] =g_strdup("act.inf");
-    argv[3] =g_strdup("id.lst");
-    argv[4] =g_strdup("sysinfo.dat");
-    argv[5] =g_strdup("file.lst");
-    int n = 6;
+    int n = 0;
+    argv[n] =g_strdup(isdownload_gui);
+    for(;n < slen;n++)
+    {
+        argv[n+1] = g_strdup(system_files[n]);
+    }
+    g_strfreev(system_files);
     GList *tlist = dlist;
     for(; tlist; tlist=tlist->next,n++)
     {
-        argv[n] = g_strdup(tlist->data);
+        argv[n+1] = g_strdup(tlist->data);
     }
 
 

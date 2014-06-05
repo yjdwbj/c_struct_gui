@@ -523,6 +523,14 @@ void factoryReadDataFromFile(const gchar* filename)
             continue;
         if(!g_ascii_strncasecmp(aline,_(":version="),9))
             continue;
+        if(!g_ascii_strncasecmp(aline,_(":file="),6))
+        {
+            gchar **split = g_strsplit(aline,"=",-1);
+            int len = g_strv_length(split);
+            factoryContainer->system_files = g_strdup(split[len-1]);
+            g_strfreev(split);
+            continue;
+        }
         isutf8 = g_utf8_validate(aline,-1,NULL);
         if(aline[0]==':')
         {
