@@ -8,7 +8,7 @@
 
 			<menuitem name="FileSave" action="FileSave" />
 			<menuitem name="FileSaveas" action="FileSaveas" />
-			<menuitem name="FileExport" action="FileExport" />
+	<!--		<menuitem name="FileExport" action="FileExport" />
 			<separator name="FileSep2" />
 
 			<menuitem name="FileTree" action="FileTree" />
@@ -18,14 +18,14 @@
 			<menuitem name="DiagramProperties" action="DiagramProperties" />
 			<menuitem name="FilePagesetup" action="FilePagesetup" />
 			<menuitem name="FilePrint" action="FilePrint" />
-			<separator name="FileSep4 "/>
+			<separator name="FileSep4 "/>-->
 
 			<menuitem name="FileClose" action="FileClose" />
 			<separator/>
 
-			<menuitem name="FilePrefs" action="FilePrefs" />
+<!--			<menuitem name="FilePrefs" action="FilePrefs" />
 			<menuitem name="FilePlugins" action="FilePlugins" />
-
+-->
 			<separator name="FileRecentStart"/>
 
 			<separator name="FileRecentEnd" />
@@ -49,7 +49,7 @@
 			<menuitem name="EditCuttext" action="EditCuttext" />
 			<menuitem name="EditPastetext" action="EditPastetext" />
 		</menu>
-		<menu name="View" action="View">
+<!--		<menu name="View" action="View">
 			<menuitem name="ViewZoomin" action="ViewZoomin" />
 			<menuitem name="ViewZoomout" action="ViewZoomout" />
 			<menu name="ViewZoom" action="ViewZoom">
@@ -84,16 +84,16 @@
 			<menuitem name="ViewCloneview" action="ViewCloneview" />
 			<menuitem name="ViewRedraw" action="ViewRedraw" />
 		</menu>
-
-		<menu name="Layers" action="Layers">
+-->
+<!--		<menu name="Layers" action="Layers">
 			<menuitem name="LayerAdd" action="LayerAdd" />
 			<menuitem name="LayerRename" action="LayerRename" />
 			<separator name="LayersSep1" />
 			<menuitem name="ObjectsLayerAbove" action="ObjectsLayerAbove" />
 			<menuitem name="ObjectsLayerBelow" action="ObjectsLayerBelow" />
 		</menu>
-
-		<menu name="Objects" action="Objects">
+-->
+<!--		<menu name="Objects" action="Objects">
 			<menuitem name="ObjectsSendtoback" action="ObjectsSendtoback" />
 			<menuitem name="ObjectsBringtofront" action="ObjectsBringtofront" />
 			<menuitem name="ObjectsSendbackwards" action="ObjectsSendbackwards" />
@@ -123,8 +123,8 @@
 			<separator name="ObjectsSep4" />
 			<menuitem name="ObjectsProperties" action="ObjectsProperties" />
 			<separator name="ObjectsExtensionStart" />
-		</menu>
-		<menu name="Select" action="Select">
+		</menu>-->
+<!--		<menu name="Select" action="Select">
 			<menuitem name="SelectAll" action="SelectAll" />
 			<menuitem name="SelectNone" action="SelectNone" />
 			<menuitem name="SelectInvert" action="SelectInvert" />
@@ -142,8 +142,8 @@
 			<menu name="SelectBy" action="SelectBy">
 				<separator name="SelectByExtensionStart" />
 			</menu>
-		</menu>
-		<menu name="Tools" action="Tools">
+		</menu>-->
+<!--		<menu name="Tools" action="Tools">
 			<menuitem name="ToolsModify" action="ToolsModify" />
 			<menuitem name="ToolsTextedit" action="ToolsTextedit" />
 			<menuitem name="ToolsMagnify" action="ToolsMagnify" />
@@ -169,12 +169,12 @@
 		</menu>
 		<menu name="Debug" action="Debug">
 			<separator name="DebugExtensionStart" />
-		</menu>
+		</menu>-->
 
 		<menu name="Help" action="Help">
-			<menuitem name="HelpContents" action="HelpContents" />
+<!--			<menuitem name="HelpContents" action="HelpContents" />
 			<separator name="HelpExtensionStart" />
-			<separator name="HelpExtensionEnd" />
+			<separator name="HelpExtensionEnd" />-->
 			<menuitem name="HelpAbout" action="HelpAbout" />
 		</menu>
 	</menubar>

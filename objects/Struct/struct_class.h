@@ -628,7 +628,7 @@ void factory_systeminfo_load();
 void factory_system_dialog(GList *list,GtkWidget *parent);
 
 void factory_systeminfo_callback(GtkWidget *parent);
-gpointer factory_get_download_name_list(const gchar *path);
+GList* factory_get_download_name_list(const gchar *path);
 
 
 //void factoryReadDataFromFile(STRUCTClass *structclass);

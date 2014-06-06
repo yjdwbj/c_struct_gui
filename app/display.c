@@ -1217,7 +1217,8 @@ are_you_sure_close_dialog_respond(GtkWidget *widget, /* the dialog */
   switch (response_id) {
   case GTK_RESPONSE_YES :
     /* save changes */
-    file_save_as_callback(NULL,NULL,NULL); /* 关闭画布时，提示保存文件 */
+//    file_save_as_callback(NULL,NULL,NULL); /* 关闭画布时，提示保存文件 */
+    file_save_callback(NULL,NULL,NULL);
 
 //    if (!diagram_save(ddisp->diagram, ddisp->diagram->filename))
 //      close_ddisp = FALSE;

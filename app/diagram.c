@@ -403,6 +403,7 @@ diagram_modified(Diagram *dia)
 void
 diagram_set_modified(Diagram *dia, int modified)
 {
+    g_return_if_fail(dia);
   if (dia->mollified != modified)
   {
     dia->mollified = modified;
@@ -789,8 +790,7 @@ diagram_unselect_objects(Diagram *dia, GList *obj_list)
 void
 diagram_select(Diagram *diagram, DiaObject *obj)
 {
-//    if(!obj->selectable)
-//        return;
+
     gchar name[] =  "Standard - Line";
     if(!g_ascii_strcasecmp(name,obj->type->name))
         return;

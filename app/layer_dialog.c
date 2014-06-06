@@ -1221,7 +1221,7 @@ edit_layer_delete_callback (GtkWidget *w,
                             gpointer client_data)
 {
     edit_layer_cancel_callback (w, client_data);
-
+    ddisplay_set_title(ddisplay_active(),g_strdup_printf("Dia.exe v%s",VERSION));
     return TRUE;
 }
 
@@ -1383,6 +1383,7 @@ layer_change_free(struct LayerChange *change)
         if (change->applied)
         {
             layer_destroy(change->layer);
+
         }
         break;
     case TYPE_ADD_LAYER:

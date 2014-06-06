@@ -14,7 +14,7 @@
 	"widgets.h"
 	"intl.h"
 
-1401884935 o:\tool\dvs50\config.h
+1402041697 o:\tool\dvs50\config.h
 
 1394617928 o:\tool\dvs50\lib\message.h
 	<stdarg.h>
@@ -28,7 +28,7 @@
 	"diatypes.h"
 	"geometry.h"
 
-1401948139 o:\tool\dvs50\lib\diatypes.h
+1402019293 o:\tool\dvs50\lib\diatypes.h
 	"diavar.h"
 
 1394621090 o:\tool\dvs50\lib\geometry.h
@@ -529,7 +529,7 @@
 	"properties.h"
 	"diavar.h"
 
-1401961588 source:o:\tool\dvs50\lib\diagramdata.c
+1402026292 source:o:\tool\dvs50\lib\diagramdata.c
 	<config.h>
 	"intl.h"
 	"diagramdata.h"
@@ -1322,7 +1322,7 @@
 	"attributes.h"
 	"persistence.h"
 
-1401872738 source:o:\tool\dvs50\app\commands.c
+1402021227 source:o:\tool\dvs50\app\commands.c
 	<config.h>
 	<unistd.h>
 	<stdlib.h>
@@ -1512,7 +1512,7 @@
 	<gdk/gdk.h>
 	<gtk/gtkcontainer.h>
 
-1401276937 source:o:\tool\dvs50\app\diagram.c
+1402041969 source:o:\tool\dvs50\app\diagram.c
 	<config.h>
 	<assert.h>
 	<string.h>
@@ -1633,7 +1633,7 @@
 	"geometry.h"
 	"tool.h"
 
-1401932154 source:o:\tool\dvs50\app\display.c
+1402021886 source:o:\tool\dvs50\app\display.c
 	<config.h>
 	<string.h>
 	<stdio.h>
@@ -1765,7 +1765,7 @@
 	"object_ops.h"
 	"group.h"
 
-1401940126 source:o:\tool\dvs50\app\interface.c
+1402021314 source:o:\tool\dvs50\app\interface.c
 	<config.h>
 	<gnome.h>
 	<gtk/gtk.h>
@@ -1809,7 +1809,7 @@
 
 1257604114 o:\tool\dvs50\app\pixmaps\missing.xpm
 
-1401439906 source:o:\tool\dvs50\app\layer_dialog.c
+1402025714 source:o:\tool\dvs50\app\layer_dialog.c
 	<config.h>
 	<assert.h>
 	<string.h>
@@ -1831,7 +1831,7 @@
 	"intl.h"
 	<math.h>
 
-1401949676 source:o:\tool\dvs50\app\load_save.c
+1402025588 source:o:\tool\dvs50\app\load_save.c
 	<config.h>
 	<sys/stat.h>
 	<unistd.h>
@@ -1867,7 +1867,7 @@
 	"magnify.h"
 	"cursor.h"
 
-1401931432 source:o:\tool\dvs50\app\menus.c
+1402042099 source:o:\tool\dvs50\app\menus.c
 	<config.h>
 	<gtk/gtk.h>
 	<gdk/gdkkeysyms.h>
@@ -2258,7 +2258,7 @@
 	"properties.h"
 	"tool-icons.h"
 
-1401277265 source:o:\tool\dvs50\objects\standard\line.c
+1402024488 source:o:\tool\dvs50\objects\standard\line.c
 	<config.h>
 	<assert.h>
 	<math.h>
@@ -2368,7 +2368,7 @@
 
 1398410525 source:o:\tool\dvs50\dia.rc
 
-1401873255 source:o:\tool\dvs50\objects\struct\struct.c
+1402019293 source:o:\tool\dvs50\objects\struct\struct.c
 	<config.h>
 	<string.h>
 	<stdio.h>
@@ -2378,7 +2378,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1401966944 source:o:\tool\dvs50\objects\struct\struct_class.c
+1402043701 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2395,7 +2395,7 @@
 	"sheet.h"
 	"filedlg.h"
 
-1401965453 o:\tool\dvs50\objects\struct\struct_class.h
+1402019663 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2412,7 +2412,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1401959580 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1402044743 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2426,4 +2426,9 @@
 	"sheet.h"
 	"diagramdata.h"
 	"connpoint_line.h"
+
+1398413200 source:o:\tool\dvs50\app\main.c
+	<config.h>
+	"app_procs.h"
+	"interface.h"
 

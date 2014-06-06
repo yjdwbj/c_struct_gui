@@ -32,7 +32,7 @@
 
 extern DiaObjectType structclass_type;
 extern DiaObjectType factory_systeminfo_type;
-extern gpointer factory_get_download_name_list(const gchar *path);
+extern GList* factory_get_download_name_list(const gchar *path);
 
 DIA_PLUGIN_CHECK_INIT
 

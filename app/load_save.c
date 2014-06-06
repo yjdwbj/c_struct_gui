@@ -1297,7 +1297,7 @@ static void factory_call_isd_download()
     g_return_if_fail(factoryContainer);
 
     GList *dlist = factoryContainer->fgdn_func(filename); /* 取得最新的download 文件列表*/
-
+    g_return_if_fail(dlist);
     int len = g_list_length(dlist);
     gchar *isdownload_gui = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "isdownload_gui.exe",NULL);
     gchar *isdownload = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "isd_download.exe",NULL);
@@ -1362,6 +1362,7 @@ diagram_save(Diagram *dia, const char *filename)
 
     diagram_cleanup_autosave(dia);
 
+//    ddisplay_set_title(ddisplay_active(),g_strdup_printf("Dia.exe %v",VERSION));
     return TRUE;
 }
 

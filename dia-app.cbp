@@ -589,6 +589,7 @@
 		<Unit filename="app/main.c">
 			<Option compilerVar="CC" />
 			<Option target="debug_dia" />
+			<Option target="dia" />
 		</Unit>
 		<Unit filename="app/menus.c">
 			<Option compilerVar="CC" />
@@ -769,7 +770,6 @@
 		<Unit filename="app/winmain.c">
 			<Option compilerVar="CC" />
 			<Option target="debug_app" />
-			<Option target="dia" />
 		</Unit>
 		<Unit filename="config.h">
 			<Option target="lib" />

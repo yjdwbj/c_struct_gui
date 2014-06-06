@@ -213,7 +213,7 @@ struct _FactoryStructItemList{
     gboolean isvisible; /* 是否显示到时面板上 */
 };
 
-typedef gpointer (*FactoryGetDownloadNameList)(const gchar* path);
+typedef GList* (*FactoryGetDownloadNameList)(const gchar* path);
 
 
 typedef struct _FactorySystemInfo FactorySystemInfo;

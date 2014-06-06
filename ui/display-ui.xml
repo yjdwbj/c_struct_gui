@@ -7,12 +7,12 @@
 			<separator name="FileSep1" />
 			<menuitem name="FileSave" action="FileSave" />
 			<menuitem name="FileSaveas" action="FileSaveas" />
-			<menuitem name="FileExport" action="FileExport" />
+<!--			<menuitem name="FileExport" action="FileExport" />
 			<separator name="FileSep2 "/>
 			<menuitem name="DiagramProperties" action="DiagramProperties" />
 			<menuitem name="FilePagesetup" action="FilePagesetup" />
 			<menuitem name="FilePrint" action="FilePrint" />
-			<separator name="FileSep3" />
+			<separator name="FileSep3" />-->
 			<menuitem name="FileClose" action="FileClose" />
 			<menuitem name="FileQuit" action="FileQuit" />
 			<separator name="FileSep4" />
@@ -39,7 +39,7 @@
 			<separator name="EditSep5" />
 			<separator name="EditExtensionStart" />
 		</menu>
-		<menu name="View" action="View">
+<!--		<menu name="View" action="View">
 			<menuitem name="ViewZoomin" action="ViewZoomin" />
 			<menuitem name="ViewZoomout" action="ViewZoomout" />
 			<menu name="ViewZoom" action="ViewZoom">
@@ -71,8 +71,8 @@
 			<menuitem name="ViewRedraw" action="ViewRedraw" />
 			<separator name="ViewSep3" />
 			<separator name="ViewExtensionStart" />
-		</menu>
-		<menu name="Layers" action="Layers">
+		</menu>-->
+<!--		<menu name="Layers" action="Layers">
 			<menuitem name="LayerAdd" action="LayerAdd" />
 			<menuitem name="LayerRename" action="LayerRename" />
 			<separator name="LayersSep1" />
@@ -80,8 +80,8 @@
 			<menuitem name="ObjectsLayerBelow" action="ObjectsLayerBelow" />
 			<separator name="LayersSep2" />
 			<menuitem name="DiagramLayers" action="DiagramLayers" />
-		</menu>
-		<menu name="Objects" action="Objects">
+		</menu>-->
+<!--		<menu name="Objects" action="Objects">
 			<menuitem name="ObjectsSendtoback" action="ObjectsSendtoback" />
 			<menuitem name="ObjectsBringtofront" action="ObjectsBringtofront" />
 			<menuitem name="ObjectsSendbackwards" action="ObjectsSendbackwards" />
@@ -111,7 +111,7 @@
 			<separator name="ObjectsSep4" />
 			<menuitem name="ObjectsProperties" action="ObjectsProperties" />
 			<separator name="ObjectsExtensionStart" />
-		</menu>
+		</menu>-->
 		<menu name="Select" action="Select">
 			<menuitem name="SelectAll" action="SelectAll" />
 			<menuitem name="SelectNone" action="SelectNone" />
@@ -133,7 +133,7 @@
 			<separator name="SelectSep4" />
 			<separator name="SelectExtensionStart" />
 		</menu>
-		<menu name="Tools" action="Tools">
+<!--		<menu name="Tools" action="Tools">
 			<menuitem name="ToolsModify" action="ToolsModify" />
 			<menuitem name="ToolsTextedit" action="ToolsTextedit" />
 			<menuitem name="ToolsMagnify" action="ToolsMagnify" />
@@ -154,14 +154,14 @@
 			<menuitem name="ToolsImage" action="ToolsImage" />
 			<separator name="ToolsSep2" />
 			<separator name="ToolsExtensionStart" />
-		</menu>
-		<menuitem name="InputMethods" action="InputMethods" />
+		</menu>-->
+	<!--	<menuitem name="InputMethods" action="InputMethods" />
 		<menu name="Dialogs" action="Dialogs">
 			<separator name="DialogsExtensionStart" />
 		</menu>
 		<menu name="Debug" action="Debug">
 			<separator name="DebugExtensionStart" />
-		</menu>
+		</menu>-->
 		<menu name="Help" action="Help">
 			<menuitem name="HelpContents" action="HelpContents" />
 			<separator name="HelpExtensionStart" />

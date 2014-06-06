@@ -571,12 +571,12 @@ structclass_select(STRUCTClass *structclass, Point *clicked_point,
 static void factory_update_index(STRUCTClass *fclass)
 {
 
-    DiaObject *obj = &fclass->element.object;
-    Layer *curlay = obj->parent_layer;
-    GList *list = curlay->objects;
-
-
-    obj->oindex  = g_list_index(list,fclass);
+//    DiaObject *obj = &fclass->element.object;
+//    Layer *curlay = obj->parent_layer;
+//    GList *list = curlay->objects;
+//
+//
+//    obj->oindex  = g_list_index(list,fclass);
 //    factory_rename_structclass(fclass);
 
 
@@ -2141,7 +2141,7 @@ gint factory_gint_compare(gpointer first, gpointer second)
 }
 void factory_get_oindex_for_structclass(STRUCTClass *structclass)
 {
-    GList *p = g_hash_table_get_keys(curLayer->defnames);
+    GList *p = g_hash_table_get_values(curLayer->defnames);
     if(!p)
     {
         structclass->element.object.oindex = 0;
@@ -2838,6 +2838,8 @@ gpointer *factory_read_object_comobox_value_from_file(AttributeNode attr_node)
     return aid;
 }
 
+
+
 void factory_update_view_names(STRUCTClass *fclass)
 {
 //    DiaObject *obj = &fclass->element.object;
@@ -2867,9 +2869,13 @@ void factory_update_view_names(STRUCTClass *fclass)
         {
             tclass = end_cp->object;
             if(tclass != fclass)
+            {
                 tclass->connections[8].connected =g_list_remove(tclass->connections[8].connected,connection);
+                factory_update_ActionId_for_structclass(tclass);
+            }
+
         }
-//        connection->object.selectable = TRUE;
+
 //        diagram_select(ddisplay_active()->diagram,connection);
 //        edit_delete_callback(NULL); /*调用一个现有的函数删除线条*/
         layer_remove_object(curLayer,connection);
@@ -3460,6 +3466,7 @@ structclass_copy(STRUCTClass *structclass)
 //          dia_font_copy(structclass->comment_font);
     newstructclass->name = g_strdup(structclass->name);
     newstructclass->isInitial = FALSE;
+    newstructclass->hasIdnumber = FALSE;
 
 
 
@@ -3619,6 +3626,7 @@ static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
         SaveEntry *sey = &sss->value.sentry;
         GList *tlist = sey->data;
         gchar *ret =g_strdup("");
+
         for(; tlist; tlist = tlist->next)
         {
             /* 2014-3-31 lcy 把链表里的数据用逗号连接 */
@@ -3659,12 +3667,11 @@ static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
     break;
 //    case SBTN:
     case SPINBOX:
-//        if(!g_ascii_strncasecmp(sss->org->Name,"wActID",6)) /*这里一个关键字判断是否是ＩＤ*/
-//        {
-//            STRUCTClass *sclass = sss->sclass;
-//            sclass->element.object.oindex = g_list_index(curLayer->objects,sclass);
-//            sss->value.vnumber = g_strdup_printf("%d",sclass->element.object.oindex);
-//        }
+        if(!g_ascii_strncasecmp(sss->org->Name,"wActID",6)) /*这里一个关键字判断是否是ＩＤ*/
+        {
+            STRUCTClass *sclass = sss->sclass;
+            sss->value.vnumber = g_strdup_printf("%d",sclass->element.object.oindex);
+        }
         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"SPINBOX");
         xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.vnumber);
         break;
@@ -3678,7 +3685,8 @@ static void factory_write_object_comobox(ActionID *aid,ObjectNode ccc )
 //                    xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
     xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf(_("%d"),aid->index));
     xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)aid->value);
-    xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)aid->pre_name);
+    gboolean b =  g_ascii_strcasecmp(aid->value,"-1");
+    xmlSetProp(ccc, (const xmlChar *)"idname", b ? (xmlChar *)aid->pre_name : (xmlChar*)"");
 }
 
 static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node)
@@ -3843,7 +3851,7 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
     obj = &elem->object;
     obj->type = &structclass_type;
     obj->ops = &structclass_ops;
-//    obj->selectable = TRUE;
+
     obj->type->version = g_strdup(factoryContainer->file_version);
     element_load(elem, obj_node);
     if(curLayer != factoryContainer->curLayer)
@@ -3954,7 +3962,12 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
             factory_rename_structclass(structclass);
         else
             g_hash_table_insert(curLayer->defnames,structclass->name,structclass);
+
+        SaveStruct *sst = (SaveStruct *)structclass->widgetSave->data;
+        obj->oindex = g_strtod(sst->value.vnumber,NULL);
+        structclass->hasIdnumber = TRUE;
     }
+
 
 
     // curLayer->defnames = g_list_append(curLayer->defnames,structclass->name);

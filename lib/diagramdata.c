@@ -149,6 +149,7 @@ diagram_data_finalize(GObject *object)
   g_list_free(data->selected);
   data->selected = NULL; /* for safety */
   data->selected_count_private = 0;
+//  ddisplay_set_title(ddisplay_active(),g_strdup_printf("Dia.exe v%s",VERSION));
 }
 
 /** Initialize the DiagramData class data.

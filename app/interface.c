@@ -1099,7 +1099,7 @@ tool_button_press (GtkWidget      *w,
 
 
 //    tool_options_dialog_show (tooldata->type, tooldata->extra_data,
-//                              tooldata->user_data, w, event->state&1); // 2014-3-21 lcy 关闭默认的人属性显示.
+//                              tooldata->user_data, w, event->state&1); // 2014-3-21 lcy 关闭默认的属性显示.
         return FALSE;
     }
 

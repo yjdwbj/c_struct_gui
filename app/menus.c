@@ -106,29 +106,29 @@ static const GtkActionEntry common_entries[] =
 };
 
 /* Actions for toolbox menu */
-static const GtkActionEntry toolbox_entries[] =
-{
+//static const GtkActionEntry toolbox_entries[] =
+//{
+//
+//    /* { "FileSheets", NULL, N_("Sheets and Objects..."), "F9", NULL, G_CALLBACK (sheets_dialog_show_callback) },*/
+//    { "FileSheets", NULL, N_("Sheets and Objects..."), "F9", NULL, NULL },
+//    { "FilePrefs", GTK_STOCK_PREFERENCES, NULL, NULL, NULL, G_CALLBACK (file_preferences_callback) },
+//    { "FilePlugins", NULL, N_("Plugins..."),NULL, NULL, G_CALLBACK (file_plugins_callback) }
+//};
 
-    /* { "FileSheets", NULL, N_("Sheets and Objects..."), "F9", NULL, G_CALLBACK (sheets_dialog_show_callback) },*/
-    { "FileSheets", NULL, N_("Sheets and Objects..."), "F9", NULL, NULL },
-    { "FilePrefs", GTK_STOCK_PREFERENCES, NULL, NULL, NULL, G_CALLBACK (file_preferences_callback) },
-    { "FilePlugins", NULL, N_("Plugins..."),NULL, NULL, G_CALLBACK (file_plugins_callback) }
-};
-
-
-/* Toggle-Actions for toolbox menu */
-static const GtkToggleActionEntry toolbox_toggle_entries[] =
-{
-    { "FileTree", NULL, N_("_Diagram tree..."), "F8", NULL, G_CALLBACK (diagtree_show_callback) }
-};
 
 /* Toggle-Actions for toolbox menu */
-static const GtkToggleActionEntry integrated_ui_view_toggle_entries[] =
-{
-    { VIEW_MAIN_TOOLBAR_ACTION,   NULL, N_("Show Toolbar"),   NULL, NULL, G_CALLBACK (view_main_toolbar_callback) },
-    { VIEW_MAIN_STATUSBAR_ACTION, NULL, N_("Show Statusbar"), NULL, NULL, G_CALLBACK (view_main_statusbar_callback) },
-    { VIEW_LAYERS_ACTION,    NULL, N_("Show Layers"), "<control>L", NULL, G_CALLBACK (view_layers_callback) }
-};
+//static const GtkToggleActionEntry toolbox_toggle_entries[] =
+//{
+//    { "FileTree", NULL, N_("_Diagram tree..."), "F8", NULL, G_CALLBACK (diagtree_show_callback) }
+//};
+
+/* Toggle-Actions for toolbox menu */
+//static const GtkToggleActionEntry integrated_ui_view_toggle_entries[] =
+//{
+//    { VIEW_MAIN_TOOLBAR_ACTION,   NULL, N_("Show Toolbar"),   NULL, NULL, G_CALLBACK (view_main_toolbar_callback) },
+//    { VIEW_MAIN_STATUSBAR_ACTION, NULL, N_("Show Statusbar"), NULL, NULL, G_CALLBACK (view_main_statusbar_callback) },
+//    { VIEW_LAYERS_ACTION,    NULL, N_("Show Layers"), "<control>L", NULL, G_CALLBACK (view_layers_callback) }
+//};
 
 /* Actions for diagram window */
 static const GtkActionEntry display_entries[] =
@@ -138,7 +138,7 @@ static const GtkActionEntry display_entries[] =
 //    { "FileExport", GTK_STOCK_CONVERT, N_("_Export ..."), NULL, NULL, G_CALLBACK (file_export_callback) },
 //    { "DiagramProperties", GTK_STOCK_PROPERTIES, N_("_Diagram Properties"), "<shift><alt>Return", NULL,G_CALLBACK (view_diagram_properties_callback)},
 //    { "FilePagesetup", NULL, N_("Page Set_up..."), NULL, NULL, G_CALLBACK (file_pagesetup_callback) },
-    { "FilePrint", GTK_STOCK_PRINT, NULL, "<control>P", NULL, G_CALLBACK (file_print_callback) },
+//    { "FilePrint", GTK_STOCK_PRINT, NULL, "<control>P", NULL, G_CALLBACK (file_print_callback) },
     { "FileClose", GTK_STOCK_CLOSE, NULL, "<control>W", NULL, G_CALLBACK (file_close_callback) },
 
     { "Edit", NULL, N_("_Edit"), NULL, NULL, NULL },
@@ -187,9 +187,9 @@ static const GtkActionEntry display_entries[] =
 //      { "ViewZoom250", NULL, N_("25"), NULL, NULL, G_CALLBACK (view_zoom_set_callback) },
 //    /* Show All, Best Fit.  Same as the Gimp, Ctrl+E */
 //    { "ViewShowall", GTK_STOCK_ZOOM_FIT, NULL, "<control>E", NULL, G_CALLBACK (view_show_all_callback) },
-//
-//  /* "display_toggle_entries" items go here */
-//
+////
+////  /* "display_toggle_entries" items go here */
+////
 //    { "ViewNewview", NULL, N_("New _View"), NULL, NULL, G_CALLBACK (view_new_view_callback) },
 //    { "ViewCloneview", NULL, N_("C_lone View"), NULL, NULL, G_CALLBACK (view_clone_view_callback) },
 //    { "ViewRedraw", GTK_STOCK_REFRESH, NULL, NULL, NULL, G_CALLBACK (view_redraw_callback) },
@@ -241,31 +241,31 @@ static const GtkActionEntry display_entries[] =
 
     { "Dialogs", NULL, N_("D_ialogs"), NULL, NULL, NULL },
 
-    { "Debug", NULL, N_("D_ebug"), NULL, NULL, NULL }
+//    { "Debug", NULL, N_("D_ebug"), NULL, NULL, NULL }
 };
 
 /* Standard-Tool entries */
 static const GtkActionEntry tool_entries[] =
 {
-    { "Tools", NULL, N_("_Tools"), NULL, NULL, NULL },
-    { "ToolsModify", NULL, N_("Modify"), "N", NULL, NULL },
-    { "ToolsMagnify", NULL, N_("Magnify"), "M", NULL, NULL },
-    { "ToolsTextedit", NULL, N_("Edit text"), "F2", NULL, NULL },
-    { "ToolsScroll", NULL, N_("Scroll"), "S", NULL, NULL },
-    { "ToolsText", NULL, N_("Text"), "T", NULL, NULL },
-    { "ToolsBox", NULL, N_("Box"), "R", NULL, NULL },
-    { "ToolsEllipse", NULL, N_("Ellipse"), "E", NULL, NULL },
-    { "ToolsPolygon", NULL, N_("Polygon"), "P", NULL, NULL },
-    { "ToolsBeziergon", NULL, N_("Beziergon"), "B", NULL, NULL },
-
-    { "ToolsLine", NULL, N_("Line"), "L", NULL, NULL },
-    { "ToolsArc", NULL, N_("Arc"), "A", NULL, NULL },
-    { "ToolsZigzagline", NULL, N_("Zigzagline"), "Z", NULL, NULL },
-    { "ToolsPolyline", NULL, N_("Polyline"), "Y", NULL },
-    { "ToolsBezierline", NULL, N_("Bezierline"), "C", NULL, NULL },
-    { "ToolsOutline", NULL, N_("Outline"), "O", NULL, NULL },
-
-    { "ToolsImage", NULL, N_("Image"), "I", NULL, NULL },
+//    { "Tools", NULL, N_("_Tools"), NULL, NULL, NULL },
+//    { "ToolsModify", NULL, N_("Modify"), "N", NULL, NULL },
+//    { "ToolsMagnify", NULL, N_("Magnify"), "M", NULL, NULL },
+//    { "ToolsTextedit", NULL, N_("Edit text"), "F2", NULL, NULL },
+//    { "ToolsScroll", NULL, N_("Scroll"), "S", NULL, NULL },
+//    { "ToolsText", NULL, N_("Text"), "T", NULL, NULL },
+//    { "ToolsBox", NULL, N_("Box"), "R", NULL, NULL },
+//    { "ToolsEllipse", NULL, N_("Ellipse"), "E", NULL, NULL },
+//    { "ToolsPolygon", NULL, N_("Polygon"), "P", NULL, NULL },
+//    { "ToolsBeziergon", NULL, N_("Beziergon"), "B", NULL, NULL },
+//
+//    { "ToolsLine", NULL, N_("Line"), "L", NULL, NULL },
+//    { "ToolsArc", NULL, N_("Arc"), "A", NULL, NULL },
+//    { "ToolsZigzagline", NULL, N_("Zigzagline"), "Z", NULL, NULL },
+//    { "ToolsPolyline", NULL, N_("Polyline"), "Y", NULL },
+//    { "ToolsBezierline", NULL, N_("Bezierline"), "C", NULL, NULL },
+//    { "ToolsOutline", NULL, N_("Outline"), "O", NULL, NULL },
+//
+//    { "ToolsImage", NULL, N_("Image"), "I", NULL, NULL },
 };
 
 /* Toggle-Actions for diagram window */
@@ -598,6 +598,7 @@ void factory_callback_download_to_device(GtkWidget *btn,gpointer user_data)
 
 void factory_callback_system_data(GtkWidget *btn,gpointer user_data)
 {
+    g_return_if_fail(ddisplay_active());
     g_return_if_fail(factoryContainer);
     if(factoryContainer->sys_info)
     {
@@ -935,8 +936,8 @@ create_or_ref_display_actions (void)
     display_actions = gtk_action_group_new ("display-actions");
     gtk_action_group_set_translation_domain (display_actions, NULL);
     gtk_action_group_set_translate_func (display_actions, _dia_translate, NULL, NULL);
-    gtk_action_group_add_actions (toolbox_actions, toolbox_entries,
-                                  G_N_ELEMENTS (toolbox_entries), NULL);
+//    gtk_action_group_add_actions (toolbox_actions, toolbox_entries,
+//                                  G_N_ELEMENTS (toolbox_entries), NULL);
     gtk_action_group_add_actions (display_actions, common_entries,
                                   G_N_ELEMENTS (common_entries), NULL);
     /*添加动作.*/
@@ -987,8 +988,8 @@ menus_init(void)
     gtk_action_group_add_actions (toolbox_actions, common_entries,
                                   G_N_ELEMENTS (common_entries), NULL);
 
-    gtk_action_group_add_actions (toolbox_actions, toolbox_entries,
-                                  G_N_ELEMENTS (toolbox_entries), NULL);
+//    gtk_action_group_add_actions (toolbox_actions, toolbox_entries,
+//                                  G_N_ELEMENTS (toolbox_entries), NULL);
 //  gtk_action_group_add_toggle_actions (toolbox_actions, toolbox_toggle_entries,
 //                G_N_ELEMENTS (toolbox_toggle_entries),
 //                NULL);   // 2014-3-20 lcy  这里把树窗口关闭掉.
@@ -1079,13 +1080,13 @@ menus_get_integrated_ui_menubar (GtkWidget     **menubar,
     gtk_action_group_add_actions (integrated_ui_actions, common_entries,
                                   G_N_ELEMENTS (common_entries), NULL);
 
-    gtk_action_group_add_actions (integrated_ui_actions, toolbox_entries,
-                                  G_N_ELEMENTS (toolbox_entries), NULL);
+//    gtk_action_group_add_actions (integrated_ui_actions, toolbox_entries,
+//                                  G_N_ELEMENTS (toolbox_entries), NULL);
     gtk_action_group_add_actions (integrated_ui_actions, display_entries,
                                   G_N_ELEMENTS (display_entries), NULL);
-    gtk_action_group_add_toggle_actions (integrated_ui_actions, integrated_ui_view_toggle_entries,
-                                         G_N_ELEMENTS (integrated_ui_view_toggle_entries), NULL);
-//  gtk_action_group_add_toggle_actions (integrated_ui_actions, toolbox_toggle_entries,
+//    gtk_action_group_add_toggle_actions (integrated_ui_actions, integrated_ui_view_toggle_entries,
+//                                         G_N_ELEMENTS (integrated_ui_view_toggle_entries), NULL);
+//    gtk_action_group_add_toggle_actions (integrated_ui_actions, toolbox_toggle_entries,
 //                G_N_ELEMENTS (toolbox_toggle_entries),
 //                NULL);   // 2014-3-20 lcy  这里把树窗口关闭掉.
     gtk_action_group_add_toggle_actions (integrated_ui_actions, display_toggle_entries,
