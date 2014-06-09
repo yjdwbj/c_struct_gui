@@ -80,7 +80,7 @@ recent_file_history_make_menu()
        items = g_list_next(items), i++) {
 
     gchar *name = g_strdup_printf ("FileRecent_%d", i);
-    gchar *file = g_path_get_basename ((const gchar *) items->data);
+    gchar *file = g_strdup((const gchar *) items->data);
     gchar **split = g_strsplit (file, "_", -1);
     gchar *file_escaped = g_strjoinv ("__", split);
     gchar *label = g_strdup_printf ("_%d. %s", i + 1, file_escaped);

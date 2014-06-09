@@ -145,7 +145,9 @@ load_all_sheets(void)
 
 
 
-
+    factoryContainer->structTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+    factoryContainer->enumTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+    factoryContainer->unionTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
     /* 2014-4-1 lcy 递归查找config 目录下所有以.struct 为后缀的文件名 */
     for_each_in_dir(dia_get_lib_directory("config"),factoryReadDataFromFile,this_is_a_struct);
 //  for_each_in_dir(dia_get_lib_directory("config"),factory_read_native_c_file,this_is_a_struct);
@@ -357,7 +359,7 @@ static void factory_check_items_valid(gpointer key, gpointer value, gpointer use
 {
     gchar *keystr = (gchar *)key;
     GList *vallist = value;
-     g_return_if_fail(vallist);
+    g_return_if_fail(vallist);
     for(; vallist; vallist = vallist->next)
     {
         gpointer ret = NULL;
@@ -416,6 +418,20 @@ static void factory_check_struct_items_valid(gpointer key, gpointer value, gpoin
 
 }
 
+static int error_count = 0;
+void factory_error_msgbox(const gchar *msg_err)
+{
+         message_error(msg_err);
+        fwrite(msg_err,strlen(msg_err),1,logfd);
+        if(error_count++ >5)
+        {
+           gchar *merr =  factory_utf8(_("遇到多个错误，现在退出！\n"));
+           message_error(merr);
+           fwrite(merr,strlen(merr),1,logfd);
+           exit(1);
+        }
+}
+
 
 gchar *factory_get_utf8_str(gboolean isutf8,gchar *str)
 {
@@ -431,19 +447,17 @@ void factoryReadDataFromFile(const gchar* filename)
 {
 #define MAX_LINE 1024
 #define MAX_SECTION 7
+    gchar *fname_gbk = factory_locale(filename);
 
-    factoryContainer->structTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-    factoryContainer->enumTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-    factoryContainer->unionTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
     gboolean isutf8 = FALSE;
     struct stat statbuf;
 
     FILE *fd;
-    if((fd =  fopen(filename,"r")) == NULL)
+    if((fd =  fopen(fname_gbk,"r")) == NULL)
     {
 
         gchar *msg_err = g_strdup_printf(_("Can't open output file %s: %s\n"),
-                      dia_message_filename(filename), strerror(errno));
+                                         dia_message_filename(fname_gbk), strerror(errno));
         fwrite(msg_err,strlen(msg_err),1,logfd);
         fclose(logfd);
         message_error(msg_err);
@@ -499,7 +513,7 @@ void factoryReadDataFromFile(const gchar* filename)
     GHashTable *unionValue = NULL;
     int n = 0;
     int zero = 0; // 2014-3-25 lcy  这里是初始化枚举值;
-    if((fd =  fopen(filename,"r")) == NULL)
+    if((fd =  fopen(fname_gbk,"r")) == NULL)
     {
         message_error(_("Couldn't open filename "
                         "object-libs; exiting...\n"));
@@ -539,7 +553,7 @@ void factoryReadDataFromFile(const gchar* filename)
 
             if(g_strv_length(sbuf) < 3)
             {
-                gchar *msg_err = factory_utf8(g_strdup_printf(_("文件格式错误,配置文件:%d 行．\n"),curline));
+                gchar *msg_err = factory_utf8(g_strdup_printf(_("文件格式错误,配置文件　文件名：%s,:%d 行．\n"),fname_gbk,curline));
                 message_error(msg_err);
                 fwrite(msg_err,strlen(msg_err),1,logfd);
                 g_free(msg_err);
@@ -586,6 +600,16 @@ void factoryReadDataFromFile(const gchar* filename)
             if(isStruct)
             {
                 isStruct = FALSE;
+                gpointer exists = g_hash_table_lookup(factoryContainer->structTable,hashKey);
+                if(exists)
+                {
+                    gchar *msg_err = factory_utf8(g_strdup_printf(_("有两个相同名的结构体，或者有两个相同类容的配置文件,文件名：%s,行：%d\n"),fname_gbk,curline));
+                   factory_error_msgbox(msg_err);
+                    g_free(msg_err);
+                    continue;
+//                    exit(1);
+                }
+
                 fssl->list = dlist;
                 factoryContainer->structList = g_list_append(factoryContainer->structList,fssl);
                 g_hash_table_insert(factoryContainer->structTable,hashKey,fssl); /* 链表在哈希表里 */
@@ -593,11 +617,29 @@ void factoryReadDataFromFile(const gchar* filename)
             else if(isEmnu)
             {
                 isEmnu = FALSE;
+                 gpointer exists = g_hash_table_lookup(factoryContainer->structTable,hashKey);
+                if(exists)
+                {
+                    gchar *msg_err = factory_utf8(g_strdup_printf(_("有两个相同名的枚举，或者有两个相同类容的配置文件,文件名: %s, 行：%d\n"),fname_gbk,curline));
+                    factory_error_msgbox(msg_err);
+                    g_free(msg_err);
+                    continue;
+//                    exit(1);
+                }
                 g_hash_table_insert(factoryContainer->enumTable,hashKey,enumlist);
             }
             else if(isUnion)
             {
                 isUnion = FALSE;
+                  gpointer exists = g_hash_table_lookup(factoryContainer->structTable,hashKey);
+                if(exists)
+                {
+                    gchar *msg_err = factory_utf8(g_strdup_printf(_("有两个相同名的联合体，或者有两个相同类容的配置文件,文件名:%s,行：%d\n"),fname_gbk,curline));
+                    factory_error_msgbox(msg_err);
+                    g_free(msg_err);
+                    continue;
+//                    exit(1);
+                }
                 g_hash_table_insert(factoryContainer->unionTable,hashKey,dlist);
             }
         }

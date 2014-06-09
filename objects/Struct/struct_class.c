@@ -2408,6 +2408,13 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         skv->radindex = g_strtod((gchar*)key,NULL);
         sss->value.vnumber = skv;
         xmlFree(key);
+         key = xmlGetProp(attr_node,(xmlChar*)"idname");
+         if(!key)
+        {
+            skv->vname = g_strdup("");
+        }
+        skv->vname = g_strdup((gchar*)key);
+        xmlFree(key);
         return;
     }
 
@@ -2519,20 +2526,23 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
 //            slist =  g_hash_table_lookup(fclass->EnumsAndStructs->unionTable,(gchar*)sss->type);
 //            xmlFree(key);
 //        }
+         if(sss->type) g_free(sss->type);
+         sss->type = g_strdup((gchar*)fst->SType);
         slist =  g_hash_table_lookup(fclass->EnumsAndStructs->unionTable,(gchar*)sss->type);
         /* 下面下拉框当面名字　*/
         FactoryStructItem *nextobj =  g_list_nth_data(slist,suptr->index);
 //        suptr->structlist = slist;
         g_return_if_fail(nextobj); /* 没有找到控件原型,可能出错了. */
 
-//        if(suptr->curkey) g_free(suptr->curkey);
-//        suptr->curkey = g_strjoin("##",nextobj->FType,nextobj->Name,NULL);
+        if(suptr->curkey) g_free(suptr->curkey);
+        suptr->curkey = g_strjoin("##",nextobj->FType,nextobj->Name,NULL);
 
-//        if(suptr->curtext) g_free(suptr->curtext);
-//        suptr->curtext = g_strdup(nextobj->Name);
+        if(suptr->curtext) g_free(suptr->curtext);
+        suptr->curtext = g_strdup(nextobj->Name);
         SaveStruct *nsitm = factory_get_savestruct(nextobj);/* 紧跟它下面的控件名 */
         if(nsitm)
         {
+
             nsitm->sclass = sss->sclass;
             SaveUbtn *sbtn = &nsitm->value.ssubtn;
             factory_strjoin(&nsitm->name,g_strdup(sss->name),".");
@@ -2863,7 +2873,11 @@ void factory_update_view_names(STRUCTClass *fclass)
             /* 把这条线从对像里删掉*/
             tclass = start_cp->object;
             if(tclass != fclass)
+            {
                 tclass->connections[8].connected =g_list_remove(tclass->connections[8].connected,connection);
+//                factory_update_ActionId_for_structclass(tclass);
+            }
+
         }
         if(end_cp)
         {
@@ -2871,7 +2885,7 @@ void factory_update_view_names(STRUCTClass *fclass)
             if(tclass != fclass)
             {
                 tclass->connections[8].connected =g_list_remove(tclass->connections[8].connected,connection);
-                factory_update_ActionId_for_structclass(tclass);
+//                factory_update_ActionId_for_structclass(tclass);
             }
 
         }
@@ -3112,8 +3126,6 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
                 }
 
             }
-
-
         }
         break;
         case ST:
@@ -3152,6 +3164,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
                     curLayer->sid = g_new0(SaveIdDialog,1);
 
                 sid =(SaveIdDialog*)(curLayer->sid);
+
                 SaveKV *skv = g_new0(SaveKV,1);
                 sid->skv = skv;
                 skv->value = g_strdup(fst->Value);
@@ -3179,14 +3192,14 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             suptr->vbox = NULL;
             suptr->saveVal = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
             suptr->curkey = g_strdup("");
-            suptr->index = 0;
             suptr->comobox = NULL;
             suptr->structlist = fst->datalist;
-            GList *p = suptr->structlist;
-            /* nextobj 就是当前下拉框所显示的 */
-            FactoryStructItem *nextobj =  g_list_nth_data(suptr->structlist,suptr->index);
+             /* nextobj 就是当前下拉框所显示的 */
+            FactoryStructItem *nextobj = factory_get_factorystructitem(suptr->structlist,fst->Value);
             if(!nextobj)
                 break;
+            suptr->index = g_list_index(suptr->structlist,nextobj);
+            GList *p = suptr->structlist;
             suptr->curtext = g_strdup(nextobj->Name);
             suptr->curkey = g_strjoin("##",nextobj->FType,nextobj->Name,NULL);
             SaveStruct *tsst = factory_get_savestruct(nextobj);
@@ -3684,9 +3697,19 @@ static void factory_write_object_comobox(ActionID *aid,ObjectNode ccc )
     xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)aid->title_name);
 //                    xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
     xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf(_("%d"),aid->index));
-    xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)aid->value);
-    gboolean b =  g_ascii_strcasecmp(aid->value,"-1");
-    xmlSetProp(ccc, (const xmlChar *)"idname", b ? (xmlChar *)aid->pre_name : (xmlChar*)"");
+    gpointer exist = g_hash_table_lookup(curLayer->defnames,aid->pre_name);
+    if(!exist)
+    {
+        g_free(aid->pre_name);
+        aid->pre_name = g_strdup("");
+        g_free(aid->value);
+        aid->value=g_strdup("-1");
+
+    }
+
+    xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)aid->value );
+
+    xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)aid->pre_name );
 }
 
 static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node)
@@ -3946,6 +3969,7 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
         {
             curLayer->sid = g_new0(SaveIdDialog,1);
         }
+
         factory_read_specific_object_from_file(structclass,attr_node->xmlChildrenNode);
         structclass_destroy(structclass) ;
         return NULL;
@@ -4001,7 +4025,7 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
     if(!g_strcasecmp(fsi->sname,"FILELST"))
     {
         /* 这里写音乐管理界面上的数据 */
-        g_return_if_fail(smd->itemlist);
+       // g_return_if_fail(smd->itemlist);
         gchar *rows = g_strdup_printf("%d",g_list_length(smd->itemlist));
         xmlSetProp(obj_node, (const xmlChar *)"rows", (xmlChar *)rows);
         g_free(rows);
@@ -4021,6 +4045,7 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
 
         xmlSetProp(newobj, (const xmlChar *)"name",
                    (xmlChar *)"Music_File");
+        g_return_if_fail(smd->smfm); /* 没有音乐文件　*/
         xmlSetProp(newobj, (const xmlChar *)"offset",
                    (xmlChar *)g_strdup_printf("%d",smd->smfm->offset));
         flist = smd->smfm->filelist;
@@ -4064,7 +4089,7 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
                     sit->dname = g_strdup(tcalss->name);
                 }
             }
-            xmlSetProp(ccc, (const xmlChar *)"value", /*(xmlChar *)val*/(xmlChar *)g_strdup_printf("%d",sit->id_addr));
+            xmlSetProp(ccc, (const xmlChar *)"value", sit->active ? (xmlChar *)g_strdup_printf("%d",sit->id_addr) :(xmlChar *)"-1" );
             xmlSetProp(ccc, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",sit->id_addr));
             xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)sit->dname);
             xmlSetProp(ccc, (const xmlChar *)"active", (xmlChar *)g_strdup_printf("%d",sit->active));

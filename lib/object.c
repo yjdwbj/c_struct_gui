@@ -1195,11 +1195,16 @@ GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent
     gtk_dialog_set_default_response (GTK_DIALOG(subdig), GTK_RESPONSE_OK);
     gtk_window_set_resizable (GTK_WINDOW(subdig),FALSE);
     gtk_window_set_position (GTK_WINDOW(subdig),GTK_WIN_POS_CENTER_ALWAYS);
-    gtk_window_present(GTK_WINDOW(subdig));
+//    gtk_window_present(GTK_WINDOW(subdig));
+    GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
     g_signal_connect(G_OBJECT(subdig), "delete_event",
                      G_CALLBACK(gtk_widget_hide), NULL);
     g_signal_connect(GTK_OBJECT(subdig), "delete_event",
                      G_CALLBACK(gtk_true), NULL);
+    g_signal_connect(G_OBJECT (subdig), "destroy",
+                     G_CALLBACK(gtk_widget_destroyed), &subdig);
+    g_signal_connect(G_OBJECT (subdig), "destroy",
+                     G_CALLBACK(gtk_widget_destroyed), &dialog_vbox);
     return subdig;
 }
 

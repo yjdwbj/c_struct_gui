@@ -184,6 +184,7 @@ properties_respond(GtkWidget *widget,
 #else
         properties_dialog_hide();
 #endif
+
     }
 
     return 0;

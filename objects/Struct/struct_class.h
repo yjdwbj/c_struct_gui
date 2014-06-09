@@ -167,7 +167,7 @@ struct _SaveIdDialog
     gchar *title;
     SaveKV *skv;
 //    gchar **dvalue;
-    GSList *grouplist; /* GtkRadio */
+//    GSList *grouplist; /* GtkRadio */
 };
 
 //SaveIdDialog *IdDialog;
@@ -226,7 +226,7 @@ struct _SaveMusicDialog
 //    gchar **dvalue; /* 默认值，与SaveStruct.value.vnumber 绑定 */
     SaveKV *skv;
     GtkWidget *leftvbox;
-    GSList *grouplist;   /* 记录Radio 的单选链表　*/
+//    GSList *grouplist;   /* 记录Radio 的单选链表　*/
     GList *itemlist; /* 左边界面的链表　内容是　SaveMusicItem */
     GList *cboxlist; /* 右边下载名的链表　内容是 gchar */
     GtkWidget *parent_btn;
@@ -581,8 +581,8 @@ typedef void (*factory_button_callback)(GtkWidget *self);
 
 void factory_add_item_to_music_manager(GtkButton *self,gpointer user_data);
 GtkWidget *factory_new_add_button(factory_button_callback *callback,gpointer list);
-GtkWidget *factory_get_new_iditem(SaveIdItem *swt,GSList **grouplist);
-GtkWidget *factory_get_new_musicitem( SaveMusicItem *swt,GList *fillist,GSList **grouplist);
+GtkWidget *factory_get_new_iditem(SaveIdItem *swt);
+GtkWidget *factory_get_new_musicitem( SaveMusicItem *swt,GList *fillist);
 
 
 

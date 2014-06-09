@@ -14,7 +14,7 @@
 	"widgets.h"
 	"intl.h"
 
-1402041697 o:\tool\dvs50\config.h
+1402283562 o:\tool\dvs50\config.h
 
 1394617928 o:\tool\dvs50\lib\message.h
 	<stdarg.h>
@@ -768,7 +768,7 @@
 	<config.h>
 	"object.h"
 
-1401845802 source:o:\tool\dvs50\lib\object.c
+1402296931 source:o:\tool\dvs50\lib\object.c
 	<config.h>
 	<stdio.h>
 	<string.h>
@@ -1052,7 +1052,7 @@
 	"message.h"
 	"diagdkrenderer.h"
 
-1401948458 source:o:\tool\dvs50\lib\sheet.c
+1402281366 source:o:\tool\dvs50\lib\sheet.c
 	<config.h>
 	<stdlib.h>
 	<string.h>
@@ -1183,7 +1183,7 @@
 	"dialib.h"
 	"diaerror.h"
 
-1394614635 o:\tool\dvs50\app\app_procs.h
+1402281110 o:\tool\dvs50\app\app_procs.h
 	<glib.h>
 	"diavar.h"
 
@@ -1973,7 +1973,7 @@
 	"persistence.h"
 	<io.h>
 
-1401331123 source:o:\tool\dvs50\app\properties-dialog.c
+1402297415 source:o:\tool\dvs50\app\properties-dialog.c
 	<config.h>
 	<gtk/gtk.h>
 	<gdk/gdkkeysyms.h>
@@ -1985,7 +1985,7 @@
 	"message.h"
 	<string.h>
 
-1401966096 source:o:\tool\dvs50\app\recent_files.c
+1402305153 source:o:\tool\dvs50\app\recent_files.c
 	<config.h>
 	<gnome.h>
 	<gdk/gdkkeysyms.h>
@@ -2378,7 +2378,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1402043701 source:o:\tool\dvs50\objects\struct\struct_class.c
+1402318267 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2395,7 +2395,7 @@
 	"sheet.h"
 	"filedlg.h"
 
-1402019663 o:\tool\dvs50\objects\struct\struct_class.h
+1402307902 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2412,7 +2412,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1402044743 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1402318403 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
