@@ -3991,12 +3991,10 @@ void factoy_changed_item(gpointer widget,gpointer user_data)
         }
     }
 
-
     gchar *text = gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget));
     suptr->curtext = g_strdup(text);
     g_free(text);
     suptr->index = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
-    // GList *t = sss->value.senum.enumList;
 
 
     FactoryStructItem *sfst= factory_find_a_struct_item(suptr->structlist,suptr->curtext);
@@ -4009,9 +4007,6 @@ void factoy_changed_item(gpointer widget,gpointer user_data)
             existS = g_hash_table_lookup(suptr->saveVal,suptr->curkey);
             if(!existS)
             {
-                //                                  existS = factory_get_savestruct(sfst);
-                //                                  factory_strjoin(existS->name,sss->name,".");
-                //                                  g_hash_table_insert(suptr->saveVal,suptr->curkey,existS);
                 goto CFIRST;
             }
 
@@ -4100,6 +4095,138 @@ void factory_create_basebutton_dialog(GtkWidget *button,SaveStruct *sss)
 
 
 
+void factory_io_port_changed_response(GtkWidget *widget,gpointer user_data)
+{
+     g_return_if_fail(factoryContainer);
+    FactorySystemInfo *sys_info = factoryContainer->sys_info;
+    SaveEbtn *sebtn = (SaveEbtn*)user_data;
+    int len = g_list_length(sebtn->ebtnwlist);
+    GList *tlist = sebtn->ebtnwlist;
+
+    for(;tlist;tlist=tlist->next)
+    {
+       SaveEnumArr *sea = (SaveEnumArr *)tlist->data;
+       if(sea->widget2 == widget)
+       {
+          int pos = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
+          gchar *txt = gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget));
+          if(pos != sys_info->io_mindex)
+          {
+//               gpointer  ptr = g_list_nth_data(sys_info->IO_List,pos);
+//               sys_info->IO_List = g_list_remove(sys_info->IO_List,ptr);
+//               sys_info->IO_selected = g_list_append(sys_info->IO_selected,ptr);
+//              if(sea->senum->index != sys_info->io_mindex)
+//              {
+//                  sys_info->IO_List = g_list_append(sys_info->IO_List,sea->senum->evalue);
+//                  sys_info->IO_selected = g_list_remove(sys_info->IO_selected,sea->senum->evalue);
+//              }
+
+              tlist=tlist->next; /*下一个可编辑*/
+              g_return_if_fail(tlist);
+              SaveEnumArr *ssea = (SaveEnumArr *)tlist->data;
+              gtk_widget_set_sensitive(ssea->widget2,TRUE);
+//              for(;tlist ; tlist = tlist->next)
+//              {
+//                  SaveEnumArr *tsea = (SaveEnumArr *)tlist->data;
+//                  gtk_combo_box_remove_text(GTK_COMBO_BOX(tsea->widget2),pos);/* 清除掉每个使用过的io口 */
+//                  if(tsea->senum->index != sys_info->io_mindex)
+//                    gtk_combo_box_insert_text(GTK_COMBO_BOX(tsea->widget2),pos,sea->senum->evalue);
+//              }
+              break;
+          }
+          else
+          {   /* 选择的NULL端口 */
+              for(;tlist;tlist=tlist->next)
+              {
+                  SaveEnumArr *tsea = (SaveEnumArr *)tlist->data;
+                  gtk_combo_box_set_active(GTK_COMBO_BOX(tsea->widget2),pos);
+                  gtk_widget_set_sensitive(tsea->widget2,FALSE);
+//                  GList *list = sys_info->IO_selected;
+//                  for(;list;list = list->next)
+//                  {
+//                      gchar *str = (gchar*)list->data;
+//                      if(g_ascii_strcasecmp(tsea->senum->evalue,str))
+//                      {
+//                          gtk_combo_box_insert_text(GTK_COMBO_BOX(tsea->widget2),pos,str);
+//                          list = g_list_remove(list,str);
+//                          sys_info->IO_List = g_list_append(sys_info->IO_List,str);
+//                      }
+//
+//                  }
+
+              }
+              gtk_widget_set_sensitive(GTK_COMBO_BOX(widget),TRUE);
+              g_return_if_fail(tlist);
+
+          }
+       }
+    }
+}
+
+void factory_create_io_port_dialog(GtkWidget *button,SaveStruct *sst)
+{
+    g_return_if_fail(factoryContainer);
+    FactorySystemInfo *sys_info = factoryContainer->sys_info;
+    GtkWidget *sdialog = gtk_hbox_new(FALSE,0);
+    GtkWidget *newdialog = factory_create_new_dialog_with_buttons(sst->name,gtk_widget_get_toplevel(button));
+    GtkWidget *dialog_vbox = GTK_DIALOG(newdialog)->vbox;
+    gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
+    gtk_window_set_modal(GTK_WINDOW(newdialog),TRUE);
+    SaveEbtn *sebtn  = &sst->value.ssebtn;
+//    GList *nixlist = sebtn->ebtnwlist;
+//    int n = 0;
+//    int io_max = g_list_length(sys_info->IO_List)-1;
+//    sys_info->io_mindex = g_list_length(sys_info->IO_List)-1;
+    gchar **title = g_strsplit(sst->name,"[",-1);
+    gchar *fmt =  g_strconcat(title[0],"(%d)",NULL);
+    g_strfreev(title);
+
+    int r = 0;
+    int pos = 0;
+    int tnum = 0;
+    gboolean sensitive = TRUE;
+    ArrayBaseProp *abp = sebtn->arr_base;
+
+    for(; r < abp->row ; r++)
+    {
+        GtkWidget *vbox = gtk_vbox_new(TRUE,0);
+        int c = 0;
+        tnum = r*abp->col;
+        for(; c < abp->col ; c++)
+        {
+            pos = tnum +c;
+            if( pos >= abp->reallen)
+                break;
+            GtkWidget *hbox = abp->row > 8 ? gtk_vbox_new(FALSE,0): gtk_hbox_new(FALSE,0) ;
+            SaveEnumArr *sea = g_list_nth_data(sebtn->ebtnwlist,pos);
+            if(pos && (sea->senum->index  == sys_info->io_mindex))
+            {
+                sensitive = FALSE;
+            }
+
+//            GtkWidget *comobox = factory_create_combo_widget(sys_info->IO_List,
+//                                                             sea->senum->index == sys_info->io_mindex
+//                                                             ? io_max : sea->senum->index);
+            GtkWidget *comobox = factory_create_combo_widget(sys_info->IO_List,sea->senum->index);
+            gtk_widget_set_sensitive(comobox,sensitive);
+
+            g_signal_connect(G_OBJECT(comobox),"changed",G_CALLBACK(factory_io_port_changed_response),sebtn);
+            GtkWidget *wid = gtk_label_new(g_strdup_printf(fmt,pos));
+            sea->widget1 = wid;
+            sea->widget2 = comobox;
+            gtk_box_pack_start(GTK_BOX(hbox),wid,FALSE,FALSE,0);
+            gtk_box_pack_start(GTK_BOX(hbox),comobox,FALSE,FALSE,0);
+            gtk_box_pack_start(GTK_BOX(vbox),hbox,FALSE,FALSE,0);
+            gtk_container_add(GTK_CONTAINER(vbox),hbox);
+        }
+        gtk_container_add(GTK_CONTAINER(sdialog),vbox);
+    }
+    g_signal_connect(G_OBJECT (newdialog), "response",
+                     G_CALLBACK (sst->close_func), sst); /* 保存关闭 */
+
+    gtk_widget_show_all(newdialog);
+}
+
 
 void factory_create_enumbutton_dialog(GtkWidget *button,SaveStruct *sst)
 {
@@ -4145,10 +4272,8 @@ void factory_create_enumbutton_dialog(GtkWidget *button,SaveStruct *sst)
     }
     g_signal_connect(G_OBJECT (newdialog), "response",
                      G_CALLBACK (sst->close_func), sst); /* 保存关闭 */
-//    g_signal_connect(G_OBJECT (newdialog), "destroy",G_CALLBACK(gtk_widget_destroyed), &newdialog);
-//    g_signal_connect(G_OBJECT (sdialog), "destroy",G_CALLBACK(gtk_widget_destroyed),&dialog_vbox);
-    gtk_widget_show_all(newdialog);
 
+    gtk_widget_show_all(newdialog);
 }
 
 
@@ -4300,6 +4425,9 @@ void factory_create_unionbutton_dialog(GtkWidget *button,SaveStruct *sst)
     GtkWidget *parent = gtk_widget_get_toplevel(button);
 //    GdkWindow *pwin = gtk_widget_get_window(button);
     GtkWidget *subdig = factory_create_new_dialog_with_buttons(sst->name,parent);
+    gtk_window_set_type_hint(GTK_WINDOW(subdig),GDK_WINDOW_TYPE_HINT_DOCK);
+//    gtk_window_set_transient_for (GTK_WINDOW(subdig),parent);
+//    gtk_window_set_keep_above (GTK_WINDOW(subdig),TRUE);
     GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
 
     gtk_window_set_modal(GTK_WINDOW(subdig),TRUE);
@@ -4671,6 +4799,23 @@ void factory_systeminfo_callback(GtkWidget *parent)
     FactorySystemInfo  *fsio = factoryContainer->sys_info;
     if(!fsio->system_info) /* 打开过第一次了 */
     {
+               GList *fill_list = NULL;
+        GList *tmplist = g_hash_table_lookup(factoryContainer->enumTable,"ALL_IO_PORT");
+        factoryContainer->sys_info->io_mindex = g_list_length(tmplist)-1;
+
+        for(; tmplist; tmplist = tmplist->next)
+        {
+            FactoryStructEnum *kvmap = tmplist->data;
+//            if(!g_ascii_strcasecmp(fst->Value,kvmap->key))
+//            {
+//                index = g_list_index(sebtn->ebtnslist,kvmap);
+//                value = kvmap->value;
+//            }
+            fill_list = g_list_append(fill_list,kvmap->key);
+        }
+        factoryContainer->sys_info->IO_List = fill_list;
+        factoryContainer->sys_info->null_io = g_strdup((gchar*)g_list_last(fill_list)->data);
+
         FactoryStructItemList *fsil = g_hash_table_lookup(factoryContainer->structTable,"SYS_DATA");
         GList *itemlist = fsil->list;
         for(; itemlist ; itemlist = itemlist->next)
@@ -4679,6 +4824,7 @@ void factory_systeminfo_callback(GtkWidget *parent)
             SaveStruct *sst= factory_get_savestruct(fst);
             fsio->system_info = g_list_append(fsio->system_info,sst);
         }
+
     }
     factory_system_dialog(fsio->system_info,parent);
 
@@ -4693,10 +4839,6 @@ void factory_system_dialog(GList *list,GtkWidget *parent)
 
     gtk_window_set_modal(GTK_WINDOW(subdig),TRUE);
 
-//    gtk_dialog_set_default_response (GTK_DIALOG(subdig), GTK_RESPONSE_OK);
-//    gtk_window_set_resizable (GTK_WINDOW(subdig),FALSE);
-//    gtk_window_set_position (GTK_WINDOW(subdig),GTK_POS_BOTTOM);
-
     int num = g_list_length(targetlist);
 
     GtkWidget *table = gtk_table_new(num,4,FALSE);  // 2014-3-19 lcy 根据要链表的数量,创建多少行列表.
@@ -4707,9 +4849,6 @@ void factory_system_dialog(GList *list,GtkWidget *parent)
 
     g_signal_connect(G_OBJECT (subdig), "response",
                      G_CALLBACK (factory_systeminfo_apply_dialog), list); /* 保存关闭 */
-
-//    g_signal_connect(G_OBJECT (subdig), "destroy",G_CALLBACK(gtk_widget_destroyed), &subdig);
-//    g_signal_connect(G_OBJECT (sdialog), "destroy",G_CALLBACK(gtk_widget_destroyed),&dialog_vbox);
 
     gtk_widget_show_all(subdig);
 }

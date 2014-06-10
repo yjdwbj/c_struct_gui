@@ -522,9 +522,11 @@ void factory_save_enumbutton_dialog(GtkWidget *widget,gint response_id,gpointer 
 void factory_save_objectbutton_dialog(GtkWidget *widget,gint  response_id,gpointer   user_data);
 void factory_save_unionbutton_dialog(GtkWidget *widget,gint       response_id,gpointer   user_data);
 void factory_save_basebutton_dialog(GtkWidget *widget,gint       response_id,gpointer   user_data);
+void factory_create_io_port_dialog(GtkWidget *button,SaveStruct *sst);
 
 
 void factory_inital_ebtn(SaveStruct *sss,const FactoryStructItem *fst);
+void factory_inital_io_port_ebtn(SaveStruct *sss,const FactoryStructItem *fst);
 
 
 GList* factory_get_objects_from_layer(Layer *layer);

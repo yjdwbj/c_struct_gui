@@ -2150,10 +2150,10 @@ void factory_get_oindex_for_structclass(STRUCTClass *structclass)
 
     GList *numlist = NULL;
 
-    for(;p ; p = p->next)
+    for(; p ; p = p->next)
     {
-       DiaObject *eobj = (DiaObject *)p->data;
-       numlist = g_list_append(numlist,(gpointer)&eobj->oindex);
+        DiaObject *eobj = (DiaObject *)p->data;
+        numlist = g_list_append(numlist,(gpointer)&eobj->oindex);
     }
 
     if(g_list_length(numlist) > 1)
@@ -2162,16 +2162,16 @@ void factory_get_oindex_for_structclass(STRUCTClass *structclass)
     }
 
     int n = 0;
-   while(numlist)
-   {
-       if(n < *(gint*)numlist->data)
-       {
-           break;
-       }
-       n++;
-       numlist = numlist->next;
-   }
-   structclass->element.object.oindex = n;
+    while(numlist)
+    {
+        if(n < *(gint*)numlist->data)
+        {
+            break;
+        }
+        n++;
+        numlist = numlist->next;
+    }
+    structclass->element.object.oindex = n;
 }
 
 void factory_rename_structclass(STRUCTClass *structclass)
@@ -2181,11 +2181,11 @@ void factory_rename_structclass(STRUCTClass *structclass)
     if( !curLayer ||  factory_is_special_object(obj->name)
             || factory_is_system_data(obj->name))
         return ;
-     if(!structclass->hasIdnumber)
-     {
-         structclass->hasIdnumber = TRUE;
-         factory_get_oindex_for_structclass(structclass);
-     }
+    if(!structclass->hasIdnumber)
+    {
+        structclass->hasIdnumber = TRUE;
+        factory_get_oindex_for_structclass(structclass);
+    }
 
 
     STRUCTClass *oldclass =  g_hash_table_lookup(curLayer->defnames,structclass->name);
@@ -2408,8 +2408,8 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         skv->radindex = g_strtod((gchar*)key,NULL);
         sss->value.vnumber = skv;
         xmlFree(key);
-         key = xmlGetProp(attr_node,(xmlChar*)"idname");
-         if(!key)
+        key = xmlGetProp(attr_node,(xmlChar*)"idname");
+        if(!key)
         {
             skv->vname = g_strdup("");
         }
@@ -2517,17 +2517,9 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
             xmlFree(key);
         }
         GList *slist;
-//        key = xmlGetProp(attr_node,(xmlChar *)"type");
-//        if(key)
-//        {
-//            if(sss->type) g_free(sss->type);
-//            sss->type = g_strdup((gchar*)key);
-//            /* 通过类型名 找到对应的联合体 */
-//            slist =  g_hash_table_lookup(fclass->EnumsAndStructs->unionTable,(gchar*)sss->type);
-//            xmlFree(key);
-//        }
-         if(sss->type) g_free(sss->type);
-         sss->type = g_strdup((gchar*)fst->SType);
+
+        if(sss->type) g_free(sss->type);
+        sss->type = g_strdup((gchar*)fst->SType);
         slist =  g_hash_table_lookup(fclass->EnumsAndStructs->unionTable,(gchar*)sss->type);
         /* 下面下拉框当面名字　*/
         FactoryStructItem *nextobj =  g_list_nth_data(slist,suptr->index);
@@ -2535,25 +2527,25 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         g_return_if_fail(nextobj); /* 没有找到控件原型,可能出错了. */
 
         if(suptr->curkey) g_free(suptr->curkey);
-        suptr->curkey = g_strjoin("##",nextobj->FType,nextobj->Name,NULL);
+        suptr->curkey =g_strdup( g_strjoin("##",nextobj->FType,nextobj->Name,NULL));
 
         if(suptr->curtext) g_free(suptr->curtext);
         suptr->curtext = g_strdup(nextobj->Name);
         SaveStruct *nsitm = factory_get_savestruct(nextobj);/* 紧跟它下面的控件名 */
-        if(nsitm)
-        {
+        g_return_if_fail(nsitm);
 
-            nsitm->sclass = sss->sclass;
-            SaveUbtn *sbtn = &nsitm->value.ssubtn;
-            factory_strjoin(&nsitm->name,g_strdup(sss->name),".");
-            /* 把当前选择的成员初始化保存到哈希表 */
-            sbtn->structlist = nextobj->datalist;
-            sbtn->savelist = NULL;
-            /* 读它下面的子节点 */
-            factory_read_union_button_from_file(sss->sclass, attr_node->xmlChildrenNode,sbtn);
-//            g_hash_table_insert(suptr->saveVal,suptr->curkey,nsitm);
-        }
 
+        nsitm->sclass = sss->sclass;
+        SaveUbtn *sbtn = &nsitm->value.ssubtn;
+        factory_strjoin(&nsitm->name,g_strdup(sss->name),".");
+        /* 把当前选择的成员初始化保存到哈希表 */
+        sbtn->structlist = nextobj->datalist;
+        sbtn->savelist = NULL;
+        /* 读它下面的子节点 */
+        factory_read_union_button_from_file(sss->sclass, attr_node->xmlChildrenNode,sbtn);
+        g_hash_table_insert(suptr->saveVal,suptr->curkey,nsitm);
+        /* 这里不知道为什么，插入一个节点后，这个suptr->curkey 就被free, 　下面又重新设置它的值*/
+        suptr->curkey =g_strdup( g_strjoin("##",nextobj->FType,nextobj->Name,NULL));
     }
     else if(!g_ascii_strncasecmp((gchar*)key,"BBTN",4))
     {
@@ -2583,7 +2575,11 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
     else if(!g_ascii_strncasecmp((gchar*)key,"EBTN",4))
     {
         sss->celltype = EBTN;
-        factory_inital_ebtn(sss,fst);
+//        factory_inital_ebtn(sss,fst);
+        if(factory_is_io_port(fst->SType))
+            factory_inital_io_port_ebtn(sss,fst);
+        else
+            factory_inital_ebtn(sss,fst);
         SaveEbtn *sebtn = &sss->value.ssebtn;
         key = xmlGetProp(attr_node,(xmlChar *)"value");
         if(key)
@@ -2897,6 +2893,53 @@ void factory_update_view_names(STRUCTClass *fclass)
     }
 }
 
+void factory_inital_io_port_ebtn(SaveStruct *sss,const FactoryStructItem *fst)
+{
+    SaveEbtn *sebtn = &sss->value.ssebtn;
+    g_return_if_fail(sebtn);
+    sebtn->width = g_strdup(fst->Max);
+    sss->close_func = factory_save_enumbutton_dialog;
+    sss->newdlg_func = factory_create_io_port_dialog;
+    int index = 0;
+    gchar *value = NULL;
+    GList *fill_list = factoryContainer->sys_info->IO_List;
+    for(; fill_list; fill_list = fill_list->next,index++)
+    {
+        if(!g_ascii_strcasecmp(fst->Value,(gchar*)fill_list->data))
+        {
+            value = g_strdup((gchar*)fill_list->data);
+            break;
+        }
+    }
+    SaveEntry tmp;
+    factory_handle_entry_item(&tmp,fst);
+    sebtn->arr_base  = tmp.arr_base;
+
+    GList *tlist  = sebtn->ebtnslist; /* 源数据用填充下拉框,这里来自枚举*/
+    GList *nixlist = NULL;
+    int n = 0;
+    gchar **title = g_strsplit(fst->Name,"[",-1);
+    gchar *name =  g_strconcat(title[0],"(%d)",NULL);
+    g_strfreev(title);
+    n = 0;
+    for(; n < sebtn->arr_base->reallen; n++)
+    {
+        SaveEnum *see = g_new0(SaveEnum,1);
+        see->enumList = factoryContainer->sys_info->IO_List;
+        see->index = index;
+        see->evalue = value;
+        see->width = fst->Max;
+        SaveEnumArr *sea = g_new0(SaveEnumArr,1);
+        sea->widget1 = NULL;
+        sea->widget2 = NULL;
+        sea->senum = see;
+        sebtn->ebtnwlist = g_list_append(sebtn->ebtnwlist,sea);
+    }
+
+}
+
+
+
 void factory_inital_ebtn(SaveStruct *sss,const FactoryStructItem *fst)
 {
     SaveEbtn *sebtn = &sss->value.ssebtn;
@@ -2930,7 +2973,6 @@ void factory_inital_ebtn(SaveStruct *sss,const FactoryStructItem *fst)
     gchar **title = g_strsplit(fst->Name,"[",-1);
     gchar *name =  g_strconcat(title[0],"(%d)",NULL);
     g_strfreev(title);
-
     n = 0;
     for(; n < sebtn->arr_base->reallen; n++)
     {
@@ -3097,7 +3139,10 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             if( factory_find_array_flag(fst->Name))
             {
                 sss->celltype = EBTN;
-                factory_inital_ebtn(sss,fst);
+                if(factory_is_io_port(fst->SType))
+                    factory_inital_io_port_ebtn(sss,fst);
+                else
+                    factory_inital_ebtn(sss,fst);
             }
             else
             {
@@ -3194,7 +3239,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             suptr->curkey = g_strdup("");
             suptr->comobox = NULL;
             suptr->structlist = fst->datalist;
-             /* nextobj 就是当前下拉框所显示的 */
+            /* nextobj 就是当前下拉框所显示的 */
             FactoryStructItem *nextobj = factory_get_factorystructitem(suptr->structlist,fst->Value);
             if(!nextobj)
                 break;
@@ -3450,7 +3495,7 @@ structclass_copy(STRUCTClass *structclass)
     newobj->name = g_strdup(elem->object.name);
     if(factory_is_system_data(newobj->name))
     {
-        return NULL;
+        return NULL; /* 系统信息不能copy*/
     }
 
     newobj->oindex = g_list_length(curLayer->objects);
@@ -3834,13 +3879,13 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
             SaveUbtn *sbtn = &sss->value.ssubtn;
             g_return_if_fail(sbtn);
 //        GList *slist = g_hash_table_get_values(sbtn->htoflist);
-                GList *slist = sbtn->savelist;
+            GList *slist = sbtn->savelist;
 
-                for(; slist; slist = slist->next)
-                {
-                    SaveStruct *s = slist->data;
-                    factory_base_struct_save_to_file(s,obj_node);
-                }
+            for(; slist; slist = slist->next)
+            {
+                SaveStruct *s = slist->data;
+                factory_base_struct_save_to_file(s,obj_node);
+            }
 
         }
         g_strfreev(split);
@@ -4025,7 +4070,7 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
     if(!g_strcasecmp(fsi->sname,"FILELST"))
     {
         /* 这里写音乐管理界面上的数据 */
-       // g_return_if_fail(smd->itemlist);
+        // g_return_if_fail(smd->itemlist);
         gchar *rows = g_strdup_printf("%d",g_list_length(smd->itemlist));
         xmlSetProp(obj_node, (const xmlChar *)"rows", (xmlChar *)rows);
         g_free(rows);
@@ -4075,9 +4120,14 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
             xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",sit->id_index));
             xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
             gchar *val = "-1";
+            gpointer  exist = g_hash_table_lookup(curLayer->defnames,sit->dname);
+            if(!exist)
+            {
+                sit->dname = g_strdup("");
+                sit->active = 0;
+            }
+//            if(!sit->dname)
 
-            if(!sit->dname)
-                sit->dname = g_strdup("");;
             if(sit->active>0)
             {
 //                STRUCTClass *tcalss = factory_get_object_from_layer(curLayer,sit->dname);

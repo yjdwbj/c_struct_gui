@@ -375,7 +375,7 @@ dia_register_plugins_in_dir(const gchar *directory)
 
   if ((len >= reclen) &&
       (0 == strcmp(&directory[len-reclen],RECURSE))) {
-    gchar *dirbase = g_strndup(directory,len-reclen);
+    gchar *dirbase =factory_locale(g_strndup(directory,len-reclen));
     for_each_in_dir(dirbase,walk_dirs_for_plugins,directory_filter);
     g_free(dirbase);
   };

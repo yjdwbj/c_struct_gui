@@ -150,6 +150,12 @@ load_all_sheets(void)
     factoryContainer->unionTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
     /* 2014-4-1 lcy 递归查找config 目录下所有以.struct 为后缀的文件名 */
     for_each_in_dir(dia_get_lib_directory("config"),factoryReadDataFromFile,this_is_a_struct);
+    if(!g_hash_table_size(factoryContainer->structTable) ||
+       !g_hash_table_size(factoryContainer->structTable) ||
+       !g_hash_table_size(factoryContainer->structTable))
+    {
+        factory_critical_error_exit(factory_utf8("没有找到任何控件,或者config 目录下无任何有效文件．"));
+    }
 //  for_each_in_dir(dia_get_lib_directory("config"),factory_read_native_c_file,this_is_a_struct);
 //   factoryReadDataFromFile(&structList);
 //  home_dir = dia_config_filename("sheets");
@@ -394,13 +400,8 @@ static void factory_check_items_valid(gpointer key, gpointer value, gpointer use
 
             if(item->Itype == NT)
             {
-                gchar *msg_err = factory_utf8(g_strdup_printf(_("ERR:请检查配置文件, %s没有定义"),item->SType));
-                message_error(msg_err);
-                fwrite(msg_err,strlen(msg_err),1,logfd);
-                fclose(logfd);
-                g_free(msg_err);
-                exit(1);
-
+                gchar *msg_err = factory_utf8(g_strdup_printf(_("ERR:请检查config 下配置文件, %s没有定义"),item->SType));
+                factory_critical_error_exit(msg_err);
             }
 
         }
@@ -421,15 +422,15 @@ static void factory_check_struct_items_valid(gpointer key, gpointer value, gpoin
 static int error_count = 0;
 void factory_error_msgbox(const gchar *msg_err)
 {
-         message_error(msg_err);
+        message_error(msg_err);
         fwrite(msg_err,strlen(msg_err),1,logfd);
-        if(error_count++ >5)
+        if(error_count++ > 5)
         {
-           gchar *merr =  factory_utf8(_("遇到多个错误，现在退出！\n"));
-           message_error(merr);
-           fwrite(merr,strlen(merr),1,logfd);
-           exit(1);
+                    gchar *merr =  factory_utf8(_("遇到多个错误，现在退出！\n"));
+                    factory_critical_error_exit(msg_err);
         }
+
+
 }
 
 
@@ -456,13 +457,10 @@ void factoryReadDataFromFile(const gchar* filename)
     if((fd =  fopen(fname_gbk,"r")) == NULL)
     {
 
-        gchar *msg_err = g_strdup_printf(_("Can't open output file %s: %s\n"),
+        gchar *msg_err = g_strdup_printf(_("不能打开文件 %s: %s\n"),
                                          dia_message_filename(fname_gbk), strerror(errno));
-        fwrite(msg_err,strlen(msg_err),1,logfd);
-        fclose(logfd);
-        message_error(msg_err);
-        g_free(msg_err);
-        exit(1);
+        factory_critical_error_exit(msg_err);
+
     }
 
 //    if(stat(filename,&statbuf) <0 )
@@ -484,11 +482,7 @@ void factoryReadDataFromFile(const gchar* filename)
     if(g_ascii_strncasecmp(aline,_(":version="),9))
     {
         gchar *msg_err = g_locale_to_utf8(_("文件格式错误,找不到文件上的版本信息!\n"),-1,NULL,NULL,NULL);
-        message_error(msg_err);
-        fwrite(msg_err,strlen(msg_err),1,logfd);
-        fclose(logfd);
-        g_free(msg_err);
-        exit(1);
+       factory_critical_error_exit(msg_err);
     }
     gchar **ver = g_strsplit(aline,"=",-1);
     factoryContainer->file_version = g_strdup(ver[1]);
@@ -554,10 +548,7 @@ void factoryReadDataFromFile(const gchar* filename)
             if(g_strv_length(sbuf) < 3)
             {
                 gchar *msg_err = factory_utf8(g_strdup_printf(_("文件格式错误,配置文件　文件名：%s,:%d 行．\n"),fname_gbk,curline));
-                message_error(msg_err);
-                fwrite(msg_err,strlen(msg_err),1,logfd);
-                g_free(msg_err);
-                exit(1);
+               factory_critical_error_exit(msg_err);
             }
             if(0 == g_ascii_strncasecmp("Enum",sbuf[1],4)) // 2014-3-20 lcy 这里匹配到枚举名字.
             {
@@ -636,9 +627,7 @@ void factoryReadDataFromFile(const gchar* filename)
                 {
                     gchar *msg_err = factory_utf8(g_strdup_printf(_("有两个相同名的联合体，或者有两个相同类容的配置文件,文件名:%s,行：%d\n"),fname_gbk,curline));
                     factory_error_msgbox(msg_err);
-                    g_free(msg_err);
                     continue;
-//                    exit(1);
                 }
                 g_hash_table_insert(factoryContainer->unionTable,hashKey,dlist);
             }

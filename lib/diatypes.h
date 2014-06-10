@@ -221,6 +221,10 @@ struct _FactorySystemInfo
 {
     FactorySystemType *fstype;
     gpointer *system_info; /*系统信息*/
+    GList *IO_List; /* IO 列表*/
+    GList *IO_selected; /*已经选择的列表 */
+    int io_mindex; /*最大的ＩＯ枚举值*/
+    gchar *null_io; /* 空ＩＯ */
 };
 
 typedef struct _FactoryStructItemAll  FactoryStructItemAll; // 2014-3-20 lcy 存放整个文件的结果,第一个为枚举,第二个存结构体

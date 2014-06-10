@@ -923,7 +923,7 @@ void  app_init (int argc, char **argv)
     gchar *lfile = g_strdup_printf(LOGNAME,factory_get_format_date_and_time());
     gchar *logfpath = g_build_filename(dia_get_lib_directory("log"), lfile, NULL);
 
-    logfd = fopen(logfpath,"w");
+    logfd = fopen(logfpath,"w"); /*打开日志句柄*/
 
     /* Now write the data in the temporary file name. */
 
@@ -1047,7 +1047,8 @@ void  app_init (int argc, char **argv)
                         "object-libs; exiting...\n"));
         g_critical( _("Couldn't find standard objects when looking for "
                       "object-libs in '%s'; exiting...\n"), dia_get_lib_directory("dia"));
-        exit(1);
+        factory_critical_error_exit(_("Couldn't find standard objects when looking for "
+                        "object-libs; exiting...\n"));
     }
 
     persistence_load();

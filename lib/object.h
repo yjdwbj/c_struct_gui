@@ -636,9 +636,11 @@ DIAVAR gboolean factory_is_special_object(const gchar *name);
 DIAVAR gchar *factory_get_last_section(const gchar *src,const gchar *delimiter);
 DIAVAR gboolean factory_is_valid_type(gpointer data);
 DIAVAR GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent);
+DIAVAR void factory_critical_error_exit(const gchar *msg_err);
 
 DIAVAR void factory_callback_system_data();
 DIAVAR gboolean factory_is_system_data(const gchar *name);
+DIAVAR gboolean factory_is_io_port(const gchar *name);
 
 
 

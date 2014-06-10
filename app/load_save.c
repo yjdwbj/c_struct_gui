@@ -161,12 +161,9 @@ read_objects(xmlNodePtr objects,
             {
                 //	version = atoi(versionstr);
                 gchar *msg_err =  factory_utf8(_("结构体文件的版本错误!无法打开."));
-                message_error(msg_err);
-                fwrite(msg_err,strlen(msg_err),1,logfd);
-                fclose(logfd);
-                g_free(msg_err);
+                factory_critical_error_exit(msg_err);
                 xmlFree(versionstr);
-                exit(1);
+
             }
 
             type = object_get_type((char *)typestr);
@@ -1257,12 +1254,12 @@ CLEANUP:
     newfile[n-3] = 'b';
     gchar *outfile = g_strdup_printf("-o=%s",newfile);
     /* 转换本地码,不然会有乱码的 */
-    gchar *utf8f = g_convert(fullpath,-1,"GB2312","UTF-8",NULL,NULL,NULL);
-    gchar *utf8i = g_convert(input,-1,"GB2312","UTF-8",NULL,NULL,NULL);
-    gchar *utf8o = g_convert(outfile,-1,"GB2312","UTF-8",NULL,NULL,NULL);
-    gchar *arg = g_strjoin(" ",utf8f,utf8i,utf8o,NULL);
+//    gchar *utf8f = g_convert(fullpath,-1,"GB2312","UTF-8",NULL,NULL,NULL);
+//    gchar *utf8i = g_convert(input,-1,"GB2312","UTF-8",NULL,NULL,NULL);
+//    gchar *utf8o = g_convert(outfile,-1,"GB2312","UTF-8",NULL,NULL,NULL);
+//    gchar *arg = g_strjoin(" ",utf8f,utf8i,utf8o,NULL);
 //        gchar *cmd = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "makebin.exe",NULL);
-    gchar *argv[] = {utf8f,utf8i,utf8o,NULL};
+    gchar *argv[] = {fullpath,input,outfile,NULL};
     GPid pid;
     g_spawn_sync(NULL,
                  argv,NULL,
@@ -1276,12 +1273,11 @@ CLEANUP:
     g_free(outfile);
     g_free(newfile);
     g_free(input);
-    g_free(arg);
-    g_free(utf8f);
-    g_free(utf8i);
-    g_free(utf8o);
+//    g_free(utf8f);
+//    g_free(utf8i);
+//    g_free(utf8o);
 
-    g_free(fullpath);
+//    g_free(fullpath);
     g_free(exefile);
     return (ret?FALSE:TRUE);
 }

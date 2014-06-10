@@ -1183,6 +1183,65 @@ gboolean factory_is_system_data(const gchar *name)
 }
 
 
+gboolean factory_is_io_port(const gchar *name)
+{
+     gboolean *b = FALSE;
+    if(!g_ascii_strcasecmp(name,"ALL_IO_PORT"))
+        b = TRUE;
+    return b;
+}
+
+static void
+factory_critical_error_response(GtkWidget *widget,
+                               gint       response_id,
+                               gpointer   data)
+{
+
+    if(logfd)
+    {
+        fclose(logfd);/* 关闭日志　*/
+    }
+   // gtk_widget_destroy(widget);
+    gtk_main_quit();
+    exit(1);
+
+}
+
+void
+factory_critical_error_exit(const gchar *msg_err)
+{
+
+
+    gchar *lastmsg = factory_utf8("\t\t\严重错误,无法继续\n\n错误信息： %s .\n 请联系厂家技术支持.\n\n\t\t现在退出");
+    GtkWidget * msg_dialog = gtk_message_dialog_new (GTK_WINDOW (NULL),
+                                                            GTK_DIALOG_MODAL,
+                                                            GTK_MESSAGE_ERROR,
+                                                            GTK_BUTTONS_CLOSE,
+                                                            g_strdup_printf(lastmsg,msg_err));
+
+           gint yes_or_no = gtk_dialog_run (GTK_DIALOG (msg_dialog));
+
+           gtk_widget_destroy (msg_dialog);
+        factory_critical_error_response(NULL,NULL,NULL);
+
+
+//    gtk_dialog_set_default_response (GTK_DIALOG(dialog), GTK_RESPONSE_CLOSE);
+//     gtk_window_set_modal(dialog,TRUE);
+//     gtk_widget_set_size_request (dialog,300,500);
+
+//     fwrite(msg_err,strlen(msg_err),1,logfd);
+//     GtkWidget *label = gtk_label_new(msg_err);
+//     GtkWidget *vbox = gtk_vbox_new(FALSE,0);
+//     GtkWidget *dialog_vbox = GTK_DIALOG(dialog)->vbox;
+//     gtk_container_add(GTK_CONTAINER(dialog_vbox),vbox);
+//
+//     gtk_box_pack_start(GTK_BOX(vbox),label,FALSE,FALSE,0);
+//     g_signal_connect(G_OBJECT(dialog), "response",G_CALLBACK(factory_critical_error_response),NULL);
+//     gtk_widget_show(dialog);
+
+}
+
+
 
 GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent)
 {
@@ -1195,12 +1254,14 @@ GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent
     gtk_dialog_set_default_response (GTK_DIALOG(subdig), GTK_RESPONSE_OK);
     gtk_window_set_resizable (GTK_WINDOW(subdig),FALSE);
     gtk_window_set_position (GTK_WINDOW(subdig),GTK_WIN_POS_CENTER_ALWAYS);
+
 //    gtk_window_present(GTK_WINDOW(subdig));
     GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
     g_signal_connect(G_OBJECT(subdig), "delete_event",
                      G_CALLBACK(gtk_widget_hide), NULL);
     g_signal_connect(GTK_OBJECT(subdig), "delete_event",
                      G_CALLBACK(gtk_true), NULL);
+//    g_signal_connect (G_OBJECT (subdig), "delete_event", G_CALLBACK (gtk_window_iconify), NULL);
     g_signal_connect(G_OBJECT (subdig), "destroy",
                      G_CALLBACK(gtk_widget_destroyed), &subdig);
     g_signal_connect(G_OBJECT (subdig), "destroy",
