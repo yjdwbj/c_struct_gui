@@ -14,7 +14,7 @@
 	"widgets.h"
 	"intl.h"
 
-1402364391 o:\tool\dvs50\config.h
+1402490655 o:\tool\dvs50\config.h
 
 1394617928 o:\tool\dvs50\lib\message.h
 	<stdarg.h>
@@ -28,7 +28,7 @@
 	"diatypes.h"
 	"geometry.h"
 
-1402392479 o:\tool\dvs50\lib\diatypes.h
+1402450401 o:\tool\dvs50\lib\diatypes.h
 	"diavar.h"
 
 1394621090 o:\tool\dvs50\lib\geometry.h
@@ -768,49 +768,6 @@
 	<config.h>
 	"object.h"
 
-1402384808 source:o:\tool\dvs50\lib\object.c
-	<config.h>
-	<stdio.h>
-	<string.h>
-	<gtk/gtk.h>
-	"object.h"
-	"diagramdata.h"
-	"message.h"
-	"parent.h"
-	"dummy_dep.h"
-	"debug.h"
-
-1257604114 o:\tool\dvs50\lib\dummy_dep.h
-	<glib.h>
-	"connection.h"
-	"element.h"
-	"font.h"
-	"text.h"
-	"orth_conn.h"
-	"neworth_conn.h"
-	"arrows.h"
-	"utils.h"
-	"poly_conn.h"
-	"polyshape.h"
-	"bezier_conn.h"
-	"beziershape.h"
-	"widgets.h"
-	"intl.h"
-	"connpoint_line.h"
-	"properties.h"
-	"dynamic_obj.h"
-	"connectionpoint.h"
-
-1394613365 o:\tool\dvs50\lib\poly_conn.h
-	"diatypes.h"
-	"object.h"
-	"boundingbox.h"
-
-1394613218 o:\tool\dvs50\lib\polyshape.h
-	"diatypes.h"
-	"object.h"
-	"boundingbox.h"
-
 1399857930 source:o:\tool\dvs50\lib\object_defaults.c
 	<config.h>
 	<stdlib.h>
@@ -905,6 +862,11 @@
 	"message.h"
 	"diarenderer.h"
 
+1394613365 o:\tool\dvs50\lib\poly_conn.h
+	"diatypes.h"
+	"object.h"
+	"boundingbox.h"
+
 1257604114 source:o:\tool\dvs50\lib\polyshape.c
 	<config.h>
 	<stdio.h>
@@ -915,6 +877,11 @@
 	"polyshape.h"
 	"message.h"
 	"diarenderer.h"
+
+1394613218 o:\tool\dvs50\lib\polyshape.h
+	"diatypes.h"
+	"object.h"
+	"boundingbox.h"
 
 1257604114 source:o:\tool\dvs50\lib\prefs.c
 	<config.h>
@@ -1052,7 +1019,7 @@
 	"message.h"
 	"diagdkrenderer.h"
 
-1402381053 source:o:\tool\dvs50\lib\sheet.c
+1402466999 source:o:\tool\dvs50\lib\sheet.c
 	<config.h>
 	<stdlib.h>
 	<string.h>
@@ -1230,7 +1197,7 @@
 	"geometry.h"
 	"display.h"
 
-1394614635 o:\tool\dvs50\app\interface.h
+1402485062 o:\tool\dvs50\app\interface.h
 	"display.h"
 	"menus.h"
 	"disp_callbacks.h"
@@ -1386,7 +1353,7 @@
 	<glib.h>
 	"diavar.h"
 
-1257604114 o:\tool\dvs50\app\properties-dialog.h
+1402486146 o:\tool\dvs50\app\properties-dialog.h
 	"object.h"
 	"diagram.h"
 
@@ -1481,7 +1448,7 @@
 	"object.h"
 	"object_ops.h"
 
-1400745530 source:o:\tool\dvs50\app\defaults.c
+1402480019 source:o:\tool\dvs50\app\defaults.c
 	<config.h>
 	<gtk/gtk.h>
 	"defaults.h"
@@ -1672,7 +1639,7 @@
 	"connectionpoint_ops.h"
 	<glib.h>
 
-1257604114 source:o:\tool\dvs50\app\exit_dialog.c
+1402478528 source:o:\tool\dvs50\app\exit_dialog.c
 	<config.h>
 	"exit_dialog.h"
 	"intl.h"
@@ -1765,7 +1732,7 @@
 	"object_ops.h"
 	"group.h"
 
-1402021314 source:o:\tool\dvs50\app\interface.c
+1402490379 source:o:\tool\dvs50\app\interface.c
 	<config.h>
 	<gnome.h>
 	<gtk/gtk.h>
@@ -1831,7 +1798,7 @@
 	"intl.h"
 	<math.h>
 
-1402385383 source:o:\tool\dvs50\app\load_save.c
+1402449900 source:o:\tool\dvs50\app\load_save.c
 	<config.h>
 	<sys/stat.h>
 	<unistd.h>
@@ -1973,18 +1940,6 @@
 	"persistence.h"
 	<io.h>
 
-1402297415 source:o:\tool\dvs50\app\properties-dialog.c
-	<config.h>
-	<gtk/gtk.h>
-	<gdk/gdkkeysyms.h>
-	"intl.h"
-	"properties-dialog.h"
-	"object_ops.h"
-	"connectionpoint_ops.h"
-	"undo.h"
-	"message.h"
-	<string.h>
-
 1402305153 source:o:\tool\dvs50\app\recent_files.c
 	<config.h>
 	<gnome.h>
@@ -2071,7 +2026,7 @@
 	"intl.h"
 	"persistence.h"
 
-1401416499 source:o:\tool\dvs50\app\sheets_dialog_callbacks.c
+1402464312 source:o:\tool\dvs50\app\sheets_dialog_callbacks.c
 	<config.h>
 	<errno.h>
 	<string.h>
@@ -2374,7 +2329,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1402391837 source:o:\tool\dvs50\objects\struct\struct_class.c
+1402470139 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2391,7 +2346,7 @@
 	"sheet.h"
 	"filedlg.h"
 
-1402391837 o:\tool\dvs50\objects\struct\struct_class.h
+1402450587 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2408,7 +2363,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1402402013 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1402490828 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2422,4 +2377,49 @@
 	"sheet.h"
 	"diagramdata.h"
 	"connpoint_line.h"
+
+1402490179 source:o:\tool\dvs50\lib\object.c
+	<config.h>
+	<stdio.h>
+	<string.h>
+	<gtk/gtk.h>
+	"object.h"
+	"diagramdata.h"
+	"message.h"
+	"parent.h"
+	"dummy_dep.h"
+	"debug.h"
+
+1257604114 o:\tool\dvs50\lib\dummy_dep.h
+	<glib.h>
+	"connection.h"
+	"element.h"
+	"font.h"
+	"text.h"
+	"orth_conn.h"
+	"neworth_conn.h"
+	"arrows.h"
+	"utils.h"
+	"poly_conn.h"
+	"polyshape.h"
+	"bezier_conn.h"
+	"beziershape.h"
+	"widgets.h"
+	"intl.h"
+	"connpoint_line.h"
+	"properties.h"
+	"dynamic_obj.h"
+	"connectionpoint.h"
+
+1402490561 source:o:\tool\dvs50\app\properties-dialog.c
+	<config.h>
+	<gtk/gtk.h>
+	<gdk/gdkkeysyms.h>
+	"intl.h"
+	"properties-dialog.h"
+	"object_ops.h"
+	"connectionpoint_ops.h"
+	"undo.h"
+	"message.h"
+	<string.h>
 

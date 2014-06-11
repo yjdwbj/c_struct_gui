@@ -1,2 +1,0 @@
-; dlltool -z libdia.def
-EXPORTS

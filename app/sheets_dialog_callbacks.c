@@ -854,8 +854,7 @@ on_sheets_new_dialog_button_ok_clicked (GtkButton       *button,
     sheet_obj = g_new0(SheetObject, 1);
     sheet_obj->object_type = g_strdup(ot->name);
     {
-      sheet_obj->description =
-	gtk_editable_get_chars(GTK_EDITABLE(entry), 0, -1);
+      sheet_obj->description =gtk_editable_get_chars(GTK_EDITABLE(entry), 0, -1);
     }
     sheet_obj->pixmap = ot->pixmap;
     sheet_obj->user_data = ot->default_user_data;

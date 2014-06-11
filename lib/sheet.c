@@ -151,8 +151,8 @@ load_all_sheets(void)
     /* 2014-4-1 lcy 递归查找config 目录下所有以.struct 为后缀的文件名 */
     for_each_in_dir(dia_get_lib_directory("config"),factoryReadDataFromFile,this_is_a_struct);
     if(!g_hash_table_size(factoryContainer->structTable) ||
-       !g_hash_table_size(factoryContainer->structTable) ||
-       !g_hash_table_size(factoryContainer->structTable))
+            !g_hash_table_size(factoryContainer->structTable) ||
+            !g_hash_table_size(factoryContainer->structTable))
     {
         factory_critical_error_exit(factory_utf8("没有找到任何控件,或者config 目录下无任何有效文件．"));
     }
@@ -422,13 +422,13 @@ static void factory_check_struct_items_valid(gpointer key, gpointer value, gpoin
 static int error_count = 0;
 void factory_error_msgbox(const gchar *msg_err)
 {
-        message_error(msg_err);
-        fwrite(msg_err,strlen(msg_err),1,logfd);
-        if(error_count++ > 5)
-        {
-                    gchar *merr =  factory_utf8(_("遇到多个错误，现在退出！\n"));
-                    factory_critical_error_exit(msg_err);
-        }
+    message_error(msg_err);
+    fwrite(msg_err,strlen(msg_err),1,logfd);
+    if(error_count++ > 5)
+    {
+        gchar *merr =  factory_utf8(_("遇到多个错误，现在退出！\n"));
+        factory_critical_error_exit(msg_err);
+    }
 
 
 }
@@ -441,6 +441,7 @@ gchar *factory_get_utf8_str(gboolean isutf8,gchar *str)
         p = g_strdup(str);
     else
         p = g_strdup(factory_utf8(str));
+
     return p;
 }
 
@@ -482,10 +483,32 @@ void factoryReadDataFromFile(const gchar* filename)
     if(g_ascii_strncasecmp(aline,_(":version="),9))
     {
         gchar *msg_err = g_locale_to_utf8(_("文件格式错误,找不到文件上的版本信息!\n"),-1,NULL,NULL,NULL);
-       factory_critical_error_exit(msg_err);
+        factory_critical_error_exit(msg_err);
     }
     gchar **ver = g_strsplit(aline,"=",-1);
-    factoryContainer->file_version = g_strdup(ver[1]);
+
+    if(!strlen(ver[1]))
+    {
+        factory_critical_error_exit(factory_utf8("没有找到版本信息"));
+    }
+
+    gchar **split  = g_strsplit(ver[1],"@",-1);
+    if(g_strv_length(split)!=2)
+    {
+        factory_critical_error_exit(factory_utf8(_("版本格式不正信息,样列: 工程号@主版本号．次版本号　!\n")));
+    }
+    factoryContainer->project_number = g_strdup(split[0]);
+    gchar **mvers = g_strsplit(split[1],".",-1);
+    if(g_strv_length(mvers)!=2)
+    {
+        factory_critical_error_exit(factory_utf8(_("版本格式不正信息!找不到主版本号\n")));
+    }
+
+    factoryContainer->major_version = g_strdup(mvers[0]);
+    factoryContainer->minor_version = g_strdup(mvers[1]);
+    g_strfreev(mvers);
+    g_strfreev(split);
+
     g_strfreev(ver);
     g_free(aline);
 
@@ -523,9 +546,7 @@ void factoryReadDataFromFile(const gchar* filename)
 
     while(fgets(filetxt,MAX_LINE,fd)!=NULL)
     {
-
         curline++;
-
         aline = g_strstrip(filetxt);
         if(0 == strlen(aline))
             continue;
@@ -548,7 +569,7 @@ void factoryReadDataFromFile(const gchar* filename)
             if(g_strv_length(sbuf) < 3)
             {
                 gchar *msg_err = factory_utf8(g_strdup_printf(_("文件格式错误,配置文件　文件名：%s,:%d 行．\n"),fname_gbk,curline));
-               factory_critical_error_exit(msg_err);
+                factory_critical_error_exit(msg_err);
             }
             if(0 == g_ascii_strncasecmp("Enum",sbuf[1],4)) // 2014-3-20 lcy 这里匹配到枚举名字.
             {
@@ -560,8 +581,18 @@ void factoryReadDataFromFile(const gchar* filename)
             {
                 isStruct = TRUE;
                 fssl = g_new0(FactoryStructItemList,1);
-                fssl->sname = factory_get_utf8_str(isutf8,sbuf[2]);;
-                fssl->vname = factory_get_utf8_str(isutf8,sbuf[4]);;
+                fssl->sname = factory_get_utf8_str(isutf8,sbuf[2]);
+
+
+                fssl->vname = factory_get_utf8_str(isutf8,sbuf[4]);
+                if(!fssl->vname)
+                    fssl->vname = g_strdup("nil");
+
+                if(!fssl->sname)
+                {
+                    factory_critical_error_exit(factory_utf8(g_strdup_printf("没有读到字段名.\n"
+                                                             "文件名：%s,行数：%d\n",filename,curline)));
+                }
                 fssl->isvisible = FALSE;
                 if(!g_ascii_strcasecmp("action",sbuf[3]) /*|| !g_ascii_strcasecmp("system",sbuf[3])*/) /* 2014-5-30 */
                 {
@@ -580,6 +611,11 @@ void factoryReadDataFromFile(const gchar* filename)
 
             }
             hashKey = factory_get_utf8_str(isutf8,sbuf[2]);
+            if(!hashKey)
+            {
+                    factory_critical_error_exit(factory_utf8(g_strdup_printf("没有读到字段名.\n"
+                                                             "文件名：%s,行数：%d\n",filename,curline)));
+            }
             g_strfreev(sbuf);
         }
         else if(aline[0] == '{' )
@@ -595,8 +631,7 @@ void factoryReadDataFromFile(const gchar* filename)
                 if(exists)
                 {
                     gchar *msg_err = factory_utf8(g_strdup_printf(_("有两个相同名的结构体，或者有两个相同类容的配置文件,文件名：%s,行：%d\n"),fname_gbk,curline));
-                   factory_error_msgbox(msg_err);
-                    g_free(msg_err);
+                    factory_error_msgbox(msg_err);
                     continue;
 //                    exit(1);
                 }
@@ -608,7 +643,7 @@ void factoryReadDataFromFile(const gchar* filename)
             else if(isEmnu)
             {
                 isEmnu = FALSE;
-                 gpointer exists = g_hash_table_lookup(factoryContainer->structTable,hashKey);
+                gpointer exists = g_hash_table_lookup(factoryContainer->structTable,hashKey);
                 if(exists)
                 {
                     gchar *msg_err = factory_utf8(g_strdup_printf(_("有两个相同名的枚举，或者有两个相同类容的配置文件,文件名: %s, 行：%d\n"),fname_gbk,curline));
@@ -622,7 +657,7 @@ void factoryReadDataFromFile(const gchar* filename)
             else if(isUnion)
             {
                 isUnion = FALSE;
-                  gpointer exists = g_hash_table_lookup(factoryContainer->structTable,hashKey);
+                gpointer exists = g_hash_table_lookup(factoryContainer->structTable,hashKey);
                 if(exists)
                 {
                     gchar *msg_err = factory_utf8(g_strdup_printf(_("有两个相同名的联合体，或者有两个相同类容的配置文件,文件名:%s,行：%d\n"),fname_gbk,curline));
@@ -637,42 +672,47 @@ void factoryReadDataFromFile(const gchar* filename)
             if(aline[0] == '/' || aline[0] == '#' || !strlen(aline))
                 continue;
             FactoryStructEnum *kvmap  = g_new0(FactoryStructEnum,1);
-            gchar ** sbuf=NULL;
-            sbuf=  g_strsplit_set (aline,isutf8 ? u_tdot : tdot,-1);
-            if( g_strv_length(sbuf) <2)
+            gchar ** splits=NULL;
+            splits=  g_strsplit_set (aline,isutf8 ? u_tdot : tdot,-1);
+            if( g_strv_length(splits) <2)
             {
-                kvmap->key = factory_get_utf8_str(isutf8,sbuf[0]);
+                kvmap->key = factory_get_utf8_str(isutf8,splits[0]);
                 kvmap->value = factory_utf8(g_strdup_printf("%d",zero++));
             }
             else
             {
                 /* 2014-3-25 lcy 这里把上一个枚举值存下来，做为下一个没有指定值的时候在此基础上递增。*/
-                zero = g_ascii_strtod(sbuf[1],NULL);
-                kvmap->key = factory_get_utf8_str(isutf8,sbuf[0]);
-                kvmap->value =factory_get_utf8_str(isutf8,sbuf[1]);
+                zero = g_ascii_strtod(splits[1],NULL);
+                kvmap->key = factory_get_utf8_str(isutf8,splits[0]);
+                kvmap->value =factory_get_utf8_str(isutf8,splits[1]);
             }
             // fsel->list  =  g_list_append(fsel->list ,kvmap);
 
             enumlist = g_list_append(enumlist,kvmap);
             // g_hash_table_insert(hashValue,(char*)kvmap->key,(char*)kvmap->value);
-            g_strfreev(sbuf);
+            g_strfreev(splits);
         }
         else if(isStruct || isUnion )    // 2013-3-20 lcy  这里把每一项结构体数据放进链表.
         {
 
-            gchar ** sbuf=NULL;
+            gchar ** splits=NULL;
             if(aline[0] == '/' || aline[0] == '#' || !strlen(aline))
                 continue;
             FactoryStructItem *item = g_new0(FactoryStructItem,1);
             item->savestruct = NULL;
             item->orgclass = NULL;
             //  sscanf(&aline,"%[^:]:%[^:]:%[^:]:%[^:]:%[^:]:%[^:]",sbuf[0],sbuf[1],sbuf[2],sbuf[3],sbuf[4],sbuf[5]);
-            sbuf=  g_strsplit_set (filetxt,isutf8 ? u_tdot : tdot,-1);
+            splits=  g_strsplit(filetxt,isutf8 ? u_tdot : tdot,-1);
 
-            if( g_strv_length(sbuf) <MAX_SECTION)
+            if( g_strv_length(splits) <MAX_SECTION)
                 continue;
 
-            item->FType = factory_get_utf8_str(isutf8,sbuf[0]);
+            item->FType = factory_get_utf8_str(isutf8,splits[0]);
+            if(!item->FType)
+            {
+                    factory_critical_error_exit(factory_utf8(g_strdup_printf("没有读到第一段(类型)的字段名.\n"
+                                                             "文件名：%s,行数：%d\n",filename,curline)));
+            }
 
             gchar **p = g_strsplit(item->FType,isutf8 ? u_dot : dot,-1);
             int l = g_strv_length(p);
@@ -683,14 +723,31 @@ void factoryReadDataFromFile(const gchar* filename)
             {
                 item->Itype = BT;
             }
-            item->Name = factory_get_utf8_str(isutf8,sbuf[1]);
-            item->Cname = factory_get_utf8_str(isutf8,sbuf[2]);
-            item->Value = factory_get_utf8_str(isutf8,sbuf[3]);
-            item->Min = factory_get_utf8_str(isutf8,sbuf[4]);
-            item->Max = factory_get_utf8_str(isutf8,sbuf[5]);
-            item->Comment = factory_get_utf8_str(isutf8,sbuf[6]);
+            item->Name =  factory_get_utf8_str(isutf8,splits[1]);
+            if(!item->Name)
+            {
+                    factory_critical_error_exit(factory_utf8(g_strdup_printf("内容:%s \n没有读到第二段(名字)的字段名.\n"
+                                                             "文件名：%s,行数：%d\n",factory_utf8(filetxt),filename,curline)));
+            }
+            item->Cname = factory_get_utf8_str(isutf8,splits[2]);
+//            if(!item->Value)
+//            {
+//                    factory_critical_error_exit(factory_utf8(g_strdup_printf("没有读到第四段(默认值)的字段名.\n
+//                                                             "文件名：%s,行数：%d\n",filename,curline));
+//            }
+            item->Value = factory_get_utf8_str(isutf8,splits[3]);
+            if(!item->Value)
+            {
+                    factory_critical_error_exit(factory_utf8(g_strdup_printf("没有读到第四段(默认值)的字段名.\n"
+                                                             "文件名：%s,行数：%d\n",filename,curline)));
+            }
+            item->Min = factory_get_utf8_str(isutf8,splits[4]);
+            item->Max = factory_get_utf8_str(isutf8,splits[5]);
+            item->Comment = factory_get_utf8_str(isutf8,splits[6]);
+           if(!item->Comment)
+                item->Comment=g_strdup("");
             dlist = g_list_append(dlist,item);
-            g_strfreev(sbuf);
+            g_strfreev(splits);
         }
         memset(filetxt,0x0,MAX_LINE);
     }
@@ -983,7 +1040,7 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
             continue;
         sheet_obj = g_new(SheetObject,1);
         sheet_obj->object_type = g_strdup((char *) otype->name);
-        sheet_obj->description = g_strdup(fssl->vname);
+        sheet_obj->description =  fssl->vname ?  g_strdup(fssl->vname) : g_strdup("NULL");
 //        sheet_obj->title_on_button = g_strdup(fssl->vname);
 //    xmlFree(objdesc);     objdesc = NULL;
 

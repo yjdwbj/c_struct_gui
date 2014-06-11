@@ -1186,7 +1186,8 @@ gboolean factory_is_system_data(const gchar *name)
 gboolean factory_is_io_port(const gchar *name)
 {
      gboolean *b = FALSE;
-    if(!g_ascii_strcasecmp(name,"ALL_IO_PORT"))
+
+    if(!g_ascii_strcasecmp(name,"ALL_IO_PORT") || !g_ascii_strcasecmp(name,"ADC_IO_PORT") )
         b = TRUE;
     return b;
 }
@@ -1241,21 +1242,44 @@ factory_critical_error_exit(const gchar *msg_err)
 
 }
 
-
+static void
+factory_give_focus(GtkWidget *widget, gpointer data)
+{
+    if (GTK_WIDGET_CAN_FOCUS(widget))
+    {
+        gtk_widget_grab_focus(widget);
+    }
+    else
+    {
+        if (GTK_IS_CONTAINER(widget))
+        {
+            gtk_container_foreach(GTK_CONTAINER(widget), factory_give_focus, data);
+        }
+    }
+}
 
 GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent)
 {
     /* 创建对话框 */
     GtkWidget*  subdig = gtk_dialog_new_with_buttons(_(title),
                          GTK_WINDOW(parent),
-                         GTK_DIALOG_DESTROY_WITH_PARENT,
+                         GTK_DIALOG_MODAL,
                          GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
                          GTK_STOCK_OK, GTK_RESPONSE_OK,NULL);
     gtk_dialog_set_default_response (GTK_DIALOG(subdig), GTK_RESPONSE_OK);
     gtk_window_set_resizable (GTK_WINDOW(subdig),FALSE);
     gtk_window_set_position (GTK_WINDOW(subdig),GTK_WIN_POS_CENTER_ALWAYS);
 
-//    gtk_window_present(GTK_WINDOW(subdig));
+    factory_give_focus(subdig,NULL);
+
+//       gtk_window_set_transient_for(GTK_WINDOW(subdig),
+//                                 GTK_WINDOW (parent));
+    gtk_window_present(GTK_WINDOW(subdig));
+    gtk_widget_set_state (subdig,GTK_STATE_ACTIVE);
+    gtk_widget_set_parent (GTK_WINDOW(subdig),GTK_WINDOW(parent));
+//    gtk_window_stick (GTK_WINDOW(subdig));
+
+
     GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
     g_signal_connect(G_OBJECT(subdig), "delete_event",
                      G_CALLBACK(gtk_widget_hide), NULL);

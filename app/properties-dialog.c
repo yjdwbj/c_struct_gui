@@ -57,11 +57,12 @@ static void create_dialog()
                  GTK_WINDOW (ddisplay_active()->shell),
                  GTK_DIALOG_DESTROY_WITH_PARENT,
                  GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
-                 GTK_STOCK_APPLY, GTK_RESPONSE_APPLY,
+//                 GTK_STOCK_APPLY, GTK_RESPONSE_APPLY,
                  GTK_STOCK_OK, GTK_RESPONSE_OK,
                  NULL);
 
     gtk_dialog_set_default_response (GTK_DIALOG(dialog), GTK_RESPONSE_OK);
+
 
     dialog_vbox = GTK_DIALOG(dialog)->vbox;
 
@@ -76,8 +77,8 @@ static void create_dialog()
                      G_CALLBACK(gtk_widget_destroyed), &dialog);
     g_signal_connect(G_OBJECT (dialog), "destroy",
                      G_CALLBACK(gtk_widget_destroyed), &dialog_vbox);
-    g_signal_connect(G_OBJECT (dialog), "key-release-event",
-                     G_CALLBACK(properties_key_event), NULL);
+//    g_signal_connect(G_OBJECT (dialog), "key-release-event",
+//                     G_CALLBACK(properties_key_event), NULL);
 
     no_properties_dialog = gtk_label_new(_("This object has no properties."));
     gtk_widget_show (no_properties_dialog);
@@ -231,6 +232,22 @@ object_properties_show(Diagram *dia, DiaObject *obj)
     g_list_free(tmp);
 }
 
+gint factory_open_new_dialog(GtkWidget *parent)
+{
+    GtkWidget * msg_dialog = gtk_message_dialog_new (dialog,
+                             GTK_DIALOG_MODAL,
+                             GTK_MESSAGE_WARNING,
+                             GTK_BUTTONS_YES_NO,
+                             factory_utf8("只能打开一个窗口，你要关闭之前打开的窗口吗?\n"
+                                          "请用tab键选择，回车键确定"));
+    gtk_dialog_set_default_response (GTK_DIALOG(msg_dialog), GTK_RESPONSE_NO);
+//                gtk_widget_show(msg_dialog);
+    gint yes_or_no = gtk_dialog_run (GTK_DIALOG (msg_dialog));
+    gtk_widget_destroy (msg_dialog);
+    return yes_or_no;
+}
+
+
 void
 object_list_properties_show(Diagram *dia, GList *objects)
 {
@@ -238,7 +255,36 @@ object_list_properties_show(Diagram *dia, GList *objects)
     DiaObject *one_obj;
     if (!dialog)
         create_dialog();
-    clear_dialog_globals();
+//    clear_dialog_globals();
+    else
+    {
+        while (TRUE)
+        {
+
+            GtkWidget * msg_dialog = gtk_message_dialog_new (GTK_WINDOW (ddisplay_active()->shell),
+                                     GTK_DIALOG_MODAL,
+                                     GTK_MESSAGE_WARNING,
+                                     GTK_BUTTONS_YES_NO,
+                                     factory_utf8("只能打开一个窗口，你要关闭之前打开的窗口吗?\n"
+                                                  "请用tab键选择，回车键确定"));
+            gtk_dialog_set_default_response (GTK_DIALOG(msg_dialog), GTK_RESPONSE_NO);
+//                gtk_widget_show(msg_dialog);
+            gtk_window_set_transient_for(GTK_WINDOW(msg_dialog),
+                                         GTK_WINDOW (dialog));
+            gtk_widget_set_parent_window(GTK_WINDOW(msg_dialog),GTK_WINDOW (interface_get_toolbox_shell()));
+            gint yes_or_no = gtk_dialog_run (GTK_DIALOG (msg_dialog));
+            gtk_widget_destroy (msg_dialog);
+            if(yes_or_no != GTK_RESPONSE_YES)
+            {
+                return;
+            }
+
+
+            break;
+        }
+        clear_dialog_globals();
+    }
+
 
     if (!objects)
     {
@@ -285,6 +331,7 @@ object_list_properties_show(Diagram *dia, GList *objects)
     gtk_widget_show (properties);
 
     properties_give_focus(properties, NULL);
+
 
     /* resize to minimum */
     /* if (obj != current_obj) */

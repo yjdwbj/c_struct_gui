@@ -61,7 +61,7 @@ void create_toolbox (void);
 extern __declspec(dllexport) void toolbox_show(void);
 void toolbox_hide(void);
 
-GtkWidget *interface_get_toolbox_shell(void);
+DIAVAR GtkWidget *interface_get_toolbox_shell(void);
 
 void tool_select_callback(GtkWidget *widget, gpointer data);
 void create_integrated_ui (void);

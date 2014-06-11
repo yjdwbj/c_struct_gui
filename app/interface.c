@@ -1319,7 +1319,8 @@ fill_sheet_wbox(Sheet *sheet)
                                   COLUMNS * 1.0 / rows);
 
 //    style = gtk_widget_get_style(sheet_wbox);
-    for (tmp = sheet->objects; tmp != NULL; tmp = tmp->next)
+    int n = 0;
+    for (tmp = sheet->objects; tmp != NULL; tmp = tmp->next,n++)
     {
         SheetObject *sheet_obj = tmp->data;
         GdkPixmap *pixmap = NULL;
@@ -1413,8 +1414,10 @@ fill_sheet_wbox(Sheet *sheet)
 
         tool_setup_drag_source(button, data, pixmap, mask);
 
+//        message_warning(sheet_obj->description);
         gtk_tooltips_set_tip (tool_tips, button,
-                              gettext(sheet_obj->description), NULL);
+                              sheet_obj->description, NULL);
+
     }
     /* If the selection is in the old sheet, steal it */
     if (active_tool != NULL &&

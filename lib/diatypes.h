@@ -221,10 +221,10 @@ struct _FactorySystemInfo
 {
     FactorySystemType *fstype;
     gpointer *system_info; /*系统信息*/
-    GList *IO_List; /* IO 列表*/
-    GList *IO_selected; /*已经选择的列表 */
-    int io_mindex; /*最大的ＩＯ枚举值*/
-    gchar *null_io; /* 空ＩＯ */
+//    GList *IO_List; /* IO 列表*/
+//    GList *IO_selected; /*已经选择的列表 */
+//    int io_mindex; /*最大的ＩＯ枚举值*/
+//    gchar *null_io; /* 空ＩＯ */
 };
 
 typedef struct _FactoryStructItemAll  FactoryStructItemAll; // 2014-3-20 lcy 存放整个文件的结果,第一个为枚举,第二个存结构体
@@ -234,7 +234,9 @@ struct _FactoryStructItemAll{
     GHashTable *structTable; // 2014-3-25 lcy 这里存放 FactoryStructItemList 的哈希表。
     GHashTable *unionTable;
     GList* structList; // 2014-3-25 lcy 这里存放 FactoryStructItemList 的链表。
-    gchar *file_version;
+    gchar *project_number;
+    gchar *major_version;
+    gchar *minor_version;
     gchar *system_files;
     Layer *curLayer;
 //    gpointer *otp_obj; /*这里用来放系统信息，只能有唯一个*/

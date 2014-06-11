@@ -1,4 +1,4 @@
-/* 
+/*
  * exit_dialog.h: Dialog to allow the user to choose which data to
  * save on exit or to cancel exit.
  *
@@ -96,7 +96,7 @@ exit_dialog_make (GtkWindow * parent_window,
     GtkTreeViewColumn * column;
 
     gtk_box_pack_start (vbox, label, FALSE, FALSE, 0);
-    
+
     gtk_widget_show (label);
 
     /* Scrolled window for displaying things which need saving */
@@ -116,7 +116,7 @@ exit_dialog_make (GtkWindow * parent_window,
     gtk_tree_view_append_column (GTK_TREE_VIEW (treeview), column);
 
     g_signal_connect (G_OBJECT (renderer), "toggled",
-                      G_CALLBACK (toggle_check_button), 
+                      G_CALLBACK (toggle_check_button),
                       treeview);
 
     renderer = gtk_cell_renderer_text_new ();
@@ -134,7 +134,7 @@ exit_dialog_make (GtkWindow * parent_window,
 
     gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (scrolled), GTK_WIDGET (treeview));
 
- 
+
     hbox = gtk_hbox_new (FALSE, 3);
     gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
     gtk_widget_show (hbox);
@@ -144,7 +144,7 @@ exit_dialog_make (GtkWindow * parent_window,
     gtk_widget_show (button);
 
     g_signal_connect (G_OBJECT (button), "clicked",
-                      G_CALLBACK (select_all_clicked), 
+                      G_CALLBACK (select_all_clicked),
                       treeview);
 
     button = gtk_button_new_with_label (_("Select None"));
@@ -152,7 +152,7 @@ exit_dialog_make (GtkWindow * parent_window,
     gtk_widget_show (button);
 
     g_signal_connect (G_OBJECT (button), "clicked",
-                      G_CALLBACK (select_none_clicked), 
+                      G_CALLBACK (select_none_clicked),
                       treeview);
 
     g_object_unref (model);
@@ -161,11 +161,11 @@ exit_dialog_make (GtkWindow * parent_window,
     gtk_widget_show_all (GTK_WIDGET(vbox));
 
     g_object_set_data (G_OBJECT (dialog), EXIT_DIALOG_TREEVIEW,  treeview);
-    
+
     g_signal_connect (G_OBJECT (dialog), "destroy",
-                      G_CALLBACK (exit_dialog_destroy), 
+                      G_CALLBACK (exit_dialog_destroy),
                       treeview);
-    
+
     return dialog;
 }
 
@@ -178,8 +178,8 @@ exit_dialog_make (GtkWindow * parent_window,
  */
 void
 exit_dialog_add_item (GtkWidget *    dialog,
-                      const gchar *  name, 
-                      const gchar *  path, 
+                      const gchar *  name,
+                      const gchar *  path,
                       const gpointer optional_data)
 {
     GtkTreeView *  treeview;
@@ -189,8 +189,8 @@ exit_dialog_add_item (GtkWidget *    dialog,
     const gchar *  path_copy = g_strdup (path);
 
     treeview = g_object_get_data (G_OBJECT (dialog), EXIT_DIALOG_TREEVIEW);
-  
-    model = GTK_LIST_STORE (gtk_tree_view_get_model (treeview)); 
+
+    model = GTK_LIST_STORE (gtk_tree_view_get_model (treeview));
 
     gtk_list_store_append (model, &iter);
 
@@ -208,12 +208,12 @@ exit_dialog_run (GtkWidget * dialog,
 {
     gint                       result;
     gint                       count;
-    
+
     while (TRUE)
     {
         result = gtk_dialog_run ( GTK_DIALOG(dialog));
 
-        switch (result) 
+        switch (result)
         {
             case EXIT_DIALOG_EXIT_CANCEL:
             case EXIT_DIALOG_EXIT_NO_SAVE:
@@ -224,9 +224,9 @@ exit_dialog_run (GtkWidget * dialog,
 	    default : /* e.g. if closed by window manager button */
 	        return EXIT_DIALOG_EXIT_CANCEL;
         }
-    
+
         count = get_selected_items (dialog, items);
-    
+
         if (count == 0)
         {
            GtkWidget * msg_dialog = gtk_message_dialog_new (GTK_WINDOW (dialog),
@@ -272,9 +272,9 @@ get_selected_items (GtkWidget * dialog,
     gint                       i;
 
     treeview = g_object_get_data (G_OBJECT (dialog), EXIT_DIALOG_TREEVIEW);
-  
-    model = GTK_LIST_STORE (gtk_tree_view_get_model (treeview)); 
-  
+
+    model = GTK_LIST_STORE (gtk_tree_view_get_model (treeview));
+
     /* Get the first iter in the list */
     valid = gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter);
 
@@ -286,7 +286,7 @@ get_selected_items (GtkWidget * dialog,
         gpointer     data;
         gboolean     is_selected;
 
-        gtk_tree_model_get (GTK_TREE_MODEL (model), &iter, 
+        gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
                             CHECK_COL, &is_selected,
                             NAME_COL,  &name,
                             PATH_COL,  &path,
@@ -301,7 +301,7 @@ get_selected_items (GtkWidget * dialog,
             item->data = data;
             list = g_slist_prepend (list, item);
         }
-        
+
         valid = gtk_tree_model_iter_next (GTK_TREE_MODEL (model), &iter);
     }
 
@@ -312,7 +312,7 @@ get_selected_items (GtkWidget * dialog,
         *items              = g_new (exit_dialog_item_array_t,1);
        (*items)->array_size = selected_count;
        (*items)->array      = g_new (exit_dialog_item_t, (*items)->array_size);
-    
+
         list_iter = list;
         for(i = 0 ; i < selected_count ; i++)
         {
@@ -322,7 +322,7 @@ get_selected_items (GtkWidget * dialog,
             (*items)->array[i].data = item->data;
             list_iter = g_slist_next(list_iter);
         }
-    
+
         g_slist_free (list);
     }
     else
@@ -354,7 +354,7 @@ void exit_dialog_free_items (exit_dialog_item_array_t * items)
   }
 }
 
-/** 
+/**
  * Handler for the check box (button) in the exit dialogs treeview.
  * This is needed to cause the check box to change state when the
  * user clicks it
@@ -362,7 +362,7 @@ void exit_dialog_free_items (exit_dialog_item_array_t * items)
 static void toggle_check_button (GtkCellRendererToggle * renderer,
                                  gchar * path,
                                  GtkTreeView * treeview)
-{ 
+{
     GtkTreeModel * model;
     GtkTreeIter    iter;
     gboolean       value;
@@ -378,7 +378,7 @@ static void toggle_check_button (GtkCellRendererToggle * renderer,
 /*
  * Signal handler for "destroy" event to free memory allocated for the exit_dialog.
  *
- * @param exit_dialog 
+ * @param exit_dialog
  * @param data Exit dialog's treeview
  */
 static void exit_dialog_destroy  (GtkWidget * exit_dialog,
@@ -388,11 +388,11 @@ static void exit_dialog_destroy  (GtkWidget * exit_dialog,
     GtkTreeIter    iter;
     GtkTreeModel * model;
     gboolean       valid;
-  
+
     treeview = g_object_get_data (G_OBJECT (exit_dialog), EXIT_DIALOG_TREEVIEW);
 
-    model = GTK_TREE_MODEL (gtk_tree_view_get_model (treeview)); 
-    
+    model = GTK_TREE_MODEL (gtk_tree_view_get_model (treeview));
+
     /* Get the first iter in the list */
     valid = gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter);
 
@@ -426,8 +426,8 @@ static void selected_state_set_all (GtkTreeView * treeview,
     GtkListStore * model;
     gboolean       valid;
 
-    model = GTK_LIST_STORE (gtk_tree_view_get_model (treeview)); 
-  
+    model = GTK_LIST_STORE (gtk_tree_view_get_model (treeview));
+
     /* Get the first iter in the list */
     valid = gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter);
 

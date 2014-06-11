@@ -39,10 +39,10 @@ static gint defaults_respond(GtkWidget *widget, gint response_id, gpointer data)
 
 static void create_dialog()
 {
-  GtkWidget *pwidget = gtk_widget_get_toplevel(ddisplay_active()->menu_bar);
+//  GtkWidget *pwidget = gtk_widget_get_toplevel(ddisplay_active()->menu_bar);
   dialog = gtk_dialog_new_with_buttons(
              _("Object defaults"),
-             pwidget, GTK_DIALOG_MODAL,
+             interface_get_toolbox_shell(), GTK_DIALOG_DESTROY_WITH_PARENT,
              GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
              GTK_STOCK_APPLY, GTK_RESPONSE_APPLY,
              GTK_STOCK_OK, GTK_RESPONSE_OK,

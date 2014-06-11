@@ -3435,6 +3435,7 @@ GtkWidget *factory_create_combo_widget(GList *datalist,gint activeid)
     {
         gtk_combo_box_append_text(GTK_COMBO_BOX(widget),pp->data);
     }
+
     gtk_combo_box_set_active(GTK_COMBO_BOX(widget),activeid);
     return  widget;
 }
@@ -3594,6 +3595,10 @@ FIRST:
 
         nextid->itemlist = factory_get_objects_from_layer(curLayer);
         nextid->itemlist = g_list_insert(nextid->itemlist,g_strdup(""),0);
+        if(g_list_length(nextid->actlist)>1)
+        {
+            message_error(g_strdup_printf("%s类型错误",sss->type));
+        }
         ActionID *aid = nextid->actlist->data;
 
         GList *tlist = nextid->itemlist;
@@ -4097,21 +4102,22 @@ void factory_create_basebutton_dialog(GtkWidget *button,SaveStruct *sss)
 
 void factory_io_port_changed_response(GtkWidget *widget,gpointer user_data)
 {
-     g_return_if_fail(factoryContainer);
+    g_return_if_fail(factoryContainer);
     FactorySystemInfo *sys_info = factoryContainer->sys_info;
     SaveEbtn *sebtn = (SaveEbtn*)user_data;
     int len = g_list_length(sebtn->ebtnwlist);
     GList *tlist = sebtn->ebtnwlist;
 
-    for(;tlist;tlist=tlist->next)
+    for(; tlist; tlist=tlist->next)
     {
-       SaveEnumArr *sea = (SaveEnumArr *)tlist->data;
-       if(sea->widget2 == widget)
-       {
-          int pos = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
-          gchar *txt = gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget));
-          if(pos != sys_info->io_mindex)
-          {
+        SaveEnumArr *sea = (SaveEnumArr *)tlist->data;
+        int io_max = g_list_length(sea->senum->enumList)-1;
+        if(sea->widget2 == widget)
+        {
+            int pos = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
+            gchar *txt = gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget));
+            if(pos != io_max)
+            {
 //               gpointer  ptr = g_list_nth_data(sys_info->IO_List,pos);
 //               sys_info->IO_List = g_list_remove(sys_info->IO_List,ptr);
 //               sys_info->IO_selected = g_list_append(sys_info->IO_selected,ptr);
@@ -4121,10 +4127,10 @@ void factory_io_port_changed_response(GtkWidget *widget,gpointer user_data)
 //                  sys_info->IO_selected = g_list_remove(sys_info->IO_selected,sea->senum->evalue);
 //              }
 
-              tlist=tlist->next; /*下一个可编辑*/
-              g_return_if_fail(tlist);
-              SaveEnumArr *ssea = (SaveEnumArr *)tlist->data;
-              gtk_widget_set_sensitive(ssea->widget2,TRUE);
+                tlist=tlist->next; /*下一个可编辑*/
+                g_return_if_fail(tlist);
+                SaveEnumArr *ssea = (SaveEnumArr *)tlist->data;
+                gtk_widget_set_sensitive(ssea->widget2,TRUE);
 //              for(;tlist ; tlist = tlist->next)
 //              {
 //                  SaveEnumArr *tsea = (SaveEnumArr *)tlist->data;
@@ -4132,15 +4138,16 @@ void factory_io_port_changed_response(GtkWidget *widget,gpointer user_data)
 //                  if(tsea->senum->index != sys_info->io_mindex)
 //                    gtk_combo_box_insert_text(GTK_COMBO_BOX(tsea->widget2),pos,sea->senum->evalue);
 //              }
-              break;
-          }
-          else
-          {   /* 选择的NULL端口 */
-              for(;tlist;tlist=tlist->next)
-              {
-                  SaveEnumArr *tsea = (SaveEnumArr *)tlist->data;
-                  gtk_combo_box_set_active(GTK_COMBO_BOX(tsea->widget2),pos);
-                  gtk_widget_set_sensitive(tsea->widget2,FALSE);
+                break;
+            }
+            else
+            {
+                /* 选择的NULL端口 */
+                for(; tlist; tlist=tlist->next)
+                {
+                    SaveEnumArr *tsea = (SaveEnumArr *)tlist->data;
+                    gtk_combo_box_set_active(GTK_COMBO_BOX(tsea->widget2),pos);
+                    gtk_widget_set_sensitive(tsea->widget2,FALSE);
 //                  GList *list = sys_info->IO_selected;
 //                  for(;list;list = list->next)
 //                  {
@@ -4154,12 +4161,12 @@ void factory_io_port_changed_response(GtkWidget *widget,gpointer user_data)
 //
 //                  }
 
-              }
-              gtk_widget_set_sensitive(GTK_COMBO_BOX(widget),TRUE);
-              g_return_if_fail(tlist);
+                }
+                gtk_widget_set_sensitive(GTK_COMBO_BOX(widget),TRUE);
+                g_return_if_fail(tlist);
 
-          }
-       }
+            }
+        }
     }
 }
 
@@ -4199,7 +4206,8 @@ void factory_create_io_port_dialog(GtkWidget *button,SaveStruct *sst)
                 break;
             GtkWidget *hbox = abp->row > 8 ? gtk_vbox_new(FALSE,0): gtk_hbox_new(FALSE,0) ;
             SaveEnumArr *sea = g_list_nth_data(sebtn->ebtnwlist,pos);
-            if(pos && (sea->senum->index  == sys_info->io_mindex))
+            int io_max = g_list_length(sea->senum->enumList)-1;
+            if(pos && (sea->senum->index  == io_max))
             {
                 sensitive = FALSE;
             }
@@ -4207,7 +4215,8 @@ void factory_create_io_port_dialog(GtkWidget *button,SaveStruct *sst)
 //            GtkWidget *comobox = factory_create_combo_widget(sys_info->IO_List,
 //                                                             sea->senum->index == sys_info->io_mindex
 //                                                             ? io_max : sea->senum->index);
-            GtkWidget *comobox = factory_create_combo_widget(sys_info->IO_List,sea->senum->index);
+//            GtkWidget *comobox = factory_create_combo_widget(sys_info->IO_List,sea->senum->index);
+            GtkWidget *comobox = factory_create_combo_widget(sea->senum->enumList,sea->senum->index);
             gtk_widget_set_sensitive(comobox,sensitive);
 
             g_signal_connect(G_OBJECT(comobox),"changed",G_CALLBACK(factory_io_port_changed_response),sebtn);
@@ -4225,6 +4234,9 @@ void factory_create_io_port_dialog(GtkWidget *button,SaveStruct *sst)
                      G_CALLBACK (sst->close_func), sst); /* 保存关闭 */
 
     gtk_widget_show_all(newdialog);
+    gtk_dialog_run(newdialog);
+
+   gtk_widget_destroy(newdialog);
 }
 
 
@@ -4274,6 +4286,8 @@ void factory_create_enumbutton_dialog(GtkWidget *button,SaveStruct *sst)
                      G_CALLBACK (sst->close_func), sst); /* 保存关闭 */
 
     gtk_widget_show_all(newdialog);
+    gtk_dialog_run(newdialog);
+   gtk_widget_destroy(newdialog);
 }
 
 
@@ -4281,7 +4295,7 @@ void factory_create_objectbutton_dialog(GtkWidget *button,SaveStruct *sst)
 {
     /* 这里是多个 数组 */
     GtkWidget *sdialog = gtk_hbox_new(FALSE,0);
-    GtkWidget *subdig = factory_create_new_dialog_with_buttons(sst->name,button->window);
+    GtkWidget *subdig = factory_create_new_dialog_with_buttons(sst->name,gtk_widget_get_toplevel(button));
     GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
     gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
     gtk_window_set_modal(GTK_WINDOW(subdig),TRUE);
@@ -4321,9 +4335,11 @@ void factory_create_objectbutton_dialog(GtkWidget *button,SaveStruct *sst)
     g_signal_connect(G_OBJECT (subdig), "response",
                      G_CALLBACK (sst->close_func), sst); /* 保存关闭 */
 
-//    g_signal_connect(G_OBJECT (subdig), "destroy",G_CALLBACK(gtk_widget_destroyed), &subdig);
-//    g_signal_connect(G_OBJECT (sdialog), "destroy",G_CALLBACK(gtk_widget_destroyed),&dialog_vbox);
     gtk_widget_show_all(subdig);
+
+    gtk_dialog_run(subdig);
+
+   gtk_widget_destroy(subdig);
 
 }
 
@@ -4422,9 +4438,9 @@ void factory_create_unionbutton_dialog(GtkWidget *button,SaveStruct *sst)
     SaveUbtn *sbtn = &sst->value.ssubtn;
     g_return_if_fail(sbtn);
     /* 通按钮事件,创建属性对话框*/
-    GtkWidget *parent = gtk_widget_get_toplevel(button);
+//    GtkWidget *parent = gtk_widget_get_toplevel(button);
 //    GdkWindow *pwin = gtk_widget_get_window(button);
-    GtkWidget *subdig = factory_create_new_dialog_with_buttons(sst->name,parent);
+    GtkWidget *subdig = factory_create_new_dialog_with_buttons(sst->name,gtk_widget_get_toplevel(button));
     gtk_window_set_type_hint(GTK_WINDOW(subdig),GDK_WINDOW_TYPE_HINT_DOCK);
 //    gtk_window_set_transient_for (GTK_WINDOW(subdig),parent);
 //    gtk_window_set_keep_above (GTK_WINDOW(subdig),TRUE);
@@ -4468,6 +4484,9 @@ void factory_create_unionbutton_dialog(GtkWidget *button,SaveStruct *sst)
     gtk_table_set_col_spacing(GTK_TABLE(table),1,20);
     g_signal_connect(G_OBJECT (subdig), "response",G_CALLBACK (sst->close_func), sst); /* 保存关闭 */
     gtk_widget_show_all(subdig);
+    gtk_dialog_run(subdig);
+    gtk_widget_destroy(subdig);
+
 }
 
 
@@ -4797,24 +4816,29 @@ void factory_systeminfo_callback(GtkWidget *parent)
         curLayer = factoryContainer->curLayer;
 
     FactorySystemInfo  *fsio = factoryContainer->sys_info;
+//    if(!factoryContainer->sys_info->IO_List)
+//    {
+//        GList *fill_list = NULL;
+//        GList *tmplist = g_hash_table_lookup(factoryContainer->enumTable,"ALL_IO_PORT");
+//        factoryContainer->sys_info->io_mindex = g_list_length(tmplist)-1;
+//
+//        for(; tmplist; tmplist = tmplist->next)
+//        {
+//            FactoryStructEnum *kvmap = tmplist->data;
+////            if(!g_ascii_strcasecmp(fst->Value,kvmap->key))
+////            {
+////                index = g_list_index(sebtn->ebtnslist,kvmap);
+////                value = kvmap->value;
+////            }
+//            fill_list = g_list_append(fill_list,kvmap->key);
+//        }
+//        factoryContainer->sys_info->IO_List = fill_list;
+//        factoryContainer->sys_info->null_io = g_strdup((gchar*)g_list_last(fill_list)->data);
+//
+//    }
+
     if(!fsio->system_info) /* 打开过第一次了 */
     {
-               GList *fill_list = NULL;
-        GList *tmplist = g_hash_table_lookup(factoryContainer->enumTable,"ALL_IO_PORT");
-        factoryContainer->sys_info->io_mindex = g_list_length(tmplist)-1;
-
-        for(; tmplist; tmplist = tmplist->next)
-        {
-            FactoryStructEnum *kvmap = tmplist->data;
-//            if(!g_ascii_strcasecmp(fst->Value,kvmap->key))
-//            {
-//                index = g_list_index(sebtn->ebtnslist,kvmap);
-//                value = kvmap->value;
-//            }
-            fill_list = g_list_append(fill_list,kvmap->key);
-        }
-        factoryContainer->sys_info->IO_List = fill_list;
-        factoryContainer->sys_info->null_io = g_strdup((gchar*)g_list_last(fill_list)->data);
 
         FactoryStructItemList *fsil = g_hash_table_lookup(factoryContainer->structTable,"SYS_DATA");
         GList *itemlist = fsil->list;
@@ -5227,7 +5251,7 @@ void factory_new_idlist_dialog(GtkWidget *button,SaveStruct *sst)
     gtk_button_set_label(GTK_BUTTON(button),sid->skv->value);
     sid->parent_btn = button;
     GtkWidget *parent = gtk_widget_get_toplevel(button);
-    GtkWidget *subdig = factory_create_new_dialog_with_buttons(factory_utf8("ID列表"),parent);
+    GtkWidget *subdig = factory_create_new_dialog_with_buttons(factory_utf8("ID列表"),gtk_widget_get_toplevel(button));
     GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
 
     gtk_window_set_modal(GTK_WINDOW(subdig),TRUE);
@@ -5267,10 +5291,13 @@ void factory_new_idlist_dialog(GtkWidget *button,SaveStruct *sst)
                        factory_new_add_button(factory_add_item_to_idlist,sid),FALSE,FALSE,0);
 
     g_signal_connect(G_OBJECT (subdig), "response",G_CALLBACK (sst->close_func), sid); /* 保存关闭 */
-//    g_signal_connect(G_OBJECT (subdig), "destroy",G_CALLBACK(gtk_widget_destroyed), &subdig);
-//    g_signal_connect(G_OBJECT (mainBox), "destroy",G_CALLBACK(gtk_widget_destroyed),&dialog_vbox);
+
 
     gtk_widget_show_all(subdig);
+   gtk_dialog_run(subdig);
+
+   gtk_widget_destroy(subdig);
+
 }
 
 
@@ -5436,7 +5463,7 @@ void factory_file_manager_dialog(GtkWidget *btn,SaveStruct *sst)
     smd->skv = (SaveKV*)(sst->value.vnumber);
     GtkWidget *mainHbox = gtk_hbox_new(FALSE,0);
     GtkWidget *parent = gtk_widget_get_toplevel(btn);
-    GtkWidget *window = factory_create_new_dialog_with_buttons(smd->title,parent);
+    GtkWidget *window = factory_create_new_dialog_with_buttons(smd->title,gtk_widget_get_toplevel(btn));
     GtkWidget *dialog_vbox = GTK_DIALOG(window)->vbox;
     gtk_container_add(GTK_CONTAINER(dialog_vbox),mainHbox);
     gtk_window_set_modal(GTK_WINDOW(window),TRUE);

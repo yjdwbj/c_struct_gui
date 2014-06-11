@@ -157,14 +157,36 @@ read_objects(xmlNodePtr objects,
 //                }
 //            }
             version = 0;
-            if (versionstr != NULL && g_ascii_strncasecmp(versionstr,factoryContainer->file_version,strlen(versionstr)))
+            gchar **split  = g_strsplit(versionstr,"@",-1);
+            if(g_strv_length(split)!=2)
+            {
+                factory_critical_error_exit(factory_utf8(_("版本格式不正信息,样列: 工程号@主版本号．次版本号　!\n")));
+            }
+
+            gchar **mvers = g_strsplit(split[1],".",-1);
+            if(g_strv_length(mvers) != 2  )
+            {
+                factory_critical_error_exit(factory_utf8(_("结构体文件的版本错误!找不到有效版本号.")));
+            }
+
+            if (g_ascii_strcasecmp(mvers[0],factoryContainer->major_version))
             {
                 //	version = atoi(versionstr);
-                gchar *msg_err =  factory_utf8(_("结构体文件的版本错误!无法打开."));
-                factory_critical_error_exit(msg_err);
-                xmlFree(versionstr);
-
+                factory_critical_error_exit(factory_utf8(_("主版本号不一致!无法打开.")));
             }
+
+            if(g_ascii_strcasecmp(mvers[1],factoryContainer->minor_version))
+            {
+                int sminor = g_strtod(factoryContainer->minor_version,NULL);
+                int rminor = g_strtod(mvers[1],NULL);
+                if(rminor > sminor)
+                {
+                    factory_critical_error_exit(factory_utf8(_("当前打开的文件版本，高于当前控件的版本号.")));
+                }
+            }
+            g_strfreev(mvers);
+            g_strfreev(split);
+            xmlFree(versionstr);
 
             type = object_get_type((char *)typestr);
 
@@ -838,8 +860,10 @@ write_objects(GList *objects, xmlNodePtr objects_node,
 
 //      g_snprintf(buffer, 30, "%d", obj->type->version);
             /* 写入自定义的唯一长串版本号 */
-            xmlSetProp(obj_node, (const xmlChar *)"version", (xmlChar *)g_strdup(factoryContainer->file_version));
-
+            gchar *fversion = g_strdup_printf("%s@%s.%s",factoryContainer->project_number,factoryContainer->major_version,
+                                         factoryContainer->minor_version);
+            xmlSetProp(obj_node, (const xmlChar *)"version", (xmlChar *)fversion);
+            g_free(fversion);
 
 
 
@@ -1306,7 +1330,7 @@ static void factory_call_isd_download()
     argv[len] = NULL;
     int n = 0;
     argv[n] =g_strdup(isdownload_gui);
-    for(;n < slen;n++)
+    for(; n < slen; n++)
     {
         argv[n+1] = g_strdup(system_files[n]);
     }

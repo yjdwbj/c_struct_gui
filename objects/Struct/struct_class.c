@@ -2292,7 +2292,9 @@ factory_struct_items_create(Point *startpoint,
     structclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
 
     obj->type = &structclass_type;
-    obj->type->version  = g_strdup(factoryContainer->file_version);
+    //  obj->type->version  = g_strdup(factoryContainer->file_version);
+    obj->type->version = g_strdup_printf("%s@%s.%s",factoryContainer->project_number,factoryContainer->major_version,
+                                         factoryContainer->minor_version);
     obj->ops = &structclass_ops;
 
 
@@ -2576,10 +2578,10 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
     {
         sss->celltype = EBTN;
 //        factory_inital_ebtn(sss,fst);
-        if(factory_is_io_port(fst->SType))
-            factory_inital_io_port_ebtn(sss,fst);
-        else
-            factory_inital_ebtn(sss,fst);
+//        if(factory_is_io_port(fst->SType))
+//            factory_inital_io_port_ebtn(sss,fst);
+//        else
+        factory_inital_ebtn(sss,fst);
         SaveEbtn *sebtn = &sss->value.ssebtn;
         key = xmlGetProp(attr_node,(xmlChar *)"value");
         if(key)
@@ -2792,6 +2794,12 @@ void factory_read_value_from_xml(STRUCTClass *fclass,ObjectNode obj_node)
         /* 添加完整类型名比较 */
         sss->name = g_strdup(fst->Name);
         sss->type = g_strdup(fst->FType);
+//        if(factory_is_special_object(fst->FType) && g_ascii_strcasecmp(key,fst->FType) &&
+//           !factory_music_fm_get_type(fst->Name))
+//        {
+//            factory_critical_error_exit(factory_utf8(g_strdup_printf("结构体　%s.\n成员%s.\n和读取的数据不一致．行数:%d",
+//                                             fclass->name,fst->Name,attr_node->line)));
+//        }
         xmlFree(key);
 
         gchar *hkey =  g_strjoin("##",fst->FType,fst->Name,NULL);
@@ -2893,50 +2901,50 @@ void factory_update_view_names(STRUCTClass *fclass)
     }
 }
 
-void factory_inital_io_port_ebtn(SaveStruct *sss,const FactoryStructItem *fst)
-{
-    SaveEbtn *sebtn = &sss->value.ssebtn;
-    g_return_if_fail(sebtn);
-    sebtn->width = g_strdup(fst->Max);
-    sss->close_func = factory_save_enumbutton_dialog;
-    sss->newdlg_func = factory_create_io_port_dialog;
-    int index = 0;
-    gchar *value = NULL;
-    GList *fill_list = factoryContainer->sys_info->IO_List;
-    for(; fill_list; fill_list = fill_list->next,index++)
-    {
-        if(!g_ascii_strcasecmp(fst->Value,(gchar*)fill_list->data))
-        {
-            value = g_strdup((gchar*)fill_list->data);
-            break;
-        }
-    }
-    SaveEntry tmp;
-    factory_handle_entry_item(&tmp,fst);
-    sebtn->arr_base  = tmp.arr_base;
-
-    GList *tlist  = sebtn->ebtnslist; /* 源数据用填充下拉框,这里来自枚举*/
-    GList *nixlist = NULL;
-    int n = 0;
-    gchar **title = g_strsplit(fst->Name,"[",-1);
-    gchar *name =  g_strconcat(title[0],"(%d)",NULL);
-    g_strfreev(title);
-    n = 0;
-    for(; n < sebtn->arr_base->reallen; n++)
-    {
-        SaveEnum *see = g_new0(SaveEnum,1);
-        see->enumList = factoryContainer->sys_info->IO_List;
-        see->index = index;
-        see->evalue = value;
-        see->width = fst->Max;
-        SaveEnumArr *sea = g_new0(SaveEnumArr,1);
-        sea->widget1 = NULL;
-        sea->widget2 = NULL;
-        sea->senum = see;
-        sebtn->ebtnwlist = g_list_append(sebtn->ebtnwlist,sea);
-    }
-
-}
+//void factory_inital_io_port_ebtn(SaveStruct *sss,const FactoryStructItem *fst)
+//{
+//    SaveEbtn *sebtn = &sss->value.ssebtn;
+//    g_return_if_fail(sebtn);
+//    sebtn->width = g_strdup(fst->Max);
+//    sss->close_func = factory_save_enumbutton_dialog;
+//    sss->newdlg_func = factory_create_io_port_dialog;
+//    int index = 0;
+//    gchar *value = NULL;
+//    GList *fill_list = factoryContainer->sys_info->IO_List;
+//    for(; fill_list; fill_list = fill_list->next,index++)
+//    {
+//        if(!g_ascii_strcasecmp(fst->Value,(gchar*)fill_list->data))
+//        {
+//            value = g_strdup((gchar*)fill_list->data);
+//            break;
+//        }
+//    }
+//    SaveEntry tmp;
+//    factory_handle_entry_item(&tmp,fst);
+//    sebtn->arr_base  = tmp.arr_base;
+//
+//    GList *tlist  = sebtn->ebtnslist; /* 源数据用填充下拉框,这里来自枚举*/
+//    GList *nixlist = NULL;
+//    int n = 0;
+//    gchar **title = g_strsplit(fst->Name,"[",-1);
+//    gchar *name =  g_strconcat(title[0],"(%d)",NULL);
+//    g_strfreev(title);
+//    n = 0;
+//    for(; n < sebtn->arr_base->reallen; n++)
+//    {
+//        SaveEnum *see = g_new0(SaveEnum,1);
+//        see->enumList = factoryContainer->sys_info->IO_List;
+//        see->index = index;
+//        see->evalue = value;
+//        see->width = fst->Max;
+//        SaveEnumArr *sea = g_new0(SaveEnumArr,1);
+//        sea->widget1 = NULL;
+//        sea->widget2 = NULL;
+//        sea->senum = see;
+//        sebtn->ebtnwlist = g_list_append(sebtn->ebtnwlist,sea);
+//    }
+//
+//}
 
 
 
@@ -2949,6 +2957,8 @@ void factory_inital_ebtn(SaveStruct *sss,const FactoryStructItem *fst)
     sebtn->width = g_strdup(fst->Max);
     sss->close_func = factory_save_enumbutton_dialog;
     sss->newdlg_func = factory_create_enumbutton_dialog;
+    if(factory_is_io_port(fst->SType))
+        sss->newdlg_func = factory_create_io_port_dialog;
     GList *tmplist = sebtn->ebtnslist;
     int index = 0;
     gchar *value = NULL;
@@ -2989,33 +2999,9 @@ void factory_inital_ebtn(SaveStruct *sss,const FactoryStructItem *fst)
     }
 }
 
-SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
+
+SaveStruct *factory_get_action_savestruct(SaveStruct *sss,FactoryStructItem *fst)
 {
-    g_return_if_fail(fst);
-    SaveStruct *sss = g_new0(SaveStruct,1);
-    sss->widget1= NULL;
-    sss->widget2 = NULL;
-
-    sss->type = g_strdup(fst->FType);
-    sss->name = g_strdup(fst->Name);
-    sss->sclass = fst->orgclass;
-    sss->close_func = NULL;
-    sss->newdlg_func = NULL;
-
-    if(!g_ascii_strcasecmp(fst->Min,factory_utf8(_("固定值"))))
-    {
-        sss->isSensitive = FALSE;
-    }
-    else
-        sss->isSensitive = TRUE;
-
-    /* 这里添加两个特别的判断 */
-
-
-
-    /* 2014-3-26 lcy 通过名字去哈希表里找链表*/
-    if(!g_ascii_strncasecmp(sss->name,ACTION_ID,ACT_SIZE))
-    {
         sss->celltype = OCOMBO;
         NextID *nid = &sss->value.nextid;
         nid->itemlist = NULL;
@@ -3055,228 +3041,254 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             aid->title_name = g_strdup(sss->name);
             nid->actlist = g_list_append(nid->actlist,aid);
         }
+        sss->org = fst;
+        return sss;
+}
 
+SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
+{
+    g_return_if_fail(fst);
+//    g_return_if_fail(fst->Name);
+    SaveStruct *sss = g_new0(SaveStruct,1);
+    sss->widget1= NULL;
+    sss->widget2 = NULL;
+
+    sss->type = g_strdup(fst->FType);
+    sss->name = g_strdup(fst->Name);
+    sss->sclass = fst->orgclass;
+    sss->close_func = NULL;
+    sss->newdlg_func = NULL;
+
+    if(!g_ascii_strcasecmp(fst->Min,factory_utf8(_("固定值"))))
+    {
+        sss->isSensitive = FALSE;
     }
     else
-        switch(fst->Itype)
-        {
-        case BT:
-            if( factory_find_array_flag(fst->Name))
-            {
-                /* 2014-3-25 lcy 这里是字符串，需用文本框显示了*/
-                sss->celltype = ENTRY;
+        sss->isSensitive = TRUE;
 
-                SaveEntry *sey = &sss->value.sentry;
-                factory_handle_entry_item(sey,fst);
-                if(!sey->isString)
+    if(!sss->name)
+    {
+        factory_critical_error_exit(factory_utf8(g_strdup_printf("%s类型,没有名字．",sss->type)));
+    }
+
+    if(!g_ascii_strncasecmp(sss->name,ACTION_ID,6))
+    {
+        return factory_get_action_savestruct(sss,fst);
+    }
+
+    /* 2014-3-26 lcy 通过名字去哈希表里找链表*/
+
+    switch(fst->Itype)
+    {
+    case BT:
+    {
+        if( factory_find_array_flag(fst->Name))
+        {
+            /* 2014-3-25 lcy 这里是字符串，需用文本框显示了*/
+            sss->celltype = ENTRY;
+            SaveEntry *sey = &sss->value.sentry;
+            factory_handle_entry_item(sey,fst);
+            if(!sey->isString)
+            {
+                sss->celltype = BBTN;
+                sss->newdlg_func = factory_create_basebutton_dialog;
+                sss->close_func = factory_save_basebutton_dialog;
+                if( 2 == strlen(fst->SType) && !g_ascii_strcasecmp(fst->SType,"u1"))
                 {
-                    sss->celltype = BBTN;
-                    sss->newdlg_func = factory_create_basebutton_dialog;
-                    sss->close_func = factory_save_basebutton_dialog;
-                    if( 2 == strlen(fst->SType) && !g_ascii_strcasecmp(fst->SType,"u1"))
+                    int n = 0 ;
+                    int maxi = sey->arr_base->reallen;
+                    for( ; n < maxi; n++)
                     {
-                        int n = 0 ;
-                        int maxi = sey->arr_base->reallen;
-                        for( ; n < maxi; n++)
-                        {
-                            /* 初如值 */
-                            sey->data =  g_list_append(sey->data,g_strdup_printf("%d",0));
-                        }
+                        /* 初始值 */
+                        sey->data =  g_list_append(sey->data,g_strdup_printf("%d",0));
                     }
-                    else
-                    {
-                        gchar *fmt = NULL;
-                        int len = 2;
-                        switch(sey->width)
-                        {
-                        case 1:
-                            fmt = g_strdup("0x%02x");
-                            len = 4;
-                            break;
-                        case 2:
-                            fmt = g_strdup("0x%04x");
-                            len = 6;
-                            break;
-                        case 4:
-                            fmt = g_strdup("0x%08x");
-                            len = 6;
-                            break;
-                        default:
-                            fmt = g_strdup("0x%02x");
-                        }
-                        int n = 0 ;
-                        int maxi = sey->arr_base->reallen;
-                        int first = g_strtod(fst->Value,NULL);
-                        for( ; n < maxi; n++)
-                        {
-                            /* 初始值 */
-                            gchar *tmp = g_strdup_printf(fmt,first);
-                            tmp[len]='\0';
-                            sey->data =  g_list_append(sey->data,g_strdup(tmp));
-                            g_free(tmp);
-                        }
-                        g_free(fmt);
-                    }
-
                 }
-            }
-            else
-            {
-                sss->celltype = SPINBOX;
-//                if(!g_ascii_strcasecmp(fst->Name,"wActID")) /*这里一个关键字判断是否是ＩＤ*/
-//                {
-//                    STRUCTClass *sclass = fst->orgclass;
-//                    sss->value.vnumber = g_strdup_printf("%d",sclass->element.object.oindex);
-//                    sss->isSensitive = FALSE;
-//                }
-//
-//                else
-                sss->value.vnumber = g_strdup(fst->Value);
-            }
-            break;
-        case ET:
-        {
-            if( factory_find_array_flag(fst->Name))
-            {
-                sss->celltype = EBTN;
-                if(factory_is_io_port(fst->SType))
-                    factory_inital_io_port_ebtn(sss,fst);
                 else
-                    factory_inital_ebtn(sss,fst);
-            }
-            else
-            {
-                sss->celltype = ECOMBO;
-                sss->value.senum.enumList = fst->datalist;
-//                sss->value.senum.width = g_strdup(fst->Max);
-                GList *t = sss->value.senum.enumList;
-                for(; t != NULL ; t = t->next)
                 {
-                    FactoryStructEnum *kvmap = t->data;
-                    if(!g_ascii_strcasecmp(fst->Value,kvmap->key))
+                    gchar *fmt = NULL;
+                    int len = 2;
+                    switch(sey->width)
                     {
-                        sss->value.senum.index = g_list_index(fst->datalist,kvmap);
-                        sss->value.senum.width = g_strdup(fst->Max);
-                        sss->value.senum.evalue = g_strdup(kvmap->value);
+                    case 1:
+                        fmt = g_strdup("0x%02x");
+                        len = 4;
                         break;
+                    case 2:
+                        fmt = g_strdup("0x%04x");
+                        len = 6;
+                        break;
+                    case 4:
+                        fmt = g_strdup("0x%08x");
+                        len = 6;
+                        break;
+                    default:
+                        fmt = g_strdup("0x%02x");
                     }
-
+                    int n = 0 ;
+                    int maxi = sey->arr_base->reallen;
+                    int first = g_strtod(fst->Value,NULL);
+                    for( ; n < maxi; n++)
+                    {
+                        /* 初始值 */
+                        gchar *tmp = g_strdup_printf(fmt,first);
+                        tmp[len]='\0';
+                        sey->data =  g_list_append(sey->data,g_strdup(tmp));
+                        g_free(tmp);
+                    }
+                    g_free(fmt);
                 }
-                if(!t && !sss->value.senum.width ) /*源文件有错误，这里用默认值*/
+
+            }
+        }
+        else
+        {
+            sss->celltype = SPINBOX;
+            sss->value.vnumber = g_strdup(fst->Value);
+        }
+    }
+    break;
+    case ET:
+    {
+        if( factory_find_array_flag(fst->Name))
+        {
+            sss->celltype = EBTN;
+//                if(factory_is_io_port(fst->SType))
+//                    factory_inital_io_port_ebtn(sss,fst);
+//                else
+            factory_inital_ebtn(sss,fst);
+        }
+        else
+        {
+            sss->celltype = ECOMBO;
+            sss->value.senum.enumList = fst->datalist;
+//                sss->value.senum.width = g_strdup(fst->Max);
+            GList *t = sss->value.senum.enumList;
+            for(; t != NULL ; t = t->next)
+            {
+                FactoryStructEnum *kvmap = t->data;
+                if(!g_ascii_strcasecmp(fst->Value,kvmap->key))
                 {
-                    sss->value.senum.index = 0;
+                    sss->value.senum.index = g_list_index(fst->datalist,kvmap);
                     sss->value.senum.width = g_strdup(fst->Max);
-                    FactoryStructEnum *kvmap = sss->value.senum.enumList->data;
                     sss->value.senum.evalue = g_strdup(kvmap->value);
+                    break;
                 }
 
             }
+            if(!t && !sss->value.senum.width ) /*源文件有错误，这里用默认值*/
+            {
+                sss->value.senum.index = 0;
+                sss->value.senum.width = g_strdup(fst->Max);
+                FactoryStructEnum *kvmap = sss->value.senum.enumList->data;
+                sss->value.senum.evalue = g_strdup(kvmap->value);
+            }
+
         }
-        break;
-        case ST:
+    }
+    break;
+    case ST:
+    {
+        sss->celltype = UBTN;
+        sss->isPointer = TRUE; /* 这里是一个按键*/
+
+        if(!g_strcasecmp(fst->SType,"FILELST")) /*　 特殊的控件,音乐文件管理　*/
         {
-            sss->celltype = UBTN;
-            sss->isPointer = TRUE; /* 这里是一个按键*/
-
-            if(!g_strcasecmp(fst->SType,"FILELST")) /*　 特殊的控件,音乐文件管理　*/
+            SaveMusicDialog *smd = NULL;
+            if(!curLayer->smd)
             {
-                SaveMusicDialog *smd = NULL;
-                if(!curLayer->smd)
-                {
-                    curLayer->smd = g_new0(SaveMusicDialog,1);
-                    smd =curLayer->smd;
-                    smd->smfm = NULL;
-                    smd->mfmos = &mfmo_opts;
-                    smd->title = factory_utf8("文件管理");
-                }
-
-                smd = curLayer->smd;
-
-                /* sss->value.vnumber  原定义为一个gchar 指针，在这里当做gpointer 用了*/
-                SaveKV *skv = g_new0(SaveKV,1);
-                smd->skv = skv;
-                skv->value = g_strdup(fst->Value);
-                skv->radindex = -1;
-                sss->value.vnumber = skv;
-                smd->btnname = g_strdup(fst->Cname);
-                sss->newdlg_func = factory_file_manager_dialog;
-                sss->close_func = factory_music_file_manager_apply;
+                curLayer->smd = g_new0(SaveMusicDialog,1);
+                smd =curLayer->smd;
+                smd->smfm = NULL;
+                smd->mfmos = &mfmo_opts;
+                smd->title = factory_utf8("文件管理");
             }
-            else if(!g_strcasecmp(fst->SType,"IDLST"))
-            {
-                SaveIdDialog   *sid = NULL;
-                if(!curLayer->sid)
-                    curLayer->sid = g_new0(SaveIdDialog,1);
 
-                sid =(SaveIdDialog*)(curLayer->sid);
+            smd = curLayer->smd;
 
-                SaveKV *skv = g_new0(SaveKV,1);
-                sid->skv = skv;
-                skv->value = g_strdup(fst->Value);
-                skv->radindex = -1;
-                sss->value.vnumber = skv;
-                sss->newdlg_func = factory_new_idlist_dialog;
-                sss->close_func = factory_save_idlist_dialog;
-            }
-            else
-            {
-                SaveUbtn *sbtn = &sss->value.ssubtn;
-                sbtn->structlist = fst->datalist;
-
-                sbtn->savelist = NULL;
-                sss->newdlg_func = factory_create_unionbutton_dialog;
-                sss->close_func = factory_save_unionbutton_dialog;
-            }
+            /* sss->value.vnumber  原定义为一个gchar 指针，在这里当做gpointer 用了*/
+            SaveKV *skv = g_new0(SaveKV,1);
+            smd->skv = skv;
+            skv->value = g_strdup(fst->Value);
+            skv->radindex = -1;
+            sss->value.vnumber = skv;
+            smd->btnname = g_strdup(fst->Cname);
+            sss->newdlg_func = factory_file_manager_dialog;
+            sss->close_func = factory_music_file_manager_apply;
         }
-        break;
-        case UT:
+        else if(!g_strcasecmp(fst->SType,"IDLST"))
         {
-            /*  这种成员最少有两个 gtk_widget */
-            SaveUnion *suptr = &sss->value.sunion;
-            sss->celltype = UCOMBO;
-            suptr->vbox = NULL;
-            suptr->saveVal = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-            suptr->curkey = g_strdup("");
-            suptr->comobox = NULL;
-            suptr->structlist = fst->datalist;
-            /* nextobj 就是当前下拉框所显示的 */
-            FactoryStructItem *nextobj = factory_get_factorystructitem(suptr->structlist,fst->Value);
-            if(!nextobj)
-                break;
-            suptr->index = g_list_index(suptr->structlist,nextobj);
-            GList *p = suptr->structlist;
-            suptr->curtext = g_strdup(nextobj->Name);
-            suptr->curkey = g_strjoin("##",nextobj->FType,nextobj->Name,NULL);
-            SaveStruct *tsst = factory_get_savestruct(nextobj);
-            if(!tsst)
-                break;
-            tsst->sclass = sss->sclass;
-            factory_strjoin(&tsst->name,sss->name,".");
-            /* 把当前选择的成员初始化保存到哈希表 */
-            g_hash_table_insert(suptr->saveVal,suptr->curkey,tsst);
-            if(tsst->isPointer )
+            SaveIdDialog   *sid = NULL;
+            if(!curLayer->sid)
+                curLayer->sid = g_new0(SaveIdDialog,1);
+
+            sid =(SaveIdDialog*)(curLayer->sid);
+
+            SaveKV *skv = g_new0(SaveKV,1);
+            sid->skv = skv;
+            skv->value = g_strdup(fst->Value);
+            skv->radindex = -1;
+            sss->value.vnumber = skv;
+            sss->newdlg_func = factory_new_idlist_dialog;
+            sss->close_func = factory_save_idlist_dialog;
+        }
+        else
+        {
+            SaveUbtn *sbtn = &sss->value.ssubtn;
+            sbtn->structlist = fst->datalist;
+
+            sbtn->savelist = NULL;
+            sss->newdlg_func = factory_create_unionbutton_dialog;
+            sss->close_func = factory_save_unionbutton_dialog;
+        }
+    }
+    break;
+    case UT:
+    {
+        /*  这种成员最少有两个 gtk_widget */
+        SaveUnion *suptr = &sss->value.sunion;
+        sss->celltype = UCOMBO;
+        suptr->vbox = NULL;
+        suptr->saveVal = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+        suptr->curkey = g_strdup("");
+        suptr->comobox = NULL;
+        suptr->structlist = fst->datalist;
+        /* nextobj 就是当前下拉框所显示的 */
+        FactoryStructItem *nextobj = factory_get_factorystructitem(suptr->structlist,fst->Value);
+        if(!nextobj)
+            break;
+        suptr->index = g_list_index(suptr->structlist,nextobj);
+        GList *p = suptr->structlist;
+        suptr->curtext = g_strdup(nextobj->Name);
+        suptr->curkey = g_strjoin("##",nextobj->FType,nextobj->Name,NULL);
+        SaveStruct *tsst = factory_get_savestruct(nextobj);
+        if(!tsst)
+            break;
+        tsst->sclass = sss->sclass;
+        factory_strjoin(&tsst->name,sss->name,".");
+        /* 把当前选择的成员初始化保存到哈希表 */
+        g_hash_table_insert(suptr->saveVal,suptr->curkey,tsst);
+        if(tsst->isPointer )
+        {
+            SaveUbtn *sbtn = &tsst->value.ssubtn;
+            if(/*!g_hash_table_size(sbtn->htoflist)*/ !g_list_length(sbtn->savelist) && sbtn->structlist)
             {
-                SaveUbtn *sbtn = &tsst->value.ssubtn;
-                if(/*!g_hash_table_size(sbtn->htoflist)*/ !g_list_length(sbtn->savelist) && sbtn->structlist)
-                {
 
 //                sbtn->htoflist = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-                    GList *slist = sbtn->structlist;
-                    for(; slist; slist = slist->next)
-                    {
-                        FactoryStructItem *o = slist->data;
-                        SaveStruct *s  = factory_get_savestruct(o);
-                        s->sclass = sss->sclass;
-                        factory_strjoin(&s->name,sss->name,".");
-                        sbtn->savelist = g_list_append(sbtn->savelist,s);
-                    }
+                GList *slist = sbtn->structlist;
+                for(; slist; slist = slist->next)
+                {
+                    FactoryStructItem *o = slist->data;
+                    SaveStruct *s  = factory_get_savestruct(o);
+                    s->sclass = sss->sclass;
+                    factory_strjoin(&s->name,sss->name,".");
+                    sbtn->savelist = g_list_append(sbtn->savelist,s);
                 }
             }
         }
-        break;
-        default:
-            break;
-        }
+    }
+    break;
+
+    }
     sss->org = fst;
     return sss;
 }
@@ -3737,11 +3749,10 @@ static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
     /* 这里是不是要加一个OCOMBO 控件识别呢? */
 }
 
-static void factory_write_object_comobox(ActionID *aid,ObjectNode ccc )
+static void factory_write_object_comobox(ActionID *aid,ObjectNode ccc ,const gchar *type)
 {
     xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)aid->title_name);
-//                    xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
-    xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf(_("%d"),aid->index));
+
     gpointer exist = g_hash_table_lookup(curLayer->defnames,aid->pre_name);
     if(!exist)
     {
@@ -3751,8 +3762,11 @@ static void factory_write_object_comobox(ActionID *aid,ObjectNode ccc )
         aid->value=g_strdup("-1");
 
     }
+    xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)type);
+    xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
 
     xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)aid->value );
+    xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf(_("%d"),aid->index));
 
     xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)aid->pre_name );
 }
@@ -3776,12 +3790,9 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
     break;
     case OCOMBO:
     {
-        /*每一项用JL_item 做节点名，存放多个属性*/
-        ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
-        xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
-        xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
         NextID *nid  = &sss->value.nextid;
         g_return_if_fail(nid);
+        ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
         GList *tlist = nid->actlist;
         ActionID *aid = g_list_first(tlist)->data;
         if(aid && strlen(aid->pre_name )> 0)
@@ -3792,7 +3803,8 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
                 aid->value = g_strdup_printf("%d",fclass->element.object.oindex);
             }
         }
-        factory_write_object_comobox(aid,ccc);
+        factory_write_object_comobox(aid,ccc,sss->type);
+        /*每一项用JL_item 做节点名，存放多个属性*/
     }
     break;
     case OBTN:
@@ -3807,9 +3819,9 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
         {
             ActionID *aid = tlist->data;
             ObjectNode ccc = xmlNewChild(obtn, NULL, (const xmlChar *)"JL_item", NULL);
-            xmlSetProp(obtn, (const xmlChar *)"name", (xmlChar *)sss->name);
-            xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
-            xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
+//            xmlSetProp(obtn, (const xmlChar *)"name", (xmlChar *)sss->name);
+//            xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
+//            xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
             if(!aid->pre_name)
                 aid->pre_name = g_strdup("");
             if(!strlen(aid->pre_name))
@@ -3826,7 +3838,7 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
 //                }
             }
 
-            factory_write_object_comobox(tlist->data,ccc);
+            factory_write_object_comobox(tlist->data,ccc,sss->type);
         }
     }
     break;
@@ -3920,7 +3932,9 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
     obj->type = &structclass_type;
     obj->ops = &structclass_ops;
 
-    obj->type->version = g_strdup(factoryContainer->file_version);
+//    obj->type->version = g_strdup(factoryContainer->file_version);
+    obj->type->version = g_strdup_printf("%s@%s.%s",factoryContainer->project_number,factoryContainer->major_version,
+                                         factoryContainer->minor_version);
     element_load(elem, obj_node);
     if(curLayer != factoryContainer->curLayer)
         curLayer = factoryContainer->curLayer;
