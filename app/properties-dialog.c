@@ -47,6 +47,12 @@ static gboolean properties_key_event(GtkWidget *widget,
                                      gpointer data);
 static void properties_dialog_hide(void);
 
+
+GtkWidget *factory_get_toplevel_dialog()
+{
+    return dialog ? dialog : NULL;
+}
+
 static void create_dialog()
 {
     /*   GtkWidget *actionbox; */
@@ -176,6 +182,7 @@ properties_respond(GtkWidget *widget,
         }
     }
 
+
     if (response_id != GTK_RESPONSE_APPLY)
     {
 #ifdef G_OS_WIN32
@@ -187,6 +194,7 @@ properties_respond(GtkWidget *widget,
 #endif
 
     }
+
 
     return 0;
 }
@@ -255,36 +263,7 @@ object_list_properties_show(Diagram *dia, GList *objects)
     DiaObject *one_obj;
     if (!dialog)
         create_dialog();
-//    clear_dialog_globals();
-    else
-    {
-        while (TRUE)
-        {
-
-            GtkWidget * msg_dialog = gtk_message_dialog_new (GTK_WINDOW (ddisplay_active()->shell),
-                                     GTK_DIALOG_MODAL,
-                                     GTK_MESSAGE_WARNING,
-                                     GTK_BUTTONS_YES_NO,
-                                     factory_utf8("只能打开一个窗口，你要关闭之前打开的窗口吗?\n"
-                                                  "请用tab键选择，回车键确定"));
-            gtk_dialog_set_default_response (GTK_DIALOG(msg_dialog), GTK_RESPONSE_NO);
-//                gtk_widget_show(msg_dialog);
-            gtk_window_set_transient_for(GTK_WINDOW(msg_dialog),
-                                         GTK_WINDOW (dialog));
-            gtk_widget_set_parent_window(GTK_WINDOW(msg_dialog),GTK_WINDOW (interface_get_toolbox_shell()));
-            gint yes_or_no = gtk_dialog_run (GTK_DIALOG (msg_dialog));
-            gtk_widget_destroy (msg_dialog);
-            if(yes_or_no != GTK_RESPONSE_YES)
-            {
-                return;
-            }
-
-
-            break;
-        }
-        clear_dialog_globals();
-    }
-
+    clear_dialog_globals();
 
     if (!objects)
     {

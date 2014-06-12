@@ -3046,11 +3046,11 @@ DiaObject *factory_find_same_diaobject_via_glist(GList *flist,GList *comprelist)
 
 
 static void factory_connection_two_object(STRUCTClass *fclass, /* start pointer*/
-        gchar *objname /* end pointer */)
+        STRUCTClass *objclass /* end pointer */)
 {
 
 //    Layer *curlayer = fclass->element.object.parent_layer;
-    STRUCTClass *objclass = g_hash_table_lookup(curLayer->defnames,objname);
+//    STRUCTClass *objclass = g_hash_table_lookup(curLayer->defnames,objname);
     g_return_if_fail(objclass);
 
     if(factory_is_connected(&objclass->connections[8],&fclass->connections[8])) /* 已经有连线了 */
@@ -3155,55 +3155,62 @@ static void factory_get_value_from_comobox(STRUCTClass *startclass,GtkWidget *co
     DDisplay *ddisp =  ddisplay_active();
     int  curindex = gtk_combo_box_get_active(GTK_COMBO_BOX(comobox));
     gchar *pname = gtk_combo_box_get_active_text(GTK_COMBO_BOX(comobox));
+    aid->conn_ptr = g_hash_table_lookup(curLayer->defnames,pname);
 //    if(!g_ascii_strcasecmp(pname,aid->pre_name))
 //        return;
-
+    gpointer  lastobj = g_hash_table_lookup(curLayer->defnames,aid->pre_name);
     if(!curindex) /*下标零，删除上一次的画线*/
         goto DELL;
     else
     {
-        factory_delete_line_between_two_objects(startclass,aid->pre_name);
+
+        factory_delete_line_between_two_objects(startclass,lastobj); /*如果上次有连线现在要删除 */
 //        STRUCTClass *objclass =NULL;
 //        objclass =  g_hash_table_lookup(curLayer->defnames,pname);
 //        if(!objclass)
 //            goto DELL;
 
-        if(g_ascii_strcasecmp(pname,startclass->name)) /* 是自己就不连线,如果上次有连线现在要删除 */
+        if(aid->conn_ptr != lastobj) /* 是自己就不连线 */
         {
-            factory_connection_two_object(startclass,g_strdup(pname));
+            factory_connection_two_object(startclass,aid->conn_ptr);
             goto SETV; /* 已经有连线了 */
         }
         else
         {
             STRUCTClass *objclass =  g_hash_table_lookup(curLayer->defnames,pname);
-            if(!factory_is_connected(&objclass->connections[8],&startclass->connections[8]))
-                factory_connection_two_object(startclass,g_strdup(pname));
+            if(!factory_is_connected(&objclass->connections[8],&startclass->connections[8])) /* 检查一下连线 */
+            {
+                factory_connection_two_object(startclass,aid->conn_ptr);
+            }
+
         }
 
     }
 
 DELL:
     if(aid->index && aid->index != curindex &&
-            g_ascii_strcasecmp(aid->pre_name,startclass->name)) /* 上次非零,名字又不是自己,要删除线*/
+            (aid->conn_ptr != startclass)) /* 上次非零,名字又不是自己,要删除线*/
     {
-        factory_delete_line_between_two_objects(startclass,aid->pre_name);
+        factory_delete_line_between_two_objects(startclass,lastobj);
         g_free(aid->value);
         aid->value = g_strdup("-1");
+        aid->conn_ptr = NULL;
     }
 
 SETV:
     aid->pre_name = g_strdup(pname);
     aid->index  = curindex;
+//    aid->conn_ptr = g_hash_table_lookup(curLayer->defnames,pname);
     diagram_flush(ddisp->diagram);
     g_free(pname);
 }
 
 
-void factory_delete_line_between_two_objects(STRUCTClass *startc,const gchar *endc)
+void factory_delete_line_between_two_objects(STRUCTClass *startc,STRUCTClass *objclass)
 {
     DDisplay *ddisp =  ddisplay_active();
 //    Layer *curlayer = startc->element.object.parent_layer;
-    STRUCTClass *objclass = g_hash_table_lookup(curLayer->defnames,endc);
+//    STRUCTClass *objclass = g_hash_table_lookup(curLayer->defnames,endc);
     g_return_if_fail(objclass);
 
     ConnectionPoint *cpstart = &startc->connections[8];
@@ -3227,6 +3234,8 @@ void factory_delete_line_between_two_objects(STRUCTClass *startc,const gchar *en
     diagram_select(ddisp->diagram,startc);
 
 }
+
+
 
 void factory_change_view_name(STRUCTClass *fclass)
 {
@@ -3603,7 +3612,13 @@ FIRST:
 
         GList *tlist = nextid->itemlist;
         columTwo = factory_create_combo_widget(tlist,aid->index);
-        factory_update_ActionId_object(columTwo,aid);
+        factory_update_ActionId_object(columTwo,aid, nextid->itemlist);
+    }
+    break;
+    case LBTN:
+    {
+         columTwo =gtk_button_new_with_label(item->Name);
+        g_signal_connect (G_OBJECT (columTwo), "clicked",G_CALLBACK (sss->newdlg_func), sss);
     }
     break;
     case OBTN:
@@ -3637,27 +3652,28 @@ FIRST:
 gboolean factory_music_fm_get_type(const gchar* name)
 {
     SaveMusicDialog *smd = curLayer->smd;
-
+    gchar *skey = factory_get_last_section(name,".");
     gboolean flag = FALSE;
     if(!smd)
         return flag;
-    if(!g_ascii_strncasecmp(name,"aIndex_Number",strlen("aIndex_Number")))
+    if(!g_ascii_strncasecmp(skey,"aIndex_Number",strlen("aIndex_Number")))
     {
         smd->fmst = INDEX;
         flag = TRUE;
     }
 
-    else if(!g_ascii_strncasecmp(name,"aFile_Number",strlen("aFile_Number")))
+    else if(!g_ascii_strncasecmp(skey,"aFile_Number",strlen("aFile_Number")))
     {
         smd->fmst =  SEQUENCE;
         flag = TRUE;
     }
 
-    else if(!g_ascii_strncasecmp(name,"aPhy_Number",strlen("aPhy_Number")))
+    else if(!g_ascii_strncasecmp(skey,"aPhy_Number",strlen("aPhy_Number")))
     {
         smd->fmst = PHY;
         flag = TRUE;
     }
+    g_free(skey);
     return flag;
 }
 
@@ -4236,7 +4252,7 @@ void factory_create_io_port_dialog(GtkWidget *button,SaveStruct *sst)
     gtk_widget_show_all(newdialog);
     gtk_dialog_run(newdialog);
 
-   gtk_widget_destroy(newdialog);
+    gtk_widget_destroy(newdialog);
 }
 
 
@@ -4287,7 +4303,7 @@ void factory_create_enumbutton_dialog(GtkWidget *button,SaveStruct *sst)
 
     gtk_widget_show_all(newdialog);
     gtk_dialog_run(newdialog);
-   gtk_widget_destroy(newdialog);
+    gtk_widget_destroy(newdialog);
 }
 
 
@@ -4322,7 +4338,7 @@ void factory_create_objectbutton_dialog(GtkWidget *button,SaveStruct *sst)
             GtkWidget *hbox = gtk_hbox_new(FALSE,0);
             ActionID *aid = g_list_nth_data(nextid->actlist,pos);
             GtkWidget *comobox = factory_create_combo_widget(nextid->itemlist,aid->index);
-            factory_update_ActionId_object(comobox,aid);
+            factory_update_ActionId_object(comobox,aid, nextid->itemlist);
             GtkWidget *wid = gtk_label_new(aid->title_name);
             nextid->wlist = g_list_append(nextid->wlist,comobox);
             gtk_box_pack_start(GTK_BOX(hbox),wid,FALSE,FALSE,0);
@@ -4339,7 +4355,7 @@ void factory_create_objectbutton_dialog(GtkWidget *button,SaveStruct *sst)
 
     gtk_dialog_run(subdig);
 
-   gtk_widget_destroy(subdig);
+    gtk_widget_destroy(subdig);
 
 }
 
@@ -4416,6 +4432,10 @@ gboolean factory_is_connected(ConnectionPoint *cpend,ConnectionPoint *cpstart)
     return isconnected;
 }
 
+static gint factory_str_compare(const gchar *str1,const gchar *str2)
+{
+    return g_strcasecmp(str1,str2);
+}
 
 /* 这里是画布所有可见的控件名，除去特殊与线条之外的．*/
 GList * factory_get_objects_from_layer(Layer *layer)
@@ -4423,7 +4443,10 @@ GList * factory_get_objects_from_layer(Layer *layer)
     GList *list = NULL;
     if(curLayer)
     {
+
         list = g_hash_table_get_keys(curLayer->defnames);
+        if(g_list_length(list)>1)
+            list = g_list_sort(list,factory_str_compare);
     }
     return list;
 }
@@ -4440,7 +4463,8 @@ void factory_create_unionbutton_dialog(GtkWidget *button,SaveStruct *sst)
     /* 通按钮事件,创建属性对话框*/
 //    GtkWidget *parent = gtk_widget_get_toplevel(button);
 //    GdkWindow *pwin = gtk_widget_get_window(button);
-    GtkWidget *subdig = factory_create_new_dialog_with_buttons(sst->name,gtk_widget_get_toplevel(button));
+    GtkWidget *subdig = factory_create_new_dialog_with_buttons(sst->name,
+                        gtk_widget_get_toplevel(button));
     gtk_window_set_type_hint(GTK_WINDOW(subdig),GDK_WINDOW_TYPE_HINT_DOCK);
 //    gtk_window_set_transient_for (GTK_WINDOW(subdig),parent);
 //    gtk_window_set_keep_above (GTK_WINDOW(subdig),TRUE);
@@ -4717,22 +4741,55 @@ void factory_append_public_info(GtkWidget *dialog,STRUCTClass *fclass)
 //}
 
 
-void factory_update_ActionId_object(GtkWidget *comobox,ActionID *aid)
+gint factory_get_ocombox_index(GList *clist,const gchar *name)
+{
+    GList *fill_list = clist;
+    int pos = 0;
+    for(; fill_list; fill_list = fill_list->next,pos++)
+    {
+        if(!g_ascii_strcasecmp(fill_list->data,name))
+        {
+            break;
+        }
+    }
+    return pos;
+}
+
+
+void factory_update_ActionId_object(GtkWidget *comobox,ActionID *aid,GList *clist)
 {
     if(!aid->pre_name)
         return;
-    gpointer exists = g_hash_table_lookup(curLayer->defnames,aid->pre_name);
-    if(!exists)
+//    gpointer exists = g_hash_table_lookup(curLayer->defnames,aid->pre_name);
+    gpointer exist = g_list_find (curLayer->objects,aid->conn_ptr); /* 如果非NULL，说明它存在，可能改名字了*/
+    if(exist)
+    {
+        /* 这里判断所指向的对像名字改了，要重找到它改名*/
+        STRUCTClass *pclass = aid->conn_ptr;
+        if(g_ascii_strcasecmp(pclass->name,aid->pre_name))
+        {
+            g_free(aid->pre_name);
+            aid->pre_name = g_strdup(pclass->name);
+        }
+    }
+    else
     {
         g_free(aid->pre_name);
         aid->pre_name = g_strdup("");
         aid->index = 0;
-        gtk_combo_box_set_active(GTK_COMBO_BOX(comobox),aid->index);
-        return;
+        aid->conn_ptr = NULL;
+//        gtk_combo_box_set_active(GTK_COMBO_BOX(comobox),aid->index);
+//        return;
     }
-    GList *vlist = g_hash_table_get_values(curLayer->defnames);
-    int pos  = g_list_index(vlist,exists);
-    aid->index = pos+1;
+
+//    GList *vlist = g_hash_table_get_values(curLayer->defnames);
+
+
+//    int pos  = g_list_index(clist,aid->pre_name);
+//    g_free(aid->pre_name);
+//    STRUCTClass *fclass = aid->conn_ptr;
+//    aid->pre_name = g_strdup(fclass->name);
+    aid->index =factory_get_ocombox_index(clist,aid->pre_name);
     gtk_combo_box_set_active(GTK_COMBO_BOX(comobox),aid->index);
 }
 
@@ -5294,9 +5351,9 @@ void factory_new_idlist_dialog(GtkWidget *button,SaveStruct *sst)
 
 
     gtk_widget_show_all(subdig);
-   gtk_dialog_run(subdig);
+    gtk_dialog_run(subdig);
 
-   gtk_widget_destroy(subdig);
+    gtk_widget_destroy(subdig);
 
 }
 
@@ -5382,7 +5439,8 @@ void factory_save_idlist_dialog(GtkWidget *widget,
 //                SaveStruct *tmp = fclass->widgetSave->data;
 //                *sid->dvalue = g_strdup(tmp->value.vnumber);
 //                    skv->value = g_strdup_printf("%d",g_list_index(curLayer->objects,fclass));
-                skv->value = g_strdup_printf("%d",sil->id_addr);
+//                skv->value = g_strdup_printf("%d",sil->id_addr);
+                skv->value = g_strdup_printf("%d",skv->radindex);
                 skv->vname = g_strdup(sil->dname);
 //                }
 
@@ -5453,14 +5511,91 @@ HIDE:
     gtk_widget_hide(widget);
 }
 
-void factory_file_manager_dialog(GtkWidget *btn,SaveStruct *sst)
+
+void factory_save_list_array_manager_dialog(GtkWidget *widget,gint       response_id,gpointer user_data)
+{
+    gtk_widget_destroy(widget);
+}
+
+
+void factory_create_list_array_manager_dialog(GtkWidget *button,SaveStruct *sst)
+{
+    GtkWidget *sdialog = gtk_hbox_new(FALSE,0);
+    GtkWidget *subdig = factory_create_new_dialog_with_buttons(sst->name,gtk_widget_get_toplevel(button));
+    GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
+    gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
+    gtk_window_set_modal(GTK_WINDOW(subdig),TRUE);
+
+    /* 行列式的控件输入框 */
+    gtk_window_set_position (GTK_WINDOW(subdig),GTK_WIN_POS_MOUSE);
+
+    GtkTooltips *tips = gtk_tooltips_new();
+
+    GList *wlist = NULL;
+    ListBtn *lbtn = &sst->value.slbtn;
+    gchar *lastname = factory_get_last_section(sst->name,".");
+    gchar **title = g_strsplit(lastname,"[",-1);
+    gchar *fmt =  g_strconcat(title[0],"(%d)",NULL);
+    g_free(lastname);
+    g_strfreev(title);
+
+    int r = 0;
+    int pos = 0;
+    int tnum = 0;
+
+    ArrayBaseProp *abp = lbtn->arr_base;
+    GtkWidget *vbox = gtk_vbox_new(TRUE,0);
+    for(; r < abp->row ; r++)
+    {
+        GtkWidget *hbox = gtk_hbox_new(TRUE,0);
+        int c = 0;
+        tnum = r*abp->col;
+        for(; c < abp->col ; c++)
+        {
+            pos = tnum +c;
+            if( pos >= abp->reallen)
+                break;
+//            GtkWidget *hbox = abp->row > 8 ? gtk_vbox_new(FALSE,0): gtk_hbox_new(FALSE,0) ;
+            ListBtnArr *lba = g_list_nth_data(lbtn->vlist,pos);
+            GtkWidget *twovbox = gtk_vbox_new(TRUE,0);
+            GtkWidget *lab = gtk_label_new(g_strdup_printf(fmt,pos));
+            GtkWidget *btn = gtk_button_new_with_label(lba->skv->value);
+            g_signal_connect(G_OBJECT(btn),"clicked",G_CALLBACK(factory_file_manager_dialog),sst);
+            lba->widget1 = btn;
+            gtk_box_pack_start(GTK_BOX(twovbox),lab,FALSE,FALSE,0);
+            gtk_box_pack_start(GTK_BOX(twovbox),btn,FALSE,FALSE,0);
+            gtk_box_pack_start(GTK_BOX(hbox),twovbox,FALSE,FALSE,0);
+//            gtk_container_add(GTK_CONTAINER(vbox),hbox);
+        }
+        gtk_box_pack_start(GTK_BOX(vbox),hbox,FALSE,FALSE,0);
+
+    }
+    gtk_container_add(GTK_CONTAINER(sdialog),vbox);
+    g_signal_connect(G_OBJECT (subdig), "response",
+                     G_CALLBACK (sst->close_func), sst); /* 保存关闭 */
+    gtk_widget_show_all(sdialog);
+}
+
+
+void factory_create_file_manager_dialog(GtkWidget *btn,SaveStruct *sst)
 {
     factory_music_fm_get_type(sst->name);
     SaveMusicDialog *smd = curLayer->smd;
     smd->parent_btn = btn;
+    smd->skv = (SaveKV*)(sst->value.vnumber); /* 公共部分 */
+    factory_file_manager_dialog(btn,NULL);
+}
+
+
+void factory_file_manager_dialog(GtkWidget *btn,SaveStruct *sst)
+{
+
+//    factory_music_fm_get_type(sst->name);
+    SaveMusicDialog *smd = curLayer->smd;
+//    smd->parent_btn = btn;
 
 //    smd->dvalue = &sst->value.vnumber;
-    smd->skv = (SaveKV*)(sst->value.vnumber);
+//    smd->skv = (SaveKV*)(sst->value.vnumber); /* 公共部分 */
     GtkWidget *mainHbox = gtk_hbox_new(FALSE,0);
     GtkWidget *parent = gtk_widget_get_toplevel(btn);
     GtkWidget *window = factory_create_new_dialog_with_buttons(smd->title,gtk_widget_get_toplevel(btn));
@@ -5478,9 +5613,6 @@ void factory_file_manager_dialog(GtkWidget *btn,SaveStruct *sst)
 
     g_signal_connect(G_OBJECT (window), "response",
                      G_CALLBACK (smd->mfmos->m_applydialog), smd); /* 保存关闭 */
-
-//    g_signal_connect(G_OBJECT (window), "destroy",G_CALLBACK(gtk_widget_destroyed), &window);
-//    g_signal_connect(G_OBJECT (mainHbox), "destroy",G_CALLBACK(gtk_widget_destroyed),&dialog_vbox);
 
     gtk_widget_show_all(window);
 }

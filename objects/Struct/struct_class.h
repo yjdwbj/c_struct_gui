@@ -110,7 +110,7 @@ typedef enum
     UBTN,
     OBTN,/* 这里是按键按钮 */
     EBTN,/* 枚举也有数组 */
-    SBTN /* 文件管理与ID管理 */
+    LBTN /* 文件管理与ID管理 数组形式的按键 */
 } CellType;
 
 typedef struct _ActionId ActionID;
@@ -120,6 +120,7 @@ struct _ActionId
     gchar* value;
     gchar *pre_name;
     gchar *title_name;
+    gpointer conn_ptr; /* 就指向对像指针，名字与ID都不能对应更改名字操作 */
 };
 
 
@@ -130,6 +131,8 @@ struct _ArrayBaseProp
     int col;   /* default is 1 */
     int reallen;
 };
+
+
 
 typedef struct _NextId NextID;
 struct _NextId
@@ -157,7 +160,19 @@ struct _SaveKV
     int radindex; /* radio index */
 };
 
+typedef struct _ListBtnArr ListBtnArr;
+struct _ListBtnArr
+{
+    GtkWidget *widget1;
+    SaveKV *skv;
+};
 
+typedef struct _ListBtn ListBtn;
+struct _ListBtn
+{
+    GList *vlist; /* save ListBtnArr */
+    ArrayBaseProp *arr_base;/* 如果有数组 */
+};
 
 struct _SaveIdDialog
 {
@@ -369,6 +384,7 @@ typedef struct _SaveStruct
         NextID nextid;  // 保存连线的 comobox;
         SaveUbtn ssubtn; /* 联合体按键 */
         SaveEbtn ssebtn; /* 枚举数组 */
+        ListBtn slbtn;
     } value;
     FactoryStructItem *org;
     STRUCTClass *sclass; /* 它的最上层的对像 */
@@ -496,7 +512,7 @@ static void
 attributes_list_selection_changed_callback(GtkWidget *gtklist,
         STRUCTClass *structclass);
 static void factory_connection_two_object(STRUCTClass *fclass, /* start pointer*/
-        gchar *objname /* end pointer */);
+        STRUCTClass *objclass /* end pointer */);
 
 
 
@@ -569,11 +585,12 @@ void factory_create_toolbar_button(const gint8 *icon,gchar *tips,GtkToolbar  *to
                                    gpointer *callback);
 
 void factory_new_idlist_dialog(GtkWidget *parent,SaveStruct *sst);
-void factory_save_idlist_dialog(GtkWidget *widget,
-                                        gint       response_id,
-                                        gpointer user_data);
+void factory_save_idlist_dialog(GtkWidget *widget,gint       response_id,gpointer user_data);
 
+void factory_create_file_manager_dialog(GtkWidget *btn,SaveStruct *sst);
 void factory_file_manager_dialog(GtkWidget *btn,SaveStruct *sst);
+void factory_create_list_array_manager_dialog(GtkWidget *btn,SaveStruct *sst);
+void factory_save_list_array_manager_dialog(GtkWidget *widget,gint       response_id,gpointer user_data);
 
 
 void factory_select(STRUCTClass *structclass, Point *clicked_point,
@@ -620,7 +637,7 @@ gboolean factory_music_fm_get_type(const gchar* str);
 
 void factory_fm_get_cboxlist(SaveMusicDialog *smd);
 
-void factory_update_ActionId_object(GtkWidget *comobox,ActionID *aid);
+void factory_update_ActionId_object(GtkWidget *comobox,ActionID *aid,GList *clist);
 
 void factory_setting_systemdata(STRUCTClass *structclass);
 
@@ -631,7 +648,6 @@ void factory_system_dialog(GList *list,GtkWidget *parent);
 
 void factory_systeminfo_callback(GtkWidget *parent);
 GList* factory_get_download_name_list(const gchar *path);
-
 
 //void factoryReadDataFromFile(STRUCTClass *structclass);
 

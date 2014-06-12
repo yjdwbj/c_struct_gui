@@ -54,9 +54,9 @@ static void modify_motion(ModifyTool *tool, GdkEventMotion *event,
 			  DDisplay *ddisp);
 static void modify_double_click(ModifyTool *tool, GdkEventButton *event,
 				DDisplay *ddisp);
-static void modify_make_text_edit(DDisplay *ddisp, DiaObject *obj, 
+static void modify_make_text_edit(DDisplay *ddisp, DiaObject *obj,
                                   Point *clickedpoint);
-static void modify_start_text_edit(DDisplay *ddisp, Text *text, DiaObject *obj, 
+static void modify_start_text_edit(DDisplay *ddisp, Text *text, DiaObject *obj,
                                    Point *clickedpoint);
 
 
@@ -78,24 +78,24 @@ create_modify_tool(void)
   tool->auto_scrolled = FALSE;
 
   tool->orig_pos = NULL;
-  
+
   return (Tool *)tool;
 }
 
-static ModifierKeys 
+static ModifierKeys
 gdk_event_to_dia_ModifierKeys(guint event_state)
 {
         ModifierKeys mod = MODIFIER_NONE;
         if (event_state & GDK_SHIFT_MASK)
                 mod |= MODIFIER_SHIFT;
    /*     Used intenally do not propagate
-    *     if (event_state & GDK_CONTROL_MASK) 
-                mod | MODIFIER_CONTROL;  
+    *     if (event_state & GDK_CONTROL_MASK)
+                mod | MODIFIER_CONTROL;
                 */
         return mod;
 }
 
-        
+
 void
 free_modify_tool(Tool *tool)
 {
@@ -135,13 +135,13 @@ click_select_object(DDisplay *ddisp, Point *clickedpoint,
   Diagram *diagram;
   real click_distance;
   DiaObject *obj;
-  
+
   diagram = ddisp->diagram;
-  
+
   /* Find the closest object to select it: */
 
   click_distance = ddisplay_untransform_length(ddisp, 3.0);
-  
+
   obj = diagram_find_clicked_object(diagram, clickedpoint,
 				    click_distance);
 
@@ -149,7 +149,7 @@ click_select_object(DDisplay *ddisp, Point *clickedpoint,
     /* Selected an object. */
     GList *already;
     /*printf("Selected object!\n");*/
-      
+
     already = g_list_find(diagram->data->selected, obj);
     if (already == NULL) { /* Not already selected */
       /*printf("Not already selected\n");*/
@@ -158,10 +158,10 @@ click_select_object(DDisplay *ddisp, Point *clickedpoint,
 	/* Not Multi-select => remove current selection */
 	diagram_remove_all_selected(diagram, TRUE);
       }
-      
+
       diagram_select(diagram, obj);
       /* To be removed once text edit mode is stable.  By then,
-       * we don't want to automatically edit selected objects. 
+       * we don't want to automatically edit selected objects.
 	 textedit_activate_object(ddisp, obj, clickedpoint);
       */
 
@@ -185,7 +185,7 @@ click_select_object(DDisplay *ddisp, Point *clickedpoint,
       */
       object_add_updates_list(diagram->data->selected, diagram);
       diagram_flush(diagram);
-      
+
       if (event->state & GDK_SHIFT_MASK) { /* Multi-select */
 	/* Remove the selected selected */
 	ddisplay_do_update_menu_sensitivity(ddisp);
@@ -219,7 +219,7 @@ static int do_if_clicked_handle(DDisplay *ddisp, ModifyTool *tool,
   DiaObject *obj;
   Handle *handle;
   real dist;
-  
+
   handle = NULL;
   dist = diagram_find_closest_handle(ddisp->diagram, &handle,
 				     &obj, clickedpoint);
@@ -244,6 +244,7 @@ static void
 modify_button_press(ModifyTool *tool, GdkEventButton *event,
 		     DDisplay *ddisp)
 {
+
   Point clickedpoint;
   DiaObject *clicked_obj;
   gboolean some_selected;
@@ -256,7 +257,7 @@ modify_button_press(ModifyTool *tool, GdkEventButton *event,
   some_selected = g_list_length (ddisp->diagram->data->selected) > 1;
   if (!some_selected && do_if_clicked_handle(ddisp, tool, &clickedpoint, event))
     return;
-  
+
   clicked_obj = click_select_object(ddisp, &clickedpoint, event);
   if (!some_selected && do_if_clicked_handle(ddisp, tool, &clickedpoint, event))
     return;
@@ -282,7 +283,7 @@ modify_button_press(ModifyTool *tool, GdkEventButton *event,
 
     if (tool->gc == NULL) {
       tool->gc = gdk_gc_new(ddisp->canvas->window);
-      gdk_gc_set_line_attributes(tool->gc, 1, GDK_LINE_ON_OFF_DASH, 
+      gdk_gc_set_line_attributes(tool->gc, 1, GDK_LINE_ON_OFF_DASH,
 				 GDK_CAP_BUTT, GDK_JOIN_MITER);
       gdk_gc_set_foreground(tool->gc, &color_gdk_white);
       gdk_gc_set_function(tool->gc, GDK_XOR);
@@ -306,7 +307,7 @@ modify_button_hold(ModifyTool *tool, GdkEventButton *event,
   Point clickedpoint;
 
   switch (tool->state) {
-  case STATE_MOVE_OBJECT: 
+  case STATE_MOVE_OBJECT:
     /* A button hold is as if user was moving object - if it is
      * a text object and can be edited, then the move is cancelled */
     ddisplay_untransform_coords(ddisp,
@@ -323,7 +324,7 @@ modify_button_hold(ModifyTool *tool, GdkEventButton *event,
 	/* Activate Text Edit */
 	gtk_action_activate (menus_get_action ("ToolsTextedit"));
       }
-    } 
+    }
     break;
   case STATE_MOVE_HANDLE:
     break;
@@ -340,15 +341,17 @@ static void
 modify_double_click(ModifyTool *tool, GdkEventButton *event,
 		    DDisplay *ddisp)
 {
+  if(factory_get_toplevel_dialog())
+                return;
   Point clickedpoint;
   DiaObject *clicked_obj;
-  
+
   ddisplay_untransform_coords(ddisp,
 			      (int)event->x, (int)event->y,
 			      &clickedpoint.x, &clickedpoint.y);
 
   clicked_obj = click_select_object(ddisp, &clickedpoint, event);
-  
+
   if ( clicked_obj != NULL ) {
     object_list_properties_show(ddisp->diagram, ddisp->diagram->data->selected);
   } else { /* No object selected */
@@ -391,7 +394,7 @@ modify_move_already(ModifyTool *tool, DDisplay *ddisp, Point *to)
     if (settings == NULL) {
       g_message(_("Couldn't get GTK settings"));
     } else {
-      g_object_get(G_OBJECT(settings), 
+      g_object_get(G_OBJECT(settings),
 		   "gtk-double-click-time", &double_click_time, NULL);
     }
     settings_taken = TRUE;
@@ -433,7 +436,7 @@ modify_motion(ModifyTool *tool, GdkEventMotion *event,
     return; /* Fast path... */
 
   auto_scroll = ddisplay_autoscroll(ddisp, event->x, event->y);
-  
+
   ddisplay_untransform_coords(ddisp, event->x, event->y, &to.x, &to.y);
 
   if (!modify_move_already(tool, ddisp, &to)) return;
@@ -456,10 +459,10 @@ modify_motion(ModifyTool *tool, GdkEventMotion *event,
 	list = g_list_next(list); i++;
       }
     }
-    
+
     if (tool->break_connections)
       diagram_unconnect_selected(ddisp->diagram); /* Pushes UNDO info */
-  
+
     if (event->state & GDK_CONTROL_MASK) {
       full_delta = to;
       point_sub(&full_delta, &tool->start_at);
@@ -468,12 +471,12 @@ modify_motion(ModifyTool *tool, GdkEventMotion *event,
 
     point_add(&to, &tool->move_compensate);
     snap_to_grid(ddisp, &to.x, &to.y);
-  
+
     now = tool->object->position;
-    
+
     delta = to;
     point_sub(&delta, &now);
-    
+
     if (event->state & GDK_CONTROL_MASK) {
       /* Up-down or left-right */
       if (vertical) {
@@ -497,16 +500,16 @@ modify_motion(ModifyTool *tool, GdkEventMotion *event,
       gchar *postext;
       GtkStatusbar *statusbar = GTK_STATUSBAR (ddisp->modified_status);
       guint context_id = gtk_statusbar_get_context_id (statusbar, "ObjectPos");
-      gtk_statusbar_pop (statusbar, context_id); 
+      gtk_statusbar_pop (statusbar, context_id);
       postext = g_strdup_printf("%.3f, %.3f - %.3f, %.3f",
 			        tool->object->bounding_box.left,
 			        tool->object->bounding_box.top,
 			        tool->object->bounding_box.right,
 			        tool->object->bounding_box.bottom);
-			       
-      gtk_statusbar_pop (statusbar, context_id); 
+
+      gtk_statusbar_pop (statusbar, context_id);
       gtk_statusbar_push (statusbar, context_id, postext);
-      
+
       g_free(postext);
     }
 
@@ -557,7 +560,7 @@ modify_motion(ModifyTool *tool, GdkEventMotion *event,
       if (tool->handle->connected_to!=NULL) {
 	Change *change = undo_unconnect(ddisp->diagram, tool->object,
 					tool->handle);
-					
+
         (change->apply)(change, ddisp->diagram);
       }
     }
@@ -581,7 +584,7 @@ modify_motion(ModifyTool *tool, GdkEventMotion *event,
       gchar *postext;
       GtkStatusbar *statusbar = GTK_STATUSBAR (ddisp->modified_status);
       guint context_id = gtk_statusbar_get_context_id (statusbar, "ObjectPos");
-    
+
       if (tool->object) { /* play safe */
 	real w = tool->object->bounding_box.right - tool->object->bounding_box.left;
 	real h = tool->object->bounding_box.bottom - tool->object->bounding_box.top;
@@ -589,24 +592,24 @@ modify_motion(ModifyTool *tool, GdkEventMotion *event,
       } else {
         postext = g_strdup_printf("%.3f, %.3f", to.x, to.y);
       }
-			       
-      gtk_statusbar_pop (statusbar, context_id); 
+
+      gtk_statusbar_pop (statusbar, context_id);
       gtk_statusbar_push (statusbar, context_id, postext);
 
       g_free(postext);
     }
-    
+
     object_add_updates(tool->object, ddisp->diagram);
 
     /* Handle undo */
-    objchange = tool->object->ops->move_handle(tool->object, tool->handle, 
+    objchange = tool->object->ops->move_handle(tool->object, tool->handle,
 					       &to, connectionpoint,
 					       HANDLE_MOVE_USER, gdk_event_to_dia_ModifierKeys(event->state));
     if (objchange != NULL) {
       undo_object_change(ddisp->diagram, tool->object, objchange);
     }
     object_add_updates(tool->object, ddisp->diagram);
-  
+
     diagram_update_connections_selection(ddisp->diagram);
     diagram_flush(ddisp->diagram);
     break;
@@ -635,7 +638,7 @@ modify_motion(ModifyTool *tool, GdkEventMotion *event,
 			tool->x2 - tool->x1, tool->y2 - tool->y1);
     break;
   case STATE_NONE:
-    
+
     break;
   default:
     message_error("Internal error: Strange state in modify_tool\n");
@@ -645,7 +648,7 @@ modify_motion(ModifyTool *tool, GdkEventMotion *event,
   tool->auto_scrolled = auto_scroll;
 }
 
-/** Find the list of objects selected by current rubberbanding. 
+/** Find the list of objects selected by current rubberbanding.
  * The list should be freed after use. */
 static GList *
 find_selected_objects(DDisplay *ddisp, ModifyTool *tool)
@@ -655,8 +658,8 @@ find_selected_objects(DDisplay *ddisp, ModifyTool *tool)
   r.right = MAX(tool->start_box.x, tool->end_box.x);
   r.top = MIN(tool->start_box.y, tool->end_box.y);
   r.bottom = MAX(tool->start_box.y, tool->end_box.y);
-  
-  if (prefs.reverse_rubberbanding_intersects && 
+
+  if (prefs.reverse_rubberbanding_intersects &&
       tool->start_box.x > tool->end_box.x) {
     return
       layer_find_objects_intersecting_rectangle(ddisp->diagram->data->active_layer, &r);
@@ -676,7 +679,7 @@ modify_button_release(ModifyTool *tool, GdkEventButton *event,
   DiaObject *active_obj = NULL;
   ObjectChange *objchange;
   Focus *active_focus;
-  
+
   tool->break_connections = FALSE;
   ddisplay_set_all_cursor(default_cursor);
 
@@ -714,7 +717,7 @@ modify_button_release(ModifyTool *tool, GdkEventButton *event,
       undo_move_objects(ddisp->diagram, tool->orig_pos, dest_pos,
 			parent_list_affected(ddisp->diagram->data->selected));
     }
-    
+
     ddisplay_connect_selected(ddisp); /* pushes UNDO info */
     diagram_update_extents(ddisp->diagram);
     diagram_modified(ddisp->diagram);
@@ -733,7 +736,7 @@ modify_button_release(ModifyTool *tool, GdkEventButton *event,
       undo_move_handle(ddisp->diagram, tool->handle, tool->object,
 		       *tool->orig_pos, tool->last_to);
     }
-    
+
     /* Final move: */
     object_add_updates(tool->object, ddisp->diagram);
     objchange = tool->object->ops->move_handle(tool->object, tool->handle,
@@ -750,10 +753,10 @@ modify_button_release(ModifyTool *tool, GdkEventButton *event,
       object_connect_display(ddisp, tool->object, tool->handle, TRUE); /* pushes UNDO info */
       diagram_update_connections_selection(ddisp->diagram);
     }
-    
+
     highlight_reset_all(ddisp->diagram);
     diagram_flush(ddisp->diagram);
-    
+
     diagram_modified(ddisp->diagram);
     diagram_update_extents(ddisp->diagram);
 
@@ -766,7 +769,7 @@ modify_button_release(ModifyTool *tool, GdkEventButton *event,
 
     break;
   case STATE_BOX_SELECT:
-    
+
     gdk_pointer_ungrab (event->time);
     /* Remember the currently active object for reactivating. */
     active_focus = get_active_focus((DiagramData *) ddisp->diagram);
@@ -782,7 +785,7 @@ modify_button_release(ModifyTool *tool, GdkEventButton *event,
       GList *list, *list_to_free;
 
       list = list_to_free = find_selected_objects(ddisp, tool);
-      
+
       if (selection_style == SELECT_REPLACE &&
           !(event->state & GDK_SHIFT_MASK)) {
         /* Not Multi-select => Remove all selected */
@@ -794,11 +797,11 @@ modify_button_release(ModifyTool *tool, GdkEventButton *event,
 
         while (list != NULL) {
           DiaObject *obj = (DiaObject *)list->data;
-          
+
           if (diagram_is_selected(ddisp->diagram, obj)) {
             intersection = g_list_append(intersection, obj);
           }
-          
+
           list = g_list_next(list);
         }
         list = intersection;
@@ -814,11 +817,11 @@ modify_button_release(ModifyTool *tool, GdkEventButton *event,
       } else {
         while (list != NULL) {
           DiaObject *obj = (DiaObject *)list->data;
-          
+
           if (selection_style == SELECT_REMOVE) {
             if (diagram_is_selected(ddisp->diagram, obj))
               diagram_unselect_object(ddisp->diagram, obj);
-          } else if (selection_style == SELECT_INVERT) { 
+          } else if (selection_style == SELECT_INVERT) {
             if (diagram_is_selected(ddisp->diagram, obj))
               diagram_unselect_object(ddisp->diagram, obj);
             else
@@ -827,15 +830,15 @@ modify_button_release(ModifyTool *tool, GdkEventButton *event,
             if (!diagram_is_selected(ddisp->diagram, obj))
               diagram_select(ddisp->diagram, obj);
           }
-          
+
           list = g_list_next(list);
         }
       }
 
       g_list_free(list_to_free);
-      
+
     }
-    
+
     /* To be removed once text edit mode is stable.  By then,
      * we don't want to automatically edit selected objects.
     if (active_obj != NULL &&
@@ -854,7 +857,7 @@ modify_button_release(ModifyTool *tool, GdkEventButton *event,
     break;
   default:
     message_error("Internal error: Strange state in modify_tool\n");
-      
+
   }
 }
 
@@ -913,13 +916,13 @@ modify_start_text_edit(DDisplay *ddisp, Text *text, DiaObject *obj, Point *click
 			    text_bbox.left,
 			    text_bbox.top,
 			    &x, &y);
-  dia_canvas_put(DIA_CANVAS(ddisp->canvas), view, 
+  dia_canvas_put(DIA_CANVAS(ddisp->canvas), view,
 		 x-EDIT_BORDER_WIDTH, y-EDIT_BORDER_WIDTH);
   buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(view));
   for (i = 0; i < text->numlines; i++) {
     gtk_text_buffer_insert_at_cursor(buf, text_get_line(text, i), -1);
   }
-  fonttag = 
+  fonttag =
     gtk_text_buffer_create_tag(buf,
 			       NULL,
 			       "font-desc",
@@ -932,16 +935,16 @@ modify_start_text_edit(DDisplay *ddisp, Text *text, DiaObject *obj, Point *click
 	 gtk_text_view_get_pixels_above_lines(GTK_TEXT_VIEW(view)),
 	 gtk_text_view_get_pixels_below_lines(GTK_TEXT_VIEW(view)));
 
-  gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(view), 
-				       GTK_TEXT_WINDOW_LEFT, 
+  gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(view),
+				       GTK_TEXT_WINDOW_LEFT,
 				       EDIT_BORDER_WIDTH);
-  gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(view), 
-				       GTK_TEXT_WINDOW_RIGHT, 
+  gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(view),
+				       GTK_TEXT_WINDOW_RIGHT,
 				       EDIT_BORDER_WIDTH);
-  gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(view), 
+  gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(view),
 				       GTK_TEXT_WINDOW_TOP,
 				       EDIT_BORDER_WIDTH);
-  gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(view), 
+  gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(view),
 				       GTK_TEXT_WINDOW_BOTTOM,
 				       EDIT_BORDER_WIDTH);
   /* Using deprecated function because the fucking gobject documentation
@@ -984,22 +987,22 @@ modify_make_text_edit(DDisplay *ddisp, DiaObject *obj, Point *clickedpoint)
 				textprop->attr.position.x,
 				textprop->attr.position.y,
 				&x, &y);
-      temp_line = text_line_new(textprop->text_data, 
+      temp_line = text_line_new(textprop->text_data,
 				textprop->attr.font,
 				textprop->attr.height);
       /* This might need to account for zoom factor. */
-      ascent = ddisplay_transform_length(ddisp, 
+      ascent = ddisplay_transform_length(ddisp,
 					 text_line_get_ascent(temp_line));
       text_line_destroy(temp_line);
       printf("Text prop string %s pos %d, %d ascent %f\n",
 	     textprop->text_data, x, y, ascent);
       ascent_pixels = ddisplay_transform_length(ddisp, ascent);
       y -= ascent_pixels;
-      dia_canvas_put(DIA_CANVAS(ddisp->canvas), view, 
+      dia_canvas_put(DIA_CANVAS(ddisp->canvas), view,
 		     x-EDIT_BORDER_WIDTH, y-EDIT_BORDER_WIDTH);
       buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(view));
       gtk_text_buffer_insert_at_cursor(buf, textprop->text_data, -1);
-      fonttag = 
+      fonttag =
 	gtk_text_buffer_create_tag(buf,
 				   NULL,
 				   "font-desc",
@@ -1012,16 +1015,16 @@ modify_make_text_edit(DDisplay *ddisp, DiaObject *obj, Point *clickedpoint)
 	     gtk_text_view_get_pixels_above_lines(GTK_TEXT_VIEW(view)),
 	     gtk_text_view_get_pixels_below_lines(GTK_TEXT_VIEW(view)));
 
-      gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(view), 
-					   GTK_TEXT_WINDOW_LEFT, 
+      gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(view),
+					   GTK_TEXT_WINDOW_LEFT,
 					   EDIT_BORDER_WIDTH);
-      gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(view), 
-					   GTK_TEXT_WINDOW_RIGHT, 
+      gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(view),
+					   GTK_TEXT_WINDOW_RIGHT,
 					   EDIT_BORDER_WIDTH);
-      gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(view), 
+      gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(view),
 					   GTK_TEXT_WINDOW_TOP,
 					   EDIT_BORDER_WIDTH);
-      gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(view), 
+      gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(view),
 					   GTK_TEXT_WINDOW_BOTTOM,
 					   EDIT_BORDER_WIDTH);
       /* Using deprecated function because the fucking gobject documentation
@@ -1033,5 +1036,5 @@ modify_make_text_edit(DDisplay *ddisp, DiaObject *obj, Point *clickedpoint)
       gtk_widget_grab_focus(view);
       gtk_widget_show(view);
     }
-  }  
+  }
 }

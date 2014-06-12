@@ -220,6 +220,8 @@ gboolean
 textedit_activate_object(DDisplay *ddisp, DiaObject *obj, Point *clicked)
 {
   Focus *new_focus;
+   if(factory_get_toplevel_dialog())
+                return TRUE;
 
   new_focus = focus_get_first_on_object(obj);
   if (new_focus != NULL) {

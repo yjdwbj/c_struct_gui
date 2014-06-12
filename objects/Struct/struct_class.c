@@ -117,7 +117,7 @@ static void factory_update_index(STRUCTClass *fclass);
 
 static void fill_in_fontdata(STRUCTClass *structclass);
 static int structclass_num_dynamic_connectionpoints(STRUCTClass *class);
-void factory_delete_line_between_two_objects(STRUCTClass *startc,const gchar *endc);
+//void factory_delete_line_between_two_objects(STRUCTClass *startc,const gchar *endc);
 
 void factory_rename_structclass(STRUCTClass *fclass);
 void factory_update_view_names(STRUCTClass *fclass);
@@ -125,7 +125,7 @@ void factory_update_view_names(STRUCTClass *fclass);
 
 //static ObjectChange *_structclass_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
 ObjectChange *factory_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
-void factory_delete_line_between_two_objects(STRUCTClass *startc,const gchar *endc);
+void factory_delete_line_between_two_objects(STRUCTClass *startc,STRUCTClass *endc);
 
 void factory_change_view_name(STRUCTClass *startc);
 
@@ -3002,47 +3002,48 @@ void factory_inital_ebtn(SaveStruct *sss,const FactoryStructItem *fst)
 
 SaveStruct *factory_get_action_savestruct(SaveStruct *sss,FactoryStructItem *fst)
 {
-        sss->celltype = OCOMBO;
-        NextID *nid = &sss->value.nextid;
-        nid->itemlist = NULL;
-        nid->actlist = NULL;
-        nid->wlist = NULL;
-        if(g_str_has_suffix(sss->name,"]"))
-        {
-            sss->celltype = OBTN; /* 这里是数组了,需要按键创建新窗口来设置 */
-            sss->newdlg_func = factory_create_objectbutton_dialog;
-            sss->close_func = factory_save_objectbutton_dialog;
-            SaveEntry tmp;
-            factory_handle_entry_item(&tmp,fst);
-            nid->arr_base = tmp.arr_base;
+    sss->celltype = OCOMBO;
+    NextID *nid = &sss->value.nextid;
+    nid->itemlist = NULL;
+    nid->actlist = NULL;
+    nid->wlist = NULL;
+    if(g_str_has_suffix(sss->name,"]"))
+    {
+        sss->celltype = OBTN; /* 这里是数组了,需要按键创建新窗口来设置 */
+        sss->newdlg_func = factory_create_objectbutton_dialog;
+        sss->close_func = factory_save_objectbutton_dialog;
+        SaveEntry tmp;
+        factory_handle_entry_item(&tmp,fst);
+        nid->arr_base = tmp.arr_base;
 
-            gchar **title = g_strsplit(sss->name,"[",-1);
-            gchar *name =  g_strconcat(title[0],"(%d)",NULL);
-            g_strfreev(title);
+        gchar **title = g_strsplit(sss->name,"[",-1);
+        gchar *name =  g_strconcat(title[0],"(%d)",NULL);
+        g_strfreev(title);
 
-            int n = 0;
-            for(; n < nid->arr_base->reallen; n++ )
-            {
-                ActionID *aid = g_new0(ActionID,1);
-                aid->index = 0;
-                aid->pre_name = g_strdup("");
-                aid->value = g_strdup("-1");
-                aid->title_name = g_strdup_printf(name,n);
-                nid->actlist = g_list_append(nid->actlist,aid);
-            }
-            g_free(name);
-        }
-        else
+        int n = 0;
+        for(; n < nid->arr_base->reallen; n++ )
         {
             ActionID *aid = g_new0(ActionID,1);
             aid->index = 0;
             aid->pre_name = g_strdup("");
             aid->value = g_strdup("-1");
-            aid->title_name = g_strdup(sss->name);
+            aid->title_name = g_strdup_printf(name,n);
+            aid->conn_ptr = NULL;
             nid->actlist = g_list_append(nid->actlist,aid);
         }
-        sss->org = fst;
-        return sss;
+        g_free(name);
+    }
+    else
+    {
+        ActionID *aid = g_new0(ActionID,1);
+        aid->index = 0;
+        aid->pre_name = g_strdup("");
+        aid->value = g_strdup("-1");
+        aid->title_name = g_strdup(sss->name);
+        nid->actlist = g_list_append(nid->actlist,aid);
+    }
+    sss->org = fst;
+    return sss;
 }
 
 SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
@@ -3208,12 +3209,40 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             /* sss->value.vnumber  原定义为一个gchar 指针，在这里当做gpointer 用了*/
             SaveKV *skv = g_new0(SaveKV,1);
             smd->skv = skv;
-            skv->value = g_strdup(fst->Value);
-            skv->radindex = -1;
-            sss->value.vnumber = skv;
-            smd->btnname = g_strdup(fst->Cname);
-            sss->newdlg_func = factory_file_manager_dialog;
-            sss->close_func = factory_music_file_manager_apply;
+
+            if(g_str_has_suffix(fst->Name,"]")) /* 这里是一个数组*/
+            {
+                sss->celltype = LBTN;
+                ListBtn *ltb = &sss->value.slbtn;
+                SaveEntry tmp;
+                factory_handle_entry_item(&tmp,fst);
+                ltb->arr_base = tmp.arr_base;
+                int r = 0;
+                for(; r < ltb->arr_base->reallen ; r++ ) /* 初始化一下 */
+                {
+                    ListBtnArr *lba = g_new0(ListBtnArr,1);
+                    SaveKV *skv = g_new0(SaveKV,1);
+                    lba->skv = skv;
+                    lba->widget1 = NULL;
+                    skv->value = g_strdup(fst->Value);
+                    skv->radindex = -1;
+                    skv->vname = g_strdup("");
+                    ltb->vlist = g_list_append(ltb->vlist,lba);
+                }
+
+                sss->newdlg_func = factory_create_list_array_manager_dialog;
+                sss->close_func = factory_save_list_array_manager_dialog;
+            }
+            else
+            {
+                skv->value = g_strdup(fst->Value);
+                skv->radindex = -1;
+                sss->value.vnumber = skv;
+                smd->btnname = g_strdup(fst->Cname);
+                sss->newdlg_func = factory_create_file_manager_dialog;
+                sss->close_func = factory_music_file_manager_apply;
+            }
+
         }
         else if(!g_strcasecmp(fst->SType,"IDLST"))
         {
@@ -3235,7 +3264,6 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
         {
             SaveUbtn *sbtn = &sss->value.ssubtn;
             sbtn->structlist = fst->datalist;
-
             sbtn->savelist = NULL;
             sss->newdlg_func = factory_create_unionbutton_dialog;
             sss->close_func = factory_save_unionbutton_dialog;
@@ -4095,7 +4123,7 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
             ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
             xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",smi->id_index));
             xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
-            xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)g_strdup_printf("%d",smi->active ? smi->active : -1));
+            xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)g_strdup_printf("%d",smi->active ? smi->active-1 : -1));
             xmlSetProp(ccc, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",smi->id_addr));
             xmlSetProp(ccc, (const xmlChar *)"active", (xmlChar *)g_strdup_printf("%d",smi->active));
         }

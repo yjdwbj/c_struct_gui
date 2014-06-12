@@ -25,7 +25,7 @@ void object_properties_show(Diagram *dia, DiaObject *obj);
 void object_list_properties_show(Diagram *dia, GList *objects);
 void properties_update_if_shown(Diagram *dia, DiaObject *obj);
 void properties_hide_if_shown(Diagram *dia, DiaObject *obj);
-
+DIAVAR GtkWidget *factory_get_toplevel_dialog();
 
 #endif /* PROPERTIES_H */
 
