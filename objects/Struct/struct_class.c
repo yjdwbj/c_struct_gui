@@ -2386,7 +2386,7 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
 
     STRUCTClass *fclass = fst->orgclass;
     xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"wtype");
-    if( factory_is_special_object(fst->FType) )
+    if( factory_is_special_object(fst->FType) && g_ascii_strncasecmp((gchar*)key,"LBTN",4) )
     {
         /* 这里是id列表与音乐文件列表的数据读取 */
         sss->celltype = UBTN;
@@ -2507,7 +2507,37 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         }
 
     }
+    else if(!g_ascii_strncasecmp((gchar*)key,"LBTN",4))
+    {
+        sss->celltype = LBTN;
+        sss->isPointer = TRUE;
+        ListBtn *ltb = &sss->value.slbtn;
+        sss->newdlg_func = factory_create_list_array_manager_dialog;
+        sss->close_func = factory_save_objectbutton_dialog;
+        key = xmlGetProp(attr_node,(xmlChar *)"value");
 
+        if(key)
+        {
+            gchar **split = g_strsplit((gchar*)key,",",-1);
+            int len = g_strv_length(split);
+
+            if(len < ltb->arr_base->reallen)
+            {
+
+                factory_critical_error_exit(g_strdup_printf(factory_utf8("读取的数组个数小于当前定义的．当前:%d,读取:%d"),
+                                                            ltb->arr_base->reallen,len));
+            }
+            GList *vlist = ltb->vlist;
+            int n = 0;
+            for(; vlist;vlist = vlist->next,n++)
+            {
+                ListBtnArr *lba  = vlist->data;
+                lba->skv->value = g_strdup(split[n]);
+            }
+            g_strfreev(split);
+        }
+        xmlFree(key);
+    }
     else if(!g_ascii_strncasecmp((gchar*)key,"UBTN",4))
     {
         sss->celltype = UCOMBO;
@@ -2668,6 +2698,9 @@ void factory_read_specific_object_from_file(STRUCTClass *fclass,ObjectNode obj_n
                     if(!smd->smfm)
                     {
                         smd->smfm = g_new0(SaveMusicFileMan,1);
+                        gchar **split = g_strsplit(factoryContainer->system_files,",",-1);
+                        smd->smfm->offset = g_strv_length(split);
+                        g_strfreev(split);
                         smd->smfm->selected = -1;
                     }
 
@@ -2708,9 +2741,16 @@ void factory_read_specific_object_from_file(STRUCTClass *fclass,ObjectNode obj_n
             SaveMusicItem *smi = g_new0(SaveMusicItem,1);
             smi->id_index = g_strtod((gchar*)key,NULL);
             key = xmlGetProp(attr_node,(xmlChar *)"addr");
+
+
             smi->id_addr = g_strtod((gchar*)key,NULL);
             key = xmlGetProp(attr_node,(xmlChar *)"dname");
-            smi->dname = g_strdup((gchar*)key);
+            if(!key)
+            {
+                smi->dname = g_strdup("");
+            }
+            else
+                smi->dname = g_strdup((gchar*)key);
             key = xmlGetProp(attr_node,(xmlChar *)"active");
 
             smi->active = g_strtod((gchar*)key,NULL);
@@ -2834,6 +2874,7 @@ gpointer *factory_read_object_comobox_value_from_file(AttributeNode attr_node)
     if(key)
     {
         aid->pre_name = g_strdup((gchar*)key);
+        aid->conn_ptr =  g_hash_table_lookup(curLayer->defnames,aid->pre_name);
         xmlFree(key);
     }
 
@@ -3718,6 +3759,30 @@ static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
         xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sey->data);
     }
     break;
+
+    case LBTN:
+    {
+        xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
+         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"LBTN");
+         ListBtn *lbtn = &sss->value.slbtn;
+          GList *tlist = lbtn->vlist;
+        gchar *ret =g_strdup("");
+
+        for(; tlist; tlist = tlist->next)
+        {
+            /* 2014-3-31 lcy 把链表里的数据用逗号连接 */
+            ListBtnArr *lba = tlist->data;
+            gchar *p = g_strconcat(g_strdup(ret),lba->skv->value,g_strdup(","),NULL);
+            g_free(ret);
+            ret = g_strdup(p);
+            g_free(p);
+        }
+        int len = strlen(ret);
+        if(ret[len-1]==',')
+            ret[len-1] = '\0';
+        xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)ret);
+    }
+    break;
     case BBTN:
     {
         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"BBTN");
@@ -3781,15 +3846,21 @@ static void factory_write_object_comobox(ActionID *aid,ObjectNode ccc ,const gch
 {
     xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)aid->title_name);
 
-    gpointer exist = g_hash_table_lookup(curLayer->defnames,aid->pre_name);
-    if(!exist)
+//    gpointer exist = g_hash_table_lookup(curLayer->defnames,aid->pre_name);
+//    if(!exist)
+//    {
+//        g_free(aid->pre_name);
+//        aid->pre_name = g_strdup("");
+//        g_free(aid->value);
+//        aid->value=g_strdup("-1");
+//
+//    }
+    if(!aid->conn_ptr && !strlen(aid->pre_name))
     {
-        g_free(aid->pre_name);
-        aid->pre_name = g_strdup("");
         g_free(aid->value);
-        aid->value=g_strdup("-1");
-
+        aid->value = g_strdup("-1");
     }
+
     xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)type);
     xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
 
@@ -3810,6 +3881,7 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
     case BBTN:
     case EBTN:
     case SPINBOX:
+    case LBTN:
 //    case SBTN:
     {
         ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
@@ -3823,14 +3895,18 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
         ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
         GList *tlist = nid->actlist;
         ActionID *aid = g_list_first(tlist)->data;
-        if(aid && strlen(aid->pre_name )> 0)
-        {
-            STRUCTClass *fclass = g_hash_table_lookup(curLayer->defnames,aid->pre_name);
-            if(fclass ) /* 防止自身ＩＤ更新 */
-            {
-                aid->value = g_strdup_printf("%d",fclass->element.object.oindex);
-            }
-        }
+//        if(aid && strlen(aid->pre_name )> 0)
+//        {
+//            DiaObject *obj = g_hash_table_lookup(curLayer->defnames,aid->pre_name);
+//            if(obj == aid->conn_ptr ) /* 防止自身ＩＤ更新 */
+//            {
+//                aid->value = g_strdup_printf("%d",obj->oindex);
+//            }
+//            else
+//            {
+//                message_error(factory_utf8("名字与指针的内容不一致.\n结构体名:%s,成员:%s\n"),aid->pre_name,sss->name);
+//            }
+//        }
         factory_write_object_comobox(aid,ccc,sss->type);
         /*每一项用JL_item 做节点名，存放多个属性*/
     }
@@ -3850,21 +3926,16 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
 //            xmlSetProp(obtn, (const xmlChar *)"name", (xmlChar *)sss->name);
 //            xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
 //            xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
-            if(!aid->pre_name)
-                aid->pre_name = g_strdup("");
-            if(!strlen(aid->pre_name))
-                aid->value ="-1";
-            else
-            {
-//                STRUCTClass *fclass = factory_find_diaobject_by_name(curLayer,aid->pre_name);
-                STRUCTClass *fclass = g_hash_table_lookup(curLayer->defnames,aid->pre_name);
-                aid->value = g_strdup_printf("%d",g_list_index(curLayer->objects,fclass));
-//                if(fclass && fclass->widgetSave->data) /* 防止自身ＩＤ更新 */
-//                {
-//                    SaveStruct *tmp = fclass->widgetSave->data;
-//                    aid->value = g_strdup(tmp->value.vnumber);
-//                }
-            }
+//            if(!aid->pre_name)
+//                aid->pre_name = g_strdup("");
+//            if(!strlen(aid->pre_name))
+//                aid->value ="-1";
+//            else
+//            {
+////                STRUCTClass *fclass = factory_find_diaobject_by_name(curLayer,aid->pre_name);
+//                DiaObject *obj = g_hash_table_lookup(curLayer->defnames,aid->pre_name);
+//                aid->value = g_strdup_printf("%d",obj->oindex);
+//            }
 
             factory_write_object_comobox(tlist->data,ccc,sss->type);
         }
@@ -4133,8 +4204,8 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
         xmlSetProp(newobj, (const xmlChar *)"name",
                    (xmlChar *)"Music_File");
         g_return_if_fail(smd->smfm); /* 没有音乐文件　*/
-        xmlSetProp(newobj, (const xmlChar *)"offset",
-                   (xmlChar *)g_strdup_printf("%d",smd->smfm->offset));
+//        xmlSetProp(newobj, (const xmlChar *)"offset",
+//                   (xmlChar *)g_strdup_printf("%d",smd->smfm->offset));
         flist = smd->smfm->filelist;
         for(; flist; flist = flist->next) /* 这里保存文件列表 */
         {
@@ -4161,30 +4232,38 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
             ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
             xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",sit->id_index));
             xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
-            gchar *val = "-1";
-            gpointer  exist = g_hash_table_lookup(curLayer->defnames,sit->dname);
-            if(!exist)
+            gchar *val = g_strdup("-1");
+            DiaObject *diaobj = g_hash_table_lookup(curLayer->defnames,sit->dname);
+            if(!diaobj)
             {
                 sit->dname = g_strdup("");
                 sit->active = 0;
             }
+            else{
+                val = g_strdup_printf("%d",diaobj->oindex); /* 保存ID号 */
+            }
 //            if(!sit->dname)
 
-            if(sit->active>0)
-            {
-//                STRUCTClass *tcalss = factory_get_object_from_layer(curLayer,sit->dname);
-                STRUCTClass *tcalss = g_hash_table_lookup(curLayer->defnames,sit->dname);
-                if(tcalss)
-                {
-                    SaveStruct *sst = tcalss->widgetSave->data;
-                    val = g_strdup_printf("%d",g_list_index(curLayer->objects,tcalss));
-                    sit->dname = g_strdup(tcalss->name);
-                }
-            }
-            xmlSetProp(ccc, (const xmlChar *)"value", sit->active ? (xmlChar *)g_strdup_printf("%d",sit->id_addr) :(xmlChar *)"-1" );
+//            if(sit->active>0)
+//            {
+////                STRUCTClass *tcalss = factory_get_object_from_layer(curLayer,sit->dname);
+//                STRUCTClass *tcalss = g_hash_table_lookup(curLayer->defnames,sit->dname);
+//                if(tcalss)
+//                {
+//                    SaveStruct *sst = tcalss->widgetSave->data;
+//                    val = g_strdup_printf("%d",g_list_index(curLayer->objects,tcalss));
+//                    sit->dname = g_strdup(tcalss->name);
+//                }
+//            }
+
+
+//            xmlSetProp(ccc, (const xmlChar *)"value", sit->active ? (xmlChar *)g_strdup_printf("%d",sit->id_addr) :(xmlChar *)"-1" );
+//            xmlSetProp(ccc, (const xmlChar *)"value", sit->active ? (xmlChar *)g_strdup_printf("%d",sit->id_index) :(xmlChar *)"-1" );
+            xmlSetProp(ccc, (const xmlChar *)"value",(xmlChar*)val);
             xmlSetProp(ccc, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",sit->id_addr));
             xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)sit->dname);
             xmlSetProp(ccc, (const xmlChar *)"active", (xmlChar *)g_strdup_printf("%d",sit->active));
+            g_free(val);
         }
     }
     else

@@ -167,6 +167,19 @@ struct _ListBtnArr
     SaveKV *skv;
 };
 
+typedef void (*OrderDisplayWidget)(GList *srclist); /* 这里要按顺序显示，变态*/
+
+typedef struct _ListDlgArg ListDlgArg;
+struct _ListDlgArg
+{
+    gchar *type;
+    gpointer user_data;
+    gboolean isArray;
+    OrderDisplayWidget  odw_func;
+    GList *vlist;
+
+};
+
 typedef struct _ListBtn ListBtn;
 struct _ListBtn
 {
@@ -181,6 +194,7 @@ struct _SaveIdDialog
     GList *idlists; /* SaveIdList 内容*/
     gchar *title;
     SaveKV *skv;
+    GList *flist; /* combox list */
 //    gchar **dvalue;
 //    GSList *grouplist; /* GtkRadio */
 };
@@ -587,7 +601,7 @@ void factory_create_toolbar_button(const gint8 *icon,gchar *tips,GtkToolbar  *to
 void factory_new_idlist_dialog(GtkWidget *parent,SaveStruct *sst);
 void factory_save_idlist_dialog(GtkWidget *widget,gint       response_id,gpointer user_data);
 
-void factory_create_file_manager_dialog(GtkWidget *btn,SaveStruct *sst);
+void factory_create_file_manager_dialog(GtkWidget *btn,ListDlgArg *lda);
 void factory_file_manager_dialog(GtkWidget *btn,SaveStruct *sst);
 void factory_create_list_array_manager_dialog(GtkWidget *btn,SaveStruct *sst);
 void factory_save_list_array_manager_dialog(GtkWidget *widget,gint       response_id,gpointer user_data);
@@ -600,7 +614,7 @@ typedef void (*factory_button_callback)(GtkWidget *self);
 
 void factory_add_item_to_music_manager(GtkButton *self,gpointer user_data);
 GtkWidget *factory_new_add_button(factory_button_callback *callback,gpointer list);
-GtkWidget *factory_get_new_iditem(SaveIdItem *swt);
+GtkWidget *factory_get_new_iditem(SaveIdItem *swt,GList *flist);
 GtkWidget *factory_get_new_musicitem( SaveMusicItem *swt,GList *fillist);
 
 
@@ -612,6 +626,7 @@ GtkWidget *factory_file_id_manager();
 
 
 void factory_add_item_to_idlist(GtkButton *self,gpointer user_data);
+void factory_delete_last_item(GtkButton *self,gpointer user_data);
 
 
 static void factory_choose_musicfile_callback(GtkWidget *dlg,gint       response,gpointer   user_data);

@@ -1306,7 +1306,7 @@ CLEANUP:
     return (ret?FALSE:TRUE);
 }
 
-static void factory_call_isd_download()
+void factory_call_isd_download()
 {
     gchar *filename = g_strdup(ddisplay_active_diagram()->filename);
     g_return_if_fail(filename);
@@ -1317,19 +1317,21 @@ static void factory_call_isd_download()
     g_return_if_fail(factoryContainer);
 
     GList *dlist = factoryContainer->fgdn_func(filename); /* 取得最新的download 文件列表*/
-    g_return_if_fail(dlist);
-    int len = g_list_length(dlist);
-    gchar *isdownload_gui = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "isdownload_gui.exe",NULL);
-    gchar *isdownload = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "isd_download.exe",NULL);
+//    g_return_if_fail(dlist);
+    int len = 0;
+    if(dlist)
+        len = g_list_length(dlist);
+    gchar *isdownload_gui = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S, "isdownload_gui.exe",NULL);
+    gchar *isdownload = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S ,"isd_download.exe",NULL);
     g_return_if_fail(factory_test_file_exist(isdownload));
     g_return_if_fail(factory_test_file_exist(isdownload_gui));
     gchar **system_files = g_strsplit(factoryContainer->system_files,",",-1);
     int slen = g_strv_length(system_files);
     len +=slen;
-    gchar **argv = g_new (gchar*, len+1);
-    argv[len] = NULL;
+    gchar **argv = g_new(gchar*, len+1);
+
     int n = 0;
-    argv[n] =g_strdup(isdownload_gui);
+    argv[n] =g_strdup(factory_locale(isdownload_gui));
     for(; n < slen; n++)
     {
         argv[n+1] = g_strdup(system_files[n]);
@@ -1340,11 +1342,11 @@ static void factory_call_isd_download()
     {
         argv[n+1] = g_strdup(tlist->data);
     }
-
+    argv[n+1] = 0;
 
     g_spawn_sync(filename,
                  argv,NULL,
-                 G_SPAWN_LEAVE_DESCRIPTORS_OPEN,
+                 G_SPAWN_SEARCH_PATH,
                  NULL,NULL,
                  NULL,NULL,NULL,NULL);
 //    GPid pid;

@@ -591,9 +591,16 @@ void factory_callback_download_to_device(GtkWidget *btn,gpointer user_data)
 {
     Diagram *diagram = ddisplay_active_diagram();
     if(!diagram) return;
+    if(diagram->unsaved || diagram_is_modified(diagram))
+    {
+         diagram->data->readytodownload = TRUE;
+        file_save_callback(NULL,NULL,NULL);
+    }
+    else
+    {
+        factory_call_isd_download();
+    }
 
-    diagram->data->readytodownload = TRUE;
-    file_save_callback(NULL,NULL,NULL);
 }
 
 void factory_callback_system_data(GtkWidget *btn,gpointer user_data)

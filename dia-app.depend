@@ -14,7 +14,7 @@
 	"widgets.h"
 	"intl.h"
 
-1402560404 o:\tool\dvs50\config.h
+1402651281 o:\tool\dvs50\config.h
 
 1394617928 o:\tool\dvs50\lib\message.h
 	<stdarg.h>
@@ -1052,7 +1052,7 @@
 	"message.h"
 	"diagdkrenderer.h"
 
-1402466999 source:o:\tool\dvs50\lib\sheet.c
+1402656805 source:o:\tool\dvs50\lib\sheet.c
 	<config.h>
 	<stdlib.h>
 	<string.h>
@@ -1260,7 +1260,7 @@
 	<gtk/gtk.h>
 	"diagram.h"
 
-1257604114 o:\tool\dvs50\app\load_save.h
+1402638201 o:\tool\dvs50\app\load_save.h
 	"diagram.h"
 	"filter.h"
 
@@ -1599,6 +1599,40 @@
 
 1257604114 o:\tool\dvs50\app\pixmaps\landscape.xpm
 
+1402540354 source:o:\tool\dvs50\app\disp_callbacks.c
+	<config.h>
+	<stdio.h>
+	<string.h>
+	<math.h>
+	<gnome.h>
+	<gtk/gtk.h>
+	<gdk/gdkkeysyms.h>
+	"display.h"
+	"diagram.h"
+	"tool.h"
+	"interface.h"
+	"focus.h"
+	"object_ops.h"
+	"connectionpoint_ops.h"
+	"menus.h"
+	"message.h"
+	"intl.h"
+	"magnify.h"
+	"diamenu.h"
+	"preferences.h"
+	"scroll_tool.h"
+	"commands.h"
+	"highlight.h"
+	"textedit.h"
+	"lib/parent.h"
+
+1394611949 o:\tool\dvs50\app\magnify.h
+	"tool.h"
+
+1257604114 o:\tool\dvs50\app\scroll_tool.h
+	"geometry.h"
+	"tool.h"
+
 1402021886 source:o:\tool\dvs50\app\display.c
 	<config.h>
 	<string.h>
@@ -1797,7 +1831,7 @@
 	"intl.h"
 	<math.h>
 
-1402449900 source:o:\tool\dvs50\app\load_save.c
+1402656189 source:o:\tool\dvs50\app\load_save.c
 	<config.h>
 	<sys/stat.h>
 	<unistd.h>
@@ -1833,10 +1867,7 @@
 	"magnify.h"
 	"cursor.h"
 
-1394611949 o:\tool\dvs50\app\magnify.h
-	"tool.h"
-
-1402042099 source:o:\tool\dvs50\app\menus.c
+1402638149 source:o:\tool\dvs50\app\menus.c
 	<config.h>
 	<gtk/gtk.h>
 	<gdk/gdkkeysyms.h>
@@ -1867,7 +1898,7 @@
 	"diagram.h"
 	"display.h"
 
-1402540617 source:o:\tool\dvs50\app\modify_tool.c
+1402642939 source:o:\tool\dvs50\app\modify_tool.c
 	<config.h>
 	<stdio.h>
 	<math.h>
@@ -1994,10 +2025,6 @@
 	"message.h"
 	"cursor.h"
 
-1257604114 o:\tool\dvs50\app\scroll_tool.h
-	"geometry.h"
-	"tool.h"
-
 1394461500 source:o:\tool\dvs50\app\select.c
 	<config.h>
 	<assert.h>
@@ -2082,7 +2109,7 @@
 	"dia_dirs.h"
 	"app_procs.h"
 
-1402540095 source:o:\tool\dvs50\app\textedit.c
+1402642492 source:o:\tool\dvs50\app\textedit.c
 	<config.h>
 	"object.h"
 	"focus.h"
@@ -2347,7 +2374,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1402572481 source:o:\tool\dvs50\objects\struct\struct_class.c
+1402661444 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2364,7 +2391,7 @@
 	"sheet.h"
 	"filedlg.h"
 
-1402572185 o:\tool\dvs50\objects\struct\struct_class.h
+1402658232 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2381,7 +2408,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1402572628 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1402659718 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2395,31 +2422,4 @@
 	"sheet.h"
 	"diagramdata.h"
 	"connpoint_line.h"
-
-1402540354 source:o:\tool\dvs50\app\disp_callbacks.c
-	<config.h>
-	<stdio.h>
-	<string.h>
-	<math.h>
-	<gnome.h>
-	<gtk/gtk.h>
-	<gdk/gdkkeysyms.h>
-	"display.h"
-	"diagram.h"
-	"tool.h"
-	"interface.h"
-	"focus.h"
-	"object_ops.h"
-	"connectionpoint_ops.h"
-	"menus.h"
-	"message.h"
-	"intl.h"
-	"magnify.h"
-	"diamenu.h"
-	"preferences.h"
-	"scroll_tool.h"
-	"commands.h"
-	"highlight.h"
-	"textedit.h"
-	"lib/parent.h"
 

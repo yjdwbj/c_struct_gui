@@ -727,7 +727,7 @@ void factoryReadDataFromFile(const gchar* filename)
             if(!item->Name)
             {
                     factory_critical_error_exit(factory_utf8(g_strdup_printf("内容:%s \n没有读到第二段(名字)的字段名.\n"
-                                                             "文件名：%s,行数：%d\n",factory_utf8(filetxt),filename,curline)));
+                                                             "文件名：%s,行数：%d\n",filetxt,filename,curline)));
             }
             item->Cname = factory_get_utf8_str(isutf8,splits[2]);
 //            if(!item->Value)
@@ -745,7 +745,7 @@ void factoryReadDataFromFile(const gchar* filename)
             item->Max = factory_get_utf8_str(isutf8,splits[5]);
             item->Comment = factory_get_utf8_str(isutf8,splits[6]);
            if(!item->Comment)
-                item->Comment=g_strdup("");
+                item->Comment=factory_utf8("空");
             dlist = g_list_append(dlist,item);
             g_strfreev(splits);
         }
