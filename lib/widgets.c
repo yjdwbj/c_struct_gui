@@ -1923,7 +1923,7 @@ dia_dynamic_menu_new_listbased(DDMCreateItemFunc create,
   GtkWidget *item = gtk_menu_item_new_with_label(other_label);
   GtkWidget *ddm = dia_dynamic_menu_new(create, userdata,
 					GTK_MENU_ITEM(item), persist);
-  //dia_dynamic_menu_create_sublist(DIA_DYNAMIC_MENU(ddm), items,  create);
+  dia_dynamic_menu_create_sublist(DIA_DYNAMIC_MENU(ddm), items,  create);
 
   gtk_widget_show(item);
   return ddm;

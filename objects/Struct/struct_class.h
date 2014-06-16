@@ -195,6 +195,8 @@ struct _SaveIdDialog
     gchar *title;
     SaveKV *skv;
     GList *flist; /* combox list */
+    GtkWidget *idlist_menu; /* 这里显示一个共公的现有的列表 */
+    GtkWidget *cur_btn; /* 这个是让它弹出来的按键 */
 //    gchar **dvalue;
 //    GSList *grouplist; /* GtkRadio */
 };

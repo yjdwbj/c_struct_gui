@@ -218,6 +218,11 @@
 					<Add option="-lgio-2.0" />
 				</Linker>
 			</Target>
+			<Target title="listview">
+				<Option output="dia-app" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+			</Target>
 		</Build>
 		<VirtualTargets>
 			<Add alias="Debug" targets="debub_lib;debug_app;debug_standard;debug_dia;debug_Struct;" />
@@ -1453,6 +1458,10 @@
 		<Unit filename="lib/widgets.h">
 			<Option target="lib" />
 			<Option target="debub_lib" />
+		</Unit>
+		<Unit filename="listview.c">
+			<Option compilerVar="CC" />
+			<Option target="listview" />
 		</Unit>
 		<Unit filename="objects/Struct/struct.c">
 			<Option compilerVar="CC" />

@@ -1360,7 +1360,7 @@ void factory_call_isd_download()
     g_free(isdownload_gui);
     g_free(isdownload);
     g_free(filename);
-    g_strfreev(argv);
+//    g_strfreev(argv);
 }
 
 
@@ -1384,7 +1384,7 @@ diagram_save(Diagram *dia, const char *filename)
 
     diagram_cleanup_autosave(dia);
 
-//    ddisplay_set_title(ddisplay_active(),g_strdup_printf("Dia.exe %v",VERSION));
+
     return TRUE;
 }
 

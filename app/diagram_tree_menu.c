@@ -3,21 +3,21 @@
  *
  * diagram_tree_menu.c : menus for the diagram tree.
  * Copyright (C) 2001 Jose A Ortega Ruiz
- *  
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- *  
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *  
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *  
+ *
  */
 
 #ifdef HAVE_CONFIG_H
@@ -105,7 +105,7 @@ static gchar*
 _dia_translate (const gchar *term, gpointer data)
 {
   gchar *trans = term;
-  
+
   if (term && *term) {
     /* first try our own ... */
     trans = dgettext (GETTEXT_PACKAGE, term);
@@ -138,7 +138,7 @@ create_factory(DiagramTree *tree, GtkWindow *window, gint no,
   GtkAccelGroup *accel = gtk_accel_group_new();
   gchar *item_path = NULL;
   GtkWidget *menu;
-  
+
   factory = gtk_item_factory_new(GTK_TYPE_MENU, path, accel);
   gtk_item_factory_set_translate_func(factory, _dia_translate, NULL, NULL);
   gtk_item_factory_create_items(factory, no, entries,tree);
@@ -162,7 +162,7 @@ create_factory(DiagramTree *tree, GtkWindow *window, gint no,
   menu = gtk_item_factory_get_widget(factory, item_path);
   gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu), TRUE);
   g_free(item_path);
-  
+
   switch (diagram_tree_diagram_sort_type(tree)) {
   case DIA_TREE_SORT_NAME:
     item_path = g_strconcat(path, "/Sort diagrams/Default/by name", NULL);
@@ -185,10 +185,10 @@ diagram_tree_menus_new(DiagramTree *tree, GtkWindow *window)
 {
   DiagramTreeMenus *result;
   int k;
-  
+
   g_return_val_if_fail(tree, NULL);
   g_return_val_if_fail(window, NULL);
-  
+
   result = g_new(DiagramTreeMenus, 1);
   result->tree = tree;
   for (k = 0; k < 2; ++k) {
@@ -224,7 +224,7 @@ diagram_tree_menus_popup_menu(const DiagramTreeMenus *menus,
 }
 
 
-typedef struct _ShowTypeData 
+typedef struct _ShowTypeData
 {
   DiagramTreeMenus *menus;
   GtkWidget *items[2];

@@ -2525,11 +2525,11 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
             {
 
                 factory_critical_error_exit(g_strdup_printf(factory_utf8("读取的数组个数小于当前定义的．当前:%d,读取:%d"),
-                                                            ltb->arr_base->reallen,len));
+                                            ltb->arr_base->reallen,len));
             }
             GList *vlist = ltb->vlist;
             int n = 0;
-            for(; vlist;vlist = vlist->next,n++)
+            for(; vlist; vlist = vlist->next,n++)
             {
                 ListBtnArr *lba  = vlist->data;
                 lba->skv->value = g_strdup(split[n]);
@@ -3763,9 +3763,9 @@ static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
     case LBTN:
     {
         xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
-         xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"LBTN");
-         ListBtn *lbtn = &sss->value.slbtn;
-          GList *tlist = lbtn->vlist;
+        xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"LBTN");
+        ListBtn *lbtn = &sss->value.slbtn;
+        GList *tlist = lbtn->vlist;
         gchar *ret =g_strdup("");
 
         for(; tlist; tlist = tlist->next)
@@ -4087,6 +4087,29 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
             xmlFree (key);
         }
 
+        key = xmlGetProp(attr_node,(xmlChar *)"flag");
+        if(key)
+        {
+            int n = g_strtod(key,NULL);
+            if(!structclass->pps)
+            {
+                structclass->pps = g_new0(PublicSection,1);
+                structclass->pps->name = g_strdup(structclass->name);
+            }
+            structclass->pps->hasfinished = n == 0 ? FALSE : TRUE;
+            if(structclass->pps->hasfinished)
+            {
+                Color red = {0,139,0 };
+                structclass->fill_color = red;
+            }
+            else
+            {
+                Color w = {255,255,255};
+                structclass->fill_color = w;
+            }
+            xmlFree (key);
+        }
+
     }
 
 
@@ -4173,6 +4196,12 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
     xmlSetProp(obj_node, (const xmlChar *)"vname", (xmlChar *)structclass->name);
     FactoryStructItemList *fsi = g_hash_table_lookup(structclass->EnumsAndStructs->structTable,
                                  objname);
+    if(structclass->pps)
+        xmlSetProp(obj_node, (const xmlChar *)"flag", structclass->pps->hasfinished ? (xmlChar *)"1" : (xmlChar *)"0");
+    else
+        xmlSetProp(obj_node, (const xmlChar *)"flag", (xmlChar *)"0");
+
+
     g_return_if_fail(fsi);
     if(fsi) /* 写入到指定文件名 */
         xmlSetProp(obj_node, (const xmlChar *)"file", (xmlChar *)fsi->sfile);
@@ -4239,7 +4268,8 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
                 sit->dname = g_strdup("");
                 sit->active = 0;
             }
-            else{
+            else
+            {
                 val = g_strdup_printf("%d",diaobj->oindex); /* 保存ID号 */
             }
 //            if(!sit->dname)

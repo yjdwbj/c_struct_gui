@@ -280,6 +280,7 @@ object_list_properties_show(Diagram *dia, GList *objects)
     else
     {
         message_error(factory_utf8(_("不支持多个控件的属性对话框.")));
+        gtk_widget_destroy(dialog);
         return;
         properties =  NULL; /*object_list_create_props_dialog(one_obj, FALSE); 　选择多个控件显示它们的属性对话框是不可能．*/
 
