@@ -129,7 +129,7 @@
 	"orth_conn.h"
 	"autoroute.h"
 
-1402917252 o:\tool\dvs50\lib\object.h
+1403074758 o:\tool\dvs50\lib\object.h
 	"diatypes.h"
 	<gtk/gtk.h>
 	"geometry.h"
@@ -768,7 +768,7 @@
 	<config.h>
 	"object.h"
 
-1402917178 source:o:\tool\dvs50\lib\object.c
+1403074761 source:o:\tool\dvs50\lib\object.c
 	<config.h>
 	<stdio.h>
 	<string.h>
@@ -2374,7 +2374,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1402899742 source:o:\tool\dvs50\objects\struct\struct_class.c
+1403080841 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2391,7 +2391,7 @@
 	"sheet.h"
 	"filedlg.h"
 
-1402908262 o:\tool\dvs50\objects\struct\struct_class.h
+1403084121 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2408,7 +2408,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1402918357 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1403082862 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2423,6 +2423,208 @@
 	"diagramdata.h"
 	"connpoint_line.h"
 
-1402916902 source:o:\tool\dvs50\listview.c
+1402995151 source:o:\tool\dvs50\listview.c
 	<gtk/gtk.h>
+	<gtk/gtk.h>
+	<string.h>
+	<stdlib.h>
+
+1402966484 source:o:\tool\dvs50\demo\appwindow.c
+	<gtk/gtk.h>
+	"config.h"
+
+1402966489 source:o:\tool\dvs50\demo\assistant.c
+	<gtk/gtk.h>
+
+1402966493 source:o:\tool\dvs50\demo\builder.c
+	<gtk/gtk.h>
+
+1328708542 source:o:\tool\dvs50\demo\button_box.c
+	<gtk/gtk.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\appwindow.c
+	<gtk/gtk.h>
+	"config.h"
+	"demo-common.h"
+
+1394081802 o:\tool\dvs50\gtk-demo\demo-common.h
+
+1394081802 source:o:\tool\dvs50\gtk-demo\assistant.c
+	<gtk/gtk.h>
+	"demo-common.h"
+
+1394081802 source:o:\tool\dvs50\gtk-demo\builder.c
+	<gtk/gtk.h>
+	"demo-common.h"
+
+1394081802 source:o:\tool\dvs50\gtk-demo\button_box.c
+	<gtk/gtk.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\changedisplay.c
+	<string.h>
+	<gtk/gtk.h>
+	"demo-common.h"
+
+1394081802 source:o:\tool\dvs50\gtk-demo\clipboard.c
+	<gtk/gtk.h>
+	<string.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\colorsel.c
+	<gtk/gtk.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\combobox.c
+	<gtk/gtk.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\dialog.c
+	<gtk/gtk.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\drawingarea.c
+	<gtk/gtk.h>
+
+1403008291 source:o:\tool\dvs50\gtk-demo\editable_cells.c
+	<gtk/gtk.h>
+	<string.h>
+	<stdlib.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\entry_buffer.c
+	<gtk/gtk.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\entry_completion.c
+	<gtk/gtk.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\expander.c
+	<gtk/gtk.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\hypertext.c
+	<gtk/gtk.h>
+	<gdk/gdkkeysyms.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\iconview.c
+	<gtk/gtk.h>
+	<string.h>
+	"demo-common.h"
+
+1394081802 source:o:\tool\dvs50\gtk-demo\iconview_edit.c
+	<gtk/gtk.h>
+	<string.h>
+	"demo-common.h"
+
+1394081802 source:o:\tool\dvs50\gtk-demo\images.c
+	<gtk/gtk.h>
+	<glib/gstdio.h>
+	<stdio.h>
+	<errno.h>
+	"demo-common.h"
+
+1394081802 source:o:\tool\dvs50\gtk-demo\infobar.c
+	<gtk/gtk.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\links.c
+	<gtk/gtk.h>
+
+1402967675 source:o:\tool\dvs50\gtk-demo\list_store.c
+	<gtk/gtk.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\main.c
+	"config.h"
+	<errno.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<gtk/gtk.h>
+	<glib/gstdio.h>
+	"demos.h"
+
+1395106952 o:\tool\dvs50\gtk-demo\demos.h
+
+1394081802 source:o:\tool\dvs50\gtk-demo\menus.c
+	<gtk/gtk.h>
+	<gdk/gdkkeysyms.h>
+	<stdio.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\offscreen_window.c
+	<math.h>
+	<gtk/gtk.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\offscreen_window2.c
+	<gtk/gtk.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\panes.c
+	<gtk/gtk.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\pickers.c
+	<gtk/gtk.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\pixbufs.c
+	<stdlib.h>
+	<gtk/gtk.h>
+	<math.h>
+	"demo-common.h"
+
+1394081802 source:o:\tool\dvs50\gtk-demo\printing.c
+	<math.h>
+	<gtk/gtk.h>
+	"demo-common.h"
+
+1394081802 source:o:\tool\dvs50\gtk-demo\rotated_text.c
+	<gtk/gtk.h>
+	<string.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\search_entry.c
+	<gtk/gtk.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\sizegroup.c
+	<gtk/gtk.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\spinner.c
+	<gtk/gtk.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\stock_browser.c
+	<string.h>
+	<gtk/gtk.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\textscroll.c
+	<gtk/gtk.h>
+	"demo-common.h"
+
+1394081802 source:o:\tool\dvs50\gtk-demo\textview.c
+	<gtk/gtk.h>
+	<stdlib.h>
+	"demo-common.h"
+
+1394081802 source:o:\tool\dvs50\gtk-demo\toolpalette.c
+	<string.h>
+	<gtk/gtk.h>
+	"config.h"
+	"demo-common.h"
+
+1394081802 source:o:\tool\dvs50\gtk-demo\tree_store.c
+	<gtk/gtk.h>
+
+1394081802 source:o:\tool\dvs50\gtk-demo\ui_manager.c
+	<gtk/gtk.h>
+
+1398425391 source:o:\tool\dvs50\app\winmain.c
+	<config.h>
+	<stdlib.h>
+	<glib.h>
+	<gtk/gtk.h>
+	<windows.h>
+	"app_procs.h"
+	"interface.h"
+
+1403094496 source:o:\tool\dvs50\objects\struct\idlist.c
+	"idlist.h"
+
+1403079467 o:\tool\dvs50\objects\struct\idlist.h
+	"struct.h"
+	"object.h"
+	"struct_class.h"
+
+1403093109 source:o:\tool\dvs50\objects\struct\musicfilemanager.c
+	"musicfilemanager.h"
+
+1403091149 o:\tool\dvs50\objects\struct\musicfilemanager.h
+	"object.h"
+	"struct_class.h"
 

@@ -132,6 +132,12 @@ struct _ArrayBaseProp
     int reallen;
 };
 
+typedef struct _IDListArg IDListArg; /* 创建ID list 的参数 */
+struct _IDListArg
+{
+    gchar *value;  /* 这是一个指向其它指针*/
+    GList *filist; /* 最后一列的要填充的链表 */
+};
 
 
 typedef struct _NextId NextID;
@@ -187,16 +193,19 @@ struct _ListBtn
     ArrayBaseProp *arr_base;/* 如果有数组 */
 };
 
+
 struct _SaveIdDialog
 {
     GtkWidget *parent_btn;
     GtkWidget *vbox;
     GList *idlists; /* SaveIdList 内容*/
     gchar *title;
-    SaveKV *skv;
+//    SaveKV *skv;
     GList *flist; /* combox list */
     GtkWidget *idlist_menu; /* 这里显示一个共公的现有的列表 */
-    GtkWidget *cur_btn; /* 这个是让它弹出来的按键 */
+    GtkListStore *id_store;
+    GtkListStore *id_cbmodel;
+    GtkWidget *id_treeview;
 //    gchar **dvalue;
 //    GSList *grouplist; /* GtkRadio */
 };
@@ -227,7 +236,8 @@ struct _SaveMusicFileMan
     GtkWidget *opendlg;
     GList *filelist; /* 右边界面的链表　内容是　SaveMusicFile　*/
     GtkWidget *wid_offset;
-    GtkWidget *wid_clist;
+    GtkListStore *wid_clist;
+    GtkTreeView *wid_treeview;
     enum
     {
         OPT_APPEND,
@@ -253,13 +263,14 @@ struct _SaveMusicDialog
     gchar *title;
     gchar *btnname;
     FMSaveType fmst;
-//    int radindex; /* radio 单选所在的位置　*/
-//    gchar **dvalue; /* 默认值，与SaveStruct.value.vnumber 绑定 */
     SaveKV *skv;
-    GtkWidget *leftvbox;
+//    GtkWidget *leftvbox;
 //    GSList *grouplist;   /* 记录Radio 的单选链表　*/
     GList *itemlist; /* 左边界面的链表　内容是　SaveMusicItem */
     GList *cboxlist; /* 右边下载名的链表　内容是 gchar */
+    GtkListStore *id_store;
+    GtkTreeView  *id_treeview;
+    GtkListStore *id_cbmodal;
     GtkWidget *parent_btn;
     GtkWidget *window; /* 它本身的窗口*/
     SaveMusicFileMan *smfm; /* 右边界面 */
@@ -296,6 +307,7 @@ struct _SaveMusicItem
     int id_addr;
     int active;
     gchar *dname;
+    gchar *fname;
     GtkWidget *wid_colum0;
     GtkWidget *wid_colum2;
     GtkWidget *wid_colum3;
@@ -600,8 +612,7 @@ factory_apple_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
 void factory_create_toolbar_button(const gint8 *icon,gchar *tips,GtkToolbar  *toolbar,
                                    gpointer *callback);
 
-void factory_new_idlist_dialog(GtkWidget *parent,SaveStruct *sst);
-void factory_save_idlist_dialog(GtkWidget *widget,gint       response_id,gpointer user_data);
+
 
 void factory_create_file_manager_dialog(GtkWidget *btn,ListDlgArg *lda);
 void factory_file_manager_dialog(GtkWidget *btn,SaveStruct *sst);
@@ -620,33 +631,18 @@ GtkWidget *factory_get_new_iditem(SaveIdItem *swt,GList *flist);
 GtkWidget *factory_get_new_musicitem( SaveMusicItem *swt,GList *fillist);
 
 
-
+GtkWidget *factory_music_file_manager_with_model(GtkWidget *parent,SaveMusicDialog *smd);
 
 GtkWidget *factory_music_file_manager(GtkWidget *parent,SaveMusicDialog *smd);
 GtkWidget *factory_download_file_manager(GtkWidget *parent,SaveMusicDialog *smd);
-GtkWidget *factory_file_id_manager();
+
 
 
 void factory_add_item_to_idlist(GtkButton *self,gpointer user_data);
 void factory_delete_last_item(GtkButton *self,gpointer user_data);
 
 
-static void factory_choose_musicfile_callback(GtkWidget *dlg,gint       response,gpointer   user_data);
-void factory_open_file_dialog(GtkWidget *widget,gpointer user_data);
-void factory_delete_file_manager_item(GtkWidget *widget,gpointer user_data);
-void factory_cleanall_file_manager_item(GtkWidget *widget,gpointer user_data);
-void factory_insert_file_manager_item(GtkWidget *widget,gpointer user_data);
 
-void factory_music_file_manager_new_item_changed(SaveMusicDialog *smd);
-void factory_music_file_manager_remove_all(SaveMusicDialog *smd);
-void factory_music_file_manager_apply(GtkWidget *widget,
-                                        gint       response_id,
-                                        SaveMusicDialog *smd);
-
-void factory_music_file_manager_select_callback(GtkWidget *clist,
-        gint row,gint column,
-        GdkEventButton *event,
-        gint  *ret);
 
 void factory_set_original_class(STRUCTClass *fclass);
 
@@ -667,6 +663,19 @@ void factory_systeminfo_callback(GtkWidget *parent);
 GList* factory_get_download_name_list(const gchar *path);
 
 //void factoryReadDataFromFile(STRUCTClass *structclass);
+
+
+/*ID LIST*/
+void factory_new_idlist_dialog(GtkWidget *parent,SaveStruct *sst);
+GtkTreeModel *factory_create_idcombox_model (GList *idlist);
+void factory_append_iten_to_cbmodal(GtkListStore *model,gchar *str);
+enum
+{
+    COLUMN_ITEM_SEQUENCE,
+    COLUMN_ITEM_ADDR,
+    COLUMN_ITEM_IDNAME,
+    NUM_OF_COLS
+};
 
 
 #endif /* CLASS_H */

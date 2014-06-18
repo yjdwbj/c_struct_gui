@@ -630,6 +630,7 @@ DIAVAR void   dia_object_set_meta (DiaObject *obj, const gchar *key, const gchar
 DIAVAR gchar *dia_object_get_meta (DiaObject *obj, const gchar *key);
 
 DIAVAR gchar *factory_utf8(gchar *str);
+DIAVAR gint factory_str_compare(const gchar *str1,const gchar *str2);
 DIAVAR gboolean factory_test_file_exist(const gchar *fname);
 DIAVAR gchar *factory_locale(gchar *str);
 DIAVAR gboolean factory_is_special_object(const gchar *name);

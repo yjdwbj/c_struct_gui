@@ -1115,6 +1115,12 @@ dia_object_get_meta (DiaObject *obj, const gchar *key)
     return g_strdup (val);
 }
 
+gint factory_str_compare(const gchar *str1,const gchar *str2)
+{
+    return g_strcasecmp(str1,str2);
+}
+
+
 gchar *factory_utf8(gchar *str)
 {
     return g_locale_to_utf8(_(str),-1,NULL,NULL,NULL);

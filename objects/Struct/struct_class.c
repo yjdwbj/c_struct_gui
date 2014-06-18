@@ -53,13 +53,8 @@ extern FactoryStructItemAll *factoryContainer;
 #define STRUCTCLASS_TEMPLATE_OVERLAY_X 2.3
 #define STRUCTCLASS_TEMPLATE_OVERLAY_Y 0.3
 
-static MusicFileManagerOpts  mfmo_opts =
-{
-    (OpenDialog) factory_file_manager_dialog,
-    (ApplyDialog) factory_music_file_manager_apply,
-    (Item_Added) factory_music_file_manager_new_item_changed,
-    (Clear_All) factory_music_file_manager_remove_all
-};
+extern MusicFileManagerOpts  mfmo_opts;
+
 
 
 
@@ -3247,9 +3242,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
 
             smd = curLayer->smd;
 
-            /* sss->value.vnumber  原定义为一个gchar 指针，在这里当做gpointer 用了*/
-            SaveKV *skv = g_new0(SaveKV,1);
-            smd->skv = skv;
+
 
             if(g_str_has_suffix(fst->Name,"]")) /* 这里是一个数组*/
             {
@@ -3276,12 +3269,15 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             }
             else
             {
+                    /* sss->value.vnumber  原定义为一个gchar 指针，在这里当做gpointer 用了*/
+                SaveKV *skv = g_new0(SaveKV,1);
+                smd->skv = skv;
                 skv->value = g_strdup(fst->Value);
                 skv->radindex = -1;
                 sss->value.vnumber = skv;
                 smd->btnname = g_strdup(fst->Cname);
                 sss->newdlg_func = factory_create_file_manager_dialog;
-                sss->close_func = factory_music_file_manager_apply;
+               // sss->close_func = factory_music_file_manager_apply;
             }
 
         }
@@ -3293,13 +3289,13 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
 
             sid =(SaveIdDialog*)(curLayer->sid);
 
-            SaveKV *skv = g_new0(SaveKV,1);
-            sid->skv = skv;
-            skv->value = g_strdup(fst->Value);
-            skv->radindex = -1;
-            sss->value.vnumber = skv;
+//            SaveKV *skv = g_new0(SaveKV,1); /* 这里用radio 就要用这个结构,现在改成MVC就不需要了*/
+//            sid->skv = skv;
+//            skv->value = g_strdup(fst->Value);
+//            skv->radindex = -1;
+            sss->value.vnumber = g_strdup(fst->Value);
             sss->newdlg_func = factory_new_idlist_dialog;
-            sss->close_func = factory_save_idlist_dialog;
+//            sss->close_func = factory_save_idlist_dialog;
         }
         else
         {
