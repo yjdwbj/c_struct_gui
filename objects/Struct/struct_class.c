@@ -2390,28 +2390,31 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
 //        xmlFree(key);
         key = xmlGetProp(attr_node,(xmlChar *)"value");
 
-        SaveKV *skv = g_new0(SaveKV,1);
+//        SaveKV *skv = g_new0(SaveKV,1);
         if(!key)
         {
-            skv->value = g_strdup("-1");
+//            skv->value = g_strdup("-1");
+             sss->value.vnumber = g_strdup("-1");
         }
-        skv->value = g_strdup((gchar*)key);
+        else
+            sss->value.vnumber = g_strdup((gchar*)key);
+//        skv->value = g_strdup((gchar*)key);
         xmlFree(key);
-        key = xmlGetProp(attr_node,(xmlChar*)"index");
-        if(!key)
-        {
-            skv->radindex = 0;
-        }
-        skv->radindex = g_strtod((gchar*)key,NULL);
-        sss->value.vnumber = skv;
-        xmlFree(key);
-        key = xmlGetProp(attr_node,(xmlChar*)"idname");
-        if(!key)
-        {
-            skv->vname = g_strdup("");
-        }
-        skv->vname = g_strdup((gchar*)key);
-        xmlFree(key);
+//        key = xmlGetProp(attr_node,(xmlChar*)"index");
+//        if(!key)
+//        {
+//            skv->radindex = 0;
+//        }
+//        skv->radindex = g_strtod((gchar*)key,NULL);
+//        sss->value.vnumber = skv;
+//        xmlFree(key);
+//        key = xmlGetProp(attr_node,(xmlChar*)"idname");
+//        if(!key)
+//        {
+//            skv->vname = g_strdup("");
+//        }
+//        skv->vname = g_strdup((gchar*)key);
+//        xmlFree(key);
         return;
     }
 
@@ -2527,7 +2530,7 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
             for(; vlist; vlist = vlist->next,n++)
             {
                 ListBtnArr *lba  = vlist->data;
-                lba->skv->value = g_strdup(split[n]);
+                *lba->vnumber = g_strdup(split[n]);
             }
             g_strfreev(split);
         }
@@ -2642,9 +2645,6 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         xmlFree(key);
         sss->celltype = SPINBOX;
     }
-
-
-
 }
 
 void factory_get_union_child_node( AttributeNode obtn_node )
@@ -2681,117 +2681,83 @@ void factory_read_specific_object_from_file(STRUCTClass *fclass,ObjectNode obj_n
     g_return_if_fail(objname);
     if(!g_ascii_strcasecmp(objname,"FILELST"))
     {
-        SaveMusicDialog *smd = curLayer->smd;
-        AttributeNode attr_node = obj_node;
-        while(attr_node = data_next(attr_node))
-        {
-            xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
-            if(key)
-            {
-                if(!g_ascii_strcasecmp((gchar*)key,"Music_File"))
-                {
-                    if(!smd->smfm)
-                    {
-                        smd->smfm = g_new0(SaveMusicFileMan,1);
-                        gchar **split = g_strsplit(factoryContainer->system_files,",",-1);
-                        smd->smfm->offset = g_strv_length(split);
-                        g_strfreev(split);
-                        smd->smfm->selected = -1;
-                    }
-
-                    factory_read_file_list_from_xml(attr_node->xmlChildrenNode);
-                    factory_fm_get_cboxlist(smd);
-                    break;
-                }
-                /* 这里读取左边布局的数据 */
-                SaveMusicItem *smi = g_new0(SaveMusicItem,1);
-                smi->id_index = g_strtod((gchar*)key,NULL);
-
-                key = xmlGetProp(attr_node,(xmlChar *)"addr");
-                smi->id_addr = g_strtod((gchar*)key,NULL);
-//                    sss->name = g_strdup(fst->Name);
-                key = xmlGetProp(attr_node,(xmlChar *)"active");
-
-                smi->active = g_strtod((gchar*)key,NULL);
-                smd->itemlist = g_list_append(smd->itemlist,smi);
-                smi->dname = g_strdup("");
-
-            }
-            xmlFree(key);
-
-        }
-
-        if(!attr_node)
-            return;
-
+//        SaveMusicDialog *smd = curLayer->smd;
+//        AttributeNode attr_node = obj_node;
+//        while(attr_node = data_next(attr_node))
+//        {
+//            xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
+//            if(key)
+//            {
+//                if(!g_ascii_strcasecmp((gchar*)key,"Music_File"))
+//                {
+//                    if(!smd->smfm)
+//                    {
+//                        smd->smfm = g_new0(SaveMusicFileMan,1);
+//                        gchar **split = g_strsplit(factoryContainer->system_files,",",-1);
+//                        smd->smfm->offset = g_strv_length(split);
+//                        g_strfreev(split);
+////                        smd->smfm->selected = -1;
+//                    }
+//
+//                    factory_read_file_list_from_xml(attr_node->xmlChildrenNode);
+////                    factory_fm_get_cboxlist(smd);
+//                    break;
+//                }
+//                /* 这里读取左边布局的数据 */
+//                SaveMusicItem *smi = g_new0(SaveMusicItem,1);
+//                smi->id_index = g_strtod((gchar*)key,NULL);
+//
+//                key = xmlGetProp(attr_node,(xmlChar *)"addr");
+//                smi->id_addr = g_strtod((gchar*)key,NULL);
+////                    sss->name = g_strdup(fst->Name);
+//                key = xmlGetProp(attr_node,(xmlChar *)"active");
+//
+//                smi->active = g_strtod((gchar*)key,NULL);
+//                smd->itemlist = g_list_append(smd->itemlist,smi);
+//                smi->dname = g_strdup("");
+//
+//            }
+//            xmlFree(key);
+//
+//        }
+//
+//        if(!attr_node)
+//            return;
+        factory_read_mfile_filelist_from_xml(obj_node);
     }
     else /*IDLST*/
     {
-        SaveIdDialog *sid = (SaveIdDialog *)curLayer->sid;
-        AttributeNode attr_node = obj_node;
-        while(attr_node = data_next(attr_node))
-        {
-            xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
-            if(!key) continue;
-            SaveMusicItem *smi = g_new0(SaveMusicItem,1);
-            smi->id_index = g_strtod((gchar*)key,NULL);
-            key = xmlGetProp(attr_node,(xmlChar *)"addr");
-
-
-            smi->id_addr = g_strtod((gchar*)key,NULL);
-            key = xmlGetProp(attr_node,(xmlChar *)"dname");
-            if(!key)
-            {
-                smi->dname = g_strdup("");
-            }
-            else
-                smi->dname = g_strdup((gchar*)key);
-            key = xmlGetProp(attr_node,(xmlChar *)"active");
-
-            smi->active = g_strtod((gchar*)key,NULL);
-            sid->idlists = g_list_append(sid->idlists,smi);
-
-        }
-
+//        SaveIdDialog *sid = (SaveIdDialog *)curLayer->sid;
+//        AttributeNode attr_node = obj_node;
+//        while(attr_node = data_next(attr_node))
+//        {
+//            xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
+//            if(!key) continue;
+//            SaveMusicItem *smi = g_new0(SaveMusicItem,1);
+//            smi->id_index = g_strtod((gchar*)key,NULL);
+//            key = xmlGetProp(attr_node,(xmlChar *)"addr");
+//
+//
+//            smi->id_addr = g_strtod((gchar*)key,NULL);
+//            key = xmlGetProp(attr_node,(xmlChar *)"dname");
+//            if(!key)
+//            {
+//                smi->dname = g_strdup("");
+//            }
+//            else
+//                smi->dname = g_strdup((gchar*)key);
+//            key = xmlGetProp(attr_node,(xmlChar *)"active");
+//
+//            smi->active = g_strtod((gchar*)key,NULL);
+//            sid->idlists = g_list_append(sid->idlists,smi);
+//
+//        }
+    factory_read_idlist_items(obj_node); /* 2014-6-19 改用这个函数读取*/
     }
 }
 
 
-void factory_read_file_list_from_xml(ObjectNode obj_node)
-{
-    /*　这里读文件列表　*/
-    SaveMusicDialog *smd = curLayer->smd;
-    SaveMusicFileMan  *smfm = smd->smfm;
-    AttributeNode attr_node = obj_node;
-    while(attr_node = data_next(attr_node))
-    {
-        xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
-        if(!key) continue;
 
-        SaveMusicFile *smf = g_new0(SaveMusicFile,1);
-        smf->index = g_strtod((gchar*)key,NULL);
-
-        key = xmlGetProp(attr_node,(xmlChar *)"fname");
-        smf->full_name = g_strdup((gchar*)key);
-
-        key = xmlGetProp(attr_node,(xmlChar *)"addr");
-        smf->file_addr = g_strtod((gchar*)key,NULL);
-
-        key = xmlGetProp(attr_node,(xmlChar *)"dname");
-        smf->down_name = g_strdup((gchar*)key);
-//                    sss->name = g_strdup(fst->Name);
-        gchar **split = g_strsplit(smf->full_name,"\\",-1);
-        int len = g_strv_length(split);
-        smf->base_name = g_strdup(split[len-1]);
-        g_strfreev(split);
-        smfm->filelist = g_list_append(smfm->filelist,smf);
-
-        xmlFree(key);
-
-    }
-    if(!attr_node)
-        return;
-}
 
 
 void factory_read_value_from_xml(STRUCTClass *fclass,ObjectNode obj_node)
@@ -3255,26 +3221,30 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
                 for(; r < ltb->arr_base->reallen ; r++ ) /* 初始化一下 */
                 {
                     ListBtnArr *lba = g_new0(ListBtnArr,1);
-                    SaveKV *skv = g_new0(SaveKV,1);
-                    lba->skv = skv;
+//                    SaveKV *skv = g_new0(SaveKV,1);
+//                    lba->skv = skv;
                     lba->widget1 = NULL;
-                    skv->value = g_strdup(fst->Value);
-                    skv->radindex = -1;
-                    skv->vname = g_strdup("");
+                    lba->vnumber  =  g_new0(gchar**,1);
+                    *lba->vnumber = g_strdup(fst->Value);
+//                    skv->value = g_strdup(fst->Value);
+//                    skv->radindex = -1;
+//                    skv->vname = g_strdup("");
                     ltb->vlist = g_list_append(ltb->vlist,lba);
                 }
 
                 sss->newdlg_func = factory_create_list_array_manager_dialog;
-                sss->close_func = factory_save_list_array_manager_dialog;
+//                sss->close_func = factory_save_list_array_manager_dialog;
             }
             else
             {
                     /* sss->value.vnumber  原定义为一个gchar 指针，在这里当做gpointer 用了*/
-                SaveKV *skv = g_new0(SaveKV,1);
-                smd->skv = skv;
-                skv->value = g_strdup(fst->Value);
-                skv->radindex = -1;
-                sss->value.vnumber = skv;
+//                SaveKV *skv = g_new0(SaveKV,1);
+//                smd->skv = skv;
+//                skv->value = g_strdup(fst->Value);
+//                skv->radindex = -1;
+//                sss->value.vnumber = skv;
+                sss->value.vnumber = g_strdup(fst->Value);
+//                smd->vnumber = sss->value.vnumber;
                 smd->btnname = g_strdup(fst->Cname);
                 sss->newdlg_func = factory_create_file_manager_dialog;
                // sss->close_func = factory_music_file_manager_apply;
@@ -3768,7 +3738,7 @@ static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
         {
             /* 2014-3-31 lcy 把链表里的数据用逗号连接 */
             ListBtnArr *lba = tlist->data;
-            gchar *p = g_strconcat(g_strdup(ret),lba->skv->value,g_strdup(","),NULL);
+            gchar *p = g_strconcat(g_strdup(ret),*lba->vnumber,g_strdup(","),NULL);
             g_free(ret);
             ret = g_strdup(p);
             g_free(p);
@@ -3968,18 +3938,25 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
     {
         gchar **split = g_strsplit(sss->type,".",-1);
         gchar *stype = split[g_strv_length(split)-1];
-        if(factory_is_special_object(stype)) /* 特殊控件 */
+//        if(factory_is_special_object(stype)) /* 特殊控件 */
+        if(!g_strcasecmp(stype,"FILELST"))
         {
-            ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
-            xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
-            xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
-            xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)sss->type);
+//            factory_mfile_idlist_save_xml(sss,obj_node);
+            factory_save_mfile_dialog_to_xml(sss,obj_node);
+//            ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+//            xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
+//            xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
+//            xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)sss->type);
+//
+//            SaveKV *skv = sss->value.vnumber;
+//            xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)skv->value);
+//            xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf("%d",skv->radindex));
+//            xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)skv->vname);
 
-            SaveKV *skv = sss->value.vnumber;
-            xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)skv->value);
-            xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf("%d",skv->radindex));
-            xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)skv->vname);
-
+        }
+        else if(!g_strcasecmp(stype,"IDLST"))
+        {
+            factory_save_idlist_to_xml(sss,obj_node);
         }
         else
         {
@@ -4175,6 +4152,9 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
     return &structclass->element.object;
 }
 
+
+
+
 static void
 factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
                           const char *filename)
@@ -4207,40 +4187,41 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
 
     if(!g_strcasecmp(fsi->sname,"FILELST"))
     {
+        factory_write_mfile_filelist(obj_node);
         /* 这里写音乐管理界面上的数据 */
         // g_return_if_fail(smd->itemlist);
-        gchar *rows = g_strdup_printf("%d",g_list_length(smd->itemlist));
-        xmlSetProp(obj_node, (const xmlChar *)"rows", (xmlChar *)rows);
-        g_free(rows);
-        GList *flist = smd->itemlist;
-        for(; flist; flist = flist->next)
-        {
-            SaveMusicItem *smi = flist->data;
-            ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
-            xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",smi->id_index));
-            xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
-            xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)g_strdup_printf("%d",smi->active ? smi->active-1 : -1));
-            xmlSetProp(ccc, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",smi->id_addr));
-            xmlSetProp(ccc, (const xmlChar *)"active", (xmlChar *)g_strdup_printf("%d",smi->active));
-        }
-
-        ObjectNode newobj = xmlNewChild(obj_node, NULL, (const xmlChar *)"Music_File", NULL);
-
-        xmlSetProp(newobj, (const xmlChar *)"name",
-                   (xmlChar *)"Music_File");
-        g_return_if_fail(smd->smfm); /* 没有音乐文件　*/
-//        xmlSetProp(newobj, (const xmlChar *)"offset",
-//                   (xmlChar *)g_strdup_printf("%d",smd->smfm->offset));
-        flist = smd->smfm->filelist;
-        for(; flist; flist = flist->next) /* 这里保存文件列表 */
-        {
-            SaveMusicFile *smf = flist->data;
-            ObjectNode tnode = xmlNewChild(newobj, NULL, (const xmlChar *)"file", NULL);
-            xmlSetProp(tnode, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",smf->index));
-            xmlSetProp(tnode, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",smf->file_addr));
-            xmlSetProp(tnode, (const xmlChar *)"fname", (xmlChar *)smf->full_name);
-            xmlSetProp(tnode, (const xmlChar *)"dname", (xmlChar *)smf->down_name);
-        }
+//        gchar *rows = g_strdup_printf("%d",g_list_length(smd->itemlist));
+//        xmlSetProp(obj_node, (const xmlChar *)"rows", (xmlChar *)rows);
+//        g_free(rows);
+//        GList *flist = smd->itemlist;
+//        for(; flist; flist = flist->next)
+//        {
+//            SaveMusicItem *smi = flist->data;
+//            ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+//            xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",smi->id_index));
+//            xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
+//            xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)g_strdup_printf("%d",smi->active ? smi->active-1 : -1));
+//            xmlSetProp(ccc, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",smi->id_addr));
+//            xmlSetProp(ccc, (const xmlChar *)"active", (xmlChar *)g_strdup_printf("%d",smi->active));
+//        }
+//
+//        ObjectNode newobj = xmlNewChild(obj_node, NULL, (const xmlChar *)"Music_File", NULL);
+//
+//        xmlSetProp(newobj, (const xmlChar *)"name",
+//                   (xmlChar *)"Music_File");
+//        g_return_if_fail(smd->smfm); /* 没有音乐文件　*/
+////        xmlSetProp(newobj, (const xmlChar *)"offset",
+////                   (xmlChar *)g_strdup_printf("%d",smd->smfm->offset));
+//        flist = smd->smfm->filelist;
+//        for(; flist; flist = flist->next) /* 这里保存文件列表 */
+//        {
+//            SaveMusicFile *smf = flist->data;
+//            ObjectNode tnode = xmlNewChild(newobj, NULL, (const xmlChar *)"file", NULL);
+//            xmlSetProp(tnode, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",smf->index));
+//            xmlSetProp(tnode, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",smf->file_addr));
+//            xmlSetProp(tnode, (const xmlChar *)"fname", (xmlChar *)smf->full_name);
+//            xmlSetProp(tnode, (const xmlChar *)"dname", (xmlChar *)smf->down_name);
+//        }
     }
     else if(!g_strcasecmp(fsi->sname,"IDLST"))
     {
@@ -4250,47 +4231,48 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
         gchar *rows = g_strdup_printf("%d",g_list_length(sid->idlists));
         xmlSetProp(obj_node, (const xmlChar *)"rows", (xmlChar *)rows);
         g_free(rows);
-        GList *idlist = sid->idlists;
-        for(; idlist; idlist = idlist->next)
-        {
-            SaveIdItem *sit =idlist->data;
-            ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
-            xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",sit->id_index));
-            xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
-            gchar *val = g_strdup("-1");
-            DiaObject *diaobj = g_hash_table_lookup(curLayer->defnames,sit->dname);
-            if(!diaobj)
-            {
-                sit->dname = g_strdup("");
-                sit->active = 0;
-            }
-            else
-            {
-                val = g_strdup_printf("%d",diaobj->oindex); /* 保存ID号 */
-            }
-//            if(!sit->dname)
-
-//            if(sit->active>0)
+        factory_save_idlist_items(obj_node,sid->idlists); /* 2014-6-19 更改用这个函数保存*/
+//        GList *idlist = sid->idlists;
+//        for(; idlist; idlist = idlist->next)
+//        {
+//            SaveIdItem *sit =idlist->data;
+//            ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+//            xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",sit->id_index));
+//            xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
+//            gchar *val = g_strdup("-1");
+//            DiaObject *diaobj = g_hash_table_lookup(curLayer->defnames,sit->dname);
+//            if(!diaobj)
 //            {
-////                STRUCTClass *tcalss = factory_get_object_from_layer(curLayer,sit->dname);
-//                STRUCTClass *tcalss = g_hash_table_lookup(curLayer->defnames,sit->dname);
-//                if(tcalss)
-//                {
-//                    SaveStruct *sst = tcalss->widgetSave->data;
-//                    val = g_strdup_printf("%d",g_list_index(curLayer->objects,tcalss));
-//                    sit->dname = g_strdup(tcalss->name);
-//                }
+//                sit->dname = g_strdup("");
+//                sit->active = 0;
 //            }
-
-
-//            xmlSetProp(ccc, (const xmlChar *)"value", sit->active ? (xmlChar *)g_strdup_printf("%d",sit->id_addr) :(xmlChar *)"-1" );
-//            xmlSetProp(ccc, (const xmlChar *)"value", sit->active ? (xmlChar *)g_strdup_printf("%d",sit->id_index) :(xmlChar *)"-1" );
-            xmlSetProp(ccc, (const xmlChar *)"value",(xmlChar*)val);
-            xmlSetProp(ccc, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",sit->id_addr));
-            xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)sit->dname);
-            xmlSetProp(ccc, (const xmlChar *)"active", (xmlChar *)g_strdup_printf("%d",sit->active));
-            g_free(val);
-        }
+//            else
+//            {
+//                val = g_strdup_printf("%d",diaobj->oindex); /* 保存ID号 */
+//            }
+////            if(!sit->dname)
+//
+////            if(sit->active>0)
+////            {
+//////                STRUCTClass *tcalss = factory_get_object_from_layer(curLayer,sit->dname);
+////                STRUCTClass *tcalss = g_hash_table_lookup(curLayer->defnames,sit->dname);
+////                if(tcalss)
+////                {
+////                    SaveStruct *sst = tcalss->widgetSave->data;
+////                    val = g_strdup_printf("%d",g_list_index(curLayer->objects,tcalss));
+////                    sit->dname = g_strdup(tcalss->name);
+////                }
+////            }
+//
+//
+////            xmlSetProp(ccc, (const xmlChar *)"value", sit->active ? (xmlChar *)g_strdup_printf("%d",sit->id_addr) :(xmlChar *)"-1" );
+////            xmlSetProp(ccc, (const xmlChar *)"value", sit->active ? (xmlChar *)g_strdup_printf("%d",sit->id_index) :(xmlChar *)"-1" );
+//            xmlSetProp(ccc, (const xmlChar *)"value",(xmlChar*)val);
+//            xmlSetProp(ccc, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",sit->id_addr));
+//            xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)sit->dname);
+//            xmlSetProp(ccc, (const xmlChar *)"active", (xmlChar *)g_strdup_printf("%d",sit->active));
+//            g_free(val);
+//        }
     }
     else
     {

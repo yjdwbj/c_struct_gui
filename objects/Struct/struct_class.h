@@ -170,7 +170,7 @@ typedef struct _ListBtnArr ListBtnArr;
 struct _ListBtnArr
 {
     GtkWidget *widget1;
-    SaveKV *skv;
+    gchar **vnumber;
 };
 
 typedef void (*OrderDisplayWidget)(GList *srclist); /* 这里要按顺序显示，变态*/
@@ -196,7 +196,7 @@ struct _ListBtn
 
 struct _SaveIdDialog
 {
-    GtkWidget *parent_btn;
+//    GtkWidget *parent_btn;
     GtkWidget *vbox;
     GList *idlists; /* SaveIdList 内容*/
     gchar *title;
@@ -229,14 +229,15 @@ struct _SaveMusicFile
 typedef struct _SaveMusicFileMan  SaveMusicFileMan;
 struct _SaveMusicFileMan
 {
-    int number;
+//    int number;
     int offset;
-    int selected;
+//    int selected;
     gchar *lastDir;
     GtkWidget *opendlg;
     GList *filelist; /* 右边界面的链表　内容是　SaveMusicFile　*/
     GtkWidget *wid_offset;
-    GtkListStore *wid_clist;
+    GtkTreeModel *wid_store;
+//    GtkListStore *wid_clist;
     GtkTreeView *wid_treeview;
     enum
     {
@@ -263,7 +264,8 @@ struct _SaveMusicDialog
     gchar *title;
     gchar *btnname;
     FMSaveType fmst;
-    SaveKV *skv;
+    gchar **vnumber; /* 这个就是SaveStruct vnumber*/
+//    SaveKV *skv;
 //    GtkWidget *leftvbox;
 //    GSList *grouplist;   /* 记录Radio 的单选链表　*/
     GList *itemlist; /* 左边界面的链表　内容是　SaveMusicItem */
@@ -271,7 +273,7 @@ struct _SaveMusicDialog
     GtkListStore *id_store;
     GtkTreeView  *id_treeview;
     GtkListStore *id_cbmodal;
-    GtkWidget *parent_btn;
+//    GtkWidget *parent_btn;
     GtkWidget *window; /* 它本身的窗口*/
     SaveMusicFileMan *smfm; /* 右边界面 */
     MusicFileManagerOpts *mfmos;
@@ -308,9 +310,9 @@ struct _SaveMusicItem
     int active;
     gchar *dname;
     gchar *fname;
-    GtkWidget *wid_colum0;
-    GtkWidget *wid_colum2;
-    GtkWidget *wid_colum3;
+//    GtkWidget *wid_colum0;
+//    GtkWidget *wid_colum2;
+//    GtkWidget *wid_colum3;
 };
 
 typedef struct _SaveMusicItem SaveIdItem;
@@ -669,6 +671,12 @@ GList* factory_get_download_name_list(const gchar *path);
 void factory_new_idlist_dialog(GtkWidget *parent,SaveStruct *sst);
 GtkTreeModel *factory_create_idcombox_model (GList *idlist);
 void factory_append_iten_to_cbmodal(GtkListStore *model,gchar *str);
+void factory_save_idlist_items(ObjectNode obj_node,GList *savelist);
+void factory_read_idlist_items(ObjectNode obj_node);
+
+void factory_save_idlist_to_xml(SaveStruct *sss,ObjectNode obj_node);
+
+void factory_write_mfile_filelist(ObjectNode obj_node);
 enum
 {
     COLUMN_ITEM_SEQUENCE,

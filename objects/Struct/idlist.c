@@ -60,6 +60,8 @@ static void factory_add_idlist_columns (GtkTreeView *treeview,GtkTreeModel *cbmo
     /* Combo */
 
     renderer = gtk_cell_renderer_combo_new ();
+//    gtk_combo_box_set_wrap_width(GTK_COMBO_BOX(renderer),1);
+//    gtk_combo_box_popdown (GTK_COMBO_BOX(renderer));
     g_object_set (renderer,
                   "model", cbmodel,
                   "text-column",0,
@@ -109,13 +111,12 @@ static void factory_add_item_to_idlist_model(GtkWidget *btn, gpointer user_data)
     sid->idlists = g_list_append(sid->idlists,idsave);
 }
 
-GtkTreeModel *
-factory_create_idcombox_model (GList *idlist)
+GtkTreeModel *factory_create_idcombox_model (GList *idlist)
 {
     GtkListStore *model;
     GtkTreeIter iter;
     /* create list store */
-    model = gtk_list_store_new (1, G_TYPE_STRING,G_TYPE_INT );
+    model = gtk_list_store_new (1, G_TYPE_STRING);
 
     GList *flist = idlist;
     factory_append_iten_to_cbmodal(model,"");
@@ -145,13 +146,24 @@ static void factory_delete_last_model_item(GtkWidget *btn,gpointer user_data)
     sid->idlists = g_list_remove(sid->idlists,lastptr);
 }
 
+static gboolean factory_save_idlist_lastcolumn_foreach(GtkTreeModel *model,
+        GtkTreePath *path,
+        GtkTreeIter *iter,
+        gpointer data)
+{
+    SaveMusicDialog *smd = curLayer->smd;
+    gint pos = gtk_tree_path_get_indices (path)[0];
+    IDListStore *idsave = g_list_nth_data(data,pos);
+    gtk_tree_model_get(model,iter,COLUMN_ITEM_IDNAME,&idsave->id_text,-1);
+//    gtk_tree_model_foreach(smd->id_cbmodal,factory_cboxmodel_foreach,smt);
+    return FALSE;
+}
+
+
 void factory_new_idlist_dialog(GtkWidget *button,SaveStruct *sst)
 {
     GtkWidget *mainBox = gtk_vbox_new(FALSE,0);
     SaveIdDialog *sid = (SaveIdDialog *)curLayer->sid;
-    // sid->skv = (SaveKV*)(sst->value.vnumber);
-    // gtk_button_set_label(GTK_BUTTON(button),sst->value.vnumber );
-    sid->parent_btn = button;
     GtkWidget *parent = gtk_widget_get_toplevel(button);
     GtkWidget *subdig = factory_create_new_dialog_with_buttons(factory_utf8("ID列表"),gtk_widget_get_toplevel(button));
     GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
@@ -163,11 +175,6 @@ void factory_new_idlist_dialog(GtkWidget *button,SaveStruct *sst)
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(wid_idlist),
                                    GTK_POLICY_NEVER,GTK_POLICY_ALWAYS);
 
-//    GtkWidget *vbox  = gtk_vbox_new(FALSE,0);
-
-//    gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(wid_idlist),vbox);
-//    sid->vbox = vbox;
-//    GSList *grouplist = sid->grouplist;
     GList *p = g_hash_table_get_keys(curLayer->defnames);
     p = g_list_sort(p,factory_str_compare);
     sid->flist = p;
@@ -196,13 +203,15 @@ void factory_new_idlist_dialog(GtkWidget *button,SaveStruct *sst)
         GList *tlist = sid->idlists;
         for(; tlist ; tlist = tlist->next)
         {
+            IDListStore *idsave = tlist->data;
+
             factory_append_item_to_idlist_model(sid->id_store,tlist->data);
         }
         path = gtk_tree_path_new_from_string(sst->value.vnumber);
         gtk_tree_model_get_iter(GTK_TREE_MODEL(sid->id_store), &iter, path);
         GtkTreeSelection *selection = gtk_tree_view_get_selection (sid->id_treeview);
         gtk_tree_selection_select_iter (selection,&iter); /* 选择到上次 */
-       gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (sid->id_treeview), path, NULL, TRUE, 1.0, 0);
+        gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (sid->id_treeview), path, NULL, TRUE, 1.0, 0);
         gtk_tree_path_free(path);
     }
 
@@ -225,29 +234,107 @@ void factory_new_idlist_dialog(GtkWidget *button,SaveStruct *sst)
     {
         GtkTreePath *path;
         GList *tlist = sid->idlists;
-         gchar *str;
-        for(; tlist ; tlist = tlist->next)
-        {
-            IDListStore *idsave = tlist->data;
-            path = gtk_tree_path_new_from_indices(idsave->sequence, -1);
-            gtk_tree_model_get_iter(GTK_TREE_MODEL(sid->id_store), &iter, path);
-            gtk_tree_model_get (sid->id_store,&iter,COLUMN_ITEM_IDNAME,&str,-1);
-            g_free(idsave->id_text);
-            idsave->id_text = g_strdup(str);
-        }
-        g_free(str);
+        gtk_tree_model_foreach(sid->id_store,factory_save_idlist_lastcolumn_foreach,sid->idlists);
         GtkTreeSelection *selection = gtk_tree_view_get_selection (sid->id_treeview);
-
         if (gtk_tree_selection_get_selected (selection, NULL, &iter))
         {
             path = gtk_tree_model_get_path (sid->id_store, &iter);
             sst->value.vnumber =g_strdup(gtk_tree_path_to_string (path));
-            gtk_button_set_label(GTK_BUTTON(button),sst->value.vnumber );
         }
+        else
+        {
+            sst->value.vnumber = g_strdup("-1");
+        }
+
+        gtk_button_set_label(GTK_BUTTON(button),sst->value.vnumber );
         gtk_tree_path_free(path);
     }
-
-
-
     gtk_widget_destroy(subdig);
+}
+
+void factory_save_idlist_to_xml(SaveStruct *sss,ObjectNode obj_node)
+{
+    ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+    xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
+    xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
+    xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)sss->type);
+
+    xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)sss->value.vnumber);
+
+    SaveIdDialog *sid = (SaveIdDialog *)curLayer->sid;
+    gchar *idname = g_strdup("");
+    if(sid->id_store)
+    {
+        GtkTreePath *path = gtk_tree_path_new_from_string (sss->value.vnumber);
+        GtkTreeIter iter;
+        gtk_tree_model_get_iter (sid->id_store, &iter, path);
+        gtk_tree_model_get(sid->id_store,&iter,COLUMN_ITEM_IDNAME,&idname,-1);
+    }
+    xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)idname);
+    g_free(idname);
+}
+
+
+
+void factory_read_idlist_items(ObjectNode obj_node)
+{
+    SaveIdDialog *sid = (SaveIdDialog *)curLayer->sid;
+    AttributeNode attr_node = obj_node;
+    while(attr_node = data_next(attr_node))
+    {
+        xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
+        if(!key) continue;
+        IDListStore *idsave = g_new0(IDListStore,1);
+
+
+        idsave->sequence = g_strtod((gchar*)key,NULL);
+        key = xmlGetProp(attr_node,(xmlChar *)"addr");
+        if(!key)
+        {
+            idsave->id_addr = idsave->sequence * 2;
+        }
+        else
+            idsave->id_addr = g_strtod((gchar*)key,NULL);
+        key = xmlGetProp(attr_node,(xmlChar *)"dname");
+        if(!key)
+        {
+            idsave->id_text = g_strdup("");
+        }
+        else
+            idsave->id_text = g_strdup((gchar*)key);
+
+        sid->idlists = g_list_append(sid->idlists,idsave);
+
+    }
+}
+
+
+void factory_save_idlist_items(ObjectNode obj_node,GList *savelist)
+{
+    GList *idlist = savelist;
+    for(; idlist; idlist = idlist->next)
+    {
+        IDListStore *idsave =idlist->data;
+        ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+        xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",idsave->sequence));
+        xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
+        gchar *val = g_strdup("-1");
+        DiaObject *diaobj = g_hash_table_lookup(curLayer->defnames,idsave->id_text);
+        if(!diaobj)
+        {
+            g_free(idsave->id_text);
+            idsave->id_text = g_strdup("");
+//                sit->active = 0;
+        }
+        else
+        {
+            val = g_strdup_printf("%d",diaobj->oindex); /* 保存ID号 */
+        }
+
+        xmlSetProp(ccc, (const xmlChar *)"value",(xmlChar*)val);
+        xmlSetProp(ccc, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",idsave->id_addr));
+        xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)idsave->id_text);
+//            xmlSetProp(ccc, (const xmlChar *)"active", (xmlChar *)g_strdup_printf("%d",sit->active));
+        g_free(val);
+    }
 }

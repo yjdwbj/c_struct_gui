@@ -3136,6 +3136,15 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
     case UCOMBO:
     {
         SaveUnion *suptr = &sss->value.sunion;
+
+        GList *wlist = gtk_container_children(GTK_CONTAINER(sss->widget2));
+        if(wlist)
+        {
+            g_free(suptr->curtext);
+            suptr->curtext = g_strdup(gtk_combo_box_get_active_text(wlist->data));
+            suptr->index = gtk_combo_box_get_active(GTK_COMBO_BOX(wlist->data));
+        }
+
         g_return_if_fail(suptr);
         if(!sss->isPointer)
         {
@@ -3477,9 +3486,10 @@ GtkWidget *factory_create_combo_widget(GList *datalist,gint activeid)
 
     }
 //    gtk_combo_box_set_wrap_width(GTK_COMBO_BOX(widget),1);
-    gtk_combo_box_popdown (GTK_COMBO_BOX(widget));
+//    gtk_combo_box_popdown (GTK_COMBO_BOX(widget));
     gtk_combo_box_set_active(GTK_COMBO_BOX(widget),activeid);
 
+//    gtk_container_add(GTK_CONTAINER(wid_idlist),widget);
     return  widget;
 }
 
@@ -3675,10 +3685,11 @@ FIRST:
             ListDlgArg *lda = g_new0(ListDlgArg,1);
             lda->isArray = FALSE;
             lda->odw_func = NULL;
-            lda->type = sss->name;
-            lda->user_data = sss->value.vnumber;
-            SaveKV *skv = sss->value.vnumber;
-            gtk_button_set_label(GTK_BUTTON(columTwo), skv->value );
+            lda->type = factory_get_last_section(sss->name,".");
+            lda->user_data = &sss->value.vnumber; /* 这里是二级指针*/
+//            SaveKV *skv = sss->value.vnumber;
+//            gtk_button_set_label(GTK_BUTTON(columTwo), skv->value );
+            gtk_button_set_label(GTK_BUTTON(columTwo), sss->value.vnumber );
             g_signal_connect (G_OBJECT (columTwo), "clicked",G_CALLBACK (sss->newdlg_func),lda);
         }
         else if(!g_ascii_strcasecmp(item->SType,"IDLST"))
@@ -4045,7 +4056,20 @@ factory_subdig_checkbtns_respond(GtkWidget *widget,gint       response_id,gpoint
 }
 
 
-void factoy_changed_item(gpointer widget,gpointer user_data)
+
+//void factory_ucombox_item_chanaged(gpointer widget,gpointer user_data)
+//{
+//    SaveStruct *sss  = user_data;
+//    SaveUnion *suptr = &sss->value.sunion;
+//    gchar *text = gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget));
+//}
+
+
+
+
+
+
+void factoy_changed_item(gpointer widget,gpointer user_data) /* 0.98.10 之前的版本 */
 {
     /* 这里是一个VBOX */
 //    GtkWidget *parent = gtk_widget_get_parent (widget);
@@ -4067,12 +4091,13 @@ void factoy_changed_item(gpointer widget,gpointer user_data)
     }
 
     gchar *text = gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget));
-    suptr->curtext = g_strdup(text);
-    g_free(text);
-    suptr->index = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
+//    suptr->curtext = g_strdup(text);
+//    g_free(text);
+//    suptr->index = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 
 
-    FactoryStructItem *sfst= factory_find_a_struct_item(suptr->structlist,suptr->curtext);
+//    FactoryStructItem *sfst= factory_find_a_struct_item(suptr->structlist,suptr->curtext);
+    FactoryStructItem *sfst= factory_find_a_struct_item(suptr->structlist,text);
     if(sfst)
     {
         SaveStruct *existS = NULL;

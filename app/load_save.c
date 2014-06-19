@@ -1323,6 +1323,7 @@ void factory_call_isd_download()
         len = g_list_length(dlist);
     gchar *isdownload_gui = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S, "isdownload_gui.exe",NULL);
     gchar *isdownload = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S ,"isd_download.exe",NULL);
+    gchar *datapath = dia_get_lib_directory("data"); /* 系统文件所在目录 */
     g_return_if_fail(factory_test_file_exist(isdownload));
     g_return_if_fail(factory_test_file_exist(isdownload_gui));
     gchar **system_files = g_strsplit(factoryContainer->system_files,",",-1);
@@ -1334,7 +1335,7 @@ void factory_call_isd_download()
     argv[n] =g_strdup(factory_locale(isdownload_gui));
     for(; n < slen; n++)
     {
-        argv[n+1] = g_strdup(system_files[n]);
+        argv[n+1] = g_strconcat(datapath,G_DIR_SEPARATOR_S,system_files[n],NULL);
     }
     g_strfreev(system_files);
     GList *tlist = dlist;
@@ -1360,6 +1361,7 @@ void factory_call_isd_download()
     g_free(isdownload_gui);
     g_free(isdownload);
     g_free(filename);
+    g_free(datapath);
 //    g_strfreev(argv);
 }
 

@@ -3,6 +3,7 @@
 #include "object.h"
 #include "struct_class.h"
 
+
 enum
 {
     COLUMN_SEQUENCE,
@@ -23,6 +24,12 @@ struct _MusicFileManagerOperation
     int stack;
     MusicFileManagerFunc mfmf;
 };
+
+static void factory_mfile_manager_changed_dname(GtkCellRendererText *cell,
+        const gchar         *path_string,
+        const gchar         *new_text,
+        gpointer             data);
+
 
 
 static void factory_cleanall_mfile_modal(GtkWidget *widget,gpointer user_data);
@@ -52,7 +59,7 @@ void factory_music_file_manager_select_callback(GtkWidget *clist,
 MusicFileManagerOpts  mfmo_opts =
 {
     (OpenDialog) factory_file_manager_dialog,
-    (ApplyDialog) factory_music_file_manager_apply,
+    (ApplyDialog) 0,
     (Item_Added) factory_mfile_manager_update_idmodal,
     (Clear_All) factory_mfile_manager_clean_modal
 };
