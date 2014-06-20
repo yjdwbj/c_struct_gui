@@ -240,6 +240,7 @@
 			<Add option="-g" />
 			<Add option="-std=gnu89" />
 			<Add option="-DHAVE_CONFIG_H" />
+			<Add option="-DDEBUG" />
 			<Add directory="." />
 			<Add directory="lib" />
 			<Add directory="app" />

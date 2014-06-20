@@ -237,7 +237,6 @@ struct _SaveMusicFileMan
     GList *filelist; /* 右边界面的链表　内容是　SaveMusicFile　*/
     GtkWidget *wid_offset;
     GtkTreeModel *wid_store;
-//    GtkListStore *wid_clist;
     GtkTreeView *wid_treeview;
     enum
     {

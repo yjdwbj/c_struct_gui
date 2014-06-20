@@ -716,6 +716,9 @@ _setup_textdomains (void)
     textdomain(GETTEXT_PACKAGE);
 }
 
+
+
+
 static gchar* factory_get_format_date_and_time()
 {
     GDate *cdate =  g_date_new();
@@ -1144,6 +1147,7 @@ void  app_init (int argc, char **argv)
 gboolean
 app_exit(void)
 {
+    factory_debug_to_log(factory_utf8("³ÌÐòÍË³ö.\n"));
     GList *list;
     GSList *slist;
     if(logfd)

@@ -363,7 +363,9 @@ static gboolean factory_is_base_type(const gchar *str)
 
 static void factory_check_items_valid(gpointer key, gpointer value, gpointer user_data)
 {
+
     gchar *keystr = (gchar *)key;
+    factory_debug_to_log(g_strdup_printf(factory_utf8("检查对像有效性,名称:%s.\n"),keystr));
     GList *vallist = value;
     g_return_if_fail(vallist);
     for(; vallist; vallist = vallist->next)
@@ -450,6 +452,7 @@ void factoryReadDataFromFile(const gchar* filename)
 #define MAX_LINE 1024
 #define MAX_SECTION 7
     gchar *fname_gbk = factory_locale(filename);
+    factory_debug_to_log(g_strdup_printf(factory_utf8("读取对像定文件,文件名:%s.\n"),filename));
 
     gboolean isutf8 = FALSE;
     struct stat statbuf;

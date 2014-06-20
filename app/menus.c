@@ -615,6 +615,24 @@ void factory_callback_system_data(GtkWidget *btn,gpointer user_data)
 }
 
 
+void factory_callback_object_count(GtkWidget *btn,gpointer user_data)
+{
+    g_return_if_fail(ddisplay_active());
+    g_return_if_fail(factoryContainer);
+    g_return_if_fail(factoryContainer->curLayer);
+    int allobj = g_list_length(factoryContainer->curLayer->objects);
+    int actionobj = g_hash_table_size(factoryContainer->curLayer->defnames);
+    gchar *msg = g_strdup_printf(factory_utf8("行为控件数:%d\n\n线条数:%d\n"),actionobj,allobj-actionobj);
+    GtkDialog *dialog = gtk_message_dialog_new (GTK_WINDOW(ddisplay_active()->shell),
+				       GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+				       GTK_MESSAGE_INFO,
+				       GTK_BUTTONS_OK,
+				       msg);
+    gtk_dialog_set_default_response(dialog,GTK_BUTTONS_OK);
+    gtk_dialog_run(dialog);
+    gtk_widget_destroy(dialog);
+}
+
 /**
  * Create the toolbar for the integrated UI
  * @return Main toolbar (GtkToolbar*) for the integrated UI main window
@@ -728,6 +746,12 @@ create_integrated_ui_toolbar (void)
     integrated_ui_toolbar_add_custom_item(toolbar,dbtn);
     g_signal_connect(dbtn,"clicked",G_CALLBACK(factory_callback_download_to_device),NULL);
 
+     sep = gtk_separator_tool_item_new ();
+    gtk_toolbar_insert (toolbar, sep, -1);
+
+    dbtn = gtk_button_new_with_label(factory_utf8("控件统计"));
+    integrated_ui_toolbar_add_custom_item(toolbar,dbtn);
+    g_signal_connect(dbtn,"clicked",G_CALLBACK(factory_callback_object_count),NULL);
 
     gtk_widget_show (GTK_WIDGET (sep));
 

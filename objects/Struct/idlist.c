@@ -135,8 +135,7 @@ static void factory_delete_last_model_item(GtkWidget *btn,gpointer user_data)
     GtkTreeModel *model = sid->id_store;
 //   GtkTreeSelection *selection = gtk_tree_view_get_selection (treeview);
     gint rows = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(model), NULL);
-    if(!rows)
-        return;
+    if(0 == rows) return;
     GtkTreePath *path;
     path = gtk_tree_path_new_from_indices(rows - 1, -1);
     gtk_tree_model_get_iter(GTK_TREE_MODEL(model), &iter, path);
@@ -159,6 +158,39 @@ static gboolean factory_save_idlist_lastcolumn_foreach(GtkTreeModel *model,
     return FALSE;
 }
 
+
+void factoy_idlist_response(GtkWidget *dlg,
+                            gint       response,
+                            gpointer   user_data)
+{
+
+    if(response == GTK_RESPONSE_OK)
+    {
+        SaveIdDialog *sid = curLayer->sid;
+        SaveStruct *sst = (SaveStruct *)user_data;
+
+
+        GtkTreeIter iter;
+        GList *tlist = sid->idlists;
+        gtk_tree_model_foreach(sid->id_store,factory_save_idlist_lastcolumn_foreach,sid->idlists);
+        GtkTreeSelection *selection = gtk_tree_view_get_selection (sid->id_treeview);
+        if (gtk_tree_selection_get_selected (selection, NULL, &iter))
+        {
+            GtkTreePath *path;
+            path = gtk_tree_model_get_path (sid->id_store, &iter);
+            sst->value.vnumber =g_strdup(gtk_tree_path_to_string (path));
+            gtk_tree_path_free(path);
+        }
+        else
+        {
+            sst->value.vnumber = g_strdup("-1");
+        }
+
+        gtk_button_set_label(GTK_BUTTON(sst->widget2),sst->value.vnumber );
+
+    }
+    gtk_widget_destroy(dlg);
+}
 
 void factory_new_idlist_dialog(GtkWidget *button,SaveStruct *sst)
 {
@@ -229,27 +261,13 @@ void factory_new_idlist_dialog(GtkWidget *button,SaveStruct *sst)
 
 //    gtk_box_pack_start(GTK_BOX(mainBox),factory_new_add_button(factory_add_item_to_idlist_model,sid),FALSE,FALSE,0);
     gtk_widget_show_all(subdig);
-    gint ret = gtk_dialog_run(subdig); /* 阻塞方式运行 */
-    if(ret == GTK_RESPONSE_OK) /* 把判断保存做在这里,可以减变量的数量,与函数之间的传递. */
-    {
-        GtkTreePath *path;
-        GList *tlist = sid->idlists;
-        gtk_tree_model_foreach(sid->id_store,factory_save_idlist_lastcolumn_foreach,sid->idlists);
-        GtkTreeSelection *selection = gtk_tree_view_get_selection (sid->id_treeview);
-        if (gtk_tree_selection_get_selected (selection, NULL, &iter))
-        {
-            path = gtk_tree_model_get_path (sid->id_store, &iter);
-            sst->value.vnumber =g_strdup(gtk_tree_path_to_string (path));
-        }
-        else
-        {
-            sst->value.vnumber = g_strdup("-1");
-        }
-
-        gtk_button_set_label(GTK_BUTTON(button),sst->value.vnumber );
-        gtk_tree_path_free(path);
-    }
-    gtk_widget_destroy(subdig);
+    g_signal_connect(G_OBJECT(subdig),"response",G_CALLBACK(factoy_idlist_response),sst);
+//    gint ret = gtk_dialog_run(subdig); /* 阻塞方式运行 */
+//    if(ret == GTK_RESPONSE_OK) /* 把判断保存做在这里,可以减变量的数量,与函数之间的传递. */
+//    {
+//
+//    }
+//    gtk_widget_destroy(subdig);
 }
 
 void factory_save_idlist_to_xml(SaveStruct *sss,ObjectNode obj_node)
@@ -263,12 +281,14 @@ void factory_save_idlist_to_xml(SaveStruct *sss,ObjectNode obj_node)
 
     SaveIdDialog *sid = (SaveIdDialog *)curLayer->sid;
     gchar *idname = g_strdup("");
-    if(sid->id_store)
+    if(sid->idlists)
     {
-        GtkTreePath *path = gtk_tree_path_new_from_string (sss->value.vnumber);
-        GtkTreeIter iter;
-        gtk_tree_model_get_iter (sid->id_store, &iter, path);
-        gtk_tree_model_get(sid->id_store,&iter,COLUMN_ITEM_IDNAME,&idname,-1);
+        int pos  = g_strtod(sss->value.vnumber,NULL);
+        IDListStore *idsave  = g_list_nth_data(sid->idlists,pos);
+        if(idsave)
+        {
+            idname = g_strdup(idsave->id_text);
+        }
     }
     xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)idname);
     g_free(idname);
@@ -285,8 +305,6 @@ void factory_read_idlist_items(ObjectNode obj_node)
         xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
         if(!key) continue;
         IDListStore *idsave = g_new0(IDListStore,1);
-
-
         idsave->sequence = g_strtod((gchar*)key,NULL);
         key = xmlGetProp(attr_node,(xmlChar *)"addr");
         if(!key)
@@ -295,7 +313,7 @@ void factory_read_idlist_items(ObjectNode obj_node)
         }
         else
             idsave->id_addr = g_strtod((gchar*)key,NULL);
-        key = xmlGetProp(attr_node,(xmlChar *)"dname");
+        key = xmlGetProp(attr_node,(xmlChar *)"idname");
         if(!key)
         {
             idsave->id_text = g_strdup("");
@@ -324,7 +342,6 @@ void factory_save_idlist_items(ObjectNode obj_node,GList *savelist)
         {
             g_free(idsave->id_text);
             idsave->id_text = g_strdup("");
-//                sit->active = 0;
         }
         else
         {

@@ -1308,7 +1308,9 @@ CLEANUP:
 
 void factory_call_isd_download()
 {
+
     gchar *filename = g_strdup(ddisplay_active_diagram()->filename);
+    factory_debug_to_log(g_strdup_printf(factory_utf8("下载文件到小机,文件名:%s.\n"),filename));
     g_return_if_fail(filename);
     gchar *path = strrchr((char *)filename,G_DIR_SEPARATOR);
     if(path)

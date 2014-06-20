@@ -2328,6 +2328,8 @@ factory_struct_items_create(Point *startpoint,
     structclass->EnumsAndStructs = NULL;
     structclass->EnumsAndStructs = factoryContainer;
 
+    factory_debug_to_log(g_strdup_printf(factory_utf8("创建对像,名字:%s.\n"),structclass->name));
+
     return &structclass->element.object;
 }
 
@@ -2394,7 +2396,7 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         if(!key)
         {
 //            skv->value = g_strdup("-1");
-             sss->value.vnumber = g_strdup("-1");
+            sss->value.vnumber = g_strdup("-1");
         }
         else
             sss->value.vnumber = g_strdup((gchar*)key);
@@ -2752,7 +2754,7 @@ void factory_read_specific_object_from_file(STRUCTClass *fclass,ObjectNode obj_n
 //            sid->idlists = g_list_append(sid->idlists,smi);
 //
 //        }
-    factory_read_idlist_items(obj_node); /* 2014-6-19 改用这个函数读取*/
+        factory_read_idlist_items(obj_node); /* 2014-6-19 改用这个函数读取*/
     }
 }
 
@@ -3204,6 +3206,11 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
                 smd->smfm = NULL;
                 smd->mfmos = &mfmo_opts;
                 smd->title = factory_utf8("文件管理");
+                smd->smfm = g_new0(SaveMusicFileMan,1);
+                /* 根据文件个数算偏移数 */
+                gchar **split = g_strsplit(factoryContainer->system_files,",",-1);
+                smd->smfm->offset = g_strv_length(split);
+                g_strfreev(split);
             }
 
             smd = curLayer->smd;
@@ -3237,7 +3244,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             }
             else
             {
-                    /* sss->value.vnumber  原定义为一个gchar 指针，在这里当做gpointer 用了*/
+                /* sss->value.vnumber  原定义为一个gchar 指针，在这里当做gpointer 用了*/
 //                SaveKV *skv = g_new0(SaveKV,1);
 //                smd->skv = skv;
 //                skv->value = g_strdup(fst->Value);
@@ -3247,7 +3254,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
 //                smd->vnumber = sss->value.vnumber;
                 smd->btnname = g_strdup(fst->Cname);
                 sss->newdlg_func = factory_create_file_manager_dialog;
-               // sss->close_func = factory_music_file_manager_apply;
+                // sss->close_func = factory_music_file_manager_apply;
             }
 
         }
@@ -3839,7 +3846,7 @@ static void factory_write_object_comobox(ActionID *aid,ObjectNode ccc ,const gch
 static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node)
 {
     g_return_if_fail(sss);
-
+    factory_debug_to_log(g_strdup_printf(factory_utf8("保存对像成员,名字:%s.\n"),sss->name));
     switch(sss->celltype)
     {
     case ECOMBO:
@@ -4085,7 +4092,6 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
 
     }
 
-
     fill_in_fontdata(structclass);
 //  structclass->stereotype_string = NULL;
     structclass_calculate_data(structclass);
@@ -4107,9 +4113,11 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
     /* 读取文件里面的值 */
 //    factory_set_all_factoryclass(structclass);
     int s = g_hash_table_size(structclass->widgetmap);
+
+    factory_debug_to_log(g_strdup_printf(factory_utf8("加载对像,名字:%s.\n"),structclass->name));
+
     if(factory_is_special_object(obj->name))
     {
-
         if(!curLayer->smd)
         {
             curLayer->smd = g_new0(SaveMusicDialog,1);
@@ -4117,6 +4125,11 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
             smd->title = factory_utf8("文件管理");
             smd->smfm = NULL;
             smd->mfmos = &mfmo_opts;
+            smd->smfm = g_new0(SaveMusicFileMan,1);
+            /* 根据文件个数算偏移数 */
+            gchar **split = g_strsplit(factoryContainer->system_files,",",-1);
+            smd->smfm->offset = g_strv_length(split);
+            g_strfreev(split);
         }
 
         if(!curLayer->sid)
@@ -4184,7 +4197,7 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
     //g_hash_table_foreach(structclass->widgetmap,factory_struct_save_to_xml,(gpointer)obj_node);
     if(factory_is_system_data(fsi->sname))
         structclass->widgetSave = g_list_copy(factoryContainer->sys_info->system_info);
-
+    factory_debug_to_log(g_strdup_printf(factory_utf8("保存对像,名字:%s.\n"),structclass->name));
     if(!g_strcasecmp(fsi->sname,"FILELST"))
     {
         factory_write_mfile_filelist(obj_node);

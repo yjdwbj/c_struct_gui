@@ -360,6 +360,7 @@ file_save_as_response_callback(GtkWidget *fs,
     dia = g_object_get_data (G_OBJECT(fs), "user_data");
 
     filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(fs));
+    factory_debug_to_log(g_strdup_printf(factory_utf8("另存为文件,名字:%s.\n"),filename));
 
     if (g_stat(filename, &stat_struct) == 0) {
       GtkWidget *dialog = NULL;

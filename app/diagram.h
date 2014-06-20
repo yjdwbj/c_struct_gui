@@ -94,7 +94,7 @@ void diagram_add_object(Diagram *dia, DiaObject *obj);
 void diagram_add_object_list(Diagram *dia, GList *list);
 DIAVAR void diagram_selected_break_external(Diagram *dia);
 DIAVAR void diagram_remove_all_selected(Diagram *diagram, int delete_empty);
-void diagram_unselect_object(Diagram *dia, DiaObject *obj);
+DIAVAR void diagram_unselect_object(Diagram *dia, DiaObject *obj);
 DIAVAR void diagram_unselect_objects(Diagram *dia, GList *obj_list);
 DIAVAR void diagram_select(Diagram *diagram, DiaObject *obj);
 void diagram_select_list(Diagram *diagram, GList *list);

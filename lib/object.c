@@ -1131,9 +1131,11 @@ gboolean factory_test_file_exist(const gchar *fname)
     if(!g_file_test(fname,G_FILE_TEST_EXISTS))
     {
         gchar *msg_utf8 = factory_utf8(g_strdup_printf(_("找不到　%s,不能下载."),fname));
-        fwrite(msg_utf8,1,strlen(msg_utf8),logfd);
+        gchar *fmsg = g_strconcat(factory_get_current_timestamp(),msg_utf8,NULL);
+        fwrite(fmsg,1,strlen(fmsg),logfd);
         message_error(msg_utf8);
         g_free(msg_utf8);
+        g_free(fmsg);
         return  FALSE;
     }
 
@@ -1214,11 +1216,43 @@ factory_critical_error_response(GtkWidget *widget,
 
 }
 
+gchar *factory_get_current_timestamp()
+{
+    GDate *cdate =  g_date_new();
+    g_date_set_time(cdate,time(NULL));
+    GDateTime *gdt =  g_date_time_new_now_utc();
+    gchar *datatime = NULL;
+    datatime = g_strconcat(g_strdup_printf("%d-",cdate->year),g_strdup_printf("%d-",cdate->month),
+                                           g_strdup_printf("%d ",cdate->day),
+                                           g_strdup_printf("%d:",g_date_time_get_hour(gdt)+8), /* 加8是中国GMT+8区*/
+                                           g_strdup_printf("%d:",g_date_time_get_minute(gdt)),
+                                           g_strdup_printf("%d:",g_date_time_get_second(gdt)),
+                                           g_strdup_printf("%d ",g_date_time_get_microsecond(gdt)),NULL);
+    return datatime;
+}
+
+void factory_debug_to_log(const gchar *msg_dbg)
+{
+#ifdef DEBUG
+        gchar *fmsg = g_strconcat(factory_get_current_timestamp(),msg_dbg,NULL);
+        if(logfd)
+            fwrite(fmsg,1,strlen(fmsg),logfd);
+        g_free(fmsg);
+#endif
+}
+
+void factory_waring_to_log(const gchar *msg_war)
+{
+        gchar *fmsg = g_strconcat(factory_get_current_timestamp(),msg_war,NULL);
+        if(logfd)
+            fwrite(fmsg,1,strlen(fmsg),logfd);
+        g_free(fmsg);
+}
+
+
 void
 factory_critical_error_exit(const gchar *msg_err)
 {
-
-
     gchar *lastmsg = factory_utf8("\t\t\严重错误,无法继续\n\n错误信息： %s .\n 请联系厂家技术支持.\n\n\t\t现在退出");
     GtkWidget * msg_dialog = gtk_message_dialog_new (GTK_WINDOW (NULL),
                              GTK_DIALOG_MODAL,
