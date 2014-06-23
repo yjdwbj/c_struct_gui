@@ -191,7 +191,10 @@ static ObjectOps structclass_ops =
     (ConnectionTwoObject) 0,
     (UpdateObjectIndex)   factory_update_index,
     (ObjectRename) factory_rename_structclass,
-    (UpdateObjectVName) factory_update_view_names
+    (UpdateObjectVName) factory_update_view_names,
+    (SearchConnectedLink)  factory_search_connected_link,
+    (UpdateObjectsFillColor) factory_set_fill_color,
+    (ResetObjectsToDefaultColor) factory_reset_object_color_to_default
 };
 
 
@@ -555,12 +558,17 @@ structclass_distance_from(STRUCTClass *structclass, Point *point)
     return distance_rectangle_point(&obj->bounding_box, point);
 }
 
+
+
 static void
 structclass_select(STRUCTClass *structclass, Point *clicked_point,
                    DiaRenderer *interactive_renderer)
 {
     element_update_handles(&structclass->element);
 }
+
+
+
 
 /*  2014-4-4 lcy 更新界面上所有对像的ID号*/
 static void factory_update_index(STRUCTClass *fclass)
@@ -2279,7 +2287,7 @@ factory_struct_items_create(Point *startpoint,
 //        else
 //            factoryContainer->otp_obj = structclass;
 //    }
-    factory_rename_structclass(structclass);
+    factory_rename_structclass(structclass); /* 保证名称唯一性 */
 
 
     /* 2014-3-26 lcy  这里初始哈希表用存widget与它的值*/
@@ -2297,6 +2305,7 @@ factory_struct_items_create(Point *startpoint,
     structclass->text_color = color_black;
     structclass->line_color = attributes_get_foreground();
     structclass->fill_color = attributes_get_background();
+    structclass->vcolor = N_COLOR;
 
     structclass_calculate_data(structclass);
 
@@ -3553,6 +3562,7 @@ structclass_copy(STRUCTClass *structclass)
     }
 
     newobj->oindex = g_list_length(curLayer->objects);
+
     element_copy(elem, newelem);
 
     newstructclass->font_height = structclass->font_height;
@@ -3608,6 +3618,7 @@ structclass_copy(STRUCTClass *structclass)
     newstructclass->text_color = structclass->text_color;
     newstructclass->line_color = structclass->line_color;
     newstructclass->fill_color = structclass->fill_color;
+    newstructclass->vcolor = structclass->vcolor;
 
 //  newstructclass->attributes = NULL;
 //  list = structclass->attributes;
@@ -4050,6 +4061,7 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
     /* new since 0.94, don't wrap by default to keep old diagrams intact */
 //  structclass->wrap_operations = FALSE;
     structclass->fill_color = color_white;
+    structclass->vcolor = N_COLOR;
     attr_node  =   factory_find_custom_node(obj_node,"JL_struct");
     if(attr_node)
     {
@@ -4077,16 +4089,7 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
                 structclass->pps->name = g_strdup(structclass->name);
             }
             structclass->pps->hasfinished = n == 0 ? FALSE : TRUE;
-            if(structclass->pps->hasfinished)
-            {
-                Color red = {0,139,0 };
-                structclass->fill_color = red;
-            }
-            else
-            {
-                Color w = {255,255,255};
-                structclass->fill_color = w;
-            }
+            structclass->fill_color = structclass->pps->hasfinished ? color_edited : color_white;
             xmlFree (key);
         }
 

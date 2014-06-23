@@ -248,6 +248,8 @@ static void factory_cleanall_mfile_modal(GtkWidget *widget,gpointer user_data)
     GtkTreeModel *model = gtk_tree_view_get_model(smd->smfm->wid_treeview);
     gtk_list_store_clear(model);
     gtk_list_store_clear(smd->id_cbmodal);
+    g_list_free1(smd->smfm->filelist);
+    smd->smfm->filelist = NULL;
     gtk_tree_model_foreach(smd->id_store,factory_clean_idlist_dname,NULL); /*清空*/
 }
 
@@ -754,7 +756,14 @@ void factory_open_file_dialog(GtkWidget *widget,gpointer user_data)
 
 void factory_mfile_manager_clean_modal(SaveMusicDialog *smd)
 {
+    SaveMusicFileMan *smfm = smd->smfm;
+    g_list_free1(smfm->filelist);
+    smfm->filelist = NULL;
+    g_list_free1(smd->cboxlist);
+    smd->cboxlist = NULL;
+
     gtk_list_store_clear( GTK_TREE_STORE( smd->id_cbmodal ) ); /* 清空原来的 */
+
 }
 
 void factory_mfile_manager_update_idmodal(SaveMusicDialog *smd)

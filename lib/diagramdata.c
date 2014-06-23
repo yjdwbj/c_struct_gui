@@ -226,7 +226,7 @@ new_layer(gchar *name, DiagramData *parent)
   factoryContainer->curLayer = layer;
   factoryContainer->sys_info = g_new0(FactorySystemInfo,1);
   factoryContainer->sys_info->fstype  =(FactorySystemType*) object_get_type("SystemInfo");
-  layer->id_array = g_array_new (FALSE, FALSE, sizeof (gint));
+//  layer->id_array = g_array_new (FALSE, FALSE, sizeof (gint));
   return layer;
 }
 

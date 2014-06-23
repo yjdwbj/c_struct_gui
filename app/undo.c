@@ -629,16 +629,15 @@ static void update_objects_index(GList *olist, Diagram *dia)
    while(olist)
    {
        DiaObject *obj = olist->data;
-       char *n1;
-       n1 = g_strdup("STRUCT - Class");
-       if(!g_ascii_strncasecmp(obj->type->name,n1,strlen(n1)))
+//       char *n1;
+//       n1 = g_strdup("STRUCT - Class");
+//       if(!g_ascii_strncasecmp(obj->type->name,n1,strlen(n1)))
+       if(obj->type == object_get_type("STRUCT - Class"))
        {
-
-
              obj->ops->update_index(obj);
              object_add_updates(obj, dia);
        }
-        g_free(n1);
+//        g_free(n1);
        olist = olist->next;
    }
 }
@@ -758,6 +757,7 @@ static void
 insert_objects_apply(struct InsertObjectsChange *change, Diagram *dia)
 {
   DEBUG_PRINTF(("insert_objects_apply()\n"));
+  factory_debug_to_log(factory_utf8("插入链表里的对像!"));
   change->applied = 1;
   layer_add_objects(change->layer, g_list_copy(change->obj_list));
   object_add_updates_list(change->obj_list, dia);

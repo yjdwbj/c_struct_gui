@@ -59,7 +59,8 @@
 #define ACT_SIZE  6
 
 
-
+static Color color_edited = {0.0f, 123.0f, 0.0f };
+static Color color_highlight = {126.0f, 0.0f, 0.0f };
 
 Layer *curLayer;
 typedef struct _STRUCTClass STRUCTClass;
@@ -77,6 +78,10 @@ struct _STRUCTClassDialog
     GtkWidget *mainTable; // 2014-3-19 lcy 这里添一个表格,用来布局显示.
 };
 
+typedef enum{
+    N_COLOR,  /* 正常的 */
+    H_COLOR /* 高亮显示的 */
+}ViewColor;
 
 typedef struct  _FactoryClassDialog  FactoryClassDialog;
 
@@ -206,8 +211,6 @@ struct _SaveIdDialog
     GtkListStore *id_store;
     GtkListStore *id_cbmodel;
     GtkWidget *id_treeview;
-//    gchar **dvalue;
-//    GSList *grouplist; /* GtkRadio */
 };
 
 //SaveIdDialog *IdDialog;
@@ -264,9 +267,6 @@ struct _SaveMusicDialog
     gchar *btnname;
     FMSaveType fmst;
     gchar **vnumber; /* 这个就是SaveStruct vnumber*/
-//    SaveKV *skv;
-//    GtkWidget *leftvbox;
-//    GSList *grouplist;   /* 记录Radio 的单选链表　*/
     GList *itemlist; /* 左边界面的链表　内容是　SaveMusicItem */
     GList *cboxlist; /* 右边下载名的链表　内容是 gchar */
     GtkListStore *id_store;
@@ -309,9 +309,6 @@ struct _SaveMusicItem
     int active;
     gchar *dname;
     gchar *fname;
-//    GtkWidget *wid_colum0;
-//    GtkWidget *wid_colum2;
-//    GtkWidget *wid_colum3;
 };
 
 typedef struct _SaveMusicItem SaveIdItem;
@@ -519,6 +516,8 @@ struct _STRUCTClass
     gboolean isInitial; /* 初始化属性对话框*/
     gboolean hasIdnumber;
     gboolean destroyed;
+    gint depth; /* 这里是查找高亮显示的深度,零就不深入 */
+    ViewColor vcolor;
     GHashTable *widgetmap; // 2014-3-22 lcy 这里用一个哈希表来保存界面上所有的值。
     GList *widgetSave; // 2014-3-22 lcy 这里为顺序显示用链表保存.
     FactoryStructItemAll *EnumsAndStructs ;// 2014-3-21 lcy 这里包含一个文件里的所有结构体.
@@ -620,6 +619,8 @@ void factory_file_manager_dialog(GtkWidget *btn,SaveStruct *sst);
 void factory_create_list_array_manager_dialog(GtkWidget *btn,SaveStruct *sst);
 void factory_save_list_array_manager_dialog(GtkWidget *widget,gint       response_id,gpointer user_data);
 
+void factory_search_connected_link(STRUCTClass *structclass,gint depth);
+
 
 void factory_select(STRUCTClass *structclass, Point *clicked_point,
                            DiaRenderer *interactive_renderer);
@@ -665,6 +666,8 @@ GList* factory_get_download_name_list(const gchar *path);
 
 //void factoryReadDataFromFile(STRUCTClass *structclass);
 
+void factory_reset_object_color_to_default();
+void factory_set_fill_color();
 
 /*ID LIST*/
 void factory_new_idlist_dialog(GtkWidget *parent,SaveStruct *sst);
@@ -674,6 +677,7 @@ void factory_save_idlist_items(ObjectNode obj_node,GList *savelist);
 void factory_read_idlist_items(ObjectNode obj_node);
 
 void factory_save_idlist_to_xml(SaveStruct *sss,ObjectNode obj_node);
+
 
 void factory_write_mfile_filelist(ObjectNode obj_node);
 enum

@@ -376,6 +376,7 @@ edit_paste_callback (GtkAction *action)
     for(;plist;plist=plist->next)
     {
         DiaObject *obj = plist->data;
+        if(!obj->ops->obj_rename) continue;
         obj->ops->obj_rename(obj);
     }
 

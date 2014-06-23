@@ -792,7 +792,7 @@ diagram_select(Diagram *diagram, DiaObject *obj)
 {
 
     gchar name[] =  "Standard - Line";
-    if(!g_ascii_strcasecmp(name,obj->type->name))
+    if(!g_ascii_strcasecmp(name,obj->type->name)) /* 不让线条被选中*/
         return;
 
   if (dia_object_is_selectable(obj)) {

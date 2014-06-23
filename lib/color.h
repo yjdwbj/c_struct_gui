@@ -36,6 +36,9 @@ DIAVAR Color *color_new_rgb(float r, float g, float b);
 DIAVAR void color_convert(Color *color, GdkColor *gdkcolor);
 DIAVAR gboolean color_equals(Color *color1, Color *color2);
 
+
+
+
 #ifdef G_OS_WIN32
 static Color color_black = { 0.0f, 0.0f, 0.0f };
 static Color color_white = { 1.0f, 1.0f, 1.0f };

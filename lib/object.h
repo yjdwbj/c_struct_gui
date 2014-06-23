@@ -350,6 +350,11 @@ typedef void  (*ConnectionTwoObject)(DiaObject *obj,gpointer data,int num);
 typedef void (*UpdateObjectIndex)(DiaObject *obj);
 typedef void (*ObjectRename)(DiaObject *obj);
 typedef void (*UpdateObjectVName)(DiaObject *obj);
+
+typedef void (*SearchConnectedLink)(DiaObject *obj,gint depth);
+typedef void (*UpdateObjectsFillColor)();
+typedef void (*ResetObjectsToDefaultColor)();
+
 /*************************************
  **  The functions provided in object.c
  *************************************/
@@ -461,6 +466,9 @@ struct _ObjectOps {
   UpdateObjectIndex   update_index;
   ObjectRename  obj_rename;
   UpdateObjectVName  update_vname;
+  SearchConnectedLink SearchConnLink;
+  UpdateObjectsFillColor update_fillcolor;
+  ResetObjectsToDefaultColor reset_objectsfillcolor;
   void      (*(unused[4]))(DiaObject *obj,...);
 };
 

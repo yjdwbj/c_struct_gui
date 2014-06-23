@@ -240,27 +240,21 @@ object_properties_show(Diagram *dia, DiaObject *obj)
     g_list_free(tmp);
 }
 
-gint factory_open_new_dialog(GtkWidget *parent)
-{
-    GtkWidget * msg_dialog = gtk_message_dialog_new (dialog,
-                             GTK_DIALOG_MODAL,
-                             GTK_MESSAGE_WARNING,
-                             GTK_BUTTONS_YES_NO,
-                             factory_utf8("只能打开一个窗口，你要关闭之前打开的窗口吗?\n"
-                                          "请用tab键选择，回车键确定"));
-    gtk_dialog_set_default_response (GTK_DIALOG(msg_dialog), GTK_RESPONSE_NO);
-//                gtk_widget_show(msg_dialog);
-    gint yes_or_no = gtk_dialog_run (GTK_DIALOG (msg_dialog));
-    gtk_widget_destroy (msg_dialog);
-    return yes_or_no;
-}
-
 
 void
 object_list_properties_show(Diagram *dia, GList *objects)
 {
+
+
+
     GtkWidget *properties;
     DiaObject *one_obj;
+
+    one_obj = (g_list_length(objects) == 1) ? objects->data : NULL;
+    if(!one_obj) goto MWINDOW;
+    if(one_obj->type == object_get_type("Standard - Line")) /* 不显示线条的属性*/
+        return;
+
     if (!dialog)
         create_dialog();
     clear_dialog_globals();
@@ -279,6 +273,8 @@ object_list_properties_show(Diagram *dia, GList *objects)
         properties = one_obj->ops->get_properties(one_obj, FALSE);
     else
     {
+
+MWINDOW:
         message_error(factory_utf8(_("不支持多个控件的属性对话框.")));
         gtk_widget_destroy(dialog);
         return;

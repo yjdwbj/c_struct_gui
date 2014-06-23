@@ -145,7 +145,18 @@ click_select_object(DDisplay *ddisp, Point *clickedpoint,
     obj = diagram_find_clicked_object(diagram, clickedpoint,
                                       click_distance);
 
-    if (obj!=NULL)
+
+    if (obj==NULL)
+    {
+        GList *plist = g_hash_table_get_values(diagram->data->active_layer->defnames);
+        if(plist)  /* 清空所有高亮 */
+        {
+            DiaObject *dia = plist->data;
+            dia->ops->reset_objectsfillcolor();
+        }
+        diagram_redraw_all();
+    }
+    else
     {
         /* Selected an object. */
         GList *already;
@@ -163,6 +174,15 @@ click_select_object(DDisplay *ddisp, Point *clickedpoint,
             }
 
             diagram_select(diagram, obj);
+            if(obj->type == object_get_type("STRUCT - Class"))
+            {
+                obj->ops->reset_objectsfillcolor(); /* 清空所有高亮 */
+                diagram_redraw_all();
+                obj->ops->SearchConnLink(obj,3); /* 2014-6-23 lcy 回调查找最近三层的连线 */
+//                obj->ops->update_fillcolor();
+                diagram_redraw_all(); /* 这个必须要重写画布上有的所有对像 */
+            }
+
             /* To be removed once text edit mode is stable.  By then,
              * we don't want to automatically edit selected objects.
             textedit_activate_object(ddisp, obj, clickedpoint);
@@ -370,13 +390,14 @@ modify_double_click(ModifyTool *tool, GdkEventButton *event,
 
     if ( clicked_obj != NULL )
     {
-        gchar *n1 = g_strdup("Standard - Line");
-        if(!g_ascii_strncasecmp(clicked_obj->type->name,n1,strlen(n1))) /* 线条不显示属性窗口*/
+//        gchar *n1 = g_strdup("Standard - Line");
+//        if(!g_ascii_strncasecmp(clicked_obj->type->name,n1,strlen(n1))) /* 线条不显示属性窗口*/
+        if(clicked_obj->type == object_get_type("Standard - Line"))
         {
-            g_free(n1);
+//            g_free(n1);
             return;
         }
-        g_free(n1);
+//        g_free(n1);
         object_list_properties_show(ddisp->diagram, ddisp->diagram->data->selected);
     }
     else     /* No object selected */

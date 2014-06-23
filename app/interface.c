@@ -1086,8 +1086,6 @@ tool_button_press (GtkWidget      *w,
                     event->x += 60; /* 这里尽量移动不盖住原来的控件 */
                 if(oy == (int)p.y )
                     event->y += 60;
-
-
             }
             /* 这里直接调用回调函数来新建一个控件 */
 

@@ -3044,6 +3044,88 @@ DiaObject *factory_find_same_diaobject_via_glist(GList *flist,GList *comprelist)
 }
 
 
+void factory_reset_object_color_to_default()
+{
+    GList *tlist = g_hash_table_get_values(curLayer->defnames);
+    for(;tlist; tlist = tlist->next)
+    {
+        STRUCTClass *fclass = tlist->data;
+        fclass->line_color = color_black;
+        fclass->text_color = color_black;
+        fclass->vcolor = N_COLOR;
+        if(fclass->pps)
+            fclass->fill_color = fclass->pps->hasfinished ?  color_edited : color_white;
+    }
+}
+
+void factory_set_fill_color()
+{
+    GList *tlist = g_hash_table_get_values(curLayer->defnames);
+
+    for(;tlist; tlist = tlist->next)
+    {
+        STRUCTClass *fclass = tlist->data;
+        if(fclass->vcolor == H_COLOR )
+         {
+            fclass->line_color = color_highlight;
+//            if(!fclass->pps->hasfinished)
+            fclass->text_color = color_highlight;
+
+         }
+         else
+         {
+            fclass->line_color = color_black;
+            fclass->text_color = color_black;
+         }
+
+    }
+//    g_list_free1(curLayer->highlight_list);
+//    curLayer->highlight_list = NULL;
+}
+
+
+void factory_search_connected_link(STRUCTClass *fclass,gint depth)
+{
+    if(0 == depth) /* 不用再往下递归查找了 */
+        return;
+    int cdepth = depth - 1;
+    GList *connlist = fclass->connections[8].connected; /* 本对像连接多少条线 */
+//    fclass->vcolor = H_COLOR;
+    fclass->line_color = color_highlight;
+//            if(!fclass->pps->hasfinished)
+    fclass->text_color = color_highlight;
+    for(; connlist; connlist = connlist->next)
+    {
+        Connection *connection  = (Connection *)connlist->data;
+        g_return_if_fail(connection);
+
+        ConnectionPoint *start_cp, *end_cp;
+        start_cp = connection->endpoint_handles[0].connected_to;
+        end_cp = connection->endpoint_handles[1].connected_to;
+        STRUCTClass *tclass = NULL;
+        if(start_cp)
+        {
+            /* 把这条线从对像里删掉*/
+            tclass = start_cp->object;
+            if(tclass != fclass)
+            {
+                 factory_search_connected_link(tclass,cdepth);
+            }
+
+        }
+        if(end_cp)
+        {
+            tclass = end_cp->object;
+            if(tclass != fclass)
+            {
+                  factory_search_connected_link(tclass,cdepth);
+            }
+
+        }
+
+    }
+     diagram_flush(ddisplay_active()->diagram);
+}
 
 static void factory_connection_two_object(STRUCTClass *fclass, /* start pointer*/
         STRUCTClass *objclass /* end pointer */)
@@ -3072,6 +3154,7 @@ static void factory_connection_two_object(STRUCTClass *fclass, /* start pointer*
         factory_connectionto_object(ddisp,obj,objclass,1);
     }
 //    diagram_unselect_objects(ddisp->diagram,ddisp->diagram->data->selected);
+    diagram_remove_all_selected(ddisp->diagram,TRUE);
     diagram_select(ddisp->diagram,(DiaObject*)fclass);
     diagram_flush(ddisp->diagram);
 
@@ -3303,16 +3386,7 @@ void factory_change_view_name(STRUCTClass *fclass)
         // g_convert("中国",-1,"UTF-8","GB2312",NULL,NULL,NULL);
     }
     pps->hasfinished = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(pps->wid_hasfinished));
-    if(pps->hasfinished)
-    {
-        Color red = {0,139,0 };
-        fclass->fill_color = red;
-    }
-    else
-    {
-        Color w = {255,255,255};
-        fclass->fill_color = w;
-    }
+    fclass->fill_color = fclass->pps->hasfinished ? color_edited : color_white;
 }
 
 
@@ -3329,9 +3403,6 @@ factory_apply_props_from_dialog(STRUCTClass *fclass, GtkWidget *widget)
     {
         factory_read_props_from_widget(NULL,applist->data,NULL);
     }
-
-
-
     diagram_set_modified(ddisplay_active_diagram(),TRUE);
     factory_change_view_name(fclass);
     return  NULL;
