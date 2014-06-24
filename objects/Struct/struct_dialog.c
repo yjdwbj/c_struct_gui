@@ -3046,37 +3046,63 @@ DiaObject *factory_find_same_diaobject_via_glist(GList *flist,GList *comprelist)
 
 void factory_reset_object_color_to_default()
 {
-    GList *tlist = g_hash_table_get_values(curLayer->defnames);
-    for(;tlist; tlist = tlist->next)
+//    GList *tlist = g_hash_table_get_values(curLayer->defnames);
+//    for(;tlist; tlist = tlist->next)
+//    {
+//        STRUCTClass *fclass = tlist->data;
+//        fclass->line_color = color_black;
+//        fclass->text_color = color_black;
+//        fclass->vcolor = N_COLOR;
+//        if(fclass->pps)
+//            fclass->fill_color = fclass->pps->hasfinished ?  color_edited : color_white;
+//    }
+    FactoryColors *color = factoryContainer->color;
+    GList *objects = curLayer->objects;
+    DiaObjectType *linetype = object_get_type("Standard - Line");
+//        DiaObjectType *stype =  object_get_type("STRUCT - Class");
+    for(; objects; objects = objects->next)
     {
-        STRUCTClass *fclass = tlist->data;
-        fclass->line_color = color_black;
-        fclass->text_color = color_black;
-        fclass->vcolor = N_COLOR;
-        if(fclass->pps)
-            fclass->fill_color = fclass->pps->hasfinished ?  color_edited : color_white;
+        DiaObject *dia = objects->data;
+        if(dia->type  == linetype)
+        {
+            dia->ops->reset_objectsfillcolor(dia);
+        }
+        else
+        {
+            STRUCTClass *fclass = objects->data;
+            fclass->line_color = color->color_foreground;
+            fclass->text_color = color->color_foreground;
+            fclass->vcolor = N_COLOR;
+            if(fclass->pps)
+                fclass->fill_color = fclass->pps->hasfinished ?  color->color_edited : color->color_background;
+        }
     }
 }
 
 void factory_set_fill_color()
 {
     GList *tlist = g_hash_table_get_values(curLayer->defnames);
-
-    for(;tlist; tlist = tlist->next)
+//    FactoryColors *color = factoryContainer->color;
+    FactoryColors *color = factoryContainer->color;
+    for(; tlist; tlist = tlist->next)
     {
         STRUCTClass *fclass = tlist->data;
         if(fclass->vcolor == H_COLOR )
-         {
-            fclass->line_color = color_highlight;
+        {
+//            fclass->line_color = color_highlight;
+              fclass->line_color = color->color_highlight;
 //            if(!fclass->pps->hasfinished)
-            fclass->text_color = color_highlight;
+              fclass->text_color = color->color_highlight;
+//            fclass->text_color = color_highlight;
 
-         }
-         else
-         {
-            fclass->line_color = color_black;
-            fclass->text_color = color_black;
-         }
+        }
+        else
+        {
+//            fclass->line_color = color_black;
+//            fclass->text_color = color_black;
+            fclass->line_color = color->color_foreground;
+            fclass->text_color = color->color_foreground;
+        }
 
     }
 //    g_list_free1(curLayer->highlight_list);
@@ -3084,21 +3110,19 @@ void factory_set_fill_color()
 }
 
 
-void factory_search_connected_link(STRUCTClass *fclass,gint depth)
+gboolean factory_search_connected_link(STRUCTClass *fclass,gint depth)
 {
     if(0 == depth) /* 不用再往下递归查找了 */
-        return;
+        return FALSE;
     int cdepth = depth - 1;
+    FactoryColors *color = factoryContainer->color;
     GList *connlist = fclass->connections[8].connected; /* 本对像连接多少条线 */
-//    fclass->vcolor = H_COLOR;
-    fclass->line_color = color_highlight;
-//            if(!fclass->pps->hasfinished)
-    fclass->text_color = color_highlight;
+    fclass->line_color = color->color_highlight;
+    fclass->text_color = color->color_highlight;
     for(; connlist; connlist = connlist->next)
     {
         Connection *connection  = (Connection *)connlist->data;
         g_return_if_fail(connection);
-
         ConnectionPoint *start_cp, *end_cp;
         start_cp = connection->endpoint_handles[0].connected_to;
         end_cp = connection->endpoint_handles[1].connected_to;
@@ -3109,7 +3133,8 @@ void factory_search_connected_link(STRUCTClass *fclass,gint depth)
             tclass = start_cp->object;
             if(tclass != fclass)
             {
-                 factory_search_connected_link(tclass,cdepth);
+                if(factory_search_connected_link(tclass,cdepth))
+                    ((DiaObject *)(connection))->ops->set_fillcolor(connection); /*线条颜色 */
             }
 
         }
@@ -3118,13 +3143,15 @@ void factory_search_connected_link(STRUCTClass *fclass,gint depth)
             tclass = end_cp->object;
             if(tclass != fclass)
             {
-                  factory_search_connected_link(tclass,cdepth);
+                if(factory_search_connected_link(tclass,cdepth))
+                    ((DiaObject *)(connection))->ops->set_fillcolor(connection); /*线条颜色 */
             }
 
         }
 
     }
-     diagram_flush(ddisplay_active()->diagram);
+    diagram_flush(ddisplay_active()->diagram);
+    return TRUE;
 }
 
 static void factory_connection_two_object(STRUCTClass *fclass, /* start pointer*/
@@ -4818,12 +4845,13 @@ void factory_editable_insert_callback(GtkEntry *entry,
 void factory_create_struct_dialog(GtkWidget *dialog,GList *datalist)
 {
     /* 通链表创建控件 SaveStruct *sst */
+
     GList *item = datalist;
     int row = 0;
     for(; item  ; item = item->next)
     {
         SaveStruct *sst  = item->data;
-
+        factory_debug_to_log(g_strdup_printf(factory_utf8("初始化显示控件成员,名字:%s.\n"),sst->name));
         factory_set_savestruct_widgets(sst);
         if(g_ascii_strcasecmp(factory_locale(sst->org->Cname),_("保留"))) /* 保留的不显示出来 */
         {
@@ -4952,6 +4980,7 @@ void factory_create_and_fill_dialog(STRUCTClass *fclass, gboolean is_default)
 
     curLayer = factoryContainer->curLayer;
     STRUCTClassDialog *prop_dialog = fclass->properties_dialog;
+    factory_debug_to_log(g_strdup_printf(factory_utf8("初始化显示控件,名字:%s.\n"),fclass->name));
 
     GList *targetlist = fclass->widgetSave;
     if(!targetlist)

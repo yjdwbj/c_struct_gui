@@ -3386,13 +3386,14 @@ void factory_read_initial_to_struct(STRUCTClass *fclass) /*2014-3-26 lcy ÍÏÈë¿Ø¼
 {
     /* ÕâÀï´ÓÔ­¹şÏ£±í¸´ÖÆÒ»·İ³öÀ´ */
 //    gchar **tmp =  g_strsplit(fclass->name,"(",-1);
-
+    factory_debug_to_log(g_strdup_printf(factory_utf8("³õÊ¼»¯¶ÔÏñ,Ãû×Ö:%s.\n"),fclass->name));
     factory_set_original_class(fclass);
     GList *tttt = factory_get_list_from_hashtable(fclass);
     for(; tttt != NULL ; tttt = tttt->next)
     {
         FactoryStructItem *fst = tttt->data;
         SaveStruct *sst= factory_get_savestruct(fst);
+        factory_debug_to_log(g_strdup_printf(factory_utf8("³õÊ¼»¯³ÉÔ±,Ãû×Ö:%s.\n"),sst->name));
         g_hash_table_insert(fclass->widgetmap,g_strjoin("##",fst->FType,fst->Name,NULL),sst);
         fclass->widgetSave = g_list_append(fclass->widgetSave,sst);
     }

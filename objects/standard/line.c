@@ -39,6 +39,8 @@
 
 #define DEFAULT_WIDTH 0.25
 
+extern FactoryStructItemAll *factoryContainer;
+
 typedef struct _LineProperties LineProperties;
 
 typedef struct _Line {
@@ -81,6 +83,8 @@ static PropDescription *line_describe_props(Line *line);
 static void line_get_props(Line *line, GPtrArray *props);
 static void line_set_props(Line *line, GPtrArray *props);
 static void line_connection_two_object(Line *line,ConnectionPoint *cp,int num);
+static void line_reset_default_color();
+static void line_set_color();
 
 
 static void line_save(Line *line, ObjectNode obj_node, const char *filename);
@@ -126,6 +130,12 @@ static ObjectOps line_ops = {
   (ApplyPropertiesListFunc) 0,/*object_apply_props,*/
   (UpdateData) line_update_data,
   (ConnectionTwoObject) line_connection_two_object,
+  (UpdateObjectIndex)   0,
+  (ObjectRename)  0,
+  (UpdateObjectVName)  0,
+  (SearchConnectedLink) 0,
+  (UpdateObjectsFillColor) line_set_color,
+  (ResetObjectsToDefaultColor) line_reset_default_color
 };
 
 static PropNumData gap_range = { -G_MAXFLOAT, G_MAXFLOAT, 0.1};
@@ -195,13 +205,26 @@ line_set_props(Line *line, GPtrArray *props)
   line_update_data(line);
 }
 
-
+//static Color color_highlight = {126.0f, 0.0f, 0.0f };
 static void
 line_connection_two_object(Line *line,ConnectionPoint *cp,int num)
 {
     /* 2014-4-4 lcy 把连接点固定*/
     line->connection.endpoint_handles[num].connected_to = cp;
     line_update_data(line);
+}
+
+static FactoryColors *color = NULL;
+static void line_reset_default_color(Line *line)
+{
+    color = factoryContainer->color;
+    line->line_color = color->color_foreground;
+}
+
+static void line_set_color(Line *line)
+{
+     color = factoryContainer->color;
+    line->line_color = color->color_highlight;
 }
 
 static void

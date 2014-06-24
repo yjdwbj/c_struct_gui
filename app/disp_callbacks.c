@@ -194,6 +194,7 @@ create_object_menu(DiaMenu *dia_menu)
 //              /* Create the popup menu items for the submenu. */
 //          create_object_menu((DiaMenu*)(item->callback_data) ) ;
 //          gtk_menu_item_set_submenu( GTK_MENU_ITEM (menu_item),
+
 //                                     GTK_WIDGET(((DiaMenu*)(item->callback_data))->app_data));
 //        }
 //      }

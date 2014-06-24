@@ -569,6 +569,36 @@ diagram_data_load(const char *filename, DiagramData *data, void* user_data)
     if (attr != NULL)
         data_color(attribute_first_data(attr), &data->bg_color);
 
+
+    /* 读回之前设置的四种颜色 */
+    FactoryColors *color = factoryContainer->color;
+    attr = composite_find_attribute(diagramdata, "color_edited");
+    if(attr != NULL)
+        data_color(attribute_first_data(attr), &color->color_edited);
+    else
+       color->color_edited = color_edited;
+
+
+    attr = composite_find_attribute(diagramdata, "color_highlight");
+    if(attr != NULL)
+        data_color(attribute_first_data(attr), &color->color_highlight);
+    else
+        color->color_highlight = color_highlight;
+
+
+    attr = composite_find_attribute(diagramdata, "color_foreground");
+    if(attr != NULL)
+        data_color(attribute_first_data(attr), &color->color_foreground);
+    else
+        color->color_foreground = color_black;
+
+   attr = composite_find_attribute(diagramdata, "color_background");
+    if(attr != NULL)
+        data_color(attribute_first_data(attr), &color->color_background);
+    else
+        color->color_background = color_white;
+
+
     if (diagram)
     {
         diagram->pagebreak_color = prefs.new_diagram.pagebreak_color;
@@ -1032,6 +1062,20 @@ diagram_data_write_doc(DiagramData *data, const char *filename)
 
     attr = new_attribute((ObjectNode)tree, "background");
     data_add_color(attr, &data->bg_color);
+    /* 2014-6-24 lcy 保存选择的颜色*/
+    FactoryColors *color = factoryContainer->color;
+    attr = new_attribute((ObjectNode)tree, "color_edited");
+    data_add_color(attr,&color->color_edited);
+
+    attr = new_attribute((ObjectNode)tree, "color_highlight");
+    data_add_color(attr,&color->color_highlight);
+
+    attr = new_attribute((ObjectNode)tree, "color_foreground");
+    data_add_color(attr,&color->color_foreground);
+
+    attr = new_attribute((ObjectNode)tree, "color_background");
+    data_add_color(attr,&color->color_background);
+
 
     if (diagram)
     {

@@ -1064,6 +1064,10 @@ static void
 dia_color_selector_more_callback(GtkWidget *widget, gpointer userdata)
 {
   GtkColorSelectionDialog *dialog = GTK_COLOR_SELECTION_DIALOG (gtk_color_selection_dialog_new(_("Select color")));
+  GtkWidget *parent = gtk_widget_get_toplevel(widget);
+  gtk_widget_hide(parent);
+  gtk_window_set_modal(GTK_WINDOW(dialog),TRUE);
+  gtk_window_present(GTK_WINDOW(dialog));
   DiaDynamicMenu *ddm = DIA_DYNAMIC_MENU(userdata);
   GtkColorSelection *colorsel = GTK_COLOR_SELECTION(dialog->colorsel);
   GString *palette = g_string_new ("");
@@ -2060,9 +2064,9 @@ dia_dynamic_menu_create_menu(DiaDynamicMenu *ddm)
       gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
       gtk_widget_show(item);
     }
-//    sep = gtk_separator_menu_item_new();
-//    gtk_widget_show(sep);
-//    gtk_menu_shell_append(GTK_MENU_SHELL(menu), sep);
+    sep = gtk_separator_menu_item_new();
+    gtk_widget_show(sep);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), sep);
   }
 
   for (tmplist = persistent_list_get_glist(ddm->persistent_name);
@@ -2075,23 +2079,23 @@ dia_dynamic_menu_create_menu(DiaDynamicMenu *ddm)
     gtk_widget_show(item);
   }
   // 2014-3-22 lcy 这里全部注释掉，只剩一行。
-//  sep = gtk_separator_menu_item_new();
-//  gtk_widget_show(sep);
-//  gtk_menu_shell_append(GTK_MENU_SHELL(menu), sep);
+  sep = gtk_separator_menu_item_new();
+  gtk_widget_show(sep);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu), sep);
 
-//  gtk_menu_shell_append(GTK_MENU_SHELL(menu), GTK_WIDGET(ddm->other_item));
-//  g_object_unref(G_OBJECT(ddm->other_item));
-//  /* Eventually reset item here */
-//  gtk_widget_show(menu);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu), GTK_WIDGET(ddm->other_item));
+  g_object_unref(G_OBJECT(ddm->other_item));
+  /* Eventually reset item here */
+  gtk_widget_show(menu);
 
-//  item = gtk_menu_item_new_with_label(_("Reset menu"));
-//  gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-//  g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(dia_dynamic_menu_reset), ddm);
-//  gtk_widget_show(item);
+  item = gtk_menu_item_new_with_label(_("Reset menu"));
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+  g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(dia_dynamic_menu_reset), ddm);
+  gtk_widget_show(item);
 
   gtk_option_menu_set_menu(GTK_OPTION_MENU(ddm), menu);
 
-//  gtk_option_menu_set_history(GTK_OPTION_MENU(ddm), 0);
+  gtk_option_menu_set_history(GTK_OPTION_MENU(ddm), 0);
 }
 
 /** Select the method used for sorting the non-default entries.

@@ -1193,7 +1193,7 @@ gboolean factory_is_system_data(const gchar *name)
 
 gboolean factory_is_io_port(const gchar *name)
 {
-    gboolean *b = FALSE;
+    gboolean b = FALSE;
 
     if(!g_ascii_strcasecmp(name,"ALL_IO_PORT") || !g_ascii_strcasecmp(name,"ADC_IO_PORT") )
         b = TRUE;
@@ -1263,7 +1263,7 @@ factory_critical_error_exit(const gchar *msg_err)
     gint yes_or_no = gtk_dialog_run (GTK_DIALOG (msg_dialog));
 
     gtk_widget_destroy (msg_dialog);
-    factory_critical_error_response(NULL,NULL,NULL);
+    factory_critical_error_response(NULL,0,NULL);
 
 
 //    gtk_dialog_set_default_response (GTK_DIALOG(dialog), GTK_RESPONSE_CLOSE);
@@ -1298,18 +1298,18 @@ factory_give_focus(GtkWidget *widget, gpointer data)
     }
 }
 
-static gboolean factory_button_press_response (GtkWidget *widget,
-        GdkEvent  *event,
-        gpointer   user_data)
-{
-    gchar *title = gtk_window_get_title (GTK_WINDOW(widget));
-    if( gtk_window_has_toplevel_focus (GTK_WINDOW(widget)))
-    {
-
-        return FALSE;
-    }
-    return TRUE;
-}
+//static gboolean factory_button_press_response (GtkWidget *widget,
+//        GdkEvent  *event,
+//        gpointer   user_data)
+//{
+//    gchar *title = gtk_window_get_title (GTK_WINDOW(widget));
+//    if( gtk_window_has_toplevel_focus (GTK_WINDOW(widget)))
+//    {
+//
+//        return FALSE;
+//    }
+//    return TRUE;
+//}
 
 static gboolean factory_dialog_delete_response(GtkWidget *widget,
         GdkEvent  *event,

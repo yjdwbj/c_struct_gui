@@ -97,12 +97,12 @@ build_ui_filename (const gchar* name);
 static const GtkActionEntry common_entries[] =
 {
     { "File", NULL, N_("_File"), NULL, NULL, NULL },
-        { "FileNew", GTK_STOCK_NEW, NULL, "<control>N", NULL, G_CALLBACK (file_new_callback) },
-        { "FileOpen", GTK_STOCK_OPEN, NULL,"<control>O", NULL, G_CALLBACK (file_open_callback) },
-        { "FileQuit", GTK_STOCK_QUIT, NULL, "<control>Q", NULL, G_CALLBACK (file_quit_callback) },
+    { "FileNew", GTK_STOCK_NEW, NULL, "<control>N", NULL, G_CALLBACK (file_new_callback) },
+    { "FileOpen", GTK_STOCK_OPEN, NULL,"<control>O", NULL, G_CALLBACK (file_open_callback) },
+    { "FileQuit", GTK_STOCK_QUIT, NULL, "<control>Q", NULL, G_CALLBACK (file_quit_callback) },
     { "Help", NULL, N_("_Help"), NULL, NULL,NULL },
-        { "HelpContents", GTK_STOCK_HELP, NULL, "F1", NULL, G_CALLBACK (help_manual_callback) },
-        { "HelpAbout", GTK_STOCK_ABOUT, NULL, NULL, NULL, G_CALLBACK (help_about_callback) }
+    { "HelpContents", GTK_STOCK_HELP, NULL, "F1", NULL, G_CALLBACK (help_manual_callback) },
+    { "HelpAbout", GTK_STOCK_ABOUT, NULL, NULL, NULL, G_CALLBACK (help_about_callback) }
 };
 
 /* Actions for toolbox menu */
@@ -593,8 +593,8 @@ void factory_callback_download_to_device(GtkWidget *btn,gpointer user_data)
     if(!diagram) return;
     if(diagram->unsaved || diagram_is_modified(diagram))
     {
-         diagram->data->readytodownload = TRUE;
-        file_save_callback(NULL,NULL,NULL);
+        diagram->data->readytodownload = TRUE;
+        file_save_callback(NULL,0,NULL);
     }
     else
     {
@@ -614,6 +614,172 @@ void factory_callback_system_data(GtkWidget *btn,gpointer user_data)
     }
 }
 
+static GdkColor color;
+
+
+static void
+change_color_callback (GtkWidget *button,
+                       gpointer	  data)
+{
+    Color *ucolor = (Color*)data;
+    GtkWidget *dialog;
+    GtkColorSelection *colorsel;
+    gint response;
+
+    dialog = gtk_color_selection_dialog_new ("Changing color");
+//     gtk_widget_set_parent(dialog,button);
+//     gtk_window_set_modal(GTK_WINDOW(dialog),TRUE);
+    gtk_window_set_position(GTK_WINDOW(dialog),GTK_WIN_POS_CENTER_ALWAYS);
+    gtk_window_set_modal(GTK_WINDOW(dialog),TRUE);
+
+//    gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (window));
+
+    colorsel =
+        GTK_COLOR_SELECTION (gtk_color_selection_dialog_get_color_selection (GTK_COLOR_SELECTION_DIALOG (dialog)));
+
+    color_convert(ucolor,&color);
+    gtk_color_selection_set_previous_color (colorsel, &color);
+
+    gtk_color_selection_set_current_color (colorsel, &color);
+    gtk_color_selection_set_has_palette (colorsel, TRUE);
+
+
+    response = gtk_dialog_run (GTK_DIALOG (dialog));
+
+    if (response == GTK_RESPONSE_OK)
+    {
+        gtk_color_selection_get_current_color (colorsel,
+                                               &color);
+
+
+//        gtk_widget_modify_bg (da, GTK_STATE_NORMAL, &color);
+        ucolor->red = color.red  / 65535.0;
+        ucolor->green = color.green / 65535.0;
+        ucolor->blue = color.blue / 65535.0;
+        gtk_widget_modify_bg ( GTK_WIDGET(button), GTK_STATE_NORMAL, &color);
+    }
+
+    gtk_widget_destroy (dialog);
+}
+
+
+static void factory_color_reset_default_color(GtkWidget *btn,gpointer user_data)
+{
+    FactoryColors *color = factoryContainer->color;
+    color->color_background = color_white;
+    color->color_foreground = color_black;
+    color->color_edited = color_edited;
+    color->color_highlight = color_highlight;
+}
+
+static void factory_color_setting_callback(GtkWidget *btn,gpointer user_data)
+{
+
+    g_return_if_fail(ddisplay_active());
+    g_return_if_fail(factoryContainer);
+    FactoryColors *fcolors = factoryContainer->color;
+    static GtkWidget *color_dialog = NULL;
+
+
+    GtkWidget *mainVbox = gtk_vbox_new(FALSE,1);
+    GtkWidget *table = gtk_table_new (2, 4, TRUE);
+    gtk_box_pack_start (GTK_BOX (mainVbox),
+                        table, FALSE, TRUE, 0);
+    /* should probably be refactored too. */
+
+    GtkWidget *edited_color;
+    GtkWidget *highlight_color;
+    GtkWidget *f_color,*b_color;
+    GtkWidget *label;
+
+    GdkColor bgcolor;
+    label = gtk_label_new(factory_utf8("已编辑颜色"));
+//    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
+    gtk_table_attach (GTK_TABLE (table), label, 0, 1, 0, 1, GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND, 0, 2);
+    color_convert(&fcolors->color_edited,&bgcolor);
+    edited_color = gtk_button_new();
+    gtk_widget_set_size_request (edited_color,60,30);
+    gtk_widget_set_size_request (label,60,30);
+    gtk_widget_modify_bg ( GTK_WIDGET(edited_color), GTK_STATE_NORMAL, &bgcolor);
+    g_signal_connect(edited_color,"clicked",G_CALLBACK(change_color_callback),&fcolors->color_edited);
+    gtk_table_attach (GTK_TABLE (table), edited_color, 1, 2, 0, 1,  GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND, 3, 2);
+
+    label = gtk_label_new(factory_utf8("高亮颜色"));
+//    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
+    gtk_table_attach (GTK_TABLE (table), label, 0, 1, 1, 2,  GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND, 0, 2);
+    highlight_color = gtk_button_new();
+//    gtk_widget_set_size_request (highlight_color,50,10);
+    color_convert(&fcolors->color_highlight,&bgcolor);
+    gtk_widget_modify_bg ( GTK_WIDGET(highlight_color), GTK_STATE_NORMAL, &bgcolor);
+    g_signal_connect(highlight_color,"clicked",G_CALLBACK(change_color_callback),&fcolors->color_highlight);
+    gtk_table_attach (GTK_TABLE (table), highlight_color, 1, 2, 1, 2,  GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND, 3, 2);
+
+    label = gtk_label_new(factory_utf8("前景色"));
+//    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
+    gtk_table_attach (GTK_TABLE (table), label, 0, 1, 2, 3,  GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,0, 2);
+    f_color = gtk_button_new();
+//    gtk_widget_set_size_request (f_color,50,10);
+    color_convert(&fcolors->color_foreground,&bgcolor);
+    gtk_widget_modify_bg ( GTK_WIDGET(f_color), GTK_STATE_NORMAL, &bgcolor);
+    g_signal_connect(f_color,"clicked",G_CALLBACK(change_color_callback),&fcolors->color_foreground);
+    gtk_table_attach (GTK_TABLE (table), f_color, 1, 2, 2, 3,  GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND, 3, 2);
+
+    label = gtk_label_new(factory_utf8("背景色"));
+//    gtk_misc_set_alignment(GTK_MISC(label), 0.0, 5.0);
+    gtk_table_attach (GTK_TABLE (table), label, 0, 1, 3, 4,  GTK_FILL|GTK_EXPAND,GTK_FILL|GTK_EXPAND, 0, 2);
+    b_color = gtk_button_new();
+//    gtk_widget_set_size_request (b_color,50,10);
+    color_convert(&fcolors->color_background,&bgcolor);
+    gtk_widget_modify_bg ( GTK_WIDGET(b_color), GTK_STATE_NORMAL, &bgcolor);
+    g_signal_connect(b_color,"clicked",G_CALLBACK(change_color_callback),&fcolors->color_background);
+    gtk_table_attach (GTK_TABLE (table), b_color, 1, 2, 3, 4,  GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND, 3, 2);
+
+
+
+
+    label = gtk_button_new_with_label(factory_utf8("重置系统颜色"));
+
+    g_signal_connect(label,"clicked",G_CALLBACK(factory_color_reset_default_color),NULL);
+    gtk_box_pack_start (GTK_BOX (mainVbox), edited_color, TRUE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX (mainVbox), highlight_color, TRUE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX (mainVbox), f_color, TRUE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX (mainVbox), b_color, TRUE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX (mainVbox), b_color, TRUE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX (mainVbox), label, TRUE, FALSE, 0);
+
+
+
+    gtk_widget_show_all (mainVbox);
+
+    color_dialog  = gtk_dialog_new_with_buttons(
+                        factory_utf8("颜色设置"),
+                        GTK_WINDOW(interface_get_toolbox_shell ()),
+//                            GTK_WINDOW(ddisplay_active()->shell),
+                        GTK_DIALOG_MODAL,
+                        GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
+                        NULL);
+    gtk_dialog_set_default_response(GTK_DIALOG(color_dialog),GTK_RESPONSE_CLOSE);
+    gtk_window_present(GTK_WINDOW(color_dialog));
+
+    gtk_window_set_resizable (GTK_WINDOW (color_dialog), FALSE);
+    GtkWidget *dlgvbox = GTK_DIALOG(color_dialog)->vbox;
+//        g_signal_connect(G_OBJECT(color_dialog), "delete_event",
+//                         G_CALLBACK(gtk_widget_hide), NULL);
+//
+//        g_signal_connect(G_OBJECT (color_dialog), "destroy",
+//                         G_CALLBACK(gtk_widget_destroyed), &color_dialog);
+//        g_signal_connect(G_OBJECT (color_dialog), "destroy",
+//                         G_CALLBACK(gtk_widget_destroyed), &dlgvbox);
+    gtk_container_add(GTK_CONTAINER(dlgvbox),mainVbox);
+//        gtk_widget_show(color_dialog);
+    gint ret = gtk_dialog_run(color_dialog);
+
+    gtk_widget_hide(color_dialog);
+
+
+
+}
+
 
 void factory_callback_object_count(GtkWidget *btn,gpointer user_data)
 {
@@ -624,13 +790,13 @@ void factory_callback_object_count(GtkWidget *btn,gpointer user_data)
     int actionobj = g_hash_table_size(factoryContainer->curLayer->defnames);
     gchar *msg = g_strdup_printf(factory_utf8("行为控件数:%d\n\n线条数:%d\n"),actionobj,allobj-actionobj);
     GtkDialog *dialog = gtk_message_dialog_new (GTK_WINDOW(ddisplay_active()->shell),
-				       GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-				       GTK_MESSAGE_INFO,
-				       GTK_BUTTONS_OK,
-				       msg);
+                        GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                        GTK_MESSAGE_INFO,
+                        GTK_BUTTONS_OK,
+                        msg);
     gtk_dialog_set_default_response(dialog,GTK_BUTTONS_OK);
     gtk_dialog_run(dialog);
-    gtk_widget_destroy(dialog);
+    gtk_widget_destroy(GTK_DIALOG(dialog));
 }
 
 /**
@@ -746,12 +912,21 @@ create_integrated_ui_toolbar (void)
     integrated_ui_toolbar_add_custom_item(toolbar,dbtn);
     g_signal_connect(dbtn,"clicked",G_CALLBACK(factory_callback_download_to_device),NULL);
 
-     sep = gtk_separator_tool_item_new ();
+    sep = gtk_separator_tool_item_new ();
     gtk_toolbar_insert (toolbar, sep, -1);
 
     dbtn = gtk_button_new_with_label(factory_utf8("控件统计"));
     integrated_ui_toolbar_add_custom_item(toolbar,dbtn);
     g_signal_connect(dbtn,"clicked",G_CALLBACK(factory_callback_object_count),NULL);
+
+    gtk_widget_show (GTK_WIDGET (sep));
+
+    sep = gtk_separator_tool_item_new ();
+    gtk_toolbar_insert (toolbar, sep, -1);
+
+    dbtn = gtk_button_new_with_label(factory_utf8("颜色设置"));
+    integrated_ui_toolbar_add_custom_item(toolbar,dbtn);
+    g_signal_connect(dbtn,"clicked",G_CALLBACK(factory_color_setting_callback),NULL);
 
     gtk_widget_show (GTK_WIDGET (sep));
 

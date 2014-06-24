@@ -152,7 +152,7 @@ click_select_object(DDisplay *ddisp, Point *clickedpoint,
         if(plist)  /* 清空所有高亮 */
         {
             DiaObject *dia = plist->data;
-            dia->ops->reset_objectsfillcolor();
+            dia->ops->reset_objectsfillcolor(obj);
         }
         diagram_redraw_all();
     }
@@ -176,7 +176,7 @@ click_select_object(DDisplay *ddisp, Point *clickedpoint,
             diagram_select(diagram, obj);
             if(obj->type == object_get_type("STRUCT - Class"))
             {
-                obj->ops->reset_objectsfillcolor(); /* 清空所有高亮 */
+                obj->ops->reset_objectsfillcolor(obj); /* 清空所有高亮 */
                 diagram_redraw_all();
                 obj->ops->SearchConnLink(obj,3); /* 2014-6-23 lcy 回调查找最近三层的连线 */
 //                obj->ops->update_fillcolor();

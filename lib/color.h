@@ -31,12 +31,21 @@ struct _Color {
   float blue;
 };
 
+struct _FactoryColors
+{
+    Color color_foreground;
+    Color color_background;
+    Color color_highlight;
+    Color color_edited;
+};
+
 DIAVAR void color_init(void);
 DIAVAR Color *color_new_rgb(float r, float g, float b);
 DIAVAR void color_convert(Color *color, GdkColor *gdkcolor);
 DIAVAR gboolean color_equals(Color *color1, Color *color2);
 
-
+static Color color_edited = {0.0f, 123.0f, 0.0f };
+static Color color_highlight = {126.0f, 0.0f, 0.0f };
 
 
 #ifdef G_OS_WIN32

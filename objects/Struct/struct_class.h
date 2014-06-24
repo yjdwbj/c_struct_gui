@@ -59,8 +59,7 @@
 #define ACT_SIZE  6
 
 
-static Color color_edited = {0.0f, 123.0f, 0.0f };
-static Color color_highlight = {126.0f, 0.0f, 0.0f };
+
 
 Layer *curLayer;
 typedef struct _STRUCTClass STRUCTClass;
@@ -619,7 +618,7 @@ void factory_file_manager_dialog(GtkWidget *btn,SaveStruct *sst);
 void factory_create_list_array_manager_dialog(GtkWidget *btn,SaveStruct *sst);
 void factory_save_list_array_manager_dialog(GtkWidget *widget,gint       response_id,gpointer user_data);
 
-void factory_search_connected_link(STRUCTClass *structclass,gint depth);
+gboolean factory_search_connected_link(STRUCTClass *structclass,gint depth);
 
 
 void factory_select(STRUCTClass *structclass, Point *clicked_point,

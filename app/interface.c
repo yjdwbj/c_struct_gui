@@ -1768,7 +1768,7 @@ create_integrated_ui (void)
        as it was when the application shut down                             */
     gtk_window_set_role (GTK_WINDOW (window), DIA_MAIN_WINDOW);
     /* hint 去掉最小化，最大化，只有一个关闭，因为最小化之后恢复回来的，文本框里的值不见了*/
-    gtk_window_set_type_hint(window,GDK_WINDOW_TYPE_HINT_TOOLBAR);
+    gtk_window_set_type_hint(GTK_WINDOW (window),GDK_WINDOW_TYPE_HINT_TOOLBAR);
 
 //    gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
 //    GdkScreen*  scr = gtk_window_get_screen( GTK_WINDOW( window));

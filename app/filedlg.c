@@ -46,6 +46,7 @@
 #include "confirm.h"
 
 #include "filedlg.h"
+#include "object.h"
 
 static GtkWidget *opendlg = NULL;
 static GtkWidget *savedlg = NULL;
@@ -248,6 +249,15 @@ file_open_response_callback(GtkWidget *fs,
       }
     }
   }
+    GList *list = g_hash_table_get_values(diagram->data->active_layer->defnames);
+    if(list)
+    {
+
+        DiaObject *obj = list->data;
+        obj->ops->reset_objectsfillcolor(obj);
+        diagram_redraw_all();
+    }
+
   gtk_widget_destroy(opendlg);
 }
 

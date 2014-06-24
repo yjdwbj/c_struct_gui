@@ -48,6 +48,12 @@ dia_plugin_init(PluginInfo *info)
    object_register_type(&factory_systeminfo_type); /* 这里为系统信息注册一个类型，这里可以单独做一个动态链接库的 */
    factoryContainer = g_new0(FactoryStructItemAll,1);
    factoryContainer->fgdn_func =(FactoryGetDownloadNameList)factory_get_download_name_list;
+   FactoryColors *color = g_new0(FactoryColors,1);
+   color->color_foreground = color_black;
+   color->color_background = color_white;
+   color->color_highlight = color_highlight;
+   color->color_edited = color_edited;
+   factoryContainer->color = color;
 
   return DIA_PLUGIN_INIT_OK;
 }

@@ -226,6 +226,8 @@ struct _FactorySystemInfo
 //    int io_mindex; /*最大的ＩＯ枚举值*/
 //    gchar *null_io; /* 空ＩＯ */
 };
+typedef struct _FactoryColors FactoryColors;
+
 
 typedef struct _FactoryStructItemAll  FactoryStructItemAll; // 2014-3-20 lcy 存放整个文件的结果,第一个为枚举,第二个存结构体
 struct _FactoryStructItemAll{
@@ -242,6 +244,7 @@ struct _FactoryStructItemAll{
 //    gpointer *otp_obj; /*这里用来放系统信息，只能有唯一个*/
     FactorySystemInfo *sys_info; /*系统信息*/
     FactoryGetDownloadNameList fgdn_func;
+    FactoryColors *color;
 
 };
 

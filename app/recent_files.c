@@ -47,6 +47,7 @@
 #include "../lib/intl.h"
 #include "message.h"
 #include "persistence.h"
+#include "object.h"
 
 static void open_recent_file_callback (GtkWidget *widget, gpointer data);
 void recent_file_history_remove (const char *fname);
@@ -168,5 +169,14 @@ open_recent_file_callback(GtkWidget *widget, gpointer data)
     }
   } else
     recent_file_history_remove (filename);
+
+   GList *list = g_hash_table_get_values(diagram->data->active_layer->defnames);
+    if(list)
+    {
+
+        DiaObject *obj = list->data;
+        obj->ops->reset_objectsfillcolor(obj);
+        diagram_redraw_all();
+    }
   g_free(filename);
 }
