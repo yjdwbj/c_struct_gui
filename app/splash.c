@@ -6,7 +6,9 @@
 
 #include "intl.h"
 #include "dia_dirs.h"
+#include "diatypes.h"
 #include "app_procs.h"
+#include "font.h"
 
 static GtkWidget*
 get_logo_pixmap (void)
@@ -83,12 +85,15 @@ app_splash_init (const gchar* fname)
 
   /* splash_expose gets us out of this */
   gtk_main();
+  DiaFont *font = dia_font_new_from_style(DIA_FONT_MONOSPACE, 0.8);
+    /* 把字体初始化放在这里不然在,第一次拖入时会几十秒僵死*/
   g_signal_handler_disconnect(GTK_OBJECT(splash), signal_id);
 }
 
 void
 app_splash_done (void)
 {
+
   if (splash)
   {
     gtk_widget_destroy (splash);

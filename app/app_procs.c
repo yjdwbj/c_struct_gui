@@ -1022,6 +1022,7 @@ void  app_init (int argc, char **argv)
 
     print_credits(credits);
 
+
     if (dia_is_interactive)
     {
         create_user_dirs();

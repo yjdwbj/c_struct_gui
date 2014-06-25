@@ -14,7 +14,7 @@
 	"widgets.h"
 	"intl.h"
 
-1403598538 o:\tool\dvs50\config.h
+1403665135 o:\tool\dvs50\config.h
 
 1394617928 o:\tool\dvs50\lib\message.h
 	<stdarg.h>
@@ -656,7 +656,7 @@
 	"diagramdata.h"
 	"object.h"
 
-1398325028 source:o:\tool\dvs50\lib\font.c
+1403667238 source:o:\tool\dvs50\lib\font.c
 	<config.h>
 	<stdio.h>
 	<stdlib.h>
@@ -811,7 +811,7 @@
 	"object.h"
 	"boundingbox.h"
 
-1399857930 source:o:\tool\dvs50\lib\object_defaults.c
+1403665097 source:o:\tool\dvs50\lib\object_defaults.c
 	<config.h>
 	<stdlib.h>
 	<string.h>
@@ -1138,7 +1138,7 @@
 	<time.h>
 	<gdk/gdkkeysyms.h>
 
-1403253118 source:o:\tool\dvs50\app\app_procs.c
+1403665955 source:o:\tool\dvs50\app\app_procs.c
 	<config.h>
 	<stdio.h>
 	<stdlib.h>
@@ -1599,7 +1599,7 @@
 
 1257604114 o:\tool\dvs50\app\pixmaps\landscape.xpm
 
-1403579009 source:o:\tool\dvs50\app\disp_callbacks.c
+1403665097 source:o:\tool\dvs50\app\disp_callbacks.c
 	<config.h>
 	<stdio.h>
 	<string.h>
@@ -1766,7 +1766,7 @@
 	"object_ops.h"
 	"group.h"
 
-1403599056 source:o:\tool\dvs50\app\interface.c
+1403665097 source:o:\tool\dvs50\app\interface.c
 	<config.h>
 	<gnome.h>
 	<gtk/gtk.h>
@@ -1832,7 +1832,7 @@
 	"intl.h"
 	<math.h>
 
-1403602962 source:o:\tool\dvs50\app\load_save.c
+1403665097 source:o:\tool\dvs50\app\load_save.c
 	<config.h>
 	<sys/stat.h>
 	<unistd.h>
@@ -2103,13 +2103,15 @@
 	"pixmaps/line_break.xpm"
 	"intl.h"
 
-1394691026 source:o:\tool\dvs50\app\splash.c
+1403668054 source:o:\tool\dvs50\app\splash.c
 	<config.h>
 	<gtk/gtk.h>
 	<gdk-pixbuf/gdk-pixbuf.h>
 	"intl.h"
 	"dia_dirs.h"
+	"diatypes.h"
 	"app_procs.h"
+	"font.h"
 
 1402642492 source:o:\tool\dvs50\app\textedit.c
 	<config.h>
@@ -2144,7 +2146,7 @@
 	"interface.h"
 	"defaults.h"
 
-1403489631 source:o:\tool\dvs50\app\undo.c
+1403665097 source:o:\tool\dvs50\app\undo.c
 	<config.h>
 	"undo.h"
 	"object_ops.h"
@@ -2406,7 +2408,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1403608334 source:o:\tool\dvs50\objects\struct\struct_class.c
+1403665097 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2425,7 +2427,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1403598096 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1403608795 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>

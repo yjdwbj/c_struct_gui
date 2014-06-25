@@ -1980,6 +1980,7 @@ fill_in_fontdata(STRUCTClass *structclass)
 //   }
     if (structclass->classname_font == NULL)
     {
+//        factory_debug_to_log(factory_utf8("fill_in_fontdata,structclass->classname_font\n"));
         structclass->classname_font_height = 1.0;
         structclass->classname_font =
             dia_font_new_from_style(DIA_FONT_MONOSPACE | DIA_FONT_BOLD, 1.0);
@@ -2258,7 +2259,6 @@ factory_struct_items_create(Point *startpoint,
 #else
     element_init(elem, 8, STRUCTCLASS_CONNECTIONPOINTS); /* No attribs or ops => 0 extra connectionpoints. */
 #endif
-
     fill_in_fontdata(structclass);
 
     /*
@@ -2287,6 +2287,7 @@ factory_struct_items_create(Point *startpoint,
 //        else
 //            factoryContainer->otp_obj = structclass;
 //    }
+
     factory_rename_structclass(structclass); /* 保证名称唯一性 */
 
 
@@ -2307,6 +2308,7 @@ factory_struct_items_create(Point *startpoint,
     structclass->fill_color = attributes_get_background();
     structclass->vcolor = N_COLOR;
 
+
     structclass_calculate_data(structclass);
 
     for (i=0; i<STRUCTCLASS_CONNECTIONPOINTS; i++)
@@ -2325,6 +2327,7 @@ factory_struct_items_create(Point *startpoint,
 #endif
 
     elem->extra_spacing.border_trans = structclass->line_width/2.0;
+//    factory_debug_to_log(factory_utf8("创建对像,structclass_update_data(structclass)"));
     structclass_update_data(structclass);
 
     for (i=0; i<8; i++)

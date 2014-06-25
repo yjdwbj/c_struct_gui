@@ -316,6 +316,7 @@ dia_pfd_set_slant(PangoFontDescription* pfd, DiaFontSlant fo)
 {
   switch (fo) {
   case DIA_FONT_NORMAL :
+    factory_debug_to_log(factory_utf8("dia_pfd_set_slant,DIA_FONT_NORMAL\n"));
     pango_font_description_set_style(pfd,PANGO_STYLE_NORMAL);
     break;
   case DIA_FONT_OBLIQUE :
@@ -325,6 +326,7 @@ dia_pfd_set_slant(PangoFontDescription* pfd, DiaFontSlant fo)
     pango_font_description_set_style(pfd,PANGO_STYLE_ITALIC);
     break;
   default :
+
     g_assert_not_reached();
   }
 }
@@ -337,6 +339,7 @@ dia_font_new_from_style(DiaFontStyle style, real height)
    * matching to be as (font-)system independent as possible.
    * For now fall back to Pangos configuration --hb
    */
+
   PangoFontDescription* pfd = pango_font_description_new();
   dia_pfd_set_family(pfd,DIA_FONT_STYLE_GET_FAMILY(style));
   dia_pfd_set_weight(pfd,DIA_FONT_STYLE_GET_WEIGHT(style));

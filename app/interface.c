@@ -487,12 +487,12 @@ display_data_received_callback (GtkWidget *widget,
             gtk_drag_get_source_widget(context) != NULL)
     {
         ToolButtonData *tooldata = *(ToolButtonData **)data->data;
-
+//        factory_debug_to_log(g_strdup_printf(factory_utf8("拖入对像回调,名字:%s.\n"),"null"));
         /* g_message("Tool drop %s at (%d, %d)", (gchar *)tooldata->extra_data, x, y);*/
         ddisplay_drop_object(ddisp, x, y,
                              object_get_type((gchar *)tooldata->extra_data),
                              tooldata->user_data);
-
+//        factory_debug_to_log(g_strdup_printf(factory_utf8("拖入对像回调完成,名字:%s.\n"),"null"));
         gtk_drag_finish (context, TRUE, FALSE, time);
     }
     else

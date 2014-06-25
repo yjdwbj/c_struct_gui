@@ -1074,6 +1074,7 @@ ddisplay_drop_object(DDisplay *ddisp, gint x, gint y, DiaObjectType *otype,
     droppoint_orig = droppoint;
 
     snap_to_grid(ddisp, &droppoint.x, &droppoint.y);
+//    factory_debug_to_log(g_strdup_printf(factory_utf8("ÍÏÈë¶ÔÏñ,Ãû×Ö:%s.\n"),otype->name));
 
     obj = dia_object_default_create (otype, &droppoint,
                                      user_data,
@@ -1156,6 +1157,7 @@ ddisplay_drop_object(DDisplay *ddisp, gint x, gint y, DiaObjectType *otype,
             obj->ops->move(obj, &new_pos);
         }
     }
+
 
     diagram_add_object(ddisp->diagram, obj);
 

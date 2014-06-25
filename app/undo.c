@@ -757,7 +757,7 @@ static void
 insert_objects_apply(struct InsertObjectsChange *change, Diagram *dia)
 {
   DEBUG_PRINTF(("insert_objects_apply()\n"));
-  factory_debug_to_log(factory_utf8("插入链表里的对像!"));
+//  factory_debug_to_log(factory_utf8("插入链表里的对像!"));
   change->applied = 1;
   layer_add_objects(change->layer, g_list_copy(change->obj_list));
   object_add_updates_list(change->obj_list, dia);

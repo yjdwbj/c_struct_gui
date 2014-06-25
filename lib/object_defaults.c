@@ -276,12 +276,16 @@ dia_object_default_create (const DiaObjectType *type,
     if (def_obj && def_obj->ops->describe_props)
     {
         /* copy properties to new object, but keep position */
+//        factory_debug_to_log(g_strdup_printf(factory_utf8("拖入对像def_obj,名字:%s.\n"),type->name));
         obj = type->ops->create (startpoint, user_data, handle1, handle2);
         if (obj)
         {
+
             GPtrArray *props = prop_list_from_descs (
                                    object_get_prop_descriptions(def_obj), pdtpp_standard_or_defaults);
+//            factory_debug_to_log(factory_utf8("拖入对像def_obj->ops->get_props(def_obj, props)\n"));
             def_obj->ops->get_props(def_obj, props);
+//            factory_debug_to_log(factory_utf8("拖入对像obj->ops->set_props(obj, props)\n"));
             obj->ops->set_props(obj, props);
             obj->ops->move (obj, startpoint);
             prop_list_free(props);
@@ -289,6 +293,7 @@ dia_object_default_create (const DiaObjectType *type,
     }
     else
     {
+//        factory_debug_to_log(g_strdup_printf(factory_utf8("拖入对像def_obj==NULL,名字:%s.\n"),type->name));
         obj = type->ops->create (startpoint, user_data, handle1, handle2);
     }
 
