@@ -3058,7 +3058,7 @@ void factory_reset_object_color_to_default()
 //    }
     FactoryColors *color = factoryContainer->color;
     GList *objects = curLayer->objects;
-    DiaObjectType *linetype = object_get_type("Standard - Line");
+    DiaObjectType *linetype = object_get_type(CLASS_LINE);
 //        DiaObjectType *stype =  object_get_type("STRUCT - Class");
     for(; objects; objects = objects->next)
     {
@@ -3171,7 +3171,7 @@ static void factory_connection_two_object(STRUCTClass *fclass, /* start pointer*
     x = fclass->connections[8].pos.x;
     y = fclass->connections[8].pos.y;
     DiaObject *obj = NULL;
-    obj = ddisplay_drop_object(ddisp,x,y,object_get_type("Standard - Line"),6);
+    obj = ddisplay_drop_object(ddisp,x,y,object_get_type(CLASS_LINE),6);
     /* 把线条移动到对像中心点且启始端固定在这一个对像上.*/
     //obj->ops->move(obj,&fclass->connections[8].pos);
 
@@ -3778,7 +3778,7 @@ FIRST:
         columTwo =gtk_button_new_with_label(item->Name);
         FactoryStructItem *fsi = sss->org;
 
-        if(!g_ascii_strcasecmp(item->SType,"FILELST"))
+        if(!g_ascii_strcasecmp(item->SType,TYPE_FILELST))
         {
             ListDlgArg *lda = g_new0(ListDlgArg,1);
             lda->isArray = FALSE;
@@ -3790,7 +3790,7 @@ FIRST:
             gtk_button_set_label(GTK_BUTTON(columTwo), sss->value.vnumber );
             g_signal_connect (G_OBJECT (columTwo), "clicked",G_CALLBACK (sss->newdlg_func),lda);
         }
-        else if(!g_ascii_strcasecmp(item->SType,"IDLST"))
+        else if(!g_ascii_strcasecmp(item->SType,TYPE_IDLST))
         {
 //            SaveKV *skv = sss->value.vnumber;
 //            gtk_button_set_label(GTK_BUTTON(columTwo), skv->value );
@@ -4845,7 +4845,8 @@ void factory_editable_insert_callback(GtkEntry *entry,
 void factory_create_struct_dialog(GtkWidget *dialog,GList *datalist)
 {
     /* 通链表创建控件 SaveStruct *sst */
-
+    if(item_reserverd == 0)
+       item_reserverd = g_quark_from_static_string(ITEM_RESERVED);
     GList *item = datalist;
     int row = 0;
     for(; item  ; item = item->next)
@@ -4853,7 +4854,9 @@ void factory_create_struct_dialog(GtkWidget *dialog,GList *datalist)
         SaveStruct *sst  = item->data;
         factory_debug_to_log(g_strdup_printf(factory_utf8("初始化显示控件成员,名字:%s.\n"),sst->name));
         factory_set_savestruct_widgets(sst);
-        if(g_ascii_strcasecmp(factory_locale(sst->org->Cname),_("保留"))) /* 保留的不显示出来 */
+         GQuark quark = g_quark_from_string(sst->org->Cname);
+
+        if(quark != item_reserverd) /* 保留的不显示出来 */
         {
             factory_set_twoxtwo_table(dialog,sst->widget1,sst->widget2,row++);
         }
@@ -5080,7 +5083,7 @@ void factory_systeminfo_callback(GtkWidget *parent)
     if(!fsio->system_info) /* 打开过第一次了 */
     {
 
-        FactoryStructItemList *fsil = g_hash_table_lookup(factoryContainer->structTable,"SYS_DATA");
+        FactoryStructItemList *fsil = g_hash_table_lookup(factoryContainer->structTable,TYPE_SYSDATA);
         GList *itemlist = fsil->list;
         for(; itemlist ; itemlist = itemlist->next)
         {

@@ -67,6 +67,21 @@ typedef enum {
   MODIFIER_CONTROL = 48
 } ModifierKeys;
 
+/* 这里是一些硬编码的字符串比对 */
+
+#define ACTION_ID  "NextID"
+#define TYPE_IDLST "IDLST"
+#define TYPE_FILELST "FILELST"
+#define TYPE_SYSDATA  "SYS_DATA"
+
+#define CLASS_STRUCT "STRUCT - Class"
+#define CLASS_LINE "Standard - Line"
+#define ITEM_RESERVED "保留"
+#define ITEM_FIXED   "固定值"
+#define ACT_SIZE  6
+
+
+
 /************************************
  ** Some general function prototypes
  **
@@ -354,6 +369,7 @@ typedef void (*UpdateObjectVName)(DiaObject *obj);
 typedef void (*SearchConnectedLink)(DiaObject *obj,gint depth);
 typedef void (*UpdateObjectsFillColor)(DiaObject *obj);
 typedef void (*ResetObjectsToDefaultColor)(DiaObject *obj);
+typedef void (*TemplateEdit)(gpointer action,GList *objects);
 
 /*************************************
  **  The functions provided in object.c
@@ -469,6 +485,7 @@ struct _ObjectOps {
   SearchConnectedLink SearchConnLink;
   UpdateObjectsFillColor set_fillcolor;
   ResetObjectsToDefaultColor reset_objectsfillcolor;
+  TemplateEdit templateedit;
   void      (*(unused[4]))(DiaObject *obj,...);
 };
 
@@ -648,7 +665,7 @@ DIAVAR GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget 
 DIAVAR void factory_critical_error_exit(const gchar *msg_err);
 DIAVAR void factory_debug_to_log(const gchar *msg_dbg);
 DIAVAR void factory_waring_to_log(const gchar *msg_war);
-gchar *factory_get_current_timestamp();
+DIAVAR gchar *factory_get_current_timestamp();
 DIAVAR void factory_init_list(GtkWidget *list);
 DIAVAR void factory_add_to_list(GtkWidget *list,const gchar *str);
 

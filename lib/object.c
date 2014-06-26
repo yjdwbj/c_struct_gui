@@ -47,6 +47,9 @@ object_init(DiaObject *obj,
             int num_handles,
             int num_connections)
 {
+
+
+
     obj->num_handles = num_handles;
     if (num_handles>0)
         obj->handles = g_malloc0(sizeof(Handle *) * num_handles);
@@ -1152,9 +1155,9 @@ gchar *factory_locale(gchar *str)
 gboolean factory_is_valid_type(gpointer data)
 {
     DiaObject *otype = (DiaObject *)data;
-    char *n1 = g_strdup("STRUCT - Class");
-    gboolean ftype = g_ascii_strncasecmp(otype->type->name,n1,strlen(n1));
-    g_free(n1);
+//    char *n1 = g_strdup("STRUCT - Class");
+    gboolean ftype = (object_get_type(CLASS_STRUCT) == otype->type);
+//    g_free(n1);
     return !ftype;
 }
 
@@ -1175,8 +1178,8 @@ gboolean factory_is_special_object(const gchar *name)
 {
     gboolean b = FALSE;
     gchar *cmp = factory_get_last_section(name,".");
-    if(!g_strcasecmp(cmp,"IDLST") ||
-            !g_strcasecmp(cmp,"FILELST"))
+    if(!g_strcasecmp(cmp,TYPE_IDLST) ||
+            !g_strcasecmp(cmp,TYPE_FILELST))
         b = TRUE;
     g_free(cmp);
     return b;
@@ -1185,7 +1188,7 @@ gboolean factory_is_special_object(const gchar *name)
 gboolean factory_is_system_data(const gchar *name)
 {
     gboolean *b = FALSE;
-    if(!g_ascii_strcasecmp(name,"SYS_DATA"))
+    if(!g_ascii_strcasecmp(name,TYPE_SYSDATA))
         b = TRUE;
     return b;
 }

@@ -632,7 +632,7 @@ static void update_objects_index(GList *olist, Diagram *dia)
 //       char *n1;
 //       n1 = g_strdup("STRUCT - Class");
 //       if(!g_ascii_strncasecmp(obj->type->name,n1,strlen(n1)))
-       if(obj->type == object_get_type("STRUCT - Class"))
+       if(obj->type == object_get_type(CLASS_STRUCT))
        {
              obj->ops->update_index(obj);
              object_add_updates(obj, dia);

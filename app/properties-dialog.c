@@ -252,7 +252,7 @@ object_list_properties_show(Diagram *dia, GList *objects)
 
     one_obj = (g_list_length(objects) == 1) ? objects->data : NULL;
     if(!one_obj) goto MWINDOW;
-    if(one_obj->type == object_get_type("Standard - Line")) /* 不显示线条的属性*/
+    if(one_obj->type == object_get_type(CLASS_LINE)) /* 不显示线条的属性*/
         return;
 
     if (!dialog)

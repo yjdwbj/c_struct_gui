@@ -232,7 +232,6 @@ typedef struct _FactoryColors FactoryColors;
 typedef struct _FactoryStructItemAll  FactoryStructItemAll; // 2014-3-20 lcy 存放整个文件的结果,第一个为枚举,第二个存结构体
 struct _FactoryStructItemAll{
     GHashTable *enumTable;
-//    GList *enumList;
     GHashTable *structTable; // 2014-3-25 lcy 这里存放 FactoryStructItemList 的哈希表。
     GHashTable *unionTable;
     GList* structList; // 2014-3-25 lcy 这里存放 FactoryStructItemList 的链表。
@@ -241,7 +240,6 @@ struct _FactoryStructItemAll{
     gchar *minor_version;
     gchar *system_files;
     Layer *curLayer;
-//    gpointer *otp_obj; /*这里用来放系统信息，只能有唯一个*/
     FactorySystemInfo *sys_info; /*系统信息*/
     FactoryGetDownloadNameList fgdn_func;
     FactoryColors *color;

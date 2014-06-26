@@ -134,8 +134,24 @@ add_properties_menu_item (GtkMenu *menu, gboolean separator)
         gtk_widget_show(menu_item);
     }
 
-    menu_item = gtk_menu_item_new_with_label(_("Properties..."));
-    g_signal_connect(GTK_OBJECT(menu_item), "activate", G_CALLBACK(dialogs_properties_callback), NULL);
+    DDisplay *ddisp = ddisplay_active();
+     if (!ddisp) return;
+
+    GList *objects  = (DiaObject *)ddisp->diagram->data->selected;
+    int n = g_list_length(objects);
+    if(n > 1)
+    {
+        DiaObject *dia = objects->data;
+        menu_item = gtk_menu_item_new_with_label(factory_utf8("±£´æÄ£°æ"));
+        g_signal_connect(GTK_OBJECT(menu_item), "activate", G_CALLBACK(dia->ops->templateedit), objects);
+    }
+    else
+    {
+        menu_item = gtk_menu_item_new_with_label(_("Properties..."));
+        g_signal_connect(GTK_OBJECT(menu_item), "activate", G_CALLBACK(dialogs_properties_callback), NULL);
+    }
+
+
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
     gtk_widget_show(menu_item);
 }

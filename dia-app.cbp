@@ -1663,6 +1663,13 @@
 			<Option target="Struct" />
 			<Option target="debug_Struct" />
 		</Unit>
+		<Unit filename="objects/Struct/template_proc.c">
+			<Option compilerVar="CC" />
+			<Option target="Struct" />
+		</Unit>
+		<Unit filename="objects/Struct/template_proc.h">
+			<Option target="Struct" />
+		</Unit>
 		<Unit filename="objects/standard/arc.c">
 			<Option compilerVar="CC" />
 			<Option target="standard" />

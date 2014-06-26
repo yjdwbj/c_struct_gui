@@ -702,7 +702,7 @@ void factoryReadDataFromFile(const gchar* filename)
             if(aline[0] == '/' || aline[0] == '#' || !strlen(aline))
                 continue;
             FactoryStructItem *item = g_new0(FactoryStructItem,1);
-            item->savestruct = NULL;
+//            item->savestruct = NULL;
             item->orgclass = NULL;
             //  sscanf(&aline,"%[^:]:%[^:]:%[^:]:%[^:]:%[^:]:%[^:]",sbuf[0],sbuf[1],sbuf[2],sbuf[3],sbuf[4],sbuf[5]);
             splits=  g_strsplit(filetxt,isutf8 ? u_tdot : tdot,-1);
@@ -1027,7 +1027,7 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
         xmlFree(objdesc);
         objdesc = NULL;
     }    // 2014-3-20 lcy 超长的for循环.
-    otype = object_get_type((char *)"STRUCT - Class");
+    otype = object_get_type(CLASS_STRUCT);
 //    gchar *bmppath =  dia_get_lib_directory("numbers"); /* 对所有控件进行简单编号*/
 
     GList *slist = factoryContainer->structList;

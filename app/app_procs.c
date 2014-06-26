@@ -1045,7 +1045,7 @@ void  app_init (int argc, char **argv)
 
 // debug_break();
     /* 2014-3-28 lcy  这里默认是检测standard - Box */
-    if (object_get_type("Standard - Line") == NULL)
+    if (object_get_type(CLASS_LINE) == NULL)
     {
         message_error(_("Couldn't find standard objects when looking for "
                         "object-libs; exiting...\n"));

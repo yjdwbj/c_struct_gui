@@ -54,14 +54,13 @@
  */
 #define STRUCT_MAINPOINT 1
 
-#define ACTION_ID  "NextID"
 
-#define ACT_SIZE  6
 
 
 
 
 Layer *curLayer;
+static GQuark item_reserverd = 0;
 typedef struct _STRUCTClass STRUCTClass;
 typedef struct _STRUCTClassDialog STRUCTClassDialog;
 
@@ -271,7 +270,6 @@ struct _SaveMusicDialog
     GtkListStore *id_store;
     GtkTreeView  *id_treeview;
     GtkListStore *id_cbmodal;
-//    GtkWidget *parent_btn;
     GtkWidget *window; /* 它本身的窗口*/
     SaveMusicFileMan *smfm; /* 右边界面 */
     MusicFileManagerOpts *mfmos;
@@ -349,12 +347,7 @@ struct _SaveUnion
     gchar *curkey;
     GtkWidget *vbox;
     GtkWidget *comobox;
-//    GSList *uitemsave; /* 所有成员的存储结构指针 */
     GList *structlist;
-//    GList *widgetlist;
-//    gpointer *sdata; /* 当前的存储结构指针 */
-
-//    gpointer SVal; // 基本类型. SaveStruct pointer;
     GHashTable* saveVal; //保存值的哈希表
 };
 
@@ -687,5 +680,9 @@ enum
     NUM_OF_COLS
 };
 
+
+
+/* Template Func*/
+void factory_template_edit_callback(GtkAction *action,GList *objects);
 
 #endif /* CLASS_H */

@@ -846,16 +846,16 @@ write_objects(GList *objects, xmlNodePtr objects_node,
 
     list = objects;
     /* 这里要创建一个用来　File.lst 的文件的结构体,保存完了就要删掉的*/
-    DiaObjectType *otype = object_get_type("STRUCT - Class");
-    FactoryStructItemList *fsil= g_hash_table_lookup(factoryContainer->structTable,"FILELST");
+    DiaObjectType *otype = object_get_type(CLASS_STRUCT);
+    FactoryStructItemList *fsil= g_hash_table_lookup(factoryContainer->structTable,TYPE_FILELST);
     Point startpoint = {0.0,0.0};
     Handle *h1,*h2;
     DiaObject *fileobj = otype->ops->create(&startpoint,(void*)fsil->number,&h1,&h2);
 
-    FactoryStructItemList *fsil2= g_hash_table_lookup(factoryContainer->structTable,"IDLST");
+    FactoryStructItemList *fsil2= g_hash_table_lookup(factoryContainer->structTable,TYPE_IDLST);
     DiaObject *idobj = otype->ops->create(&startpoint,(void*)fsil2->number,&h1,&h2);
 
-    FactoryStructItemList *fsil3= g_hash_table_lookup(factoryContainer->structTable,"SYS_DATA");
+    FactoryStructItemList *fsil3= g_hash_table_lookup(factoryContainer->structTable,TYPE_SYSDATA);
     DiaObject *sysinfoobj = otype->ops->create(&startpoint,(void*)fsil3->number,&h1,&h2);
 
     fileobj->name = g_strdup(fsil->sname);

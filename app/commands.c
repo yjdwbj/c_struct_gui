@@ -422,6 +422,15 @@ edit_duplicate_callback (GtkAction *action)
 
   diagram_remove_all_selected(ddisp->diagram, TRUE);
   diagram_select_list(ddisp->diagram, duplicate_list);
+   /*这里用做重命名，保证名字唯一*/
+    GList *plist = duplicate_list;
+    for(;plist;plist=plist->next)
+    {
+        DiaObject *obj = plist->data;
+        if(!obj->ops->obj_rename) continue;
+        obj->ops->obj_rename(obj);
+    }
+
 
   diagram_flush(ddisp->diagram);
 

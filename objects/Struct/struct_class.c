@@ -194,7 +194,8 @@ static ObjectOps structclass_ops =
     (UpdateObjectVName) factory_update_view_names,
     (SearchConnectedLink)  factory_search_connected_link,
     (UpdateObjectsFillColor) factory_set_fill_color,
-    (ResetObjectsToDefaultColor) factory_reset_object_color_to_default
+    (ResetObjectsToDefaultColor) factory_reset_object_color_to_default,
+    (TemplateEdit) factory_template_edit_callback
 };
 
 
@@ -2693,7 +2694,7 @@ void factory_read_specific_object_from_file(STRUCTClass *fclass,ObjectNode obj_n
 
     gchar *objname = fclass->element.object.name;
     g_return_if_fail(objname);
-    if(!g_ascii_strcasecmp(objname,"FILELST"))
+    if(!g_ascii_strcasecmp(objname,TYPE_FILELST))
     {
 //        SaveMusicDialog *smd = curLayer->smd;
 //        AttributeNode attr_node = obj_node;
@@ -3208,7 +3209,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
         sss->celltype = UBTN;
         sss->isPointer = TRUE; /* 这里是一个按键*/
 
-        if(!g_strcasecmp(fst->SType,"FILELST")) /*　 特殊的控件,音乐文件管理　*/
+        if(!g_strcasecmp(fst->SType,TYPE_FILELST)) /*　 特殊的控件,音乐文件管理　*/
         {
             SaveMusicDialog *smd = NULL;
             if(!curLayer->smd)
@@ -3270,7 +3271,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             }
 
         }
-        else if(!g_strcasecmp(fst->SType,"IDLST"))
+        else if(!g_strcasecmp(fst->SType,TYPE_IDLST))
         {
             SaveIdDialog   *sid = NULL;
             if(!curLayer->sid)
@@ -3961,7 +3962,7 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
         gchar **split = g_strsplit(sss->type,".",-1);
         gchar *stype = split[g_strv_length(split)-1];
 //        if(factory_is_special_object(stype)) /* 特殊控件 */
-        if(!g_strcasecmp(stype,"FILELST"))
+        if(!g_strcasecmp(stype,TYPE_FILELST))
         {
 //            factory_mfile_idlist_save_xml(sss,obj_node);
             factory_save_mfile_dialog_to_xml(sss,obj_node);
@@ -3976,7 +3977,7 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
 //            xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)skv->vname);
 
         }
-        else if(!g_strcasecmp(stype,"IDLST"))
+        else if(!g_strcasecmp(stype,TYPE_IDLST))
         {
             factory_save_idlist_to_xml(sss,obj_node);
         }
@@ -4205,7 +4206,7 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
     if(factory_is_system_data(fsi->sname))
         structclass->widgetSave = g_list_copy(factoryContainer->sys_info->system_info);
     factory_debug_to_log(g_strdup_printf(factory_utf8("保存对像,名字:%s.\n"),structclass->name));
-    if(!g_strcasecmp(fsi->sname,"FILELST"))
+    if(!g_strcasecmp(fsi->sname,TYPE_FILELST))
     {
         factory_write_mfile_filelist(obj_node);
         /* 这里写音乐管理界面上的数据 */
@@ -4243,7 +4244,7 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
 //            xmlSetProp(tnode, (const xmlChar *)"dname", (xmlChar *)smf->down_name);
 //        }
     }
-    else if(!g_strcasecmp(fsi->sname,"IDLST"))
+    else if(!g_strcasecmp(fsi->sname,TYPE_IDLST))
     {
         SaveIdDialog *sid = (SaveIdDialog *)curLayer->sid;
         if(!sid || !sid->idlists)

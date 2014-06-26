@@ -86,14 +86,9 @@ struct _FactoryStructItem{  // ÕâÀï¶¨ÒåÒ»¸ö½á¹¹µÄÃ¿Ò»ÏîĞèÒªÏÔÊ¾µÄ¶«Î÷, Õâ¾ÍÏàµ±Ó
     gchar  *Comment;   // ¸¡¶¯×¢ÊÍ
     ItemType Itype;   // »ù±¾ÀàĞÎ
     GList *datalist;  /* Èç¹û¸Ã³ÉÔ±ÊÇÈË½á¹¹Ìå»òÕßÊÇÁªºÏ,¸ÃÖ¸Õë¾Í²»ÎªNULL*/
-    gpointer savestruct ;//´æ´¢ÏÔÊ¾µÄ¿Ø¼şÖ¸Õë.
-   // const FactoryStructItemAll *fsia;
     gpointer orgclass;
 };
-//struct _FactoryStructEnumList{
-//    gchar *name;
-//    GHashTable *enumtable;
-//};
+
 
 
 /* 2014-3-26 lcy ÕâÀïÓÃ¹şÏ£±íµÄ±éÀúº¯Êı£¬ÔÙ½áºÏ½á¹¹Ìå´«²Î¸ø callback º¯ÊıÀ´Ìí¼Ó¿Ø¼ş£¬Ô­À´ÊÇÓÃÁ´±íÀ´´æ´¢ÏÖÔÚ¸ÄÎª¹şÏ£±í*/

@@ -174,7 +174,7 @@ click_select_object(DDisplay *ddisp, Point *clickedpoint,
             }
 
             diagram_select(diagram, obj);
-            if(obj->type == object_get_type("STRUCT - Class"))
+            if(obj->type == object_get_type(CLASS_STRUCT))
             {
                 obj->ops->reset_objectsfillcolor(obj); /* 清空所有高亮 */
                 diagram_redraw_all();
@@ -392,7 +392,7 @@ modify_double_click(ModifyTool *tool, GdkEventButton *event,
     {
 //        gchar *n1 = g_strdup("Standard - Line");
 //        if(!g_ascii_strncasecmp(clicked_obj->type->name,n1,strlen(n1))) /* 线条不显示属性窗口*/
-        if(clicked_obj->type == object_get_type("Standard - Line"))
+        if(clicked_obj->type == object_get_type(CLASS_LINE))
         {
 //            g_free(n1);
             return;
