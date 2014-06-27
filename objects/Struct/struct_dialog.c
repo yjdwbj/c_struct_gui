@@ -3385,7 +3385,7 @@ void factory_change_view_name(STRUCTClass *fclass)
         for(; exists; exists = exists->next)
         {
             STRUCTClass *pclass = exists->data;
-            if(!factory_is_valid_type(pclass))
+            if(!factory_is_struct_type(pclass))
                 continue;
             if(!g_ascii_strcasecmp(pclass->name,pps->name))
             {
@@ -3855,16 +3855,16 @@ void factory_set_savestruct_widgets(SaveStruct *sss)
         Name = gtk_label_new(sss->org->Cname);
         gtk_tooltips_set_tip(tool_tips,Name,g_strdup(sss->org->Comment),NULL);
         /* 创建多样性的对像控件  */
-        if(!g_ascii_strncasecmp(sss->org->Name,"wActID",6)) /*这里一个关键字判断是否是ＩＤ*/
-        {
-            DiaObject *obj = (DiaObject *)sss->sclass;
-//            g_hash_table_get_values(curLayer->defnames);
-//            sclass->element.object.oindex = g_list_index(curLayer->objects,sclass);
-            sss->value.vnumber = g_strdup_printf("%d",obj->oindex);
-            sss->isSensitive = FALSE;
-        }
+//        if(!g_ascii_strncasecmp(sss->name,WACDID,6)) /*这里一个关键字判断是否是ＩＤ*/
+//        {
+//            DiaObject *obj = (DiaObject *)sss->sclass;
+////            g_hash_table_get_values(curLayer->defnames);
+////            sclass->element.object.oindex = g_list_index(curLayer->objects,sclass);
+//            sss->value.vnumber = g_strdup_printf("%d",obj->oindex);
+//            sss->isSensitive = FALSE;
+//        }
         columTwo = factory_create_variant_object(sss);
-        gtk_widget_set_sensitive(columTwo,sss->isSensitive);
+        gtk_widget_set_sensitive(columTwo,sss->org->isSensitive);
         gtk_tooltips_set_tip(tool_tips,columTwo,g_strdup(sss->org->Comment),NULL);
 //        sss->widget2 = columTwo;
         sss->widget1 = Name;
@@ -4584,16 +4584,19 @@ STRUCTClass *factory_find_diaobject_by_name(Layer *curlayer,const gchar *name)
 {
     /* 通过名字在画布上找对像 */
 //    gchar *utf8name = g_locale_to_utf8(name,-1,NULL,NULL,NULL);
+    GQuark q1 = g_quark_from_string(name);
     GList *objlist = NULL;
     if(curlayer)
         objlist = curlayer->objects;
     STRUCTClass *objclass = NULL;
     for(; objlist ; objlist =  objlist->next )
     {
-        if(!factory_is_valid_type(objlist->data))
+        if(!factory_is_struct_type(objlist->data))
             continue;
         objclass = objlist->data;
-        if(!g_ascii_strcasecmp(objclass->name,name))
+        GQuark q2 = g_quark_from_string(objclass->name);
+//        if(!g_ascii_strcasecmp(objclass->name,name))
+        if(q2 == q1)
         {
             break;
         }
@@ -4845,8 +4848,7 @@ void factory_editable_insert_callback(GtkEntry *entry,
 void factory_create_struct_dialog(GtkWidget *dialog,GList *datalist)
 {
     /* 通链表创建控件 SaveStruct *sst */
-    if(item_reserverd == 0)
-       item_reserverd = g_quark_from_static_string(ITEM_RESERVED);
+
     GList *item = datalist;
     int row = 0;
     for(; item  ; item = item->next)
@@ -4854,9 +4856,9 @@ void factory_create_struct_dialog(GtkWidget *dialog,GList *datalist)
         SaveStruct *sst  = item->data;
         factory_debug_to_log(g_strdup_printf(factory_utf8("初始化显示控件成员,名字:%s.\n"),sst->name));
         factory_set_savestruct_widgets(sst);
-         GQuark quark = g_quark_from_string(sst->org->Cname);
+//         GQuark quark = g_quark_from_string(sst->org->Cname);
 
-        if(quark != item_reserverd) /* 保留的不显示出来 */
+        if(sst->org->isVisible) /* 保留的不显示出来 */
         {
             factory_set_twoxtwo_table(dialog,sst->widget1,sst->widget2,row++);
         }

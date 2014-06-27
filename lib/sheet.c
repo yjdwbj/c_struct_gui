@@ -42,6 +42,11 @@
 
 FactoryStructItemAll *factoryContainer = NULL;
 static GSList *sheets = NULL;
+static GQuark item_reserverd = 0;
+static GQuark item_fixed = 0;
+static GQuark item_wactid = 0;
+
+
 FILE *logfd;
 Sheet *
 new_sheet(char *name, gchar *description, char *filename, SheetScope scope,
@@ -143,7 +148,14 @@ load_all_sheets(void)
     char *sheet_path;
     char *home_dir;
 
+    if(!item_reserverd)
+        item_reserverd = g_quark_from_static_string(ITEM_RESERVED);
 
+    if(!item_fixed)
+        item_fixed = g_quark_from_static_string(ITEM_FIXED);
+
+    if(!item_wactid)
+        item_wactid = g_quark_from_static_string(WACDID);
 
     factoryContainer->structTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
     factoryContainer->enumTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
@@ -447,10 +459,17 @@ gchar *factory_get_utf8_str(gboolean isutf8,gchar *str)
     return p;
 }
 
+
+
+
+
 void factoryReadDataFromFile(const gchar* filename)
 {
 #define MAX_LINE 1024
 #define MAX_SECTION 7
+
+
+
     gchar *fname_gbk = factory_locale(filename);
     factory_debug_to_log(g_strdup_printf(factory_utf8("读取对像定文件,文件名:%s.\n"),filename));
 
@@ -611,7 +630,6 @@ void factoryReadDataFromFile(const gchar* filename)
             {
                 isUnion = TRUE;
                 dlist = NULL;
-
             }
             hashKey = factory_get_utf8_str(isutf8,sbuf[2]);
             if(!hashKey)
@@ -704,6 +722,8 @@ void factoryReadDataFromFile(const gchar* filename)
             FactoryStructItem *item = g_new0(FactoryStructItem,1);
 //            item->savestruct = NULL;
             item->orgclass = NULL;
+            item->isVisible = TRUE;
+            item->isSensitive = TRUE;
             //  sscanf(&aline,"%[^:]:%[^:]:%[^:]:%[^:]:%[^:]:%[^:]",sbuf[0],sbuf[1],sbuf[2],sbuf[3],sbuf[4],sbuf[5]);
             splits=  g_strsplit(filetxt,isutf8 ? u_tdot : tdot,-1);
 
@@ -732,7 +752,17 @@ void factoryReadDataFromFile(const gchar* filename)
                     factory_critical_error_exit(factory_utf8(g_strdup_printf("内容:%s \n没有读到第二段(名字)的字段名.\n"
                                                              "文件名：%s,行数：%d\n",filetxt,filename,curline)));
             }
+
+            GQuark nquark = g_quark_from_string(item->Name);
+            if(nquark == item_wactid)
+                item->isSensitive = FALSE;
+
             item->Cname = factory_get_utf8_str(isutf8,splits[2]);
+            GQuark quark = g_quark_from_string(item->Cname);
+            if(quark == item_reserverd)
+            {
+                item->isVisible = FALSE;
+            }
 //            if(!item->Value)
 //            {
 //                    factory_critical_error_exit(factory_utf8(g_strdup_printf("没有读到第四段(默认值)的字段名.\n
@@ -745,6 +775,9 @@ void factoryReadDataFromFile(const gchar* filename)
                                                              "文件名：%s,行数：%d\n",filename,curline)));
             }
             item->Min = factory_get_utf8_str(isutf8,splits[4]);
+            GQuark mquark = g_quark_from_string(item->Min);
+            if(mquark == item_fixed)
+                item->isSensitive = FALSE;
             item->Max = factory_get_utf8_str(isutf8,splits[5]);
             item->Comment = factory_get_utf8_str(isutf8,splits[6]);
            if(!item->Comment)

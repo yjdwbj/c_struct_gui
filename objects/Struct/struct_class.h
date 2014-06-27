@@ -392,7 +392,8 @@ typedef struct _SaveStruct
 //    gchar* pname;  /* 上一级名字, NULL 就是最上级 */
     CellType celltype;
     gboolean isPointer; /* FALSE == pointer , TRUE = single*/
-    gboolean isSensitive; /* 是否可编辑 */
+//    gboolean isSensitive; /* 是否可编辑 */
+//    gboolean isVisible; /* 是否可显示 */
     union
     {
         SaveEntry sentry; // entry value

@@ -1154,7 +1154,7 @@ dialogs_properties_callback (GtkAction *action)
   if (!dia || textedit_mode(ddisplay_active())) return;
 
   if (dia->data->selected != NULL) {
-   object_list_properties_show(dia, dia->data->selected); // 2014-3-21 lcy ÕâÀïÊÇÓÒ¼üÊôÐÔ.
+   object_list_properties_show(dia, dia->data->selected); // 2014-3-21 lcy 这里右键菜单最后一项 属性
   } else {
     diagram_properties_show(dia);
   }

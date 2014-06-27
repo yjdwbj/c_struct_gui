@@ -2449,11 +2449,13 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
             sen->enumList = targettable;
             GList *t  = targettable;
             key = xmlGetProp(attr_node,(xmlChar *)"value");
+            GQuark kquark = g_quark_from_string((gchar*)key);
             if((gchar*)key)
                 for(; t != NULL ; t = t->next)
                 {
                     FactoryStructEnum *fse = t->data;
-                    if(0 == g_ascii_strcasecmp(fse->value,(gchar*)key))
+                    GQuark quark = g_quark_from_string(fse->value);
+                    if(quark == kquark)
                     {
                         sen->evalue = factory_utf8((gchar*)key);
                         sen->index = g_list_index(targettable,fse);
@@ -2637,11 +2639,13 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
                 SaveEnumArr *sea = g_list_nth_data(sebtn->ebtnwlist,n);
                 SaveEnum *se = sea->senum;
                 se->evalue = g_strdup(split[n]);
+                GQuark equark = g_quark_from_string(se->evalue);
                 GList *tlist  = sebtn->ebtnslist;
                 for(; tlist; tlist = tlist->next)
                 {
                     FactoryStructEnum *fse = tlist->data;
-                    if(!g_ascii_strcasecmp(fse->value,se->evalue))
+                    GQuark fquark = g_quark_from_string(fse->value);
+                    if(fquark == equark)
                     {
                         se->index = g_list_index(sebtn->ebtnslist,fse);
                         break;
@@ -3076,13 +3080,14 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
     sss->sclass = fst->orgclass;
     sss->close_func = NULL;
     sss->newdlg_func = NULL;
+//    sss->isVisible = TRUE;
 
-    if(!g_ascii_strcasecmp(fst->Min,factory_utf8(_("固定值"))))
-    {
-        sss->isSensitive = FALSE;
-    }
-    else
-        sss->isSensitive = TRUE;
+//    if(!g_ascii_strcasecmp(fst->Min,ITEM_FIXED))
+//    {
+//        sss->isSensitive = FALSE;
+//    }
+//    else
+//        sss->isSensitive = TRUE;
 
     if(!sss->name)
     {
@@ -3181,10 +3186,12 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             sss->value.senum.enumList = fst->datalist;
 //                sss->value.senum.width = g_strdup(fst->Max);
             GList *t = sss->value.senum.enumList;
+            GQuark vquark = g_quark_from_string(fst->Value);
             for(; t != NULL ; t = t->next)
             {
                 FactoryStructEnum *kvmap = t->data;
-                if(!g_ascii_strcasecmp(fst->Value,kvmap->key))
+                GQuark kquark = g_quark_from_string(kvmap->key);
+                if(kquark == vquark)
                 {
                     sss->value.senum.index = g_list_index(fst->datalist,kvmap);
                     sss->value.senum.width = g_strdup(fst->Max);
@@ -3819,7 +3826,7 @@ static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
     break;
 //    case SBTN:
     case SPINBOX:
-        if(!g_ascii_strncasecmp(sss->org->Name,"wActID",6)) /*这里一个关键字判断是否是ＩＤ*/
+        if(!g_ascii_strncasecmp(sss->org->Name,WACDID,6)) /*这里一个关键字判断是否是ＩＤ*/
         {
             STRUCTClass *sclass = sss->sclass;
             sss->value.vnumber = g_strdup_printf("%d",sclass->element.object.oindex);

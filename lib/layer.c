@@ -215,7 +215,7 @@ layer_add_objects_first(Layer *layer, GList *obj_list)
 void
 layer_remove_object(Layer *layer, DiaObject *obj)
 {
-    if(factory_is_valid_type(obj))
+    if(factory_is_struct_type(obj) && obj->ops->update_vname)
         obj->ops->update_vname(obj);
    /*　这里要更新一下中文名链表　*/
 
@@ -240,7 +240,7 @@ layer_remove_objects(Layer *layer, GList *obj_list)
   while (obj_list != NULL) {
     obj = (DiaObject *) obj_list->data;
 
-    if(factory_is_valid_type(obj))
+    if(factory_is_struct_type(obj) && obj->ops->update_vname)
         obj->ops->update_vname(obj);/*　这里要更新一下中文名链表,且同时要删除线条　*/
 
 

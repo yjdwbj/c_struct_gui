@@ -390,14 +390,7 @@ modify_double_click(ModifyTool *tool, GdkEventButton *event,
 
     if ( clicked_obj != NULL )
     {
-//        gchar *n1 = g_strdup("Standard - Line");
-//        if(!g_ascii_strncasecmp(clicked_obj->type->name,n1,strlen(n1))) /* 线条不显示属性窗口*/
-        if(clicked_obj->type == object_get_type(CLASS_LINE))
-        {
-//            g_free(n1);
-            return;
-        }
-//        g_free(n1);
+        if(clicked_obj->type == object_get_type(CLASS_LINE)) return; /* 线条不显示属性窗口*/
         object_list_properties_show(ddisp->diagram, ddisp->diagram->data->selected);
     }
     else     /* No object selected */

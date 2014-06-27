@@ -244,14 +244,16 @@ object_properties_show(Diagram *dia, DiaObject *obj)
 void
 object_list_properties_show(Diagram *dia, GList *objects)
 {
-
-
-
     GtkWidget *properties;
     DiaObject *one_obj;
 
     one_obj = (g_list_length(objects) == 1) ? objects->data : NULL;
-    if(!one_obj) goto MWINDOW;
+    if(!one_obj)
+    {
+        one_obj = objects->data;
+        one_obj->ops->templateedit(NULL,objects); /* 这里我多选之后单击改成了模版编辑 */
+        return;
+    }
     if(one_obj->type == object_get_type(CLASS_LINE)) /* 不显示线条的属性*/
         return;
 
@@ -274,10 +276,8 @@ object_list_properties_show(Diagram *dia, GList *objects)
     else
     {
 
-MWINDOW:
         message_error(factory_utf8(_("不支持多个控件的属性对话框.")));
-        gtk_widget_destroy(dialog);
-        return;
+
         properties =  NULL; /*object_list_create_props_dialog(one_obj, FALSE); 　选择多个控件显示它们的属性对话框是不可能．*/
 
     }

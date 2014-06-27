@@ -1152,13 +1152,13 @@ gchar *factory_locale(gchar *str)
     return g_locale_from_utf8(_(str),-1,NULL,NULL,NULL);
 }
 
-gboolean factory_is_valid_type(gpointer data)
+gboolean factory_is_struct_type(gpointer data)
 {
     DiaObject *otype = (DiaObject *)data;
 //    char *n1 = g_strdup("STRUCT - Class");
-    gboolean ftype = (object_get_type(CLASS_STRUCT) == otype->type);
+//    gboolean ftype = (object_get_type(CLASS_STRUCT) != otype->type);
 //    g_free(n1);
-    return !ftype;
+    return object_get_type(CLASS_STRUCT) == otype->type ? TRUE : FALSE;
 }
 
 gchar *factory_get_last_section(const gchar *src,const gchar *delimiter)

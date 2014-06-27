@@ -224,7 +224,7 @@
 				<Option compiler="gcc" />
 			</Target>
 			<Target title="demo">
-				<Option output="dia-app" prefix_auto="1" extension_auto="1" />
+				<Option output="gtk_demo" prefix_auto="1" extension_auto="1" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 			</Target>

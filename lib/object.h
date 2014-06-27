@@ -76,8 +76,9 @@ typedef enum {
 
 #define CLASS_STRUCT "STRUCT - Class"
 #define CLASS_LINE "Standard - Line"
-#define ITEM_RESERVED "保留"
-#define ITEM_FIXED   "固定值"
+#define ITEM_RESERVED (factory_utf8("保留"))
+#define ITEM_FIXED   (factory_utf8("固定值"))
+#define WACDID  "wActID"
 #define ACT_SIZE  6
 
 
@@ -660,7 +661,7 @@ DIAVAR gboolean factory_test_file_exist(const gchar *fname);
 DIAVAR gchar *factory_locale(gchar *str);
 DIAVAR gboolean factory_is_special_object(const gchar *name);
 DIAVAR gchar *factory_get_last_section(const gchar *src,const gchar *delimiter);
-DIAVAR gboolean factory_is_valid_type(gpointer data);
+DIAVAR gboolean factory_is_struct_type(gpointer data);
 DIAVAR GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent);
 DIAVAR void factory_critical_error_exit(const gchar *msg_err);
 DIAVAR void factory_debug_to_log(const gchar *msg_dbg);

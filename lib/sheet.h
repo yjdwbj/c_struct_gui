@@ -87,6 +87,8 @@ struct _FactoryStructItem{  // ÕâÀï¶¨ÒåÒ»¸ö½á¹¹µÄÃ¿Ò»ÏîĞèÒªÏÔÊ¾µÄ¶«Î÷, Õâ¾ÍÏàµ±Ó
     ItemType Itype;   // »ù±¾ÀàĞÎ
     GList *datalist;  /* Èç¹û¸Ã³ÉÔ±ÊÇÈË½á¹¹Ìå»òÕßÊÇÁªºÏ,¸ÃÖ¸Õë¾Í²»ÎªNULL*/
     gpointer orgclass;
+    gboolean isVisible; /* ¿É¼ûÏî */
+    gboolean isSensitive; /* ¿É±à¼­Ïî */
 };
 
 
