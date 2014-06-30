@@ -28,7 +28,7 @@
 	"diatypes.h"
 	"geometry.h"
 
-1403773525 o:\tool\dvs50\lib\diatypes.h
+1404128623 o:\tool\dvs50\lib\diatypes.h
 	"diavar.h"
 
 1394621090 o:\tool\dvs50\lib\geometry.h
@@ -129,7 +129,7 @@
 	"orth_conn.h"
 	"autoroute.h"
 
-1403867127 o:\tool\dvs50\lib\object.h
+1404128643 o:\tool\dvs50\lib\object.h
 	"diatypes.h"
 	<gtk/gtk.h>
 	"geometry.h"
@@ -1138,7 +1138,7 @@
 	<time.h>
 	<gdk/gdkkeysyms.h>
 
-1403774976 source:o:\tool\dvs50\app\app_procs.c
+1404126542 source:o:\tool\dvs50\app\app_procs.c
 	<config.h>
 	<stdio.h>
 	<stdlib.h>
@@ -1187,7 +1187,7 @@
 	<glib.h>
 	"diavar.h"
 
-1403770676 o:\tool\dvs50\app\commands.h
+1404118930 o:\tool\dvs50\app\commands.h
 	<gtk/gtk.h>
 
 1401350390 o:\tool\dvs50\app\tool.h
@@ -1204,7 +1204,7 @@
 	"menus.h"
 	"diarenderer.h"
 
-1403247564 o:\tool\dvs50\app\diagram.h
+1404126298 o:\tool\dvs50\app\diagram.h
 	<gtk/gtk.h>
 	"geometry.h"
 	"handle.h"
@@ -1220,8 +1220,9 @@
 	"diagram.h"
 	"objchange.h"
 
-1394611949 o:\tool\dvs50\app\menus.h
+1404127130 o:\tool\dvs50\app\menus.h
 	<gtk/gtk.h>
+	"display.h"
 
 1257604114 o:\tool\dvs50\app\diagrid.h
 
@@ -1322,7 +1323,7 @@
 	"attributes.h"
 	"persistence.h"
 
-1403838960 source:o:\tool\dvs50\app\commands.c
+1404126872 source:o:\tool\dvs50\app\commands.c
 	<config.h>
 	<unistd.h>
 	<stdlib.h>
@@ -1512,7 +1513,7 @@
 	<gdk/gdk.h>
 	<gtk/gtkcontainer.h>
 
-1403774976 source:o:\tool\dvs50\app\diagram.c
+1404126566 source:o:\tool\dvs50\app\diagram.c
 	<config.h>
 	<assert.h>
 	<string.h>
@@ -1679,7 +1680,7 @@
 	<gtk/gtk.h>
 	<glib.h>
 
-1403770676 source:o:\tool\dvs50\app\filedlg.c
+1404119906 source:o:\tool\dvs50\app\filedlg.c
 	<config.h>
 	<sys/types.h>
 	<sys/stat.h>
@@ -1703,7 +1704,7 @@
 	"filedlg.h"
 	"object.h"
 
-1403770676 o:\tool\dvs50\app\filedlg.h
+1404119080 o:\tool\dvs50\app\filedlg.h
 	<gtk/gtk.h>
 
 1324139438 source:o:\tool\dvs50\app\find-and-replace.c
@@ -1810,7 +1811,7 @@
 
 1257604114 o:\tool\dvs50\app\pixmaps\missing.xpm
 
-1402025714 source:o:\tool\dvs50\app\layer_dialog.c
+1404127020 source:o:\tool\dvs50\app\layer_dialog.c
 	<config.h>
 	<assert.h>
 	<string.h>
@@ -1832,7 +1833,7 @@
 	"intl.h"
 	<math.h>
 
-1403774976 source:o:\tool\dvs50\app\load_save.c
+1404114978 source:o:\tool\dvs50\app\load_save.c
 	<config.h>
 	<sys/stat.h>
 	<unistd.h>
@@ -1868,7 +1869,7 @@
 	"magnify.h"
 	"cursor.h"
 
-1403770677 source:o:\tool\dvs50\app\menus.c
+1404129703 source:o:\tool\dvs50\app\menus.c
 	<config.h>
 	<gtk/gtk.h>
 	<gdk/gdkkeysyms.h>
@@ -1879,7 +1880,6 @@
 	"commands.h"
 	"message.h"
 	"interface.h"
-	"display.h"
 	"filedlg.h"
 	"find-and-replace.h"
 	"plugin-manager.h"
@@ -2146,7 +2146,7 @@
 	"interface.h"
 	"defaults.h"
 
-1403774976 source:o:\tool\dvs50\app\undo.c
+1404114340 source:o:\tool\dvs50\app\undo.c
 	<config.h>
 	"undo.h"
 	"object_ops.h"
@@ -2382,7 +2382,7 @@
 	"connectionpoint.h"
 	"dia_xml.h"
 
-1403865454 o:\tool\dvs50\objects\struct\struct_class.h
+1404113274 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2398,7 +2398,7 @@
 	"object.h"
 	"struct_class.h"
 
-1403770677 source:o:\tool\dvs50\objects\struct\struct.c
+1404128891 source:o:\tool\dvs50\objects\struct\struct.c
 	<config.h>
 	<string.h>
 	<stdio.h>
@@ -2408,7 +2408,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1403871526 source:o:\tool\dvs50\objects\struct\struct_class.c
+1404128769 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2427,7 +2427,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1403867270 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1404113132 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2604,11 +2604,11 @@
 1394081802 source:o:\tool\dvs50\gtk-demo\ui_manager.c
 	<gtk/gtk.h>
 
-1403873546 source:o:\tool\dvs50\objects\struct\template_proc.c
+1404129807 source:o:\tool\dvs50\objects\struct\template_proc.c
 	"template_proc.h"
 	"sheet.h"
 
-1403840039 o:\tool\dvs50\objects\struct\template_proc.h
+1404119490 o:\tool\dvs50\objects\struct\template_proc.h
 	"object.h"
 	"struct_class.h"
 

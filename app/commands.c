@@ -141,6 +141,8 @@ file_close_callback (GtkAction *action)
     ddisplay_close(ddisplay_active());
 }
 
+
+
 void
 file_new_callback (GtkAction *action)
 {
@@ -158,8 +160,31 @@ file_new_callback (GtkAction *action)
   g_free (name);
   g_free (filename);
   dia->unsaved = TRUE;
+  factory_toggle_toolbar_item(ddisp,FALSE);
   factory_callback_system_data(NULL,ddisp->shell);
 }
+
+
+
+void factory_template_new_callback(GtkAction *action)
+{
+  Diagram *dia;
+  DDisplay *ddisp;
+  static int untitled_nr = 1;
+  gchar *name, *filename;
+
+  name = g_strdup_printf(_("template%d.lcy"), untitled_nr++);
+  filename = g_filename_from_utf8(name, -1, NULL, NULL, NULL);
+  dia = new_diagram(filename);
+
+  ddisp = new_display(dia);
+  factory_toggle_toolbar_item(ddisp,TRUE);
+
+  g_free (name);
+  g_free (filename);
+  dia->unsaved = TRUE;
+}
+
 
 void
 file_preferences_callback (GtkAction *action)

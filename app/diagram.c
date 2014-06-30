@@ -210,8 +210,17 @@ diagram_init(Diagram *dia, const char *filename)
   /* Make sure the filename is absolute */
   if (!g_path_is_absolute(filename)) {
     gchar *pwd = g_get_current_dir();
+    if(dia->isTemplate)
+    {
+        gchar *templatepath =  dia_get_lib_directory("template");
+        newfilename = g_strconcat(templatepath,G_DIR_SEPARATOR_S,filename,NULL);
+        g_free(templatepath);
+    }
+    else
+    {
+        newfilename = g_build_filename(pwd, filename, NULL);
+    }
 
-    newfilename = g_build_filename(pwd, filename, NULL);
     g_free(pwd);
     filename = newfilename;
   }
@@ -343,6 +352,7 @@ Diagram *
 new_diagram(const char *filename)  /* Note: filename is copied */
 {
   Diagram *dia = g_object_new(DIA_TYPE_DIAGRAM, NULL);
+  dia->isTemplate = g_str_has_suffix(filename,".lcy");
 
   if (diagram_init(dia, filename)) {
     return dia;

@@ -370,7 +370,7 @@ typedef void (*UpdateObjectVName)(DiaObject *obj);
 typedef void (*SearchConnectedLink)(DiaObject *obj,gint depth);
 typedef void (*UpdateObjectsFillColor)(DiaObject *obj);
 typedef void (*ResetObjectsToDefaultColor)(DiaObject *obj);
-typedef void (*TemplateEdit)(gpointer action,GList *objects);
+
 
 /*************************************
  **  The functions provided in object.c
@@ -673,6 +673,9 @@ DIAVAR void factory_add_to_list(GtkWidget *list,const gchar *str);
 DIAVAR void factory_callback_system_data();
 DIAVAR gboolean factory_is_system_data(const gchar *name);
 DIAVAR gboolean factory_is_io_port(const gchar *name);
+
+
+DIAVAR int diagram_data_raw_save(DiagramData *data, const char *filename);
 
 
 

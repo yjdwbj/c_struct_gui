@@ -5,8 +5,15 @@
 			<menuitem name="FileNew" action="FileNew" />
 			<menuitem name="FileOpen" action="FileOpen" />
 			<separator name="FileSep1" />
+			<menuitem name="TemplateNew" action="TemplateNew" />
+			<menuitem name="TemplateOpen" action="TemplateOpen" />
+			<separatir name="TempSep1" />
 			<menuitem name="FileSave" action="FileSave" />
 			<menuitem name="FileSaveas" action="FileSaveas" />
+			<separatir name="TempSep2" />
+			<menuitem name="TemplateSave" action="TemplateSave"/>
+			<menuitem name="TemplateSaveAs" action="TemplateSaveAs" />
+			<separatir name="TempSep3" />
 <!--			<menuitem name="FileExport" action="FileExport" />
 			<separator name="FileSep2 "/>
 			<menuitem name="DiagramProperties" action="DiagramProperties" />

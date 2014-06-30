@@ -194,8 +194,8 @@ static ObjectOps structclass_ops =
     (UpdateObjectVName) factory_update_view_names,
     (SearchConnectedLink)  factory_search_connected_link,
     (UpdateObjectsFillColor) factory_set_fill_color,
-    (ResetObjectsToDefaultColor) factory_reset_object_color_to_default,
-    (TemplateEdit) factory_template_edit_callback
+    (ResetObjectsToDefaultColor) factory_reset_object_color_to_default
+//    (TemplateEdit) factory_template_edit_callback
 };
 
 
@@ -2294,7 +2294,7 @@ factory_struct_items_create(Point *startpoint,
 
     /* 2014-3-26 lcy  ÕâÀï³õÊ¼¹þÏ£±íÓÃ´æwidgetÓëËüµÄÖµ*/
 // structclass->widgetmap = g_hash_table_new(g_direct_hash,g_direct_equal);
-    structclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+//    structclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
 
     obj->type = &structclass_type;
     //  obj->type->version  = g_strdup(factoryContainer->file_version);
@@ -2822,18 +2822,19 @@ void factory_read_value_from_xml(STRUCTClass *fclass,ObjectNode obj_node)
 //        }
         xmlFree(key);
 
-        gchar *hkey =  g_strjoin("##",fst->FType,fst->Name,NULL);
+//        gchar *hkey =  g_strjoin("##",fst->FType,fst->Name,NULL);
         factory_read_object_value_from_file(sss,fst,attr_node);
-        SaveStruct *firstval =  g_hash_table_lookup(fclass->widgetmap,hkey);
+//        SaveStruct *firstval =  g_hash_table_lookup(fclass->widgetmap,hkey);
+        SaveStruct *firstval = g_list_nth_data(fclass->widgetSave,g_list_index(fclass->widgetSave,fst));
         if(firstval)
             *firstval = *sss;
         else
         {
-            g_hash_table_insert(fclass->widgetmap,g_strdup(hkey),sss);
+//            g_hash_table_insert(fclass->widgetmap,g_strdup(hkey),sss);
             fclass->widgetSave = g_list_append(fclass->widgetSave,sss);
         }
 
-        g_free(hkey);
+//        g_free(hkey);
     }
 
 }
@@ -3405,7 +3406,7 @@ void factory_read_initial_to_struct(STRUCTClass *fclass) /*2014-3-26 lcy ÍÏÈë¿Ø¼
         FactoryStructItem *fst = tttt->data;
         SaveStruct *sst= factory_get_savestruct(fst);
         factory_debug_to_log(g_strdup_printf(factory_utf8("³õÊ¼»¯³ÉÔ±,Ãû×Ö:%s.\n"),sst->name));
-        g_hash_table_insert(fclass->widgetmap,g_strjoin("##",fst->FType,fst->Name,NULL),sst);
+//        g_hash_table_insert(fclass->widgetmap,g_strjoin("##",fst->FType,fst->Name,NULL),sst);
         fclass->widgetSave = g_list_append(fclass->widgetSave,sst);
     }
 
@@ -3534,10 +3535,10 @@ structclass_destroy(STRUCTClass *structclass)
 //  if (structclass->stereotype_string != NULL) {
 //    g_free(structclass->stereotype_string);
 //  }
-    if(structclass->widgetmap && g_hash_table_size(structclass->widgetmap))
-    {
-        g_hash_table_destroy(structclass->widgetmap);
-    }
+//    if(structclass->widgetmap && g_hash_table_size(structclass->widgetmap))
+//    {
+//        g_hash_table_destroy(structclass->widgetmap);
+//    }
 
     if (structclass->properties_dialog != NULL)
     {
@@ -3722,7 +3723,7 @@ structclass_copy(STRUCTClass *structclass)
     structclass_update_data(newstructclass);
 
     newstructclass->EnumsAndStructs = factoryContainer;
-    newstructclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+//    newstructclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
     newstructclass->widgetSave = NULL;
 //    g_hash_table_foreach(structclass->widgetmap,factory_hashtable_copy,newstructclass->widgetmap);
     newstructclass->properties_dialog = NULL;
@@ -4057,7 +4058,7 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
         structclass->connections[i].connected = NULL;
     }
 
-    structclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+//    structclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
     structclass->widgetSave = NULL;
     fill_in_fontdata(structclass);
 
@@ -4127,7 +4128,7 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
     structclass->isInitial = TRUE;
     /* ¶ÁÈ¡ÎÄ¼þÀïÃæµÄÖµ */
 //    factory_set_all_factoryclass(structclass);
-    int s = g_hash_table_size(structclass->widgetmap);
+
 
     factory_debug_to_log(g_strdup_printf(factory_utf8("¼ÓÔØ¶ÔÏñ,Ãû×Ö:%s.\n"),structclass->name));
 

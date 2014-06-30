@@ -214,6 +214,8 @@ struct _FactoryStructItemList{
 };
 
 typedef GList* (*FactoryGetDownloadNameList)(const gchar* path);
+typedef void (*TemplateEdit)(gpointer action,GList *objects);
+//typedef int (*DiagramDataRawSave)(DiagramData *data, const char *filename);
 
 
 typedef struct _FactorySystemInfo FactorySystemInfo;
@@ -235,7 +237,7 @@ struct _FactoryStructItemAll{
     GHashTable *structTable; // 2014-3-25 lcy 这里存放 FactoryStructItemList 的哈希表。
     GHashTable *unionTable;
     GList* structList; // 2014-3-25 lcy 这里存放 FactoryStructItemList 的链表。
-    gchar *project_number;
+    gchar *project_number; /*工程号*/
     gchar *major_version;
     gchar *minor_version;
     gchar *system_files;
@@ -243,6 +245,8 @@ struct _FactoryStructItemAll{
     FactorySystemInfo *sys_info; /*系统信息*/
     FactoryGetDownloadNameList fgdn_func;
     FactoryColors *color;
+    TemplateEdit templateedit;
+//    DiagramDataRawSave diagram_data_raw_save;
 
 };
 

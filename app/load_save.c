@@ -80,7 +80,7 @@ static gboolean write_objects(GList *objects, xmlNodePtr objects_node,
 static gboolean write_connections(GList *objects, xmlNodePtr layer_node,
                                   GHashTable *objects_hash);
 static xmlDocPtr diagram_data_write_doc(DiagramData *data, const char *filename);
-static int diagram_data_raw_save(DiagramData *data, const char *filename);
+//static int diagram_data_raw_save(DiagramData *data, const char *filename);
 static int diagram_data_save(DiagramData *data, const char *filename);
 
 
@@ -501,6 +501,8 @@ diagram_data_load(const char *filename, DiagramData *data, void* user_data)
     Layer *active_layer = NULL;
     GHashTable* unknown_objects_hash = g_hash_table_new(g_str_hash, g_str_equal);
 
+//     if(!factoryContainer->diagram_data_raw_save)
+//        factoryContainer->diagram_data_raw_save = diagram_data_raw_save;
 
     if (g_file_test (filename, G_FILE_TEST_IS_DIR))
     {
@@ -576,7 +578,7 @@ diagram_data_load(const char *filename, DiagramData *data, void* user_data)
     if(attr != NULL)
         data_color(attribute_first_data(attr), &color->color_edited);
     else
-       color->color_edited = color_edited;
+        color->color_edited = color_edited;
 
 
     attr = composite_find_attribute(diagramdata, "color_highlight");
@@ -592,7 +594,7 @@ diagram_data_load(const char *filename, DiagramData *data, void* user_data)
     else
         color->color_foreground = color_black;
 
-   attr = composite_find_attribute(diagramdata, "color_background");
+    attr = composite_find_attribute(diagramdata, "color_background");
     if(attr != NULL)
         data_color(attribute_first_data(attr), &color->color_background);
     else
@@ -843,28 +845,8 @@ write_objects(GList *objects, xmlNodePtr objects_node,
     ObjectNode obj_node;
     xmlNodePtr group_node;
     GList *list;
-
+//    gboolean istemplate = g_str_has_suffix(filename,".lcy"); /* 用保存文件后缀名来判断是否要保存为模版 */
     list = objects;
-    /* 这里要创建一个用来　File.lst 的文件的结构体,保存完了就要删掉的*/
-    DiaObjectType *otype = object_get_type(CLASS_STRUCT);
-    FactoryStructItemList *fsil= g_hash_table_lookup(factoryContainer->structTable,TYPE_FILELST);
-    Point startpoint = {0.0,0.0};
-    Handle *h1,*h2;
-    DiaObject *fileobj = otype->ops->create(&startpoint,(void*)fsil->number,&h1,&h2);
-
-    FactoryStructItemList *fsil2= g_hash_table_lookup(factoryContainer->structTable,TYPE_IDLST);
-    DiaObject *idobj = otype->ops->create(&startpoint,(void*)fsil2->number,&h1,&h2);
-
-    FactoryStructItemList *fsil3= g_hash_table_lookup(factoryContainer->structTable,TYPE_SYSDATA);
-    DiaObject *sysinfoobj = otype->ops->create(&startpoint,(void*)fsil3->number,&h1,&h2);
-
-    fileobj->name = g_strdup(fsil->sname);
-    idobj->name = g_strdup(fsil2->sname);
-    sysinfoobj->name = g_strdup(fsil3->sname);
-
-    list = g_list_append(list,fileobj);
-    list = g_list_append(list,idobj);
-    list = g_list_append(list,sysinfoobj);
     while (list != NULL)
     {
         DiaObject *obj = (DiaObject *) list->data;
@@ -884,14 +866,12 @@ write_objects(GList *objects, xmlNodePtr objects_node,
         else
         {
             obj_node = xmlNewChild(objects_node, NULL, (const xmlChar *)"object", NULL);
-
             xmlSetProp(obj_node, (const xmlChar *)"type", (xmlChar *)obj->type->name);
-
 
 //      g_snprintf(buffer, 30, "%d", obj->type->version);
             /* 写入自定义的唯一长串版本号 */
             gchar *fversion = g_strdup_printf("%s@%s.%s",factoryContainer->project_number,factoryContainer->major_version,
-                                         factoryContainer->minor_version);
+                                              factoryContainer->minor_version);
             xmlSetProp(obj_node, (const xmlChar *)"version", (xmlChar *)fversion);
             g_free(fversion);
 
@@ -921,12 +901,15 @@ write_objects(GList *objects, xmlNodePtr objects_node,
 
         list = g_list_next(list);
     }
-    objects = g_list_remove(objects,fileobj);
-    fileobj->ops->destroy(fileobj);
-    objects = g_list_remove(objects,idobj);
-    idobj->ops->destroy(idobj);
-    objects = g_list_remove(objects,sysinfoobj);
-    sysinfoobj->ops->destroy(sysinfoobj);
+//    if(!istemplate)
+//    {
+//        objects = g_list_remove(objects,fileobj);
+//        fileobj->ops->destroy(fileobj);
+//        objects = g_list_remove(objects,idobj);
+//        idobj->ops->destroy(idobj);
+//        objects = g_list_remove(objects,sysinfoobj);
+//        sysinfoobj->ops->destroy(sysinfoobj);
+//    }
     return TRUE;
 }
 
@@ -1173,7 +1156,7 @@ diagram_data_write_doc(DiagramData *data, const char *filename)
 /** This tries to save the diagram into a file, without any backup
  * Returns >= 0 on success.
  * Only for internal use. */
-static int
+int
 diagram_data_raw_save(DiagramData *data, const char *filename)
 {
     xmlDocPtr doc;
@@ -1278,7 +1261,37 @@ diagram_data_save(DiagramData *data, const char *user_filename)
     }
     fclose(file);
 
+    GList *curlist = data->active_layer->objects;
+    DiaObject *fileobj,*idobj,*sysinfoobj;
+
+    /* 这里要创建一个用来　File.lst 的文件的结构体,保存完了就要删掉的*/
+    DiaObjectType *otype = object_get_type(CLASS_STRUCT);
+    FactoryStructItemList *fsil= g_hash_table_lookup(factoryContainer->structTable,TYPE_FILELST);
+    Point startpoint = {0.0,0.0};
+    Handle *h1,*h2;
+    fileobj = otype->ops->create(&startpoint,(void*)fsil->number,&h1,&h2);
+
+    FactoryStructItemList *fsil2= g_hash_table_lookup(factoryContainer->structTable,TYPE_IDLST);
+    idobj = otype->ops->create(&startpoint,(void*)fsil2->number,&h1,&h2);
+
+    FactoryStructItemList *fsil3= g_hash_table_lookup(factoryContainer->structTable,TYPE_SYSDATA);
+    sysinfoobj = otype->ops->create(&startpoint,(void*)fsil3->number,&h1,&h2);
+
+    fileobj->name = g_strdup(fsil->sname);
+    idobj->name = g_strdup(fsil2->sname);
+    sysinfoobj->name = g_strdup(fsil3->sname);
+
+    curlist = g_list_append(curlist,fileobj);
+    curlist = g_list_append(curlist,idobj);
+    curlist = g_list_append(curlist,sysinfoobj);
+
     ret = diagram_data_raw_save(data, tmpname);
+
+    curlist = g_list_remove(curlist,fileobj);
+    curlist = g_list_remove(curlist,idobj);
+    curlist = g_list_remove(curlist,sysinfoobj);
+
+    /* 上面是删掉一些不需要要界面上以控件形式显示的控件.这就是特殊控件 */
 
     if (ret < 0)
     {

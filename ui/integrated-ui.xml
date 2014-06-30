@@ -4,10 +4,18 @@
 		<menu name="File" action="File">
 			<menuitem name="FileNew" action="FileNew" />
 			<menuitem name="FileOpen" action="FileOpen" />
-			<separator name="FileSep1" />
-
+		  <separator name="FileSep1" />
+			<menuitem name="TemplateNew" action="TemplateNew" />
+			<menuitem name="TemplateOpen" action="TemplateOpen" />
+			 <separator name="FileSep2" />
 			<menuitem name="FileSave" action="FileSave" />
 			<menuitem name="FileSaveas" action="FileSaveas" />
+			 <separator name="FileSep3" />
+			<menuitem name="TemplateSave" action="TemplateSave"/>
+			<menuitem name="TemplateSaveAs" action="TemplateSaveAs" />
+			 <separator name="FileSep4" />
+	
+		
 	<!--		<menuitem name="FileExport" action="FileExport" />
 			<separator name="FileSep2" />
 

@@ -24,7 +24,7 @@
 #define DISPLAY_MENU "/DisplayMenu"
 #define INTEGRATED_MENU "/IntegratedUIMenu"
 #define INVISIBLE_MENU "/InvisibleMenu"
-
+#include "display.h"
 struct zoom_pair { const gchar *string; const gint value; };
 
 extern const struct zoom_pair zooms[10];
@@ -49,6 +49,7 @@ GtkActionGroup * menus_get_action_group (void);
 GtkAction *     menus_get_action       (const gchar *name);
 void            menus_set_recent       (GtkActionGroup *actions);
 void            menus_clear_recent     (void);
+void factory_toggle_toolbar_item(DDisplay *ddisp,gboolean isTemplate);
 
 #define VIEW_MAIN_TOOLBAR_ACTION     "ViewMainToolbar"
 #define VIEW_MAIN_STATUSBAR_ACTION   "ViewMainStatusbar"

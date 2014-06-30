@@ -25,6 +25,9 @@ void file_pagesetup_callback   (GtkAction *action);
 void file_print_callback       (GtkAction *action);
 void file_close_callback       (GtkAction *action);
 void file_new_callback         (GtkAction *action);
+
+void factory_template_new_callback(GtkAction *action);
+
 void file_preferences_callback (GtkAction *action);
 
 void help_manual_callback (GtkAction *action);

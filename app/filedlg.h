@@ -29,5 +29,9 @@ void file_save_callback(gpointer data, guint action, GtkWidget *widget);
 void file_save_as_callback(gpointer data, guint action, GtkWidget *widget);
 void file_export_callback(gpointer data, guint action, GtkWidget *widget);
 
+void factory_template_open_callback(gpointer data,guint action, GtkWidget *widget);
+void factory_template_save_callback(gpointer data,guint action, GtkWidget *widget);
+void factory_template_save_as_callback(gpointer data,guint action, GtkWidget *widget);
+
 
 #endif

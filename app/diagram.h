@@ -66,6 +66,7 @@ struct _Diagram {
   GSList *displays;       /* List of all displays showing this diagram */
 
   UndoStack *undo;
+  gboolean isTemplate; /* Ä£°æ±à¼­±êÊ¶ */
 };
 
 typedef struct _DiagramClass {

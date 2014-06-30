@@ -484,6 +484,8 @@ dia_layer_select_callback(GtkWidget *widget, gpointer data)
     data_set_active_layer(lw->dia->data, lw->layer);
     diagram_add_update_all(lw->dia);
     diagram_flush(lw->dia);
+    /*有些按键的状态需要改变*/
+     factory_toggle_toolbar_item(ddisplay_active(),lw->dia->isTemplate);
 
     internal_call = TRUE;
     if (lw->connect_off)   /* If the user wants this off, it becomes so */

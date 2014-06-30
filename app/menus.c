@@ -33,7 +33,7 @@
 #include "commands.h"
 #include "message.h"
 #include "interface.h"
-#include "display.h"
+
 #include "filedlg.h"
 #include "find-and-replace.h"
 #include "plugin-manager.h"
@@ -90,6 +90,30 @@ static void add_plugin_actions (GtkUIManager *ui_manager, const char *base_path)
 static gchar*
 build_ui_filename (const gchar* name);
 
+
+void factory_toggle_toolbar_item(DDisplay *ddisp,gboolean isTemplate)
+{
+//   int n = gtk_toolbar_get_n_items(ddisp->common_toolbar);
+  GtkToolItem *titem =  gtk_toolbar_get_nth_item (ddisp->common_toolbar,9);
+  if(titem)
+  {
+      gtk_widget_set_sensitive(GTK_WIDGET(titem),!isTemplate);
+  }
+  titem =  gtk_toolbar_get_nth_item (ddisp->common_toolbar,13);
+  if(titem)
+  {
+      gtk_widget_set_sensitive(GTK_WIDGET(titem),!isTemplate);
+  }
+
+  titem =  gtk_toolbar_get_nth_item (ddisp->common_toolbar,19);
+  if(titem)
+  {
+      gtk_widget_set_sensitive(GTK_WIDGET(titem),isTemplate);
+  }
+
+}
+
+
 /* Active/inactive state is set in diagram_update_menu_sensitivity()
  * in diagram.c */
 
@@ -99,6 +123,8 @@ static const GtkActionEntry common_entries[] =
     { "File", NULL, N_("_File"), NULL, NULL, NULL },
     { "FileNew", GTK_STOCK_NEW, NULL, "<control>N", NULL, G_CALLBACK (file_new_callback) },
     { "FileOpen", GTK_STOCK_OPEN, NULL,"<control>O", NULL, G_CALLBACK (file_open_callback) },
+    { "TemplateNew", NULL, "Template New", NULL, NULL, G_CALLBACK (factory_template_new_callback) },
+    { "TemplateOpen", NULL,"Template Open", NULL, NULL, G_CALLBACK (factory_template_open_callback) },
     { "FileQuit", GTK_STOCK_QUIT, NULL, "<control>Q", NULL, G_CALLBACK (file_quit_callback) },
     { "Help", NULL, N_("_Help"), NULL, NULL,NULL },
     { "HelpContents", GTK_STOCK_HELP, NULL, "F1", NULL, G_CALLBACK (help_manual_callback) },
@@ -135,6 +161,8 @@ static const GtkActionEntry display_entries[] =
 {
     { "FileSave", GTK_STOCK_SAVE, NULL, "<control>S", NULL, G_CALLBACK (file_save_callback) },
     { "FileSaveas", GTK_STOCK_SAVE_AS, NULL, "<control><shift>S", NULL, G_CALLBACK (file_save_as_callback) },
+    { "TemplateSave", NULL, "Template Save", NULL, NULL, G_CALLBACK (factory_template_save_callback) },
+    { "TemplateSaveAs", NULL, "Template Save As", NULL, NULL, G_CALLBACK (factory_template_save_as_callback) },
 //    { "FileExport", GTK_STOCK_CONVERT, N_("_Export ..."), NULL, NULL, G_CALLBACK (file_export_callback) },
 //    { "DiagramProperties", GTK_STOCK_PROPERTIES, N_("_Diagram Properties"), "<shift><alt>Return", NULL,G_CALLBACK (view_diagram_properties_callback)},
 //    { "FilePagesetup", NULL, N_("Page Set_up..."), NULL, NULL, G_CALLBACK (file_pagesetup_callback) },
@@ -781,6 +809,15 @@ static void factory_color_setting_callback(GtkWidget *btn,gpointer user_data)
 }
 
 
+static void factory_callback_template_edit(GtkWidget *btn,gpointer user_data)
+{
+     g_return_if_fail(ddisplay_active());
+    g_return_if_fail(factoryContainer);
+    g_return_if_fail(factoryContainer->curLayer);
+
+    factoryContainer->templateedit(NULL,factoryContainer->curLayer->objects);
+}
+
 void factory_callback_object_count(GtkWidget *btn,gpointer user_data)
 {
     g_return_if_fail(ddisplay_active());
@@ -929,6 +966,16 @@ create_integrated_ui_toolbar (void)
     g_signal_connect(dbtn,"clicked",G_CALLBACK(factory_color_setting_callback),NULL);
 
     gtk_widget_show (GTK_WIDGET (sep));
+
+    sep = gtk_separator_tool_item_new ();
+    gtk_toolbar_insert (toolbar, sep, -1);
+
+    dbtn = gtk_button_new_with_label(factory_utf8("Ä£°æ±à¼­"));
+    integrated_ui_toolbar_add_custom_item(toolbar,dbtn);
+    g_signal_connect(dbtn,"clicked",G_CALLBACK(factory_callback_template_edit),NULL);
+
+    gtk_widget_show (GTK_WIDGET (sep));
+
 
     return GTK_WIDGET (toolbar);
 }

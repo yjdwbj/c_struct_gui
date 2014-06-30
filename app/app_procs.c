@@ -1125,6 +1125,7 @@ void  app_init (int argc, char **argv)
         {
             gchar *filename = g_filename_from_utf8(_("Diagram1.dia"), -1, NULL, NULL, NULL);
             Diagram *diagram = new_diagram (filename);
+
             g_free(filename);
 
             if (diagram != NULL)

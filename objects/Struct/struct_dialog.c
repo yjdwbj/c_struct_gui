@@ -118,7 +118,7 @@ struct _STRUCTClassState
     /* Template: */
 //  int template;
 //  GList *formal_params;
-    GHashTable *widgetmap; // 2014-3-22 lcy 这里用一个链表来保存界面上所有的值。
+//    GHashTable *widgetmap; // 2014-3-22 lcy 这里用一个链表来保存界面上所有的值。
     FactoryStructItemAll *EnumsAndStructs ;// 2014-3-21 lcy 这里包含一个文件里的所有结构体.
 };
 

@@ -511,7 +511,7 @@ struct _STRUCTClass
     gboolean destroyed;
     gint depth; /* 这里是查找高亮显示的深度,零就不深入 */
     ViewColor vcolor;
-    GHashTable *widgetmap; // 2014-3-22 lcy 这里用一个哈希表来保存界面上所有的值。
+//    GHashTable *widgetmap; // 2014-3-22 lcy 这里用一个哈希表来保存界面上所有的值。
     GList *widgetSave; // 2014-3-22 lcy 这里为顺序显示用链表保存.
     FactoryStructItemAll *EnumsAndStructs ;// 2014-3-21 lcy 这里包含一个文件里的所有结构体.
     PublicSection *pps;
@@ -670,6 +670,8 @@ void factory_save_idlist_items(ObjectNode obj_node,GList *savelist);
 void factory_read_idlist_items(ObjectNode obj_node);
 
 void factory_save_idlist_to_xml(SaveStruct *sss,ObjectNode obj_node);
+
+
 
 
 void factory_write_mfile_filelist(ObjectNode obj_node);
