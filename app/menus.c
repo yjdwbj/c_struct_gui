@@ -132,14 +132,15 @@ static const GtkActionEntry common_entries[] =
 };
 
 /* Actions for toolbox menu */
-//static const GtkActionEntry toolbox_entries[] =
-//{
-//
-//    /* { "FileSheets", NULL, N_("Sheets and Objects..."), "F9", NULL, G_CALLBACK (sheets_dialog_show_callback) },*/
+static const GtkActionEntry toolbox_entries[] =
+{
+
+    /* { "FileSheets", NULL, N_("Sheets and Objects..."), "F9", NULL, G_CALLBACK (sheets_dialog_show_callback) },*/
 //    { "FileSheets", NULL, N_("Sheets and Objects..."), "F9", NULL, NULL },
 //    { "FilePrefs", GTK_STOCK_PREFERENCES, NULL, NULL, NULL, G_CALLBACK (file_preferences_callback) },
 //    { "FilePlugins", NULL, N_("Plugins..."),NULL, NULL, G_CALLBACK (file_plugins_callback) }
-//};
+    {"TemplateManager",NULL,N_("Template Manager"),NULL,NULL,NULL}
+};
 
 
 /* Toggle-Actions for toolbox menu */
@@ -1189,8 +1190,8 @@ create_or_ref_display_actions (void)
     display_actions = gtk_action_group_new ("display-actions");
     gtk_action_group_set_translation_domain (display_actions, NULL);
     gtk_action_group_set_translate_func (display_actions, _dia_translate, NULL, NULL);
-//    gtk_action_group_add_actions (toolbox_actions, toolbox_entries,
-//                                  G_N_ELEMENTS (toolbox_entries), NULL);
+    gtk_action_group_add_actions (toolbox_actions, toolbox_entries,
+                                  G_N_ELEMENTS (toolbox_entries), NULL);
     gtk_action_group_add_actions (display_actions, common_entries,
                                   G_N_ELEMENTS (common_entries), NULL);
     /*添加动作.*/
@@ -1241,8 +1242,8 @@ menus_init(void)
     gtk_action_group_add_actions (toolbox_actions, common_entries,
                                   G_N_ELEMENTS (common_entries), NULL);
 
-//    gtk_action_group_add_actions (toolbox_actions, toolbox_entries,
-//                                  G_N_ELEMENTS (toolbox_entries), NULL);
+    gtk_action_group_add_actions (toolbox_actions, toolbox_entries,
+                                  G_N_ELEMENTS (toolbox_entries), NULL);
 //  gtk_action_group_add_toggle_actions (toolbox_actions, toolbox_toggle_entries,
 //                G_N_ELEMENTS (toolbox_toggle_entries),
 //                NULL);   // 2014-3-20 lcy  这里把树窗口关闭掉.
@@ -1333,8 +1334,8 @@ menus_get_integrated_ui_menubar (GtkWidget     **menubar,
     gtk_action_group_add_actions (integrated_ui_actions, common_entries,
                                   G_N_ELEMENTS (common_entries), NULL);
 
-//    gtk_action_group_add_actions (integrated_ui_actions, toolbox_entries,
-//                                  G_N_ELEMENTS (toolbox_entries), NULL);
+    gtk_action_group_add_actions (integrated_ui_actions, toolbox_entries,
+                                  G_N_ELEMENTS (toolbox_entries), NULL);
     gtk_action_group_add_actions (integrated_ui_actions, display_entries,
                                   G_N_ELEMENTS (display_entries), NULL);
 //    gtk_action_group_add_toggle_actions (integrated_ui_actions, integrated_ui_view_toggle_entries,

@@ -73,6 +73,7 @@ typedef enum {
 #define TYPE_IDLST "IDLST"
 #define TYPE_FILELST "FILELST"
 #define TYPE_SYSDATA  "SYS_DATA"
+#define TYPE_TEMPLATE "TEMPLATE"
 
 #define CLASS_STRUCT "STRUCT - Class"
 #define CLASS_LINE "Standard - Line"
@@ -551,7 +552,7 @@ struct _DiaObject {
   GHashTable       *meta;
   gchar *name; /* 2014-4-2 lcy 加一个名字做调试 */
   guint32 oindex; /*2014-5-4 lcy 这里是控件唯一编号*/
-  gboolean selectable; /* 2014-5-28 添加一个可选与不可选的变量，比如，像线条是不可选的，可选的时候就是要删除的时候 */
+  gboolean isTemplate; /* 2014-7-1 是否是template */
 };
 
 /*!

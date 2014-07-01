@@ -881,6 +881,13 @@ write_objects(GList *objects, xmlNodePtr objects_node,
             xmlSetProp(obj_node, (const xmlChar *)"id", (xmlChar *)buffer);
             xmlSetProp(obj_node, (const xmlChar *)"name", (xmlChar *)obj->name); /* 添加名字来确认那些个节点用不用加载　*/
 
+            if(obj->isTemplate)
+            {
+                xmlSetProp(obj_node,(const xmlChar *)"templ",(xmlChar*)"1");
+            }
+            else
+               xmlSetProp(obj_node,(const xmlChar *)"templ",(xmlChar*)"0");
+
             (*obj->type->ops->save)(obj, obj_node, filename);
 
             /* Add object -> obj_nr to hash table */
@@ -1060,6 +1067,9 @@ diagram_data_write_doc(DiagramData *data, const char *filename)
     data_add_color(attr,&color->color_background);
 
 
+    /**/
+
+
     if (diagram)
     {
         attr = new_attribute((ObjectNode)tree, "pagebreak");
@@ -1180,7 +1190,7 @@ static int
 diagram_data_save(DiagramData *data, const char *user_filename)
 {
     FILE *file;
-    char *bakname=NULL,*tmpname=NULL,*dirname=NULL,*p;
+    char *bakname=NULL,*tmpname=NULL,*dirname=NULL,*pth;
     char *filename = (char *)user_filename;
     int mode,_umask;
     int fildes;
@@ -1213,10 +1223,10 @@ diagram_data_save(DiagramData *data, const char *user_filename)
 
     /* build the temporary and backup file names */
     dirname = g_strdup(filename);
-    p = strrchr((char *)dirname,G_DIR_SEPARATOR);
-    if (p)
+    pth = strrchr((char *)dirname,G_DIR_SEPARATOR);
+    if (pth)
     {
-        *(p+1) = 0;
+        *(pth+1) = 0;
     }
     else
     {

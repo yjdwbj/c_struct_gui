@@ -28,7 +28,7 @@
 	"diatypes.h"
 	"geometry.h"
 
-1404128623 o:\tool\dvs50\lib\diatypes.h
+1404199489 o:\tool\dvs50\lib\diatypes.h
 	"diavar.h"
 
 1394621090 o:\tool\dvs50\lib\geometry.h
@@ -129,7 +129,7 @@
 	"orth_conn.h"
 	"autoroute.h"
 
-1404128643 o:\tool\dvs50\lib\object.h
+1404185780 o:\tool\dvs50\lib\object.h
 	"diatypes.h"
 	<gtk/gtk.h>
 	"geometry.h"
@@ -1052,7 +1052,7 @@
 	"message.h"
 	"diagdkrenderer.h"
 
-1403863224 source:o:\tool\dvs50\lib\sheet.c
+1404205642 source:o:\tool\dvs50\lib\sheet.c
 	<config.h>
 	<stdlib.h>
 	<string.h>
@@ -1204,7 +1204,7 @@
 	"menus.h"
 	"diarenderer.h"
 
-1404126298 o:\tool\dvs50\app\diagram.h
+1404204318 o:\tool\dvs50\app\diagram.h
 	<gtk/gtk.h>
 	"geometry.h"
 	"handle.h"
@@ -1231,7 +1231,7 @@
 	"geometry.h"
 	"display.h"
 
-1402485062 o:\tool\dvs50\app\interface.h
+1404194041 o:\tool\dvs50\app\interface.h
 	"display.h"
 	"menus.h"
 	"disp_callbacks.h"
@@ -1513,7 +1513,7 @@
 	<gdk/gdk.h>
 	<gtk/gtkcontainer.h>
 
-1404126566 source:o:\tool\dvs50\app\diagram.c
+1404130209 source:o:\tool\dvs50\app\diagram.c
 	<config.h>
 	<assert.h>
 	<string.h>
@@ -1767,7 +1767,7 @@
 	"object_ops.h"
 	"group.h"
 
-1403770752 source:o:\tool\dvs50\app\interface.c
+1404195067 source:o:\tool\dvs50\app\interface.c
 	<config.h>
 	<gnome.h>
 	<gtk/gtk.h>
@@ -1833,7 +1833,7 @@
 	"intl.h"
 	<math.h>
 
-1404114978 source:o:\tool\dvs50\app\load_save.c
+1404181262 source:o:\tool\dvs50\app\load_save.c
 	<config.h>
 	<sys/stat.h>
 	<unistd.h>
@@ -1869,7 +1869,7 @@
 	"magnify.h"
 	"cursor.h"
 
-1404129703 source:o:\tool\dvs50\app\menus.c
+1404183668 source:o:\tool\dvs50\app\menus.c
 	<config.h>
 	<gtk/gtk.h>
 	<gdk/gdkkeysyms.h>
@@ -2382,7 +2382,7 @@
 	"connectionpoint.h"
 	"dia_xml.h"
 
-1404113274 o:\tool\dvs50\objects\struct\struct_class.h
+1404201575 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2408,7 +2408,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1404128769 source:o:\tool\dvs50\objects\struct\struct_class.c
+1404202164 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2604,11 +2604,11 @@
 1394081802 source:o:\tool\dvs50\gtk-demo\ui_manager.c
 	<gtk/gtk.h>
 
-1404129807 source:o:\tool\dvs50\objects\struct\template_proc.c
+1404215887 source:o:\tool\dvs50\objects\struct\template_proc.c
 	"template_proc.h"
 	"sheet.h"
 
-1404119490 o:\tool\dvs50\objects\struct\template_proc.h
+1404213796 o:\tool\dvs50\objects\struct\template_proc.h
 	"object.h"
 	"struct_class.h"
 

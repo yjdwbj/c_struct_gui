@@ -203,6 +203,16 @@ typedef struct _SaveMusicDialog SaveMusicDialog; /* 主界面　*/
 typedef struct _FactoryStructItem FactoryStructItem;
 typedef struct _FactoryStructEnum FactoryStructEnum;
 //typedef struct _FactoryStructEnumList FactoryStructEnumList;
+
+typedef struct _FactoryItemInOriginalMap  FactoryItemInOriginalMap;
+struct _FactoryItemInOriginalMap
+{
+    gchar *struct_name; /* 结构体名 */
+    gchar *act_name; /*行为名字*/
+    GSList *itemslist ; /*选择结构体内的几个成员组成新的链表*/
+};
+
+
 typedef struct _FactoryStructItemList  FactoryStructItemList;
 struct _FactoryStructItemList{
     gchar *sname; /* 结构体名 */
@@ -211,7 +221,11 @@ struct _FactoryStructItemList{
     int number;
     gchar *sfile; /* 指定保存文件名 */
     gboolean isvisible; /* 是否显示到时面板上 */
+    gboolean isTemplate; /* 跟结构体放在一起,用这个标识 */
+    GList *templlist; /*存储FactoryItemInOriginalMap*/
 };
+
+
 
 typedef GList* (*FactoryGetDownloadNameList)(const gchar* path);
 typedef void (*TemplateEdit)(gpointer action,GList *objects);

@@ -3575,6 +3575,7 @@ structclass_copy(STRUCTClass *structclass)
     }
 
     newobj->oindex = g_list_length(curLayer->objects);
+    newobj->isTemplate = structclass->element.object.isTemplate;
 
     element_copy(elem, newelem);
 
@@ -4034,6 +4035,7 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
     obj = &elem->object;
     obj->type = &structclass_type;
     obj->ops = &structclass_ops;
+    obj->isTemplate = FALSE;
 
 //    obj->type->version = g_strdup(factoryContainer->file_version);
     obj->type->version = g_strdup_printf("%s@%s.%s",factoryContainer->project_number,factoryContainer->major_version,
@@ -4157,6 +4159,10 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
         structclass_destroy(structclass) ;
         return NULL;
     }
+    else if(structclass->element.object.isTemplate)
+    {   /*模版读取*/
+        factory_template_read_from_xml(structclass,attr_node);
+    }
     else
         factory_read_value_from_xml(structclass,attr_node->xmlChildrenNode);
 
@@ -4174,9 +4180,6 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
         obj->oindex = g_strtod(sst->value.vnumber,NULL);
         structclass->hasIdnumber = TRUE;
     }
-
-
-
     // curLayer->defnames = g_list_append(curLayer->defnames,structclass->name);
     return &structclass->element.object;
 }
@@ -4196,9 +4199,11 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
     /*  2014-3-22 lcy 这里保存自定义控件的数据 */
     /* 2014-3-25 lcy 这里添加一个自定义节点名来安置这个结构体的成员*/
     gchar *objname = structclass->element.object.name;
+
     obj_node = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_struct", NULL);
     xmlSetProp(obj_node, (const xmlChar *)"name", (xmlChar *)objname);
     xmlSetProp(obj_node, (const xmlChar *)"vname", (xmlChar *)structclass->name);
+
     FactoryStructItemList *fsi = g_hash_table_lookup(structclass->EnumsAndStructs->structTable,
                                  objname);
     if(structclass->pps)
@@ -4216,41 +4221,8 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
     factory_debug_to_log(g_strdup_printf(factory_utf8("保存对像,名字:%s.\n"),structclass->name));
     if(!g_strcasecmp(fsi->sname,TYPE_FILELST))
     {
-        factory_write_mfile_filelist(obj_node);
         /* 这里写音乐管理界面上的数据 */
-        // g_return_if_fail(smd->itemlist);
-//        gchar *rows = g_strdup_printf("%d",g_list_length(smd->itemlist));
-//        xmlSetProp(obj_node, (const xmlChar *)"rows", (xmlChar *)rows);
-//        g_free(rows);
-//        GList *flist = smd->itemlist;
-//        for(; flist; flist = flist->next)
-//        {
-//            SaveMusicItem *smi = flist->data;
-//            ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
-//            xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",smi->id_index));
-//            xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
-//            xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)g_strdup_printf("%d",smi->active ? smi->active-1 : -1));
-//            xmlSetProp(ccc, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",smi->id_addr));
-//            xmlSetProp(ccc, (const xmlChar *)"active", (xmlChar *)g_strdup_printf("%d",smi->active));
-//        }
-//
-//        ObjectNode newobj = xmlNewChild(obj_node, NULL, (const xmlChar *)"Music_File", NULL);
-//
-//        xmlSetProp(newobj, (const xmlChar *)"name",
-//                   (xmlChar *)"Music_File");
-//        g_return_if_fail(smd->smfm); /* 没有音乐文件　*/
-////        xmlSetProp(newobj, (const xmlChar *)"offset",
-////                   (xmlChar *)g_strdup_printf("%d",smd->smfm->offset));
-//        flist = smd->smfm->filelist;
-//        for(; flist; flist = flist->next) /* 这里保存文件列表 */
-//        {
-//            SaveMusicFile *smf = flist->data;
-//            ObjectNode tnode = xmlNewChild(newobj, NULL, (const xmlChar *)"file", NULL);
-//            xmlSetProp(tnode, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",smf->index));
-//            xmlSetProp(tnode, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",smf->file_addr));
-//            xmlSetProp(tnode, (const xmlChar *)"fname", (xmlChar *)smf->full_name);
-//            xmlSetProp(tnode, (const xmlChar *)"dname", (xmlChar *)smf->down_name);
-//        }
+        factory_write_mfile_filelist(obj_node);
     }
     else if(!g_strcasecmp(fsi->sname,TYPE_IDLST))
     {
@@ -4261,47 +4233,10 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
         xmlSetProp(obj_node, (const xmlChar *)"rows", (xmlChar *)rows);
         g_free(rows);
         factory_save_idlist_items(obj_node,sid->idlists); /* 2014-6-19 更改用这个函数保存*/
-//        GList *idlist = sid->idlists;
-//        for(; idlist; idlist = idlist->next)
-//        {
-//            SaveIdItem *sit =idlist->data;
-//            ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
-//            xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",sit->id_index));
-//            xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
-//            gchar *val = g_strdup("-1");
-//            DiaObject *diaobj = g_hash_table_lookup(curLayer->defnames,sit->dname);
-//            if(!diaobj)
-//            {
-//                sit->dname = g_strdup("");
-//                sit->active = 0;
-//            }
-//            else
-//            {
-//                val = g_strdup_printf("%d",diaobj->oindex); /* 保存ID号 */
-//            }
-////            if(!sit->dname)
-//
-////            if(sit->active>0)
-////            {
-//////                STRUCTClass *tcalss = factory_get_object_from_layer(curLayer,sit->dname);
-////                STRUCTClass *tcalss = g_hash_table_lookup(curLayer->defnames,sit->dname);
-////                if(tcalss)
-////                {
-////                    SaveStruct *sst = tcalss->widgetSave->data;
-////                    val = g_strdup_printf("%d",g_list_index(curLayer->objects,tcalss));
-////                    sit->dname = g_strdup(tcalss->name);
-////                }
-////            }
-//
-//
-////            xmlSetProp(ccc, (const xmlChar *)"value", sit->active ? (xmlChar *)g_strdup_printf("%d",sit->id_addr) :(xmlChar *)"-1" );
-////            xmlSetProp(ccc, (const xmlChar *)"value", sit->active ? (xmlChar *)g_strdup_printf("%d",sit->id_index) :(xmlChar *)"-1" );
-//            xmlSetProp(ccc, (const xmlChar *)"value",(xmlChar*)val);
-//            xmlSetProp(ccc, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",sit->id_addr));
-//            xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)sit->dname);
-//            xmlSetProp(ccc, (const xmlChar *)"active", (xmlChar *)g_strdup_printf("%d",sit->active));
-//            g_free(val);
-//        }
+    }
+    else if(structclass->element.object.isTemplate)
+    {    /*保存模版*/
+        factory_template_write_to_xml(structclass->widgetSave,obj_node);
     }
     else
     {

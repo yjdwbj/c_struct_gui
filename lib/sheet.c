@@ -162,9 +162,7 @@ load_all_sheets(void)
     factoryContainer->unionTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
     /* 2014-4-1 lcy 递归查找config 目录下所有以.struct 为后缀的文件名 */
     for_each_in_dir(dia_get_lib_directory("config"),factoryReadDataFromFile,this_is_a_struct);
-    if(!g_hash_table_size(factoryContainer->structTable) ||
-            !g_hash_table_size(factoryContainer->structTable) ||
-            !g_hash_table_size(factoryContainer->structTable))
+    if(!g_hash_table_size(factoryContainer->structTable))
     {
         factory_critical_error_exit(factory_utf8("没有找到任何控件,或者config 目录下无任何有效文件．"));
     }
@@ -791,7 +789,7 @@ void factoryReadDataFromFile(const gchar* filename)
     /* 检查每一个块里面的成员有效性 */
     g_hash_table_foreach(factoryContainer->unionTable,factory_check_items_valid,NULL);
     g_hash_table_foreach(factoryContainer->structTable,factory_check_struct_items_valid,NULL);
-    //  g_free(filename);
+
 }
 
 static void
@@ -949,8 +947,8 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
         sheetp = g_slist_next(sheetp);
     }
 
-    sheet = new_sheet(name, description, g_strdup(filename), scope, shadowing);
-
+//    sheet = new_sheet(CLASS_STRUCT, description, g_strdup(filename), scope, shadowing);
+    sheet = new_sheet(CLASS_STRUCT, "", "", scope, shadowing);
     if (shadowing_sheet)
         shadowing_sheet->shadowing = sheet;                   /* Hilarious :-) */
 
@@ -1026,7 +1024,6 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
                 /* compare the xml:lang property on this element to see if we get a
                  * better language match.  LibXML seems to throw away attribute
                  * namespaces, so we use "lang" instead of "xml:lang" */
-
                 tmp = xmlGetProp(subnode, (xmlChar *)"xml:lang");
                 if (!tmp) tmp = xmlGetProp(subnode, (xmlChar *)"lang");
                 score = intl_score_locale((char *) tmp);
@@ -1038,7 +1035,6 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
                     if (objdesc) free(objdesc);
                     objdesc = (gchar *) xmlNodeGetContent(subnode);
                 }
-
             }
             else if (subnode->ns == ns && !xmlStrcmp(subnode->name, (const xmlChar *)"icon"))
             {
@@ -1061,87 +1057,43 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
         objdesc = NULL;
     }    // 2014-3-20 lcy 超长的for循环.
     otype = object_get_type(CLASS_STRUCT);
-//    gchar *bmppath =  dia_get_lib_directory("numbers"); /* 对所有控件进行简单编号*/
-
     GList *slist = factoryContainer->structList;
     FactoryStructItemList *fssl = NULL;
-//    gchar *fmt = g_strdup("pixmap_%03d.bmp");
+
     int n = 0;
     for(; slist != NULL; slist = slist->next) // 2014-3-21 lcy 这里根据结构体个数创那图标.
     {
 
         fssl = slist->data;
         if(!fssl->isvisible)
-
             continue;
         sheet_obj = g_new(SheetObject,1);
         sheet_obj->object_type = g_strdup((char *) otype->name);
         sheet_obj->description =  fssl->vname ?  g_strdup(fssl->vname) : g_strdup("NULL");
-//        sheet_obj->title_on_button = g_strdup(fssl->vname);
-//    xmlFree(objdesc);     objdesc = NULL;
-
         sheet_obj->pixmap = NULL;
-        // sheet_obj->user_data = GINT_TO_POINTER(intdata); /* XXX modify user_data type ? */
         sheet_obj->user_data = GINT_TO_POINTER(fssl->number);
         sheet_obj->user_data_type = has_intdata ? USER_DATA_IS_INTDATA /* sure,   */
                                     : USER_DATA_IS_OTHER;  /* why not */
-//            sheet_obj->pixmap_file = iconname;
         sheet_obj->has_icon_on_sheet = has_icon_on_sheet;
         sheet_obj->line_break = set_line_break;
         set_line_break = FALSE;
-
-//            if ((otype = object_get_type((char *) tmp)) == NULL)
-//            {
-//                /* Don't complain. This does happen when disabling plug-ins too.
-//                g_warning("object_get_type(%s) returned NULL", tmp); */
-//                if (sheet_obj->description)
-//                    g_free(sheet_obj->description);
-//                g_free(sheet_obj->pixmap_file);
-//                g_free(sheet_obj->object_type);
-//                g_free(sheet_obj);
-//                if (tmp)
-//                    xmlFree(tmp);
-//                continue;
-//            }
-
-
-        /* set defaults */
-//            if (sheet_obj->pixmap_file == NULL)
-//            {
-//                g_assert(otype->pixmap || otype->pixmap_file);
-//                sheet_obj->pixmap = otype->pixmap; // 2014-3-20 lcy 这里是加xpm 的图片.
-//                sheet_obj->pixmap_file = otype->pixmap_file;
-//        gchar *numname = g_strconcat(bmppath,G_DIR_SEPARATOR_S,g_strdup_printf(fmt,n++),NULL);
-//        if(g_file_test(numname,G_FILE_TEST_EXISTS))
-//        {
-//            sheet_obj->pixmap_file = NULL;/*g_strdup(numname);  添加数字编号 */
-//            sheet_obj->pixmap = NULL;
-//        }
-//        else
         {
             sheet_obj->pixmap = otype->pixmap; // 2014-3-20 lcy 这里是加xpm 的图片.
             sheet_obj->pixmap_file = otype->pixmap_file;
         }
-
-//        g_free(numname);
         sheet_obj->has_icon_on_sheet = has_icon_on_sheet;
-//            }
         if (sheet_obj->user_data == NULL
                 && sheet_obj->user_data_type != USER_DATA_IS_INTDATA)
             sheet_obj->user_data = otype->default_user_data;
         else
             sheet_obj->user_data_type = USER_DATA_IS_INTDATA;
 
-        // if (tmp) xmlFree(tmp);
-
         /* we don't need to fix up the icon and descriptions for simple objects,
            since they don't have their own description, and their icon is
            already automatically handled. */
         sheet_append_sheet_obj(sheet,sheet_obj);
-
     }
-//    g_free(bmppath);
-//    g_free(fmt);
+
     if (tmp)
         xmlFree(tmp);
 
@@ -1149,7 +1101,6 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
 
     if (!shadowing_sheet)
         register_sheet(sheet);
-
     xmlFreeDoc(doc);
 }
 

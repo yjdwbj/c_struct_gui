@@ -32,8 +32,9 @@
 			<separator/>
 
 <!--			<menuitem name="FilePrefs" action="FilePrefs" />
-			<menuitem name="FilePlugins" action="FilePlugins" />
 -->
+			<menuitem name="TemplateManager" action="TemplateManager" />
+
 			<separator name="FileRecentStart"/>
 
 			<separator name="FileRecentEnd" />

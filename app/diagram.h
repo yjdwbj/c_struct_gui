@@ -67,6 +67,7 @@ struct _Diagram {
 
   UndoStack *undo;
   gboolean isTemplate; /* 模版编辑标识 */
+  FactoryStructItemList *templ_item; /* 这个仅仅用来存储模版的*/
 };
 
 typedef struct _DiagramClass {

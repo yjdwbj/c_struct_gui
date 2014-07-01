@@ -1501,6 +1501,7 @@ create_sheet_dropdown_menu(GtkWidget *parent)
 //			     sheet_option_menu, NUM_TOOLS+1);
 //  gtk_widget_show(sheet_option_menu);
     gtk_widget_show(title_lab);
+
     g_free(action_btn);
 }
 
@@ -1513,6 +1514,65 @@ fill_sheet_menu(void)
 
     g_free(selection);
 }
+
+
+void create_template_sheets(GtkWidget *parent)
+{
+   GtkWidget *separator;
+    GtkWidget *label;
+    GtkWidget *swin;
+    gchar *sheetname;
+    Sheet *sheet;
+
+    separator = gtk_hseparator_new ();
+    /* add a bit of padding around the separator */
+    label = gtk_vbox_new(FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(label), separator, TRUE, TRUE, 3);
+    gtk_widget_show(label);
+
+    gtk_wrap_box_pack_wrapped (GTK_WRAP_BOX(parent), label, TRUE,TRUE, FALSE,FALSE, TRUE);
+    gtk_widget_show(separator);
+
+    GtkWidget *title_lab = gtk_label_new(factory_utf8("模版"));
+    gtk_wrap_box_pack_wrapped(GTK_WRAP_BOX(parent), title_lab,
+                              TRUE, TRUE, FALSE, FALSE, TRUE);
+    gtk_widget_show(title_lab);
+
+
+        swin = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(swin),
+                                   GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+    gtk_wrap_box_pack_wrapped(GTK_WRAP_BOX(parent), swin, TRUE, TRUE, TRUE, TRUE, TRUE);
+    gtk_widget_show(swin);
+
+     sheet_wbox = gtk_hwrap_box_new(FALSE);
+    gtk_wrap_box_set_justify(GTK_WRAP_BOX(sheet_wbox), GTK_JUSTIFY_TOP);
+    gtk_wrap_box_set_line_justify(GTK_WRAP_BOX(sheet_wbox), GTK_JUSTIFY_LEFT);
+    gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(swin), sheet_wbox);
+    gtk_widget_show(sheet_wbox);
+//    sheetname = persistence_register_string("last-sheet-selected", _("Flowchart"));
+//    sheet = get_sheet_by_name(sheetname);
+//    if (sheet == NULL)
+//    {
+//        /* Couldn't find it */
+//    }
+//    else
+//    {
+//        fill_sheet_wbox(sheet);
+//        dia_dynamic_menu_select_entry(DIA_DYNAMIC_MENU(sheet_option_menu),
+//                                      sheetname);
+//    }
+//    g_free(sheetname);
+      sheet = get_sheet_by_name(TYPE_TEMPLATE); /* 模版区间 */
+      if(sheet)
+      {
+          fill_sheet_wbox(sheet);
+      }
+//    GSList *tmp =  get_sheets_list();
+//    if(tmp)
+//        fill_sheet_wbox(tmp->data); /* 这里原来是链表用下拉框显示的,现在只有一个类型也,就直接显示了*/
+}
+
 
 void
 create_sheets(GtkWidget *parent)
@@ -1532,8 +1592,11 @@ create_sheets(GtkWidget *parent)
     gtk_wrap_box_pack_wrapped (GTK_WRAP_BOX(parent), label, TRUE,TRUE, FALSE,FALSE, TRUE);
     gtk_widget_show(separator);
 
-    create_sheet_dropdown_menu(parent);
-
+//    create_sheet_dropdown_menu(parent);
+     GtkWidget *title_lab = gtk_label_new(factory_utf8("行为结构"));
+    gtk_wrap_box_pack_wrapped(GTK_WRAP_BOX(parent), title_lab,
+                              TRUE, TRUE, FALSE, FALSE, TRUE);
+    gtk_widget_show(title_lab);
     swin = gtk_scrolled_window_new(NULL, NULL);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(swin),
                                    GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
@@ -1546,22 +1609,27 @@ create_sheets(GtkWidget *parent)
     gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(swin), sheet_wbox);
     gtk_widget_show(sheet_wbox);
 
-    sheetname = persistence_register_string("last-sheet-selected", _("Flowchart"));
-    sheet = get_sheet_by_name(sheetname);
-    if (sheet == NULL)
-    {
-        /* Couldn't find it */
-    }
-    else
-    {
-        fill_sheet_wbox(sheet);
-        dia_dynamic_menu_select_entry(DIA_DYNAMIC_MENU(sheet_option_menu),
-                                      sheetname);
-    }
-    g_free(sheetname);
-    GSList *tmp =  get_sheets_list();
-    if(tmp)
-        fill_sheet_wbox(tmp->data); /* 这里原来是链表用下拉框显示的,现在只有一个类型也,就直接显示了*/
+//    sheetname = persistence_register_string("last-sheet-selected", _("Flowchart"));
+//    sheet = get_sheet_by_name(sheetname);
+//    if (sheet == NULL)
+//    {
+//        /* Couldn't find it */
+//    }
+//    else
+//    {
+//        fill_sheet_wbox(sheet);
+//        dia_dynamic_menu_select_entry(DIA_DYNAMIC_MENU(sheet_option_menu),
+//                                      sheetname);
+//    }
+//    g_free(sheetname);
+      sheet = get_sheet_by_name(CLASS_STRUCT);
+      if(sheet)
+      {
+          fill_sheet_wbox(sheet);
+      }
+//    GSList *tmp =  get_sheets_list();
+//    if(tmp)
+//        fill_sheet_wbox(tmp->data); /* 这里原来是链表用下拉框显示的,现在只有一个类型也,就直接显示了*/
 }
 
 
@@ -1832,6 +1900,7 @@ create_integrated_ui (void)
 
     create_tools (wrapbox);
     create_sheets (wrapbox);
+    create_template_sheets(wrapbox);
 //  create_color_area (wrapbox);
 //  create_lineprops_area (wrapbox);
 

@@ -9,4 +9,7 @@ void factory_template_save_dialog(GtkWidget *widget,gint       response_id,gpoin
 void factory_template_save(FactoryStructItemList *fssl);
 
 void factory_template_load();
+static void factory_setback_values(GtkWidget *widget);
+static void factory_setback_model_values(GSList *mlist);
+static gboolean factory_find_item_pos(GList *list,const gchar *str);
 #endif // TEMPLATE_PROC_H_INCLUDED

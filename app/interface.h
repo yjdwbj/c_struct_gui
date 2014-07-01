@@ -68,6 +68,7 @@ void create_integrated_ui (void);
 void create_tree_window(void);
 
 void create_sheets(GtkWidget *parent);
+void create_template_sheets(GtkWidget *parent);
 extern GtkWidget *modify_tool_button;
 
 void view_zoom_set (float zoom_factor); /* zoom_factor is 10 * percentage */
