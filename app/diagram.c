@@ -44,6 +44,11 @@
 #include "lib/diamarshal.h"
 #include "parent.h"
 
+#include "../objects/Struct/template_proc.h"
+
+
+
+
 static GList *open_diagrams = NULL;
 
 struct _ObjectExtent
@@ -340,9 +345,10 @@ diagram_load(const char *filename, DiaImportFilter *ifilter)
     if ( g_slist_length(diagram->displays) == 1 )
       display_set_active (diagram->displays->data);
   }
-
   return diagram;
 }
+
+
 
 /** Create a new diagram with the given filename.
  * If the diagram could not be created, e.g. because the filename is not
@@ -353,6 +359,11 @@ new_diagram(const char *filename)  /* Note: filename is copied */
 {
   Diagram *dia = g_object_new(DIA_TYPE_DIAGRAM, NULL);
   dia->isTemplate = g_str_has_suffix(filename,".lcy");
+  if(dia->isTemplate)
+  {
+       dia->templ_item = g_new0(FactoryTemplateItem,1);
+       dia->templ_item->templ_ops = templ_ops;
+  }
 
   if (diagram_init(dia, filename)) {
     return dia;

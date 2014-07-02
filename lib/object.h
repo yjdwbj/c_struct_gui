@@ -487,7 +487,7 @@ struct _ObjectOps {
   SearchConnectedLink SearchConnLink;
   UpdateObjectsFillColor set_fillcolor;
   ResetObjectsToDefaultColor reset_objectsfillcolor;
-  TemplateEdit templateedit;
+//  TemplateEdit templateedit;
   void      (*(unused[4]))(DiaObject *obj,...);
 };
 

@@ -41,6 +41,9 @@
 #include "plug-ins.h"
 
 FactoryStructItemAll *factoryContainer = NULL;
+TemplateOps *templ_ops = NULL;
+
+
 static GSList *sheets = NULL;
 static GQuark item_reserverd = 0;
 static GQuark item_fixed = 0;

@@ -22,6 +22,7 @@
 
 typedef struct _Diagram Diagram;
 
+
 #include "geometry.h"
 #include "handle.h"
 #include "connectionpoint.h"
@@ -31,6 +32,7 @@ typedef struct _Diagram Diagram;
 #include "filter.h"
 #include "menus.h"
 #include "diagrid.h"
+
 
 GType diagram_get_type (void) G_GNUC_CONST;
 
@@ -67,7 +69,7 @@ struct _Diagram {
 
   UndoStack *undo;
   gboolean isTemplate; /* 模版编辑标识 */
-  FactoryStructItemList *templ_item; /* 这个仅仅用来存储模版的*/
+  FactoryTemplateItem *templ_item; /* 这个仅仅用来存储模版的*/
 };
 
 typedef struct _DiagramClass {
@@ -80,6 +82,7 @@ typedef struct _DiagramClass {
 } DiagramClass;
 
 GList *dia_open_diagrams(void); /* Read only! */
+
 
 Diagram *diagram_load(const char *filename, DiaImportFilter *ifilter);
 int diagram_load_into (Diagram *dest, const char *filename, DiaImportFilter *ifilter);
@@ -148,6 +151,7 @@ int diagram_modified_exists(void);
 void diagram_redraw_all(void);
 
 void diagram_object_modified(Diagram *dia, DiaObject *object);
+
 
 
 

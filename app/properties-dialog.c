@@ -248,12 +248,12 @@ object_list_properties_show(Diagram *dia, GList *objects)
     DiaObject *one_obj;
 
     one_obj = (g_list_length(objects) == 1) ? objects->data : NULL;
-    if(!one_obj)
-    {
-        one_obj = objects->data;
-        one_obj->ops->templateedit(NULL,objects); /* 这里我多选之后单击改成了模版编辑 */
-        return;
-    }
+//    if(!one_obj)
+//    {
+//        one_obj = objects->data;
+//        one_obj->ops->templateedit(NULL); /* 这里我多选之后单击改成了模版编辑 */
+//        return;
+//    }
     if(one_obj->type == object_get_type(CLASS_LINE)) /* 不显示线条的属性*/
         return;
 

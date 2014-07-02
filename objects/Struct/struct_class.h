@@ -686,7 +686,9 @@ enum
 
 
 /* Template Func*/
-void factory_template_edit_callback(GtkAction *action,GList *objects);
+
 void factory_template_write_to_xml(GList *templlist,ObjectNode obj_node);
 void factory_template_read_from_xml(STRUCTClass *fclass, ObjectNode attr_node);
+void factory_template_update_item(const gchar *act_name);
+
 #endif /* CLASS_H */

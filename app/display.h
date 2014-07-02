@@ -187,4 +187,6 @@ void ddisplay_im_context_preedit_reset(DDisplay *ddisp, Focus *focus);
 Focus *ddisplay_active_focus(DDisplay *ddisp);
 void ddisplay_set_active_focus(DDisplay *ddisp, Focus *focus);
 
+
+
 #endif /* DDISPLAY_H */

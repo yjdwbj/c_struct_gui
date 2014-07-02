@@ -195,7 +195,6 @@ static ObjectOps structclass_ops =
     (SearchConnectedLink)  factory_search_connected_link,
     (UpdateObjectsFillColor) factory_set_fill_color,
     (ResetObjectsToDefaultColor) factory_reset_object_color_to_default
-//    (TemplateEdit) factory_template_edit_callback
 };
 
 
@@ -2351,10 +2350,13 @@ FactoryStructItem *factory_get_factorystructitem(GList *inlist,const gchar *name
 {
     FactoryStructItem *fst = NULL;
     GList *p =inlist;
+    GQuark qaurk = g_quark_from_string(name);
+
     for(; p; p=p->next)
     {
         FactoryStructItem *t = p->data;
-        if(!g_ascii_strcasecmp(t->Name,name))
+        GQuark ok = g_quark_from_string(t->Name);
+        if(ok == qaurk)
         {
             fst = p->data;
             break;
@@ -2921,54 +2923,12 @@ void factory_update_view_names(STRUCTClass *fclass)
         layer_remove_object(curLayer,connection);
         diagram_flush(ddisplay_active()->diagram);
     }
+
+    if(ddisplay_active_diagram()->isTemplate)
+    {
+        factory_template_update_item(fclass->name); /* 如果是模版模式,要更新一下 */
+    }
 }
-
-//void factory_inital_io_port_ebtn(SaveStruct *sss,const FactoryStructItem *fst)
-//{
-//    SaveEbtn *sebtn = &sss->value.ssebtn;
-//    g_return_if_fail(sebtn);
-//    sebtn->width = g_strdup(fst->Max);
-//    sss->close_func = factory_save_enumbutton_dialog;
-//    sss->newdlg_func = factory_create_io_port_dialog;
-//    int index = 0;
-//    gchar *value = NULL;
-//    GList *fill_list = factoryContainer->sys_info->IO_List;
-//    for(; fill_list; fill_list = fill_list->next,index++)
-//    {
-//        if(!g_ascii_strcasecmp(fst->Value,(gchar*)fill_list->data))
-//        {
-//            value = g_strdup((gchar*)fill_list->data);
-//            break;
-//        }
-//    }
-//    SaveEntry tmp;
-//    factory_handle_entry_item(&tmp,fst);
-//    sebtn->arr_base  = tmp.arr_base;
-//
-//    GList *tlist  = sebtn->ebtnslist; /* 源数据用填充下拉框,这里来自枚举*/
-//    GList *nixlist = NULL;
-//    int n = 0;
-//    gchar **title = g_strsplit(fst->Name,"[",-1);
-//    gchar *name =  g_strconcat(title[0],"(%d)",NULL);
-//    g_strfreev(title);
-//    n = 0;
-//    for(; n < sebtn->arr_base->reallen; n++)
-//    {
-//        SaveEnum *see = g_new0(SaveEnum,1);
-//        see->enumList = factoryContainer->sys_info->IO_List;
-//        see->index = index;
-//        see->evalue = value;
-//        see->width = fst->Max;
-//        SaveEnumArr *sea = g_new0(SaveEnumArr,1);
-//        sea->widget1 = NULL;
-//        sea->widget2 = NULL;
-//        sea->senum = see;
-//        sebtn->ebtnwlist = g_list_append(sebtn->ebtnwlist,sea);
-//    }
-//
-//}
-
-
 
 void factory_inital_ebtn(SaveStruct *sss,const FactoryStructItem *fst)
 {

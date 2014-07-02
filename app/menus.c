@@ -815,8 +815,10 @@ static void factory_callback_template_edit(GtkWidget *btn,gpointer user_data)
      g_return_if_fail(ddisplay_active());
     g_return_if_fail(factoryContainer);
     g_return_if_fail(factoryContainer->curLayer);
-
-    factoryContainer->templateedit(NULL,factoryContainer->curLayer->objects);
+    Diagram *diagram = ddisplay_active_diagram();
+    g_return_if_fail(diagram);
+    g_return_if_fail(diagram->templ_item);
+    diagram->templ_item->templ_ops->templ_edit(NULL);
 }
 
 void factory_callback_object_count(GtkWidget *btn,gpointer user_data)

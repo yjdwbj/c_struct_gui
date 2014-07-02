@@ -4624,10 +4624,10 @@ gboolean factory_is_connected(ConnectionPoint *cpend,ConnectionPoint *cpstart)
 GList * factory_get_objects_from_layer(Layer *layer)
 {
     GList *list = NULL;
-    if(curLayer)
+    if(layer)
     {
 
-        list = g_hash_table_get_keys(curLayer->defnames);
+        list = g_hash_table_get_keys(layer->defnames);
         if(g_list_length(list)>1)
             list = g_list_sort(list,factory_str_compare);
     }

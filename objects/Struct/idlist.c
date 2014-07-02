@@ -207,11 +207,11 @@ void factory_new_idlist_dialog(GtkWidget *button,SaveStruct *sst)
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(wid_idlist),
                                    GTK_POLICY_NEVER,GTK_POLICY_ALWAYS);
 
-    GList *p = g_hash_table_get_keys(curLayer->defnames);
-    p = g_list_sort(p,factory_str_compare);
-    sid->flist = p;
+//    GList *p = g_hash_table_get_keys(curLayer->defnames);
+//    p = g_list_sort(p,factory_str_compare);
+    sid->flist = factory_get_objects_from_layer(curLayer);
 
-    sid->id_cbmodel = factory_create_idcombox_model(p); /* 创建要填充的下拉表的链表 */
+    sid->id_cbmodel = factory_create_idcombox_model(sid->flist); /* 创建要填充的下拉表的链表 */
 
     gtk_box_pack_start(GTK_BOX(mainBox),wid_idlist,TRUE,TRUE,0);
 

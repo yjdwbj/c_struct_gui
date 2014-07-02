@@ -195,7 +195,8 @@ typedef struct _DiaArrowSelectorClass  DiaArrowSelectorClass;
 typedef struct _DiaFileSelector       DiaFileSelector;
 typedef struct _DiaFileSelectorClass  DiaFileSelectorClass;
 
-
+/* Template */
+typedef struct _TemplateOps TemplateOps;
 
 typedef struct _SaveIdDialog SaveIdDialog; /*ID列表界面*/
 typedef struct _SaveMusicDialog SaveMusicDialog; /* 主界面　*/
@@ -221,16 +222,34 @@ struct _FactoryStructItemList{
     int number;
     gchar *sfile; /* 指定保存文件名 */
     gboolean isvisible; /* 是否显示到时面板上 */
-    gboolean isTemplate; /* 跟结构体放在一起,用这个标识 */
-    GList *templlist; /*存储FactoryItemInOriginalMap*/
+//    gboolean isTemplate; /* 跟结构体放在一起,用这个标识 */
+//    GList *templlist; /*存储FactoryItemInOriginalMap*/
 };
 
 
 
-typedef GList* (*FactoryGetDownloadNameList)(const gchar* path);
-typedef void (*TemplateEdit)(gpointer action,GList *objects);
-//typedef int (*DiagramDataRawSave)(DiagramData *data, const char *filename);
 
+typedef GList* (*FactoryGetDownloadNameList)(const gchar* path);
+typedef void (*TemplateEdit)(gpointer action);
+typedef void (*TemplateSaveToFile)(FactoryStructItemList *);
+
+struct _TemplateOps
+{
+    TemplateEdit templ_edit;
+    TemplateSaveToFile templ_save;
+    void      (*(unused[4]))(DiaObject *obj,...);
+};
+//typedef int (*DiagramDataRawSave)(DiagramData *data, const char *filename);
+typedef struct _FactoryTemplateItem FactoryTemplateItem;
+struct _FactoryTemplateItem
+{
+    FactoryStructItemList fsil;
+    gchar *entrypoint; /* 入口行为的名字 */
+//    GList *templlist; /*存储FactoryItemInOriginalMap*/
+    GSList *modellist; /* model top list */
+    TemplateOps *templ_ops; /* 关于模版相关的函数 */
+//    TemplateSaveToFile templ_save;
+};
 
 typedef struct _FactorySystemInfo FactorySystemInfo;
 struct _FactorySystemInfo
@@ -259,7 +278,8 @@ struct _FactoryStructItemAll{
     FactorySystemInfo *sys_info; /*系统信息*/
     FactoryGetDownloadNameList fgdn_func;
     FactoryColors *color;
-    TemplateEdit templateedit;
+    TemplateEdit templ_edit;
+    TemplateSaveToFile templ_save;
 //    DiagramDataRawSave diagram_data_raw_save;
 
 };

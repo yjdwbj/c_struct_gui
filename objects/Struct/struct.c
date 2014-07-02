@@ -30,10 +30,12 @@
 #include "plug-ins.h"
 #include "sheets.h"
 
+
 extern DiaObjectType structclass_type;
 extern DiaObjectType factory_systeminfo_type;
 extern GList* factory_get_download_name_list(const gchar *path);
-extern void factory_template_edit_callback(GtkAction *action,GList *objects);
+extern TemplateOps templops;
+
 
 DIA_PLUGIN_CHECK_INIT
 
@@ -55,8 +57,8 @@ dia_plugin_init(PluginInfo *info)
    color->color_highlight = color_highlight;
    color->color_edited = color_edited;
    factoryContainer->color = color;
-   factoryContainer->templateedit = factory_template_edit_callback;
-
+   templ_ops = g_new0(TemplateOps,1);
+   templ_ops = &templops;
   return DIA_PLUGIN_INIT_OK;
 }
 

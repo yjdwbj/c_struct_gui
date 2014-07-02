@@ -1438,6 +1438,11 @@ void factory_call_isd_download()
 int
 diagram_save(Diagram *dia, const char *filename)
 {
+    if(dia->isTemplate)
+    {
+        dia->templ_item->templ_ops->templ_save(dia->templ_item);
+        goto HERE;
+    }
     gboolean res = diagram_data_save(dia->data, filename);
     if(dia->data->readytodownload) /* 这里是下载到小机器的标志 */
     {
@@ -1448,7 +1453,7 @@ diagram_save(Diagram *dia, const char *filename)
     {
         return res;
     }
-
+HERE:
     dia->unsaved = FALSE;
     undo_mark_save(dia->undo);
     diagram_set_modified (dia, FALSE);

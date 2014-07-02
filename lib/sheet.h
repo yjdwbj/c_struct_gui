@@ -22,6 +22,7 @@
 
 #include "diatypes.h"
 DIAVAR FactoryStructItemAll *factoryContainer;
+DIAVAR TemplateOps *templ_ops;
 struct _SheetObject {
   char *object_type;
   char *description;    /*ÖÐÎÄÃû×Ö*/

@@ -100,6 +100,8 @@ gboolean this_is_a_struct(const gchar *name);
 void for_each_in_dir(const gchar *directory, ForEachInDirDoFunc dofunc,
                 ForEachInDirFilterFunc filter);
 
+
+
 /* macro defining the version check that should be implemented by all
  * plugins. */
 #define DIA_PLUGIN_CHECK_INIT \

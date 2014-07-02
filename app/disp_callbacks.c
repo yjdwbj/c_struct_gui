@@ -141,9 +141,9 @@ add_properties_menu_item (GtkMenu *menu, gboolean separator)
     int n = g_list_length(objects);
     if(n > 1)
     {
-        DiaObject *dia = objects->data;
-        menu_item = gtk_menu_item_new_with_label(factory_utf8("保存模版"));
-        g_signal_connect(GTK_OBJECT(menu_item), "activate", G_CALLBACK(dia->ops->templateedit), objects);
+//        DiaObject *dia = objects->data;
+//        menu_item = gtk_menu_item_new_with_label(factory_utf8("保存模版"));
+//        g_signal_connect(GTK_OBJECT(menu_item), "activate", G_CALLBACK(dia->ops->templateedit), objects);
     }
     else
     {

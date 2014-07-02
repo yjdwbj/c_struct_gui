@@ -710,7 +710,7 @@ void factory_open_file_dialog(GtkWidget *widget,gpointer user_data)
 
         if (!gtk_file_chooser_get_extra_widget(GTK_FILE_CHOOSER(opendlg)))
         {
-            GtkWidget *omenu= gtk_combo_box_new();
+//            GtkWidget *omenu= gtk_combo_box_new();
             GtkFileFilter* filter;
 
             /* set up the gtk file (name) filters */

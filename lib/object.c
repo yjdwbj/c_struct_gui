@@ -137,6 +137,9 @@ pointer_hash(gpointer some_pointer)
 }
 
 
+
+
+
 /** Copy a list of objects, keeping connections and parent-children
  *  relation ships between the objects.  It is assumed that the
  *  ops->copy function correctly creates the connections and handles
