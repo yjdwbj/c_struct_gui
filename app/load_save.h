@@ -28,5 +28,5 @@ void factory_call_isd_download();
 
 extern DiaExportFilter dia_export_filter;
 extern DiaImportFilter dia_import_filter;
-
+extern DiaImportFilter lcy_import_filter;
 #endif /* LOAD_SAVE_H */

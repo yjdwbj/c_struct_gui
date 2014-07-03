@@ -188,6 +188,8 @@ read_objects(xmlNodePtr objects,
             g_strfreev(split);
             xmlFree(versionstr);
 
+
+
             type = object_get_type((char *)typestr);
 
             if (!type)
@@ -209,6 +211,13 @@ read_objects(xmlNodePtr objects,
                         continue;
                     }
                 }
+
+                if(obj->isTemplate)
+                {
+                    obj_node = obj_node->next;
+                    continue;
+                }
+
                 list = g_list_append(list, obj);
 
                 if (parent)
@@ -500,9 +509,6 @@ diagram_data_load(const char *filename, DiagramData *data, void* user_data)
     Diagram *diagram = DIA_IS_DIAGRAM (data) ? DIA_DIAGRAM (data) : NULL;
     Layer *active_layer = NULL;
     GHashTable* unknown_objects_hash = g_hash_table_new(g_str_hash, g_str_equal);
-
-//     if(!factoryContainer->diagram_data_raw_save)
-//        factoryContainer->diagram_data_raw_save = diagram_data_raw_save;
 
     if (g_file_test (filename, G_FILE_TEST_IS_DIR))
     {
@@ -886,7 +892,7 @@ write_objects(GList *objects, xmlNodePtr objects_node,
                 xmlSetProp(obj_node,(const xmlChar *)"templ",(xmlChar*)"1");
             }
             else
-               xmlSetProp(obj_node,(const xmlChar *)"templ",(xmlChar*)"0");
+                xmlSetProp(obj_node,(const xmlChar *)"templ",(xmlChar*)"0");
 
             (*obj->type->ops->save)(obj, obj_node, filename);
 
@@ -1270,7 +1276,8 @@ diagram_data_save(DiagramData *data, const char *user_filename)
         goto CLEANUP;
     }
     fclose(file);
-
+//    if(data->isProject)
+//    {
     GList *curlist = data->active_layer->objects;
     DiaObject *fileobj,*idobj,*sysinfoobj;
 
@@ -1330,7 +1337,8 @@ CLEANUP:
     g_free(dirname);
     g_free(bakname);
 
-
+//    if(data->isProject)
+//    {
     /*这里添加生成BIN文件*/
     gchar *exefile = dia_get_lib_directory("bin");
     gchar *fullpath = g_strconcat(exefile,G_DIR_SEPARATOR_S"makebin.exe",NULL);
@@ -1370,6 +1378,7 @@ CLEANUP:
 
 //    g_free(fullpath);
     g_free(exefile);
+//    }
     return (ret?FALSE:TRUE);
 }
 
@@ -1438,29 +1447,31 @@ void factory_call_isd_download()
 int
 diagram_save(Diagram *dia, const char *filename)
 {
+    gboolean res;
     if(dia->isTemplate)
     {
-        dia->templ_item->templ_ops->templ_save(dia->templ_item);
-        goto HERE;
+        res = dia->templ_item->templ_ops->templ_save(dia->templ_item);
     }
-    gboolean res = diagram_data_save(dia->data, filename);
-    if(dia->data->readytodownload) /* 这里是下载到小机器的标志 */
+    else
     {
-        dia->data->readytodownload = FALSE;
-        factory_call_isd_download();
+        res = diagram_data_save(dia->data, filename);
+        if(dia->data->readytodownload) /* 这里是下载到小机器的标志 */
+        {
+            dia->data->readytodownload = FALSE;
+            factory_call_isd_download();
+        }
     }
+
     if (!res)
     {
         return res;
     }
-HERE:
+
     dia->unsaved = FALSE;
     undo_mark_save(dia->undo);
     diagram_set_modified (dia, FALSE);
 
     diagram_cleanup_autosave(dia);
-
-
     return TRUE;
 }
 
@@ -1526,6 +1537,7 @@ export_native(DiagramData *data, const gchar *filename,
 }
 
 static const gchar *extensions[] = { "dia", NULL };
+static const gchar *lcy_extensions[] = { "lcy", NULL };
 DiaExportFilter dia_export_filter =
 {
     N_("Dia Diagram File"),
@@ -1536,5 +1548,12 @@ DIAVAR  DiaImportFilter dia_import_filter =
 {
     N_("Dia Diagram File"),
     extensions,
+    diagram_data_load
+};
+
+DIAVAR  DiaImportFilter lcy_import_filter =
+{
+    N_("lcy define Template File"),
+    lcy_extensions,
     diagram_data_load
 };

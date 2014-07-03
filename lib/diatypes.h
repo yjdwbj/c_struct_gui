@@ -231,7 +231,7 @@ struct _FactoryStructItemList{
 
 typedef GList* (*FactoryGetDownloadNameList)(const gchar* path);
 typedef void (*TemplateEdit)(gpointer action);
-typedef void (*TemplateSaveToFile)(FactoryStructItemList *);
+typedef gboolean (*TemplateSaveToFile)(FactoryStructItemList *);
 
 struct _TemplateOps
 {

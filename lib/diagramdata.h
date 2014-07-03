@@ -83,6 +83,7 @@ struct _DiagramData {
    *  Updated by focus.c */
   Focus *active_text_edit;
   gboolean readytodownload;
+//  gboolean isProject; /* 生成bin文件的标志 */
 };
 
 /**

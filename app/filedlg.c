@@ -219,24 +219,16 @@ create_open_menu(void)
 
 
 static void factory_template_open_response_callback(GtkWidget *fs,
-                            gint       response,
-                            gpointer   user_data)
+        gint       response,
+        gpointer   user_data)
 {
-     char *filename;
+    char *filename;
     Diagram *diagram = NULL;
-
     if (response == GTK_RESPONSE_ACCEPT)
     {
-        gint index = gtk_combo_box_get_active (GTK_COMBO_BOX(user_data));
-
-        if (index >= 0) /* remember it */
-            persistence_set_integer ("import-filter", index);
         filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(fs));
-
-        diagram = diagram_load(filename, ifilter_by_index (index - 1, filename));
-
+        diagram = diagram_load(filename, ifilter_by_index (- 1, filename));
         g_free (filename);
-
         if (diagram != NULL)
         {
             diagram_update_extents(diagram);
@@ -247,7 +239,6 @@ static void factory_template_open_response_callback(GtkWidget *fs,
             }
         }
 
-
         GList *list = g_hash_table_get_values(diagram->data->active_layer->defnames);
         if(list)
         {
@@ -256,9 +247,7 @@ static void factory_template_open_response_callback(GtkWidget *fs,
             obj->ops->reset_objectsfillcolor(obj);
             diagram_redraw_all();
         }
-
     }
-
     gtk_widget_destroy(opendlg);
 }
 
@@ -368,6 +357,8 @@ void factory_template_open_callback(gpointer data,guint action,GtkWidget *widget
         }
         g_signal_connect(GTK_OBJECT(opendlg), "destroy",
                          G_CALLBACK(gtk_widget_destroyed), &opendlg);
+        g_signal_connect(GTK_OBJECT(opendlg),"response",
+                                    G_CALLBACK(factory_template_open_response_callback),NULL);
     }
     else
     {
@@ -377,42 +368,14 @@ void factory_template_open_callback(gpointer data,guint action,GtkWidget *widget
     }
     if (!gtk_file_chooser_get_extra_widget(GTK_FILE_CHOOSER(opendlg)))
     {
-        GtkWidget *hbox, *label, *omenu, *options;
-        GtkFileFilter* filter;
-
-        options = gtk_frame_new(_("Open Options"));
-        gtk_frame_set_shadow_type(GTK_FRAME(options), GTK_SHADOW_ETCHED_IN);
-
-        hbox = gtk_hbox_new(FALSE, 1);
-        gtk_container_set_border_width(GTK_CONTAINER(hbox), 5);
-        gtk_container_add(GTK_CONTAINER(options), hbox);
-        gtk_widget_show(hbox);
-
-        label = gtk_label_new (_("Determine file type:"));
-        gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
-        gtk_widget_show (label);
-
-        omenu = create_open_menu();
-        gtk_box_pack_start(GTK_BOX(hbox), omenu, TRUE, TRUE, 0);
-        gtk_widget_show(omenu);
-
-        gtk_file_chooser_set_extra_widget(GTK_FILE_CHOOSER(opendlg),
-                                          options);
-
-        gtk_widget_show(options);
-        g_signal_connect(GTK_OBJECT(opendlg), "response",
-                         G_CALLBACK(file_open_response_callback), omenu);
 
         /* set up the gtk file (name) filters */
         /* 0 = by extension */
-        gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (opendlg),
-                                     build_gtk_file_filter_from_index (0));
+        GtkFileFilter* filter;
         filter = gtk_file_filter_new ();
         gtk_file_filter_set_name (filter, factory_utf8("模版文件"));
         gtk_file_filter_add_pattern (filter, "*.lcy");
         gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (opendlg), filter);
-
-        gtk_combo_box_set_active (GTK_COMBO_BOX (omenu), persistence_get_integer ("import-filter"));
     }
 
     gtk_widget_show(opendlg);
@@ -514,6 +477,11 @@ file_open_callback(gpointer data, guint action, GtkWidget *widget)
         gtk_file_filter_add_pattern (filter, "*");
         gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (opendlg), filter);
 
+         filter = gtk_file_filter_new ();
+        gtk_file_filter_set_name (filter, factory_utf8("模版文件"));
+        gtk_file_filter_add_pattern (filter, "*.lcy");
+        gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (opendlg), filter);
+
         gtk_combo_box_set_active (GTK_COMBO_BOX (omenu), persistence_get_integer ("import-filter"));
     }
 
@@ -531,6 +499,7 @@ file_save_as_response_callback(GtkWidget *fs,
     char *filename;
     Diagram *dia;
     struct stat stat_struct;
+
 
     if (response == GTK_RESPONSE_ACCEPT)
     {
@@ -728,6 +697,27 @@ file_save_callback(gpointer data, guint action, GtkWidget *widget)
 
     diagram = ddisplay_active_diagram();
     if (!diagram) return;
+
+    if(diagram->isTemplate)
+    {
+        FactoryTemplateItem *titem = diagram->templ_item;
+        if(!titem->entrypoint ||
+                !titem->fsil.vname ||
+                !titem->fsil.sname)
+        {
+            GtkWidget * msg_dialog = gtk_message_dialog_new (GTK_WINDOW (ddisplay_active()->shell),
+                                     GTK_DIALOG_MODAL,
+                                     GTK_MESSAGE_WARNING,
+                                     GTK_BUTTONS_CLOSE,
+                                     factory_utf8("你没有编辑任何东西,保存之前请先运行过编辑对话框!"));
+
+            gint yes_or_no = gtk_dialog_run (GTK_DIALOG (msg_dialog));
+            gtk_widget_destroy (msg_dialog);
+            titem->templ_ops->templ_edit(titem);
+            return;
+        }
+
+    }
 
     if (diagram->unsaved)
     {

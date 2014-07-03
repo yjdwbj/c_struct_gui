@@ -81,7 +81,7 @@ typedef struct _DiagramClass {
 
 } DiagramClass;
 
-GList *dia_open_diagrams(void); /* Read only! */
+DIAVAR GList *dia_open_diagrams(void); /* Read only! */
 
 
 Diagram *diagram_load(const char *filename, DiaImportFilter *ifilter);

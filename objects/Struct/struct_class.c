@@ -3995,10 +3995,17 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
     obj = &elem->object;
     obj->type = &structclass_type;
     obj->ops = &structclass_ops;
-    obj->isTemplate = FALSE;
 
+    xmlChar*   key = xmlGetProp(obj_node,(xmlChar *)"templ");
+    if(key)
+    {
+        obj->isTemplate  = g_strtod(key,NULL);
+        xmlFree (key);
+    }
 //    obj->type->version = g_strdup(factoryContainer->file_version);
-    obj->type->version = g_strdup_printf("%s@%s.%s",factoryContainer->project_number,factoryContainer->major_version,
+    obj->type->version = g_strdup_printf("%s@%s.%s",
+                                         factoryContainer->project_number,
+                                         factoryContainer->major_version,
                                          factoryContainer->minor_version);
     element_load(elem, obj_node);
     if(curLayer != factoryContainer->curLayer)
@@ -4037,11 +4044,16 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
 //  structclass->wrap_operations = FALSE;
     structclass->fill_color = color_white;
     structclass->vcolor = N_COLOR;
-    attr_node  =   factory_find_custom_node(obj_node,"JL_struct");
+
+    attr_node  =   factory_find_custom_node(obj_node,STRUCT_NODE);
+    if(!attr_node)
+    {
+        factory_critical_error_exit(factory_utf8(g_strdup_printf("找不到XML节点名:%s,文件内容错误.\n文件名:%s\t行数:%d",
+                                    STRUCT_NODE,filename,obj_node->line)));
+    }
     if(attr_node)
     {
-
-        xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
+        key = xmlGetProp(attr_node,(xmlChar *)"name");
         if (key)
         {
             structclass->element.object.name =  g_strdup((gchar*)key);
@@ -4067,6 +4079,7 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
             structclass->fill_color = structclass->pps->hasfinished ? color_edited : color_white;
             xmlFree (key);
         }
+
 
     }
 
@@ -4120,8 +4133,10 @@ factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
         return NULL;
     }
     else if(structclass->element.object.isTemplate)
-    {   /*模版读取*/
-        factory_template_read_from_xml(structclass,attr_node);
+    {
+        /*模版读取*/
+        factory_template_read_from_xml(structclass,attr_node,filename);
+        return &structclass->element.object;
     }
     else
         factory_read_value_from_xml(structclass,attr_node->xmlChildrenNode);
@@ -4160,7 +4175,7 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
     /* 2014-3-25 lcy 这里添加一个自定义节点名来安置这个结构体的成员*/
     gchar *objname = structclass->element.object.name;
 
-    obj_node = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_struct", NULL);
+    obj_node = xmlNewChild(obj_node, NULL, (const xmlChar *)STRUCT_NODE, NULL);
     xmlSetProp(obj_node, (const xmlChar *)"name", (xmlChar *)objname);
     xmlSetProp(obj_node, (const xmlChar *)"vname", (xmlChar *)structclass->name);
 
@@ -4195,7 +4210,9 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
         factory_save_idlist_items(obj_node,sid->idlists); /* 2014-6-19 更改用这个函数保存*/
     }
     else if(structclass->element.object.isTemplate)
-    {    /*保存模版*/
+    {
+        /*保存模版*/
+
         factory_template_write_to_xml(structclass->widgetSave,obj_node);
     }
     else

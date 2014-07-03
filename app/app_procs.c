@@ -1374,6 +1374,7 @@ internal_plugin_init(PluginInfo *info)
 
     /* register import filters */
     filter_register_import(&dia_import_filter);
+    filter_register_import(&lcy_import_filter); /* 注册模版类型格式 */
 
     /* register export filters */
     /* Standard Dia format */

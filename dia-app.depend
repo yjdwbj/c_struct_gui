@@ -28,7 +28,7 @@
 	"diatypes.h"
 	"geometry.h"
 
-1404293042 o:\tool\dvs50\lib\diatypes.h
+1404368861 o:\tool\dvs50\lib\diatypes.h
 	"diavar.h"
 
 1394621090 o:\tool\dvs50\lib\geometry.h
@@ -294,7 +294,7 @@
 	<glib.h>
 	<diagramdata.h>
 
-1403507174 o:\tool\dvs50\lib\diagramdata.h
+1404374858 o:\tool\dvs50\lib\diagramdata.h
 	<glib.h>
 	<string.h>
 	"diatypes.h"
@@ -420,7 +420,7 @@
 	"dia_xml.h"
 	"font.h"
 
-1395821901 source:o:\tool\dvs50\lib\dia_xml.c
+1404376405 source:o:\tool\dvs50\lib\dia_xml.c
 	<config.h>
 	<stdio.h>
 	<stdlib.h>
@@ -529,7 +529,7 @@
 	"properties.h"
 	"diavar.h"
 
-1403507198 source:o:\tool\dvs50\lib\diagramdata.c
+1404374860 source:o:\tool\dvs50\lib\diagramdata.c
 	<config.h>
 	"intl.h"
 	"diagramdata.h"
@@ -1138,7 +1138,7 @@
 	<time.h>
 	<gdk/gdkkeysyms.h>
 
-1404126542 source:o:\tool\dvs50\app\app_procs.c
+1404373846 source:o:\tool\dvs50\app\app_procs.c
 	<config.h>
 	<stdio.h>
 	<stdlib.h>
@@ -1204,7 +1204,7 @@
 	"menus.h"
 	"diarenderer.h"
 
-1404301046 o:\tool\dvs50\app\diagram.h
+1404380212 o:\tool\dvs50\app\diagram.h
 	<gtk/gtk.h>
 	"geometry.h"
 	"handle.h"
@@ -1261,7 +1261,7 @@
 	<gtk/gtk.h>
 	"diagram.h"
 
-1402638201 o:\tool\dvs50\app\load_save.h
+1404373974 o:\tool\dvs50\app\load_save.h
 	"diagram.h"
 	"filter.h"
 
@@ -1513,7 +1513,7 @@
 	<gdk/gdk.h>
 	<gtk/gtkcontainer.h>
 
-1404301500 source:o:\tool\dvs50\app\diagram.c
+1404379053 source:o:\tool\dvs50\app\diagram.c
 	<config.h>
 	<assert.h>
 	<string.h>
@@ -1681,7 +1681,7 @@
 	<gtk/gtk.h>
 	<glib.h>
 
-1404119906 source:o:\tool\dvs50\app\filedlg.c
+1404374224 source:o:\tool\dvs50\app\filedlg.c
 	<config.h>
 	<sys/types.h>
 	<sys/stat.h>
@@ -1834,7 +1834,7 @@
 	"intl.h"
 	<math.h>
 
-1404302315 source:o:\tool\dvs50\app\load_save.c
+1404385372 source:o:\tool\dvs50\app\load_save.c
 	<config.h>
 	<sys/stat.h>
 	<unistd.h>
@@ -1870,7 +1870,7 @@
 	"magnify.h"
 	"cursor.h"
 
-1404301966 source:o:\tool\dvs50\app\menus.c
+1404385232 source:o:\tool\dvs50\app\menus.c
 	<config.h>
 	<gtk/gtk.h>
 	<gdk/gdkkeysyms.h>
@@ -2383,7 +2383,7 @@
 	"connectionpoint.h"
 	"dia_xml.h"
 
-1404293038 o:\tool\dvs50\objects\struct\struct_class.h
+1404380177 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2409,7 +2409,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1404299129 source:o:\tool\dvs50\objects\struct\struct_class.c
+1404384959 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2605,11 +2605,11 @@
 1394081802 source:o:\tool\dvs50\gtk-demo\ui_manager.c
 	<gtk/gtk.h>
 
-1404301528 source:o:\tool\dvs50\objects\struct\template_proc.c
+1404386135 source:o:\tool\dvs50\objects\struct\template_proc.c
 	"template_proc.h"
 	"sheet.h"
 
-1404301528 o:\tool\dvs50\objects\struct\template_proc.h
+1404368929 o:\tool\dvs50\objects\struct\template_proc.h
 	"object.h"
 	"struct_class.h"
 	"plug-ins.h"

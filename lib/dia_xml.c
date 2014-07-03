@@ -274,6 +274,7 @@ AttributeNode
 factory_find_custom_node(ObjectNode obj_node,
 		      const char *nodename)
 {
+  GQuark noquark = g_quark_from_string(nodename);
   AttributeNode attr;
   while (obj_node && xmlIsBlankNode(obj_node))
     obj_node = obj_node->next;
@@ -285,7 +286,8 @@ factory_find_custom_node(ObjectNode obj_node,
       attr = attr->next;
       continue;
     }
-     if ( attr  && (strcmp((char *) attr->name, nodename)==0) ) {
+     GQuark qq = g_quark_from_string((char *) attr->name);
+     if ( attr  && (noquark == qq) ) {
       return attr;
     }
     attr = attr->next;

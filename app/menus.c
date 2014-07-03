@@ -94,6 +94,7 @@ build_ui_filename (const gchar* name);
 void factory_toggle_toolbar_item(DDisplay *ddisp,gboolean isTemplate)
 {
 //   int n = gtk_toolbar_get_n_items(ddisp->common_toolbar);
+    g_return_if_fail(ddisp);
   GtkToolItem *titem =  gtk_toolbar_get_nth_item (ddisp->common_toolbar,9);
   if(titem)
   {
@@ -124,7 +125,7 @@ static const GtkActionEntry common_entries[] =
     { "FileNew", GTK_STOCK_NEW, NULL, "<control>N", NULL, G_CALLBACK (file_new_callback) },
     { "FileOpen", GTK_STOCK_OPEN, NULL,"<control>O", NULL, G_CALLBACK (file_open_callback) },
     { "TemplateNew", NULL, "Template New", NULL, NULL, G_CALLBACK (factory_template_new_callback) },
-    { "TemplateOpen", NULL,"Template Open", NULL, NULL, G_CALLBACK (factory_template_open_callback) },
+//    { "TemplateOpen", NULL,"Template Open", NULL, NULL, G_CALLBACK (factory_template_open_callback) },
     { "FileQuit", GTK_STOCK_QUIT, NULL, "<control>Q", NULL, G_CALLBACK (file_quit_callback) },
     { "Help", NULL, N_("_Help"), NULL, NULL,NULL },
     { "HelpContents", GTK_STOCK_HELP, NULL, "F1", NULL, G_CALLBACK (help_manual_callback) },

@@ -34,7 +34,7 @@ extern TemplateOps *templ_ops ;
 
 void factory_template_save_dialog(GtkWidget *widget,gint       response_id,gpointer   user_data);
 
-static void factory_template_save(FactoryStructItemList *fssl);
+static gboolean factory_template_save(FactoryStructItemList *fssl);
 
 void factory_template_load();
 
