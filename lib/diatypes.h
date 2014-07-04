@@ -226,17 +226,16 @@ struct _FactoryStructItemList{
 //    GList *templlist; /*存储FactoryItemInOriginalMap*/
 };
 
-
-
-
 typedef GList* (*FactoryGetDownloadNameList)(const gchar* path);
 typedef void (*TemplateEdit)(gpointer action);
 typedef gboolean (*TemplateSaveToFile)(FactoryStructItemList *);
+typedef void (*TemplateCreate)(DiaObject *dia);
 
 struct _TemplateOps
 {
     TemplateEdit templ_edit;
     TemplateSaveToFile templ_save;
+    TemplateCreate templ_create;
     void      (*(unused[4]))(DiaObject *obj,...);
 };
 //typedef int (*DiagramDataRawSave)(DiagramData *data, const char *filename);
@@ -245,10 +244,10 @@ struct _FactoryTemplateItem
 {
     FactoryStructItemList fsil;
     gchar *entrypoint; /* 入口行为的名字 */
-//    GList *templlist; /*存储FactoryItemInOriginalMap*/
     GSList *modellist; /* model top list */
     TemplateOps *templ_ops; /* 关于模版相关的函数 */
-//    TemplateSaveToFile templ_save;
+    GList *member_lst; /* 这个模版里的所有成员的列表 */
+
 };
 
 typedef struct _FactorySystemInfo FactorySystemInfo;

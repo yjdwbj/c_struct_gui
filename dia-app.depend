@@ -28,7 +28,7 @@
 	"diatypes.h"
 	"geometry.h"
 
-1404368861 o:\tool\dvs50\lib\diatypes.h
+1404465121 o:\tool\dvs50\lib\diatypes.h
 	"diavar.h"
 
 1394621090 o:\tool\dvs50\lib\geometry.h
@@ -1052,7 +1052,7 @@
 	"message.h"
 	"diagdkrenderer.h"
 
-1404301672 source:o:\tool\dvs50\lib\sheet.c
+1404477338 source:o:\tool\dvs50\lib\sheet.c
 	<config.h>
 	<stdlib.h>
 	<string.h>
@@ -1072,7 +1072,7 @@
 	"dia_dirs.h"
 	"plug-ins.h"
 
-1404301270 o:\tool\dvs50\lib\sheet.h
+1404473757 o:\tool\dvs50\lib\sheet.h
 	<glib.h>
 	"diatypes.h"
 
@@ -1204,7 +1204,7 @@
 	"menus.h"
 	"diarenderer.h"
 
-1404380212 o:\tool\dvs50\app\diagram.h
+1404477072 o:\tool\dvs50\app\diagram.h
 	<gtk/gtk.h>
 	"geometry.h"
 	"handle.h"
@@ -1231,7 +1231,7 @@
 	"geometry.h"
 	"display.h"
 
-1404194041 o:\tool\dvs50\app\interface.h
+1404477876 o:\tool\dvs50\app\interface.h
 	"display.h"
 	"menus.h"
 	"disp_callbacks.h"
@@ -1261,7 +1261,7 @@
 	<gtk/gtk.h>
 	"diagram.h"
 
-1404373974 o:\tool\dvs50\app\load_save.h
+1404472910 o:\tool\dvs50\app\load_save.h
 	"diagram.h"
 	"filter.h"
 
@@ -1513,7 +1513,7 @@
 	<gdk/gdk.h>
 	<gtk/gtkcontainer.h>
 
-1404379053 source:o:\tool\dvs50\app\diagram.c
+1404477071 source:o:\tool\dvs50\app\diagram.c
 	<config.h>
 	<assert.h>
 	<string.h>
@@ -1681,7 +1681,7 @@
 	<gtk/gtk.h>
 	<glib.h>
 
-1404374224 source:o:\tool\dvs50\app\filedlg.c
+1404478284 source:o:\tool\dvs50\app\filedlg.c
 	<config.h>
 	<sys/types.h>
 	<sys/stat.h>
@@ -1768,7 +1768,7 @@
 	"object_ops.h"
 	"group.h"
 
-1404195067 source:o:\tool\dvs50\app\interface.c
+1404477932 source:o:\tool\dvs50\app\interface.c
 	<config.h>
 	<gnome.h>
 	<gtk/gtk.h>
@@ -1834,7 +1834,7 @@
 	"intl.h"
 	<math.h>
 
-1404385372 source:o:\tool\dvs50\app\load_save.c
+1404473082 source:o:\tool\dvs50\app\load_save.c
 	<config.h>
 	<sys/stat.h>
 	<unistd.h>
@@ -1870,7 +1870,7 @@
 	"magnify.h"
 	"cursor.h"
 
-1404385232 source:o:\tool\dvs50\app\menus.c
+1404472744 source:o:\tool\dvs50\app\menus.c
 	<config.h>
 	<gtk/gtk.h>
 	<gdk/gdkkeysyms.h>
@@ -1893,7 +1893,7 @@
 	"widgets.h"
 	"preferences.h"
 
-1257604114 o:\tool\dvs50\app\plugin-manager.h
+1404462531 o:\tool\dvs50\app\plugin-manager.h
 	<gtk/gtk.h>
 
 1257604114 o:\tool\dvs50\app\select.h
@@ -1944,7 +1944,7 @@
 	"intl.h"
 	"diapagelayout.h"
 
-1394690825 source:o:\tool\dvs50\app\plugin-manager.c
+1404462436 source:o:\tool\dvs50\app\plugin-manager.c
 	<config.h>
 	<string.h>
 	<gtk/gtk.h>
@@ -1987,7 +1987,7 @@
 	"message.h"
 	<string.h>
 
-1403604144 source:o:\tool\dvs50\app\recent_files.c
+1404445652 source:o:\tool\dvs50\app\recent_files.c
 	<config.h>
 	<gnome.h>
 	<gdk/gdkkeysyms.h>
@@ -2409,7 +2409,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1404384959 source:o:\tool\dvs50\objects\struct\struct_class.c
+1404459963 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2428,7 +2428,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1404280387 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1404460274 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2605,11 +2605,11 @@
 1394081802 source:o:\tool\dvs50\gtk-demo\ui_manager.c
 	<gtk/gtk.h>
 
-1404386135 source:o:\tool\dvs50\objects\struct\template_proc.c
+1404472291 source:o:\tool\dvs50\objects\struct\template_proc.c
 	"template_proc.h"
 	"sheet.h"
 
-1404368929 o:\tool\dvs50\objects\struct\template_proc.h
+1404466337 o:\tool\dvs50\objects\struct\template_proc.h
 	"object.h"
 	"struct_class.h"
 	"plug-ins.h"

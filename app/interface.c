@@ -1278,6 +1278,8 @@ static GtkWidget *sheet_wbox;
 
 gchar *interface_current_sheet_name;
 
+
+
 static Sheet *
 get_sheet_by_name(const gchar *name)
 {
@@ -1293,6 +1295,10 @@ get_sheet_by_name(const gchar *name)
     }
     return NULL;
 }
+
+
+
+
 
 static void
 fill_sheet_wbox(Sheet *sheet)
@@ -1424,6 +1430,17 @@ fill_sheet_wbox(Sheet *sheet)
         gtk_signal_emit_by_name(GTK_OBJECT(first_button), "toggled",
                                 GTK_BUTTON(first_button), NULL);
 }
+
+void factory_template_add_item(SheetObject *sobj,const gchar *sname)
+{
+     Sheet  *sheet = get_sheet_by_name(TYPE_TEMPLATE); /* Ä£°æÇø¼ä */
+      if(sheet)
+      {
+          sheet->objects = g_list_append(sheet->objects,sobj);
+          fill_sheet_wbox(sheet);
+      }
+}
+
 
 static void
 sheet_option_menu_changed(DiaDynamicMenu *menu, gpointer user_data)

@@ -3041,14 +3041,6 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
     sss->sclass = fst->orgclass;
     sss->close_func = NULL;
     sss->newdlg_func = NULL;
-//    sss->isVisible = TRUE;
-
-//    if(!g_ascii_strcasecmp(fst->Min,ITEM_FIXED))
-//    {
-//        sss->isSensitive = FALSE;
-//    }
-//    else
-//        sss->isSensitive = TRUE;
 
     if(!sss->name)
     {
@@ -3059,6 +3051,8 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
     {
         return factory_get_action_savestruct(sss,fst);
     }
+
+
 
     /* 2014-3-26 lcy 通过名字去哈希表里找链表*/
 

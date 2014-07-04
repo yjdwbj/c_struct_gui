@@ -1,24 +1,17 @@
 #include "template_proc.h"
 #include "sheet.h"
 
-
-
 FactoryTemplateItem *static_temp = NULL;
 FactoryStructItemList *static_fsil = NULL;
-
-
 
 GtkTreeModel *model = NULL;
 
 TemplateOps templops =
 {
     factory_template_edit_callback,
-    factory_template_save
+    factory_template_save,
+    factory_template_create,
 };
-
-
-
-
 
 static gboolean
 query_tooltip_tree_view_cb (GtkWidget  *widget,
@@ -379,9 +372,53 @@ static NewItem *factory_template_find_old_item(GSList *slist,const gchar *str)
     }
     return NULL;
 }
+static gboolean factory_template_newitem_sorted(NewItem *org,NewItem *cmp)
+{
+    return factory_str_compare(org->label,cmp->label);
+}
+
+static NewItem * factory_template_create_model_by_name(const gchar *name)
+{
+    NewItem *topitem =  g_new0(NewItem,1);
+//    static_temp->modellist = g_slist_append(static_temp->modellist,topitem);
+    topitem->label = g_strdup(name);
+    topitem->name_quark = g_quark_from_string(topitem->label);
+//            topitem->fixed = FALSE;
+    topitem->expand = FALSE;
+    topitem->pos = 0;
+    STRUCTClass *fclass = g_hash_table_lookup(curLayer->defnames,name);
+    topitem->children = factory_template_get_editable_item(fclass->widgetSave);
+    return topitem;
+}
+
+static void factory_template_create(DiaObject *dia)
+{
+    /* 这里也是一个回调函数,要对比一些指针 */
+    Diagram *diagram  = ddisplay_active_diagram();
+
+    if(static_temp != diagram->templ_item)
+        static_temp = diagram->templ_item;
+
+    if(static_fsil != &diagram->templ_item->fsil)
+        static_fsil = &diagram->templ_item->fsil;
+
+    STRUCTClass *fclass = (STRUCTClass *)dia;
+    if(!static_temp->entrypoint)
+        static_temp->entrypoint = g_strdup(fclass->name);
+    NewItem *topitem =  g_new0(NewItem,1);
+    static_temp->modellist = g_slist_append(static_temp->modellist,topitem);
+    topitem->label = g_strdup(fclass->name);
+    topitem->name_quark = g_quark_from_string(topitem->label);
+//            topitem->fixed = FALSE;
+    topitem->expand = FALSE;
+    topitem->pos = 0;
+//    STRUCTClass *fclass = g_hash_table_lookup(curLayer->defnames,fclass->name);
+    topitem->children = factory_template_get_editable_item(fclass->widgetSave);
+
+}
 
 
-GtkTreeView * factory_template_create_treeview(GList *list)
+GtkTreeView * factory_template_create_treeview(GSList *list)
 {
     model = GTK_TREE_MODEL(gtk_tree_store_new(ITEM_COUNT,
                            G_TYPE_STRING,
@@ -389,26 +426,13 @@ GtkTreeView * factory_template_create_treeview(GList *list)
                            G_TYPE_BOOLEAN));
 
     DiaObjectType *ct = object_get_type(CLASS_LINE);
-    GList *objects = list;
+    GSList *objects = list;
 
     for(; objects; objects = objects->next) /* 按控件个数,树状显示 */
     {
-        gchar *name = objects->data;
-        NewItem *topitem = factory_template_find_old_item(static_temp->modellist,name);
-        if(!topitem)
-        {
-            topitem =  g_new0(NewItem,1);
-            static_temp->modellist = g_slist_append(static_temp->modellist,topitem);
-            topitem->label = g_strdup(name);
-            topitem->name_quark = g_quark_from_string(topitem->label);
-//            topitem->fixed = FALSE;
-            topitem->expand = FALSE;
-            topitem->pos = g_list_index(list,name);
-            STRUCTClass *fclass = g_hash_table_lookup(curLayer->defnames,name);
-            topitem->children = factory_template_get_editable_item(fclass->widgetSave);
-        }
-        factory_append_struct_to_model(model,topitem);
+        factory_append_struct_to_model(model,objects->data);
     }
+    /* 不排序,就不能对应treeview遍历的顺序 */
 
     GtkTreeView *treeview = gtk_tree_view_new_with_model(model);
     g_object_unref (model);
@@ -436,19 +460,26 @@ void factory_template_edit_callback(GtkAction *action)
     if(static_fsil != &diagram->templ_item->fsil)
         static_fsil = &diagram->templ_item->fsil;
 
-    GList *objects = factory_get_objects_from_layer(curLayer) ; /* 选择的控件列表 */
+//    GList *objects = factory_get_objects_from_layer(curLayer) ; /* 选择的控件列表 */
     GtkWidget *vbox = gtk_vbox_new(FALSE,1);
-    GtkWidget *newdialog = factory_create_new_dialog_with_buttons(factory_utf8("模版编辑"),ddisplay_active()->shell);
+    GtkWidget *newdialog = factory_create_new_dialog_with_buttons(factory_utf8("模版编辑"),
+                           ddisplay_active()->shell);
     gtk_window_set_modal(GTK_WINDOW(newdialog),TRUE);
     GtkWidget *dlgvbox = GTK_DIALOG(newdialog)->vbox;
-    GtkTreeView *treeview = factory_template_create_treeview(objects);
+    static_temp->modellist = g_slist_sort(static_temp->modellist,
+                                          factory_template_newitem_sorted);
+    GtkTreeView *treeview = factory_template_create_treeview(static_temp->modellist);
     factory_template_layout(newdialog,vbox);
-    GtkWidget *sroll_win = g_object_get_data (G_OBJECT(newdialog),"sroll_win");
-    gtk_container_add(GTK_CONTAINER(sroll_win),GTK_WIDGET(treeview));
+    GtkWidget *sroll_win = g_object_get_data (G_OBJECT(newdialog),
+                           "sroll_win");
+    gtk_container_add(GTK_CONTAINER(sroll_win),
+                      GTK_WIDGET(treeview));
     gtk_container_add(GTK_CONTAINER(dlgvbox),vbox);
     // factory_setback_values(newdialog);
     gtk_widget_show_all(vbox);
-    g_signal_connect(newdialog,"response",G_CALLBACK(factory_template_save_dialog),model);
+    g_signal_connect(newdialog,"response",
+                     G_CALLBACK(factory_template_save_dialog),
+                     model);
 }
 
 
@@ -469,51 +500,6 @@ static gboolean factory_restore_items_values(GtkTreeModel *model,
 }
 
 
-//static void factory_setback_values(GtkWidget *widget)
-//{
-//
-//    if(static_temp)
-//    {
-//        GtkWidget *entry = g_object_get_data (G_OBJECT(widget),"template_name");
-//        gtk_entry_set_text(GTK_ENTRY(entry),static_fsil->vname);
-//        entry = g_object_get_data(G_OBJECT(widget),"struct_name");
-//        gtk_entry_set_text(GTK_ENTRY(entry),static_fsil->sname);
-//        entry = g_object_get_data(G_OBJECT(widget),"sfile");
-//        gtk_entry_set_text(GTK_ENTRY(entry),static_fsil->sfile);
-////        factory_setback_model_values(topList);
-//        gtk_tree_model_foreach(model,factory_restore_items_values,NULL);
-//    }
-//}
-
-
-
-//static void factory_setback_model_values(GSList *mlist)
-//{
-//    GSList *plist = mlist;
-//    GtkTreeIter iter;
-//    int t1=0;
-//    for(; plist; plist = plist->next,t1++)
-//    {
-//        NewItem *topitem  = plist->data;
-//        GList *clist = topitem->children;
-//
-////        FactoryItemInOriginalMap *fiiom = g_list_nth_data(static_temp->templlist,t1);
-////        if(!fiiom)
-////            continue;
-//        int c1=0;
-//        for(; clist; clist = clist->next,c1++)
-//        {
-//            NewItem *citem = clist->data;
-//            GtkTreePath *path;
-//            path = gtk_tree_path_new_from_indices(t1,c1, -1);
-//            gtk_tree_model_get_iter(GTK_TREE_MODEL(model), &iter, path);
-//            gtk_tree_store_set (GTK_TREE_STORE (model), &iter, ITEM_BOOL,
-//                                citem->ischecked, -1);
-//            gtk_tree_path_free(path);
-//        }
-//    }
-//}
-
 static int factory_find_item_pos(GSList *list,const gchar *str)
 {
     int pos = -1;
@@ -528,7 +514,7 @@ static int factory_find_item_pos(GSList *list,const gchar *str)
     }
     return pos;
 }
-
+static gchar *act_name = NULL;
 
 static gboolean factory_filter_checked_item(GtkTreeModel *model,
         GtkTreePath *path,
@@ -557,13 +543,13 @@ static gboolean factory_filter_checked_item(GtkTreeModel *model,
 
 void factory_template_item_audit_dialoag(GtkWidget *widget,const gchar *msg)
 {
-     GtkWidget * msg_dialog = gtk_message_dialog_new (GTK_WINDOW (widget),
-                                     GTK_DIALOG_MODAL,
-                                     GTK_MESSAGE_WARNING,
-                                     GTK_BUTTONS_CLOSE,
-                                     msg);
-        gtk_dialog_run (GTK_DIALOG (msg_dialog));
-        gtk_widget_destroy (msg_dialog);
+    GtkWidget * msg_dialog = gtk_message_dialog_new (GTK_WINDOW (widget),
+                             GTK_DIALOG_MODAL,
+                             GTK_MESSAGE_WARNING,
+                             GTK_BUTTONS_CLOSE,
+                             msg);
+    gtk_dialog_run (GTK_DIALOG (msg_dialog));
+    gtk_widget_destroy (msg_dialog);
 }
 
 
@@ -614,11 +600,12 @@ void factory_template_save_dialog(GtkWidget *widget,
         wid_obj = g_object_get_data(G_OBJECT(widget),"entry_point");
         static_temp->entrypoint = g_strdup(gtk_combo_box_get_active_text(GTK_COMBO_BOX(wid_obj)));
         gtk_tree_model_foreach(model,factory_filter_checked_item,static_fsil);
-        FactoryStructItemList *old = g_hash_table_lookup(factoryContainer->structTable,static_fsil->sname);
+        FactoryStructItemList *old = g_hash_table_lookup(factoryContainer->structTable,
+                                     static_fsil->sname);
         if(old)
         {
             gchar *msg = factory_utf8(g_strdup_printf("重名!!!\n该模版名必须在现有结构体名与现有模版名中唯一.\n名称:%s\n",
-                                                  static_fsil->sname));
+                                      static_fsil->sname));
             factory_template_item_audit_dialoag(widget,msg);
             g_free(msg);
             return ;
@@ -661,7 +648,8 @@ GList * factory_template_get_values_to_save()
 
         fiiom = g_new0(FactoryItemInOriginalMap,1);
         fiiom->act_name = g_strdup(topitem->label);
-        STRUCTClass *fclass = g_hash_table_lookup(curLayer->defnames,fiiom->act_name);
+        STRUCTClass *fclass = g_hash_table_lookup(curLayer->defnames,
+                              fiiom->act_name);
         if(fclass)
         {
             fiiom->struct_name =  g_strdup(fclass->element.object.name);
@@ -700,7 +688,16 @@ gboolean factory_template_save(FactoryStructItemList *fssl)
     Handle *h1,*h2;
     Diagram *diagram  = ddisplay_active()->diagram;
 
-    g_hash_table_insert(factoryContainer->structTable,fssl->sname,fssl);
+    gchar *hkey = g_strdup(fssl->sname);
+    FactoryStructItemList *tmp = g_new0(FactoryStructItemList,1);
+    tmp->sname = g_strdup(fssl->sname);
+    tmp->vname = g_strdup(fssl->vname);
+    tmp->sfile = g_strdup(fssl->sfile);
+    tmp->number = fssl->number;
+    tmp->list = g_list_copy(fssl->list);
+    tmp->isvisible = fssl->isvisible;
+
+    g_hash_table_insert(factoryContainer->structTable,tmp->sname,tmp);
 //        factoryContainer->structList = g_list_append(factoryContainer->structList,static_fsil);
 
     STRUCTClass *ntemp = otype->ops->create(&startpoint,(void*)fssl->number,&h1,&h2);
@@ -711,21 +708,11 @@ gboolean factory_template_save(FactoryStructItemList *fssl)
     gchar *templatepath =  dia_get_lib_directory("template");
     curLayer->objects = g_list_append(curLayer->objects,ntemp);
 
-//    gchar*  pth = strrchr((char *)diagram->filename,G_DIR_SEPARATOR);
-//    if (pth)
-//    {
-//        *(pth+1) = 0;
-//    }
-//    gchar *newfname  = g_strdup_printf("%s%s.lcy",diagram->filename,fssl->vname);
-//    g_free(diagram->filename);
-//    diagram->filename = g_strdup(newfname);
-//    diagram_update_extents(diagram);
-//    g_free(newfname);
     int res = diagram_data_raw_save(diagram->data,diagram->filename);
 
     curLayer->objects = g_list_remove(curLayer->objects,ntemp);
     factory_template_free_templlist(vallist); /* 保存到文件之后就把它干掉 */
-    g_hash_table_remove(factoryContainer->structTable,static_fsil->sname);
+    g_hash_table_remove(factoryContainer->structTable,tmp->sname);
 
     return TRUE;
 }
@@ -791,78 +778,59 @@ void factory_template_write_to_xml(GList *templlist,ObjectNode obj_node)
     }
 }
 
-static void factory_template_read_basic_attribute(ObjectNode attr_node,const gchar *filename)
+static void factory_template_read_basic_attribute(ObjectNode attr_node,
+        FactoryTemplateItem *fti)
 {
-    GQuark pquark = g_quark_from_string(filename);
-    Diagram *diagram ;
-    GList *l;
-    for(l = dia_open_diagrams(); l ; l = l->next)
-    {
-        diagram = l->data;
-        GQuark tquark = g_quark_from_string(diagram->filename);
-        if(pquark == tquark)
-            break;
-    }
-    if(!diagram)
-    {
-        factory_critical_error_exit(factory_utf8(g_strdup_printf("不能打开模版文件.\n文件名:%s,行数:%d\n",
-                                                                 filename,attr_node->line)));
-    }
 
-    if(static_temp != diagram->templ_item)
-        static_temp = diagram->templ_item;
-
-    if(static_fsil != &diagram->templ_item->fsil)
-        static_fsil = &diagram->templ_item->fsil;
 
     gchar *key;
 
     key = xmlGetProp(attr_node, (const xmlChar *)"entry");
     if(key)
     {
-        static_temp->entrypoint = g_strdup((gchar*)key);
+        fti->entrypoint = g_strdup((gchar*)key);
         xmlFree(key);
     }
     else
     {
-         factory_critical_error_exit(factory_utf8(g_strdup_printf("读取模版出错,缺少entry属性.\n 文件名:%s\t,行号:%d\n",
-                                        attr_node->name,attr_node->line)));
+        factory_critical_error_exit(factory_utf8(g_strdup_printf("读取模版出错,缺少entry属性.\n 文件名:%s\t,行号:%d\n",
+                                    attr_node->name,attr_node->line)));
     }
 
     key = xmlGetProp(attr_node, (const xmlChar *)"name");
     if(key)
     {
-        static_fsil->sname = g_strdup((gchar*)key);
+        fti->fsil.sname = g_strdup((gchar*)key);
         xmlFree(key);
     }
     else
     {
-         factory_critical_error_exit(factory_utf8(g_strdup_printf("读取模版出错,缺少name属性.\n 文件名:%s\t,行号:%d\n",
-                                        attr_node->name,attr_node->line)));
+        factory_critical_error_exit(factory_utf8(g_strdup_printf("读取模版出错,缺少name属性.\n 文件名:%s\t,行号:%d\n",
+                                    attr_node->name,attr_node->line)));
     }
 
     key = xmlGetProp(attr_node, (const xmlChar *)"vname");
     if(key)
     {
-        static_fsil->vname = g_strdup((gchar*)key);
+        fti->fsil.vname = g_strdup((gchar*)key);
         xmlFree(key);
     }
     else
     {
-         factory_critical_error_exit(factory_utf8(g_strdup_printf("读取模版出错,缺少vname属性.\n 文件名:%s\t,行号:%d\n",
-                                        attr_node->name,attr_node->line)));
+        factory_critical_error_exit(factory_utf8(g_strdup_printf("读取模版出错,缺少vname属性.\n 文件名:%s\t,行号:%d\n",
+                                    attr_node->name,attr_node->line)));
     }
 
     key = xmlGetProp(attr_node, (const xmlChar *)"file");
-     if(key)
+    if(key)
     {
-        static_fsil->sfile = g_strdup((gchar*)key);
+        fti->fsil.sfile = g_strdup((gchar*)key);
         xmlFree(key);
     }
     else
     {
-         factory_critical_error_exit(factory_utf8(g_strdup_printf("读取模版出错,缺少file属性.\n 文件名:%s\t,行号:%d\n",
-                                        attr_node->name,attr_node->line)));
+        factory_critical_error_exit(factory_utf8(g_strdup_printf("读取模版出错,缺少file属性.\n 文件名:%s\t,行号:%d\n",
+                                    attr_node->name,attr_node->line)));
     }
 
 }
@@ -897,11 +865,32 @@ static gboolean factory_template_setvalue_foreach(GtkTreeModel *model,
     return FALSE;
 }
 
-void factory_template_read_from_xml(STRUCTClass *fclass, ObjectNode attr_node,const gchar *filename)
+
+
+void factory_template_read_from_xml(STRUCTClass *fclass,
+                                    ObjectNode attr_node,const gchar *filename)
 {
-    factory_template_read_basic_attribute(attr_node,filename);
+
+    GQuark pquark = g_quark_from_string(filename);
+    Diagram *diagram ;
+    FactoryTemplateItem *templ;
+    GList *l;
+    for(l = dia_open_diagrams(); l ; l = l->next)
+    {
+        diagram = l->data;
+        GQuark tquark = g_quark_from_string(diagram->filename);
+        if(pquark == tquark)
+            break;
+    }
+    if(!diagram)
+    {
+        factory_critical_error_exit(factory_utf8(g_strdup_printf("不能打开模版文件.\n文件名:%s,行数:%d\n",
+                                    filename,attr_node->line)));
+    }
+    templ = diagram->templ_item;
+    factory_template_read_basic_attribute(attr_node,templ);
     xmlChar *key;
-    GList *vlist;
+    GList *vlist = NULL;
     GList *modelist;
     ObjectNode child_node = attr_node->xmlChildrenNode;
     while(child_node = data_next(child_node))
@@ -951,8 +940,22 @@ void factory_template_read_from_xml(STRUCTClass *fclass, ObjectNode attr_node,co
 //            factory_critical_error_exit(factory_utf8(g_strdup_printf("读取模版出错,缺少items属性.\n 文件名:%s\t,行号:%d\n",
 //            attr_node->name,attr_node->line)));
         }
+        templ->modellist = g_slist_append(templ->modellist,
+                                          factory_template_create_model_by_name(fiiom->struct_name));
+        gpointer mitem = g_hash_table_lookup(curLayer->defnames,fiiom->struct_name);
+        if(mitem)
+        {
+            templ->member_lst = g_list_append(templ->member_lst,mitem);
+        }
 
     }
-    GtkTreeView *view =  factory_template_create_treeview(factory_get_objects_from_layer(curLayer));
-    gtk_tree_model_foreach(model,factory_template_setvalue_foreach,vlist);
+
+    if(!diagram->loadOnly)
+    {
+        static_temp = templ;
+        static_fsil = templ;
+        GtkTreeView *view =  factory_template_create_treeview(templ->modellist);
+        gtk_tree_model_foreach(model,factory_template_setvalue_foreach,vlist);
+    }
+
 }

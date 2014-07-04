@@ -35,6 +35,7 @@ struct _SheetObject {
 
   char *pixmap_file; /* fallback if pixmap is NULL */
   gboolean has_icon_on_sheet; /* 是否显示　*/
+  FactoryTemplateItem ftitm; /* 如果不为空,这就是一个模版 */
 };
 
 typedef enum

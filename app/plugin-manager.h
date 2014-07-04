@@ -25,5 +25,5 @@
 #include <gtk/gtk.h>
 
 void file_plugins_callback(gpointer data, guint action, GtkWidget *widget);
-
+void factory_template_manager_callback(gpointer data, guint action, GtkWidget *widget);
 #endif

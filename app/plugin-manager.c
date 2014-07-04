@@ -300,3 +300,17 @@ file_plugins_callback(gpointer data, guint action, GtkWidget *widget)
 
   gtk_widget_show(pm);
 }
+
+static GtkWidget *
+get_template_manager(void)
+{
+
+}
+
+
+void factory_template_manager_callback(gpointer data,
+                                       guint action,
+                                       GtkWidget *widget)
+{
+
+}

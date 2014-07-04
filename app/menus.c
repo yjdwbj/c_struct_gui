@@ -124,7 +124,7 @@ static const GtkActionEntry common_entries[] =
     { "File", NULL, N_("_File"), NULL, NULL, NULL },
     { "FileNew", GTK_STOCK_NEW, NULL, "<control>N", NULL, G_CALLBACK (file_new_callback) },
     { "FileOpen", GTK_STOCK_OPEN, NULL,"<control>O", NULL, G_CALLBACK (file_open_callback) },
-    { "TemplateNew", NULL, "Template New", NULL, NULL, G_CALLBACK (factory_template_new_callback) },
+    { "TemplateNew", NULL, "Template New", "<control><shift>T", NULL, G_CALLBACK (factory_template_new_callback) },
 //    { "TemplateOpen", NULL,"Template Open", NULL, NULL, G_CALLBACK (factory_template_open_callback) },
     { "FileQuit", GTK_STOCK_QUIT, NULL, "<control>Q", NULL, G_CALLBACK (file_quit_callback) },
     { "Help", NULL, N_("_Help"), NULL, NULL,NULL },
@@ -140,7 +140,7 @@ static const GtkActionEntry toolbox_entries[] =
 //    { "FileSheets", NULL, N_("Sheets and Objects..."), "F9", NULL, NULL },
 //    { "FilePrefs", GTK_STOCK_PREFERENCES, NULL, NULL, NULL, G_CALLBACK (file_preferences_callback) },
 //    { "FilePlugins", NULL, N_("Plugins..."),NULL, NULL, G_CALLBACK (file_plugins_callback) }
-    {"TemplateManager",NULL,N_("Template Manager"),NULL,NULL,NULL}
+    {"TemplateManager",NULL,N_("Template Manager"),NULL,NULL,G_CALLBACK(factory_template_manager_callback)}
 };
 
 
@@ -163,8 +163,8 @@ static const GtkActionEntry display_entries[] =
 {
     { "FileSave", GTK_STOCK_SAVE, NULL, "<control>S", NULL, G_CALLBACK (file_save_callback) },
     { "FileSaveas", GTK_STOCK_SAVE_AS, NULL, "<control><shift>S", NULL, G_CALLBACK (file_save_as_callback) },
-    { "TemplateSave", NULL, "Template Save", NULL, NULL, G_CALLBACK (factory_template_save_callback) },
-    { "TemplateSaveAs", NULL, "Template Save As", NULL, NULL, G_CALLBACK (factory_template_save_as_callback) },
+//    { "TemplateSave", NULL, "Template Save", NULL, NULL, G_CALLBACK (factory_template_save_callback) },
+//    { "TemplateSaveAs", NULL, "Template Save As", NULL, NULL, G_CALLBACK (factory_template_save_as_callback) },
 //    { "FileExport", GTK_STOCK_CONVERT, N_("_Export ..."), NULL, NULL, G_CALLBACK (file_export_callback) },
 //    { "DiagramProperties", GTK_STOCK_PROPERTIES, N_("_Diagram Properties"), "<shift><alt>Return", NULL,G_CALLBACK (view_diagram_properties_callback)},
 //    { "FilePagesetup", NULL, N_("Page Set_up..."), NULL, NULL, G_CALLBACK (file_pagesetup_callback) },
@@ -819,8 +819,21 @@ static void factory_callback_template_edit(GtkWidget *btn,gpointer user_data)
     Diagram *diagram = ddisplay_active_diagram();
     g_return_if_fail(diagram);
     g_return_if_fail(diagram->templ_item);
+    g_return_if_fail(diagram->templ_item->templ_ops);
     diagram->templ_item->templ_ops->templ_edit(NULL);
 }
+
+static void factory_callback_template_load(GtkWidget *btn,gpointer user_data)
+{
+//    g_return_if_fail(ddisplay_active());
+//    g_return_if_fail(factoryContainer);
+//    g_return_if_fail(factoryContainer->curLayer);
+//    Diagram *diagram = ddisplay_active_diagram();
+//    g_return_if_fail(diagram);
+    factory_template_open_callback(NULL,NULL,NULL);
+}
+
+
 
 void factory_callback_object_count(GtkWidget *btn,gpointer user_data)
 {
@@ -980,6 +993,14 @@ create_integrated_ui_toolbar (void)
 
     gtk_widget_show (GTK_WIDGET (sep));
 
+       sep = gtk_separator_tool_item_new ();
+    gtk_toolbar_insert (toolbar, sep, -1);
+
+    dbtn = gtk_button_new_with_label(factory_utf8("Ä£°æ¼ÓÔØ"));
+    integrated_ui_toolbar_add_custom_item(toolbar,dbtn);
+    g_signal_connect(dbtn,"clicked",G_CALLBACK(factory_callback_template_load),NULL);
+
+    gtk_widget_show (GTK_WIDGET (sep));
 
     return GTK_WIDGET (toolbar);
 }

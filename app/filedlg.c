@@ -223,30 +223,37 @@ static void factory_template_open_response_callback(GtkWidget *fs,
         gpointer   user_data)
 {
     char *filename;
-    Diagram *diagram = NULL;
     if (response == GTK_RESPONSE_ACCEPT)
     {
         filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(fs));
-        diagram = diagram_load(filename, ifilter_by_index (- 1, filename));
+        Diagram *diagram = new_diagram(filename);
+        factory_template_load_by_diagram(diagram);
+        FactoryTemplateItem *templ = diagram->templ_item;
+        SheetObject *sobj = g_new0(SheetObject,1);
+
+        sobj->ftitm.fsil.isvisible = templ->fsil.isvisible;
+        sobj->ftitm.fsil.list = g_list_copy(templ->fsil.list);
+        sobj->ftitm.fsil.number = templ->fsil.number;
+        sobj->ftitm.fsil.sfile = g_strdup(templ->fsil.sfile);
+        sobj->ftitm.fsil.sname = g_strdup(templ->fsil.sname);
+        sobj->ftitm.fsil.vname = g_strdup(templ->fsil.vname);
+        sobj->ftitm.entrypoint = g_strdup(templ->entrypoint);
+        sobj->ftitm.member_lst = g_list_copy(templ->member_lst);
+        sobj->ftitm.modellist = g_slist_copy(templ->modellist);
+        sobj->ftitm.templ_ops = templ->templ_ops;
+
+        sobj->object_type = g_strdup(templ->fsil.sname);
+        sobj->description =  g_strdup(templ->fsil.vname);
+        sobj->pixmap = NULL;
+        sobj->user_data = GINT_TO_POINTER(templ->fsil.number);
+        sobj->user_data_type = USER_DATA_IS_INTDATA; /* sure,   */
+
+        sobj->has_icon_on_sheet = TRUE;
+        sobj->line_break = FALSE;
+
+        factory_template_add_item(sobj,NULL);
+        diagram_destroy(diagram);
         g_free (filename);
-        if (diagram != NULL)
-        {
-            diagram_update_extents(diagram);
-            layer_dialog_set_diagram(diagram);
-            if (diagram->displays == NULL)
-            {
-                new_display(diagram);
-            }
-        }
-
-        GList *list = g_hash_table_get_values(diagram->data->active_layer->defnames);
-        if(list)
-        {
-
-            DiaObject *obj = list->data;
-            obj->ops->reset_objectsfillcolor(obj);
-            diagram_redraw_all();
-        }
     }
     gtk_widget_destroy(opendlg);
 }
@@ -358,7 +365,7 @@ void factory_template_open_callback(gpointer data,guint action,GtkWidget *widget
         g_signal_connect(GTK_OBJECT(opendlg), "destroy",
                          G_CALLBACK(gtk_widget_destroyed), &opendlg);
         g_signal_connect(GTK_OBJECT(opendlg),"response",
-                                    G_CALLBACK(factory_template_open_response_callback),NULL);
+                         G_CALLBACK(factory_template_open_response_callback),NULL);
     }
     else
     {
@@ -477,7 +484,7 @@ file_open_callback(gpointer data, guint action, GtkWidget *widget)
         gtk_file_filter_add_pattern (filter, "*");
         gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (opendlg), filter);
 
-         filter = gtk_file_filter_new ();
+        filter = gtk_file_filter_new ();
         gtk_file_filter_set_name (filter, factory_utf8("Ä£°æÎÄ¼ş"));
         gtk_file_filter_add_pattern (filter, "*.lcy");
         gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (opendlg), filter);
@@ -702,7 +709,7 @@ file_save_callback(gpointer data, guint action, GtkWidget *widget)
     {
         FactoryTemplateItem *titem = diagram->templ_item;
         if(!titem->entrypoint ||
-                !titem->fsil.vname ||
+                !titem->modellist ||
                 !titem->fsil.sname)
         {
             GtkWidget * msg_dialog = gtk_message_dialog_new (GTK_WINDOW (ddisplay_active()->shell),
@@ -713,7 +720,7 @@ file_save_callback(gpointer data, guint action, GtkWidget *widget)
 
             gint yes_or_no = gtk_dialog_run (GTK_DIALOG (msg_dialog));
             gtk_widget_destroy (msg_dialog);
-            titem->templ_ops->templ_edit(titem);
+            titem->templ_ops->templ_edit(&titem->fsil);
             return;
         }
 

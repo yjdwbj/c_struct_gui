@@ -25,6 +25,7 @@ int diagram_save(Diagram *dia, const char *filename);
 void diagram_autosave(Diagram *dia);
 void diagram_cleanup_autosave(Diagram *dia);
 void factory_call_isd_download();
+GList* factory_template_load_only(const char *filename);
 
 extern DiaExportFilter dia_export_filter;
 extern DiaImportFilter dia_import_filter;

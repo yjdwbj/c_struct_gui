@@ -47,7 +47,7 @@ TemplateOps *templ_ops = NULL;
 static GSList *sheets = NULL;
 static GQuark item_reserverd = 0;
 static GQuark item_fixed = 0;
-static GQuark item_wactid = 0;
+GQuark item_wactid = 0;
 
 
 FILE *logfd;
@@ -160,7 +160,7 @@ load_all_sheets(void)
     if(!item_wactid)
         item_wactid = g_quark_from_static_string(WACDID);
 
-    factoryContainer->structTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+    factoryContainer->structTable = g_hash_table_new(g_str_hash,g_str_equal);
     factoryContainer->enumTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
     factoryContainer->unionTable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
     /* 2014-4-1 lcy 递归查找config 目录下所有以.struct 为后缀的文件名 */

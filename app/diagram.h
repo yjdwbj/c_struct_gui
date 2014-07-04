@@ -69,6 +69,7 @@ struct _Diagram {
 
   UndoStack *undo;
   gboolean isTemplate; /* 模版编辑标识 */
+  gboolean loadOnly; /* 读取数据不做编辑 */
   FactoryTemplateItem *templ_item; /* 这个仅仅用来存储模版的*/
 };
 
@@ -83,6 +84,7 @@ typedef struct _DiagramClass {
 
 DIAVAR GList *dia_open_diagrams(void); /* Read only! */
 
+void factory_template_load_by_diagram(Diagram *diagram);
 
 Diagram *diagram_load(const char *filename, DiaImportFilter *ifilter);
 int diagram_load_into (Diagram *dest, const char *filename, DiaImportFilter *ifilter);

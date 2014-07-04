@@ -36,12 +36,12 @@ void factory_template_save_dialog(GtkWidget *widget,gint       response_id,gpoin
 
 static gboolean factory_template_save(FactoryStructItemList *fssl);
 
-void factory_template_load();
+
 
 static void factory_template_edit_callback(GtkAction *action);
 
 
-
+static void factory_template_create(DiaObject *dia);
 static void factory_setback_values(GtkWidget *widget);
 static void factory_setback_model_values(GSList *mlist);
 static gboolean factory_find_item_pos(GSList *list,const gchar *str);

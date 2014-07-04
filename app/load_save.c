@@ -95,6 +95,8 @@ GHFuncUnknownObjects(gpointer key,
     g_free(key);
 }
 
+//static GList *factory_read_template_objects()
+
 /**
  * Recursive function to read objects from a specific level in the xml.
  *
@@ -188,8 +190,6 @@ read_objects(xmlNodePtr objects,
             g_strfreev(split);
             xmlFree(versionstr);
 
-
-
             type = object_get_type((char *)typestr);
 
             if (!type)
@@ -212,14 +212,7 @@ read_objects(xmlNodePtr objects,
                     }
                 }
 
-                if(obj->isTemplate)
-                {
-                    obj_node = obj_node->next;
-                    continue;
-                }
-
                 list = g_list_append(list, obj);
-
                 if (parent)
                 {
                     obj->parent = parent;
@@ -491,6 +484,88 @@ find_node_named (xmlNodePtr p, const char *name)
         p = p->next;
     return p;
 }
+
+
+GList* factory_template_load_only(const char *filename)
+{
+    GHashTable *objects_hash;
+    int fd;
+    GList *list;
+    xmlDocPtr doc;
+    xmlNodePtr diagramdata;
+    xmlNodePtr paperinfo, gridinfo, guideinfo;
+    xmlNodePtr layer_node;
+    AttributeNode attr;
+    xmlNsPtr namespace;
+    gchar firstchar;
+    GHashTable* unknown_objects_hash = g_hash_table_new(g_str_hash, g_str_equal);
+
+    if (g_file_test (filename, G_FILE_TEST_IS_DIR))
+    {
+        message_error(_("You must specify a file, not a directory.\n"));
+        return FALSE;
+    }
+    fd = g_open(filename, O_RDONLY, 0);
+    if (fd==-1)
+    {
+        message_error(_("Couldn't open: '%s' for reading.\n"),
+                      dia_message_filename(filename));
+        return FALSE;
+    }
+    /* Note that this closing and opening means we can't read from a pipe */
+    close(fd);
+    doc = xmlDiaParseFile(filename);
+    if (doc == NULL)
+    {
+        message_error(_("Error loading diagram %s.\nUnknown file type."),
+                      dia_message_filename(filename));
+        return FALSE;
+    }
+
+    if (doc->xmlRootNode == NULL)
+    {
+        message_error(_("Error loading diagram %s.\nUnknown file type."),
+                      dia_message_filename(filename));
+        xmlFreeDoc (doc);
+        return FALSE;
+    }
+    namespace = xmlSearchNs(doc, doc->xmlRootNode, (const xmlChar *)"dia");
+    if (xmlStrcmp (doc->xmlRootNode->name, (const xmlChar *)"diagram") || (namespace == NULL))
+    {
+        message_error(_("Error loading diagram %s.\nNot a Dia file."),
+                      dia_message_filename(filename));
+        xmlFreeDoc (doc);
+        return FALSE;
+    }
+     layer_node =
+        find_node_named (doc->xmlRootNode->xmlChildrenNode, "layer");
+    objects_hash = g_hash_table_new(g_str_hash, g_str_equal);
+     while (layer_node != NULL)
+    {
+        gchar *name;
+        char *visible;
+        char *active;
+
+        if (xmlIsBlankNode(layer_node))
+        {
+            layer_node = layer_node->next;
+            continue;
+        }
+
+        if (!layer_node) break;
+
+
+        /* Read in all objects: */
+
+        list = read_objects(layer_node, objects_hash,
+                            filename, NULL, unknown_objects_hash);
+
+        layer_node = layer_node->next;
+    }
+
+    return list;
+}
+
 
 static gboolean
 diagram_data_load(const char *filename, DiagramData *data, void* user_data)
@@ -1450,7 +1525,8 @@ diagram_save(Diagram *dia, const char *filename)
     gboolean res;
     if(dia->isTemplate)
     {
-        res = dia->templ_item->templ_ops->templ_save(dia->templ_item);
+        FactoryTemplateItem *fti = dia->templ_item;
+        res = fti->templ_ops->templ_save(&fti->fsil);
     }
     else
     {

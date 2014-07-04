@@ -262,6 +262,7 @@ diagram_init(Diagram *dia, const char *filename)
     return TRUE;
 }
 
+
 int
 diagram_load_into(Diagram         *diagram,
                   const char      *filename,
@@ -275,8 +276,8 @@ diagram_load_into(Diagram         *diagram,
 
     if (ifilter->import_func(filename, diagram->data, ifilter->user_data))
     {
-        if (ifilter != &dia_import_filter ||
-            ifilter != &lcy_import_filter)
+        if (ifilter != &dia_import_filter &&
+                ifilter != &lcy_import_filter)
         {
             /* When loading non-Dia files, change filename to reflect that saving
              * will produce a Dia file. See bug #440093 */
@@ -316,6 +317,18 @@ diagram_load_into(Diagram         *diagram,
     else
         return FALSE;
 }
+
+void factory_template_load_by_diagram(Diagram *diagram)
+{
+
+    diagram->loadOnly = TRUE;
+//        GList *tlist = dia_open_diagrams();
+    open_diagrams = g_list_append(open_diagrams,diagram);
+    GList *templ_list =  factory_template_load_only(diagram->filename);
+    open_diagrams = g_list_remove(open_diagrams,diagram);
+
+}
+
 
 Diagram *
 diagram_load(const char *filename, DiaImportFilter *ifilter)
@@ -381,6 +394,7 @@ new_diagram(const char *filename)  /* Note: filename is copied */
 {
     Diagram *dia = g_object_new(DIA_TYPE_DIAGRAM, NULL);
     dia->isTemplate = g_str_has_suffix(filename,".lcy");
+    dia->loadOnly = FALSE;
     if(dia->isTemplate)
     {
         dia->templ_item = g_new0(FactoryTemplateItem,1);
@@ -735,6 +749,11 @@ diagram_add_object(Diagram *dia, DiaObject *obj)
     diagram_modified(dia);
 
     diagram_tree_add_object(diagram_tree(), dia, obj);
+    obj->ops->selectf(obj, NULL, NULL);
+    if(dia->isTemplate && (obj->type != object_get_type(CLASS_LINE))) /* 创建一它的默认值 */
+    {
+        dia->templ_item->templ_ops->templ_create(obj);
+    }
 }
 
 void

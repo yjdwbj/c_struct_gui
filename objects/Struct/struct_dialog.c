@@ -48,7 +48,7 @@
 #include "diagramdata.h"
 #include "connpoint_line.h"
 
-
+extern GQuark item_wactid;
 
 /* hide this functionality before rewrite;) */
 void
@@ -3090,9 +3090,9 @@ void factory_set_fill_color()
         if(fclass->vcolor == H_COLOR )
         {
 //            fclass->line_color = color_highlight;
-              fclass->line_color = color->color_highlight;
+            fclass->line_color = color->color_highlight;
 //            if(!fclass->pps->hasfinished)
-              fclass->text_color = color->color_highlight;
+            fclass->text_color = color->color_highlight;
 //            fclass->text_color = color_highlight;
 
         }
@@ -3855,6 +3855,12 @@ void factory_set_savestruct_widgets(SaveStruct *sss)
         Name = gtk_label_new(sss->org->Cname);
         gtk_tooltips_set_tip(tool_tips,Name,g_strdup(sss->org->Comment),NULL);
         /* 创建多样性的对像控件  */
+
+        if(!g_ascii_strncasecmp(sss->name,WACDID,6))
+        {
+            DiaObject *obj = (DiaObject *)sss->sclass;
+            sss->value.vnumber = g_strdup_printf("%d",obj->oindex);
+        }
 //        if(!g_ascii_strncasecmp(sss->name,WACDID,6)) /*这里一个关键字判断是否是ＩＤ*/
 //        {
 //            DiaObject *obj = (DiaObject *)sss->sclass;
