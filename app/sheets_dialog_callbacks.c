@@ -862,6 +862,7 @@ on_sheets_new_dialog_button_ok_clicked (GtkButton       *button,
     sheet_obj->line_break = FALSE;
     sheet_obj->pixmap_file = g_strdup(ot->pixmap_file);
     sheet_obj->has_icon_on_sheet = FALSE;
+    sheet_obj->ftitm = NULL;
 
     sm = gtk_object_get_data(GTK_OBJECT(wrapbox), "sheet_mod");
     som = sheets_append_sheet_object_mod(sheet_obj, sm);

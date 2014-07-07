@@ -230,23 +230,26 @@ typedef GList* (*FactoryGetDownloadNameList)(const gchar* path);
 typedef void (*TemplateEdit)(gpointer action);
 typedef gboolean (*TemplateSaveToFile)(FactoryStructItemList *);
 typedef void (*TemplateCreate)(DiaObject *dia);
+typedef void (*TemplateVerifyActionID)(gpointer diagram);
 
 struct _TemplateOps
 {
     TemplateEdit templ_edit;
     TemplateSaveToFile templ_save;
     TemplateCreate templ_create;
+    TemplateVerifyActionID templ_verify;
     void      (*(unused[4]))(DiaObject *obj,...);
 };
 //typedef int (*DiagramDataRawSave)(DiagramData *data, const char *filename);
 typedef struct _FactoryTemplateItem FactoryTemplateItem;
 struct _FactoryTemplateItem
 {
-    FactoryStructItemList fsil;
+    FactoryStructItemList *fsil;
     gchar *entrypoint; /* 入口行为的名字 */
     GSList *modellist; /* model top list */
     TemplateOps *templ_ops; /* 关于模版相关的函数 */
     GList *member_lst; /* 这个模版里的所有成员的列表 */
+    GList *widgetSave; /* 模版的初始值就是用从文件里读出来的 */
 
 };
 
@@ -277,8 +280,7 @@ struct _FactoryStructItemAll{
     FactorySystemInfo *sys_info; /*系统信息*/
     FactoryGetDownloadNameList fgdn_func;
     FactoryColors *color;
-    TemplateEdit templ_edit;
-    TemplateSaveToFile templ_save;
+    gint const *act_num; /* 当前系统的基本行为对像的个数 */
 //    DiagramDataRawSave diagram_data_raw_save;
 
 };

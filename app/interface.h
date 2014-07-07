@@ -39,7 +39,8 @@
 
 void create_integrated_ui (void);
 void factory_template_add_item(SheetObject *obj,const gchar *sname);
-
+DIAVAR GList *factory_template_get_widgetsave(int pos);
+DIAVAR void factory_template_open_template_filename(const gchar *name);
 
 gboolean integrated_ui_main_toolbar_is_showing (void);
 void     integrated_ui_main_toolbar_show (void);

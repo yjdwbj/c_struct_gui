@@ -380,6 +380,11 @@ diagram_load(const char *filename, DiaImportFilter *ifilter)
         if ( g_slist_length(diagram->displays) == 1 )
             display_set_active (diagram->displays->data);
     }
+
+    if(diagram->isTemplate && !diagram->loadOnly)
+    {
+        diagram->templ_item->templ_ops->templ_verify(diagram);
+    }
     return diagram;
 }
 
@@ -393,20 +398,23 @@ Diagram *
 new_diagram(const char *filename)  /* Note: filename is copied */
 {
     Diagram *dia = g_object_new(DIA_TYPE_DIAGRAM, NULL);
-    dia->isTemplate = g_str_has_suffix(filename,".lcy");
+    dia->isTemplate = g_str_has_suffix(filename,LCY);
     dia->loadOnly = FALSE;
     if(dia->isTemplate)
     {
         dia->templ_item = g_new0(FactoryTemplateItem,1);
+        FactoryStructItemList *fsil = g_new0(FactoryStructItemList,1);
         dia->templ_item->templ_ops = templ_ops;
-        dia->templ_item->fsil.sname = g_strdup("TEMPLATE");
+        dia->templ_item->fsil = fsil;
         gchar *tname = g_strdup(filename);
         gchar*  pth = strrchr(tname,'.');
         if (pth)
         {
             *(pth) = 0;
         }
-        dia->templ_item->fsil.vname = g_strdup(tname);
+        fsil->vname = g_strdup(tname);
+        fsil->sname = g_strdup(TYPE_TEMPLATE);
+        fsil->sfile = g_strdup("act.inf");
         g_free(tname);
     }
 
@@ -744,10 +752,7 @@ void
 diagram_add_object(Diagram *dia, DiaObject *obj)
 {
     layer_add_object(dia->data->active_layer, obj);
-
-
     diagram_modified(dia);
-
     diagram_tree_add_object(diagram_tree(), dia, obj);
     obj->ops->selectf(obj, NULL, NULL);
     if(dia->isTemplate && (obj->type != object_get_type(CLASS_LINE))) /* 创建一它的默认值 */

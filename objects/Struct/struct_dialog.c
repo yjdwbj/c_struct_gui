@@ -3233,7 +3233,7 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
         if( g_list_length(nid->actlist)>0)
         {
             ActionID *aid = nid->actlist->data;
-            factory_get_value_from_comobox(sss->sclass,sss->widget2,aid);
+            factory_get_value_from_comobox(sss,sss->widget2,aid);
         }
         else
         {
@@ -3272,8 +3272,11 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
 
 }
 
-static void factory_get_value_from_comobox(STRUCTClass *startclass,GtkWidget *comobox,ActionID *aid)
+static void factory_get_value_from_comobox(SaveStruct *sst,
+                                           GtkWidget *comobox,
+                                           ActionID *aid)
 {
+    STRUCTClass *startclass = sst->sclass;
     g_return_if_fail(aid);
     DDisplay *ddisp =  ddisplay_active();
     int  curindex = gtk_combo_box_get_active(GTK_COMBO_BOX(comobox));
@@ -3327,6 +3330,10 @@ SETV:
     if(aid->conn_ptr)
         aid->value  = g_strdup_printf("%d",((DiaObject*)aid->conn_ptr)->oindex);
 //    aid->conn_ptr = g_hash_table_lookup(curLayer->defnames,pname);
+    if(ddisplay_active_diagram()->isTemplate)
+    {
+        factory_template_update_actionid_state(ddisplay_active_diagram(),sst,curindex);
+    }
     diagram_flush(ddisp->diagram);
     g_free(pname);
 }
@@ -3939,13 +3946,12 @@ void factory_save_objectbutton_dialog(GtkWidget *widget,
     if (   response_id == GTK_RESPONSE_APPLY
             || response_id == GTK_RESPONSE_OK)
     {
-
         int n = 0;
         for(; wlist; wlist = wlist->next,n++)
         {
             GtkWidget *wid = wlist->data;
             ActionID *aid = g_list_nth_data(nid->actlist,n);
-            factory_get_value_from_comobox(sst->sclass,wid,aid);
+            factory_get_value_from_comobox(sst,wid,aid);
         }
         diagram_set_modified(ddisplay_active_diagram(),TRUE);
     }

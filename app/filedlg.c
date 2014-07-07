@@ -218,6 +218,7 @@ create_open_menu(void)
 */
 
 
+
 static void factory_template_open_response_callback(GtkWidget *fs,
         gint       response,
         gpointer   user_data)
@@ -226,33 +227,7 @@ static void factory_template_open_response_callback(GtkWidget *fs,
     if (response == GTK_RESPONSE_ACCEPT)
     {
         filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(fs));
-        Diagram *diagram = new_diagram(filename);
-        factory_template_load_by_diagram(diagram);
-        FactoryTemplateItem *templ = diagram->templ_item;
-        SheetObject *sobj = g_new0(SheetObject,1);
-
-        sobj->ftitm.fsil.isvisible = templ->fsil.isvisible;
-        sobj->ftitm.fsil.list = g_list_copy(templ->fsil.list);
-        sobj->ftitm.fsil.number = templ->fsil.number;
-        sobj->ftitm.fsil.sfile = g_strdup(templ->fsil.sfile);
-        sobj->ftitm.fsil.sname = g_strdup(templ->fsil.sname);
-        sobj->ftitm.fsil.vname = g_strdup(templ->fsil.vname);
-        sobj->ftitm.entrypoint = g_strdup(templ->entrypoint);
-        sobj->ftitm.member_lst = g_list_copy(templ->member_lst);
-        sobj->ftitm.modellist = g_slist_copy(templ->modellist);
-        sobj->ftitm.templ_ops = templ->templ_ops;
-
-        sobj->object_type = g_strdup(templ->fsil.sname);
-        sobj->description =  g_strdup(templ->fsil.vname);
-        sobj->pixmap = NULL;
-        sobj->user_data = GINT_TO_POINTER(templ->fsil.number);
-        sobj->user_data_type = USER_DATA_IS_INTDATA; /* sure,   */
-
-        sobj->has_icon_on_sheet = TRUE;
-        sobj->line_break = FALSE;
-
-        factory_template_add_item(sobj,NULL);
-        diagram_destroy(diagram);
+        factory_template_open_template_filename(filename);
         g_free (filename);
     }
     gtk_widget_destroy(opendlg);
@@ -710,7 +685,7 @@ file_save_callback(gpointer data, guint action, GtkWidget *widget)
         FactoryTemplateItem *titem = diagram->templ_item;
         if(!titem->entrypoint ||
                 !titem->modellist ||
-                !titem->fsil.sname)
+                !titem->fsil->sname)
         {
             GtkWidget * msg_dialog = gtk_message_dialog_new (GTK_WINDOW (ddisplay_active()->shell),
                                      GTK_DIALOG_MODAL,
@@ -720,7 +695,7 @@ file_save_callback(gpointer data, guint action, GtkWidget *widget)
 
             gint yes_or_no = gtk_dialog_run (GTK_DIALOG (msg_dialog));
             gtk_widget_destroy (msg_dialog);
-            titem->templ_ops->templ_edit(&titem->fsil);
+            titem->templ_ops->templ_edit(titem->fsil);
             return;
         }
 

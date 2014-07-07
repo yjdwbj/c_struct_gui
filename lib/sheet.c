@@ -39,6 +39,7 @@
 #include "object.h"
 #include "dia_dirs.h"
 #include "plug-ins.h"
+#include "interface.h"
 
 FactoryStructItemAll *factoryContainer = NULL;
 TemplateOps *templ_ops = NULL;
@@ -118,6 +119,7 @@ get_sheets_list(void)
 }
 
 /* Sheet file management */
+//static void factory_load_template_from_dir(const gchar *directory);
 
 static void load_sheets_from_dir(const gchar *directory, SheetScope scope);
 static void load_register_sheet(const gchar *directory,const gchar *filename,
@@ -190,12 +192,12 @@ load_all_sheets(void)
 //    g_strfreev(dirs);
 //  }
 //  else
-    {
-        char *thedir = dia_get_data_directory("sheets");
-        dia_log_message ("sheets from '%s'", thedir);
-        load_sheets_from_dir(thedir, SHEET_SCOPE_SYSTEM);
-        g_free(thedir);
-    }
+
+    char *thedir = dia_get_data_directory("sheets");
+    dia_log_message ("sheets from '%s'", thedir);
+    load_sheets_from_dir(thedir, SHEET_SCOPE_SYSTEM);
+    g_free(thedir);
+
 
     /* Sorting their sheets alphabetically makes user merging easier */
 
@@ -468,9 +470,6 @@ void factoryReadDataFromFile(const gchar* filename)
 {
 #define MAX_LINE 1024
 #define MAX_SECTION 7
-
-
-
     gchar *fname_gbk = factory_locale(filename);
     factory_debug_to_log(g_strdup_printf(factory_utf8("读取对像定文件,文件名:%s.\n"),filename));
 
@@ -480,7 +479,6 @@ void factoryReadDataFromFile(const gchar* filename)
     FILE *fd;
     if((fd =  fopen(fname_gbk,"r")) == NULL)
     {
-
         gchar *msg_err = g_strdup_printf(_("不能打开文件 %s: %s\n"),
                                          dia_message_filename(fname_gbk), strerror(errno));
         factory_critical_error_exit(msg_err);
@@ -614,7 +612,7 @@ void factoryReadDataFromFile(const gchar* filename)
                 if(!fssl->sname)
                 {
                     factory_critical_error_exit(factory_utf8(g_strdup_printf("没有读到字段名.\n"
-                                                             "文件名：%s,行数：%d\n",filename,curline)));
+                                                "文件名：%s,行数：%d\n",filename,curline)));
                 }
                 fssl->isvisible = FALSE;
                 if(!g_ascii_strcasecmp("action",sbuf[3]) /*|| !g_ascii_strcasecmp("system",sbuf[3])*/) /* 2014-5-30 */
@@ -623,7 +621,7 @@ void factoryReadDataFromFile(const gchar* filename)
                 }
                 fssl->sfile = factory_get_utf8_str(isutf8,sbuf[5]);;
                 fssl->list = NULL;
-                fssl->number = n++;
+                fssl->number = g_list_length(factoryContainer->structList);
                 dlist = NULL;
 
             }
@@ -635,8 +633,8 @@ void factoryReadDataFromFile(const gchar* filename)
             hashKey = factory_get_utf8_str(isutf8,sbuf[2]);
             if(!hashKey)
             {
-                    factory_critical_error_exit(factory_utf8(g_strdup_printf("没有读到字段名.\n"
-                                                             "文件名：%s,行数：%d\n",filename,curline)));
+                factory_critical_error_exit(factory_utf8(g_strdup_printf("没有读到字段名.\n"
+                                            "文件名：%s,行数：%d\n",filename,curline)));
             }
             g_strfreev(sbuf);
         }
@@ -734,8 +732,8 @@ void factoryReadDataFromFile(const gchar* filename)
             item->FType = factory_get_utf8_str(isutf8,splits[0]);
             if(!item->FType)
             {
-                    factory_critical_error_exit(factory_utf8(g_strdup_printf("没有读到第一段(类型)的字段名.\n"
-                                                             "文件名：%s,行数：%d\n",filename,curline)));
+                factory_critical_error_exit(factory_utf8(g_strdup_printf("没有读到第一段(类型)的字段名.\n"
+                                            "文件名：%s,行数：%d\n",filename,curline)));
             }
 
             gchar **p = g_strsplit(item->FType,isutf8 ? u_dot : dot,-1);
@@ -750,8 +748,8 @@ void factoryReadDataFromFile(const gchar* filename)
             item->Name =  factory_get_utf8_str(isutf8,splits[1]);
             if(!item->Name)
             {
-                    factory_critical_error_exit(factory_utf8(g_strdup_printf("内容:%s \n没有读到第二段(名字)的字段名.\n"
-                                                             "文件名：%s,行数：%d\n",filetxt,filename,curline)));
+                factory_critical_error_exit(factory_utf8(g_strdup_printf("内容:%s \n没有读到第二段(名字)的字段名.\n"
+                                            "文件名：%s,行数：%d\n",filetxt,filename,curline)));
             }
 
             GQuark nquark = g_quark_from_string(item->Name);
@@ -772,8 +770,8 @@ void factoryReadDataFromFile(const gchar* filename)
             item->Value = factory_get_utf8_str(isutf8,splits[3]);
             if(!item->Value)
             {
-                    factory_critical_error_exit(factory_utf8(g_strdup_printf("没有读到第四段(默认值)的字段名.\n"
-                                                             "文件名：%s,行数：%d\n",filename,curline)));
+                factory_critical_error_exit(factory_utf8(g_strdup_printf("没有读到第四段(默认值)的字段名.\n"
+                                            "文件名：%s,行数：%d\n",filename,curline)));
             }
             item->Min = factory_get_utf8_str(isutf8,splits[4]);
             GQuark mquark = g_quark_from_string(item->Min);
@@ -781,7 +779,7 @@ void factoryReadDataFromFile(const gchar* filename)
                 item->isSensitive = FALSE;
             item->Max = factory_get_utf8_str(isutf8,splits[5]);
             item->Comment = factory_get_utf8_str(isutf8,splits[6]);
-           if(!item->Comment)
+            if(!item->Comment)
                 item->Comment=factory_utf8("空");
             dlist = g_list_append(dlist,item);
             g_strfreev(splits);
@@ -790,6 +788,7 @@ void factoryReadDataFromFile(const gchar* filename)
     }
     fclose(fd);
     /* 检查每一个块里面的成员有效性 */
+    factoryContainer->act_num = g_list_length(factoryContainer->structList);
     g_hash_table_foreach(factoryContainer->unionTable,factory_check_items_valid,NULL);
     g_hash_table_foreach(factoryContainer->structTable,factory_check_struct_items_valid,NULL);
 
@@ -1079,6 +1078,7 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
                                     : USER_DATA_IS_OTHER;  /* why not */
         sheet_obj->has_icon_on_sheet = has_icon_on_sheet;
         sheet_obj->line_break = set_line_break;
+        sheet_obj->ftitm = NULL;
         set_line_break = FALSE;
         {
             sheet_obj->pixmap = otype->pixmap; // 2014-3-20 lcy 这里是加xpm 的图片.
@@ -1104,6 +1104,10 @@ load_register_sheet(const gchar *dirname, const gchar *filename,
 
     if (!shadowing_sheet)
         register_sheet(sheet);
+
+    sheet = new_sheet(TYPE_TEMPLATE,"","",SHEET_SCOPE_SYSTEM,NULL);
+    register_sheet(sheet);
+
     xmlFreeDoc(doc);
 }
 

@@ -212,6 +212,12 @@ read_objects(xmlNodePtr objects,
                     }
                 }
 
+                if(obj->isTemplate)
+                {
+                    obj_node = obj_node->next;
+                    continue;
+                }
+
                 list = g_list_append(list, obj);
                 if (parent)
                 {
@@ -537,10 +543,10 @@ GList* factory_template_load_only(const char *filename)
         xmlFreeDoc (doc);
         return FALSE;
     }
-     layer_node =
+    layer_node =
         find_node_named (doc->xmlRootNode->xmlChildrenNode, "layer");
     objects_hash = g_hash_table_new(g_str_hash, g_str_equal);
-     while (layer_node != NULL)
+    while (layer_node != NULL)
     {
         gchar *name;
         char *visible;
@@ -1519,6 +1525,48 @@ void factory_call_isd_download()
 }
 
 
+void factory_load_all_templates(void)
+{
+    gchar*   thedir = dia_get_data_directory("template");
+    GDir *dp;
+    const char *dentry;
+    gchar *p;
+
+    dp = g_dir_open(thedir, 0, NULL);
+    if (!dp) return;
+
+    while ( (dentry = g_dir_read_name(dp)) )
+    {
+        gchar *filename = g_strconcat(thedir,G_DIR_SEPARATOR_S,
+                                      dentry,NULL);
+
+        if (!g_file_test(filename, G_FILE_TEST_IS_REGULAR))
+        {
+            g_free(filename);
+            continue;
+        }
+
+        /* take only .sheet files */
+        if(g_str_has_suffix(filename,LCY))
+        {
+             factory_template_open_template_filename(filename);
+        }
+//        p = filename + strlen(filename) - 3 /* strlen(".sheet") */;
+//        if (0!=strncmp(p,".lcy",3))
+//        {
+//            g_free(filename);
+//            continue;
+//        }
+
+//        load_register_sheet(directory, filename, SHEET_SCOPE_SYSTEM);
+        g_free(filename);
+
+    }
+
+    g_dir_close(dp);
+}
+
+
 int
 diagram_save(Diagram *dia, const char *filename)
 {
@@ -1526,7 +1574,7 @@ diagram_save(Diagram *dia, const char *filename)
     if(dia->isTemplate)
     {
         FactoryTemplateItem *fti = dia->templ_item;
-        res = fti->templ_ops->templ_save(&fti->fsil);
+        res = fti->templ_ops->templ_save(fti->fsil);
     }
     else
     {

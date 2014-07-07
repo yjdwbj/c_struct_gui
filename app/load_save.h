@@ -27,6 +27,8 @@ void diagram_cleanup_autosave(Diagram *dia);
 void factory_call_isd_download();
 GList* factory_template_load_only(const char *filename);
 
+void factory_load_all_templates(void);
+
 extern DiaExportFilter dia_export_filter;
 extern DiaImportFilter dia_import_filter;
 extern DiaImportFilter lcy_import_filter;

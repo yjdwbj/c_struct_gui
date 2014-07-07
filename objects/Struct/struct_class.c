@@ -45,6 +45,8 @@
 #include "sheet.h"
 #include "filedlg.h"
 
+
+
 extern FactoryStructItemAll *factoryContainer;
 
 
@@ -147,6 +149,18 @@ static ObjectTypeOps structclass_type_ops =
 DiaObjectType structclass_type =
 {
     "STRUCT - Class",   /* name */
+    NULL,                      /* version */
+    (char **) structclass_xpm,  /* pixmap */
+
+    &structclass_type_ops,       /* ops */
+    NULL,
+    (void*)0
+};
+
+
+DiaObjectType template_type =
+{
+    TYPE_TEMPLATE,   /* name */
     NULL,                      /* version */
     (char **) structclass_xpm,  /* pixmap */
 
@@ -2269,6 +2283,14 @@ factory_struct_items_create(Point *startpoint,
 //  structclass->template = FALSE;
     int index = GPOINTER_TO_INT(user_data);
     GList *sstruct = factoryContainer->structList;
+    if(index >= factoryContainer->act_num)
+    {
+        obj->isTemplate = TRUE;
+        structclass->isInitial = TRUE;
+        structclass->widgetSave =
+        factory_template_get_widgetsave(index);
+    }
+
     for(; sstruct ; sstruct = sstruct->next)
     {
         FactoryStructItemList *i = (FactoryStructItemList *)sstruct->data;
@@ -2491,6 +2513,7 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         }
         else
             nid->actlist = g_list_append(nid->actlist,aid);
+        Diagram *diagram = ddisplay_active_diagram();
     }
     else if(!g_ascii_strncasecmp((gchar*)key,"OBTN",4))
     {
@@ -2781,7 +2804,8 @@ void factory_read_specific_object_from_file(STRUCTClass *fclass,ObjectNode obj_n
 
 
 
-void factory_read_value_from_xml(STRUCTClass *fclass,ObjectNode obj_node)
+void factory_read_value_from_xml(STRUCTClass *fclass,
+                                 ObjectNode obj_node)
 {
 
     GList *tlist = factory_get_list_from_hashtable(fclass);
@@ -3976,8 +4000,10 @@ static void factory_struct_save_to_xml(gpointer key,gpointer value,gpointer user
 
 
 static DiaObject *
-factory_struct_items_load(ObjectNode obj_node,int version, const char *filename)
+factory_struct_items_load(ObjectNode obj_node,int version,
+                          const char *filename)
 {
+
     STRUCTClass *structclass;
     Element *elem;
     DiaObject *obj;

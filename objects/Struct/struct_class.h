@@ -570,7 +570,7 @@ void factory_inital_ebtn(SaveStruct *sss,const FactoryStructItem *fst);
 
 GList* factory_get_objects_from_layer(Layer *layer);
 //STRUCTClass* factory_get_object_from_layer(Layer *layer,const gchar *name);
-static void factory_get_value_from_comobox(STRUCTClass *startclass,GtkWidget *comobox,ActionID *aid);
+static void factory_get_value_from_comobox(SaveStruct *sst,GtkWidget *comobox,ActionID *aid);
 
 void factory_strjoin(gchar **dst,const gchar *prefix,const gchar *sep);
 void factoy_changed_item(gpointer item,gpointer user_data);

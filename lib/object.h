@@ -81,6 +81,7 @@ typedef enum {
 #define ITEM_FIXED   (factory_utf8("¹Ì¶¨Öµ"))
 #define WACDID  "wActID"
 #define ACT_SIZE  6
+#define LCY ".lcy"
 
 
 

@@ -32,6 +32,7 @@
 
 
 extern DiaObjectType structclass_type;
+extern DiaObjectType template_type;
 extern DiaObjectType factory_systeminfo_type;
 extern GList* factory_get_download_name_list(const gchar *path);
 extern TemplateOps templops;
@@ -48,6 +49,7 @@ dia_plugin_init(PluginInfo *info)
     return DIA_PLUGIN_INIT_ERROR;
 
    object_register_type(&structclass_type);
+   object_register_type(&template_type);
    object_register_type(&factory_systeminfo_type); /* 这里为系统信息注册一个类型，这里可以单独做一个动态链接库的 */
    factoryContainer = g_new0(FactoryStructItemAll,1);
    factoryContainer->fgdn_func =(FactoryGetDownloadNameList)factory_get_download_name_list;

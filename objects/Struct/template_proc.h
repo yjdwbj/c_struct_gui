@@ -39,7 +39,7 @@ static gboolean factory_template_save(FactoryStructItemList *fssl);
 
 
 static void factory_template_edit_callback(GtkAction *action);
-
+void factory_template_actionid_verifyed(Diagram *diagram);
 
 static void factory_template_create(DiaObject *dia);
 static void factory_setback_values(GtkWidget *widget);

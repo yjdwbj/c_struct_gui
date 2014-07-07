@@ -28,7 +28,7 @@
 	"diatypes.h"
 	"geometry.h"
 
-1404465121 o:\tool\dvs50\lib\diatypes.h
+1404733032 o:\tool\dvs50\lib\diatypes.h
 	"diavar.h"
 
 1394621090 o:\tool\dvs50\lib\geometry.h
@@ -129,7 +129,7 @@
 	"orth_conn.h"
 	"autoroute.h"
 
-1404300907 o:\tool\dvs50\lib\object.h
+1404731206 o:\tool\dvs50\lib\object.h
 	"diatypes.h"
 	<gtk/gtk.h>
 	"geometry.h"
@@ -1052,7 +1052,7 @@
 	"message.h"
 	"diagdkrenderer.h"
 
-1404477338 source:o:\tool\dvs50\lib\sheet.c
+1404723590 source:o:\tool\dvs50\lib\sheet.c
 	<config.h>
 	<stdlib.h>
 	<string.h>
@@ -1071,8 +1071,9 @@
 	"object.h"
 	"dia_dirs.h"
 	"plug-ins.h"
+	"interface.h"
 
-1404473757 o:\tool\dvs50\lib\sheet.h
+1404695252 o:\tool\dvs50\lib\sheet.h
 	<glib.h>
 	"diatypes.h"
 
@@ -1138,7 +1139,7 @@
 	<time.h>
 	<gdk/gdkkeysyms.h>
 
-1404373846 source:o:\tool\dvs50\app\app_procs.c
+1404724409 source:o:\tool\dvs50\app\app_procs.c
 	<config.h>
 	<stdio.h>
 	<stdlib.h>
@@ -1231,7 +1232,7 @@
 	"geometry.h"
 	"display.h"
 
-1404477876 o:\tool\dvs50\app\interface.h
+1404722882 o:\tool\dvs50\app\interface.h
 	"display.h"
 	"menus.h"
 	"disp_callbacks.h"
@@ -1261,7 +1262,7 @@
 	<gtk/gtk.h>
 	"diagram.h"
 
-1404472910 o:\tool\dvs50\app\load_save.h
+1404723567 o:\tool\dvs50\app\load_save.h
 	"diagram.h"
 	"filter.h"
 
@@ -1414,7 +1415,7 @@
 	"object_ops.h"
 	"color.h"
 
-1401935015 source:o:\tool\dvs50\app\create_object.c
+1404704504 source:o:\tool\dvs50\app\create_object.c
 	<config.h>
 	"create_object.h"
 	"connectionpoint_ops.h"
@@ -1513,7 +1514,7 @@
 	<gdk/gdk.h>
 	<gtk/gtkcontainer.h>
 
-1404477071 source:o:\tool\dvs50\app\diagram.c
+1404732972 source:o:\tool\dvs50\app\diagram.c
 	<config.h>
 	<assert.h>
 	<string.h>
@@ -1681,7 +1682,7 @@
 	<gtk/gtk.h>
 	<glib.h>
 
-1404478284 source:o:\tool\dvs50\app\filedlg.c
+1404723107 source:o:\tool\dvs50\app\filedlg.c
 	<config.h>
 	<sys/types.h>
 	<sys/stat.h>
@@ -1768,7 +1769,7 @@
 	"object_ops.h"
 	"group.h"
 
-1404477932 source:o:\tool\dvs50\app\interface.c
+1404723107 source:o:\tool\dvs50\app\interface.c
 	<config.h>
 	<gnome.h>
 	<gtk/gtk.h>
@@ -1799,6 +1800,7 @@
 	"pixmaps/swap.xpm"
 	"pixmaps/default.xpm"
 	"pixmaps/missing.xpm"
+	"create_object.h"
 
 1257604114 o:\tool\dvs50\app\navigation.h
 	<gtk/gtk.h>
@@ -1834,7 +1836,7 @@
 	"intl.h"
 	<math.h>
 
-1404473082 source:o:\tool\dvs50\app\load_save.c
+1404731269 source:o:\tool\dvs50\app\load_save.c
 	<config.h>
 	<sys/stat.h>
 	<unistd.h>
@@ -2074,7 +2076,7 @@
 	"intl.h"
 	"persistence.h"
 
-1402464312 source:o:\tool\dvs50\app\sheets_dialog_callbacks.c
+1404699951 source:o:\tool\dvs50\app\sheets_dialog_callbacks.c
 	<config.h>
 	<errno.h>
 	<string.h>
@@ -2383,7 +2385,7 @@
 	"connectionpoint.h"
 	"dia_xml.h"
 
-1404380177 o:\tool\dvs50\objects\struct\struct_class.h
+1404727133 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2399,7 +2401,7 @@
 	"object.h"
 	"struct_class.h"
 
-1404302518 source:o:\tool\dvs50\objects\struct\struct.c
+1404701005 source:o:\tool\dvs50\objects\struct\struct.c
 	<config.h>
 	<string.h>
 	<stdio.h>
@@ -2409,7 +2411,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1404459963 source:o:\tool\dvs50\objects\struct\struct_class.c
+1404731823 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2428,7 +2430,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1404460274 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1404733014 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2605,11 +2607,11 @@
 1394081802 source:o:\tool\dvs50\gtk-demo\ui_manager.c
 	<gtk/gtk.h>
 
-1404472291 source:o:\tool\dvs50\objects\struct\template_proc.c
+1404734715 source:o:\tool\dvs50\objects\struct\template_proc.c
 	"template_proc.h"
 	"sheet.h"
 
-1404466337 o:\tool\dvs50\objects\struct\template_proc.h
+1404733196 o:\tool\dvs50\objects\struct\template_proc.h
 	"object.h"
 	"struct_class.h"
 	"plug-ins.h"
