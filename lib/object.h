@@ -85,6 +85,7 @@ typedef enum {
 
 
 
+
 /************************************
  ** Some general function prototypes
  **
@@ -553,7 +554,8 @@ struct _DiaObject {
   GHashTable       *meta;
   gchar *name; /* 2014-4-2 lcy 加一个名字做调试 */
   guint32 oindex; /*2014-5-4 lcy 这里是控件唯一编号*/
-  gboolean isTemplate; /* 2014-7-1 是否是template */
+  gboolean isTemplate; /* 2014-7-1 在模版模式是最后一个自定义对像,
+                        在工程模式,就是由模版派生来的. */
 };
 
 /*!

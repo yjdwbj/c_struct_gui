@@ -37,6 +37,10 @@
 /* Distributed UI Constants */
 #define  DIA_TOOLBOX       "dia-toolbox"
 
+#define TEMPL_SWIN "templ_swin"
+#define ACT_SWIN "act_swin"
+
+
 void create_integrated_ui (void);
 void factory_template_add_item(SheetObject *obj,const gchar *sname);
 DIAVAR GList *factory_template_get_widgetsave(int pos);

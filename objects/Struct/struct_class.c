@@ -2150,9 +2150,9 @@ fill_in_fontdata(STRUCTClass *structclass)
 
 gint factory_gint_compare(gpointer first, gpointer second)
 {
-    if( *(gint*)first == *(gint*)second )
+    if( GPOINTER_TO_INT(first) == GPOINTER_TO_INT(second) )
         return 0;
-    else if(*(gint*)first < *(gint*)second)
+    else if(GPOINTER_TO_INT(first) < GPOINTER_TO_INT(second))
         return -1;
     else
         return 1;
@@ -2171,7 +2171,7 @@ void factory_get_oindex_for_structclass(STRUCTClass *structclass)
     for(; p ; p = p->next)
     {
         DiaObject *eobj = (DiaObject *)p->data;
-        numlist = g_list_append(numlist,(gpointer)&eobj->oindex);
+        numlist = g_list_append(numlist,(gpointer)eobj->oindex);
     }
 
     if(g_list_length(numlist) > 1)
@@ -2182,7 +2182,7 @@ void factory_get_oindex_for_structclass(STRUCTClass *structclass)
     int n = 0;
     while(numlist)
     {
-        if(n < *(gint*)numlist->data)
+        if(n < GPOINTER_TO_INT(numlist->data))
         {
             break;
         }
@@ -2283,13 +2283,7 @@ factory_struct_items_create(Point *startpoint,
 //  structclass->template = FALSE;
     int index = GPOINTER_TO_INT(user_data);
     GList *sstruct = factoryContainer->structList;
-    if(index >= factoryContainer->act_num)
-    {
-        obj->isTemplate = TRUE;
-        structclass->isInitial = TRUE;
-        structclass->widgetSave =
-        factory_template_get_widgetsave(index);
-    }
+
 
     for(; sstruct ; sstruct = sstruct->next)
     {
@@ -2361,7 +2355,16 @@ factory_struct_items_create(Point *startpoint,
     *handle2 = NULL;
     structclass->EnumsAndStructs = NULL;
     structclass->EnumsAndStructs = factoryContainer;
-
+    if(index >= factoryContainer->act_num)
+    {
+        obj->isTemplate = TRUE;
+        structclass->isInitial = TRUE;
+        structclass->widgetSave =
+            factory_template_get_widgetsave(index);
+        structclass->EnumsAndStructs = factoryContainer;
+        factory_set_original_class(structclass);
+        factory_set_structsave_class(structclass);
+    }
     factory_debug_to_log(g_strdup_printf(factory_utf8("创建对像,名字:%s.\n"),structclass->name));
 
     return &structclass->element.object;
@@ -3349,18 +3352,18 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
 //}
 
 
-void factory_set_all_factoryclass(STRUCTClass *fclass,gchar *name)
-{
-//    gchar **tmp =  g_strsplit(fclass->name,"(",-1);
-    GList *tlist = factory_get_list_from_hashtable(fclass);
-
-//    g_strfreev(tmp);
-    for(; tlist; tlist = tlist->next)
-    {
-        FactoryStructItem *fst = tlist->data;
-        fst->orgclass = fclass;
-    }
-}
+//void factory_set_all_factoryclass(STRUCTClass *fclass,gchar *name)
+//{
+////    gchar **tmp =  g_strsplit(fclass->name,"(",-1);
+//    GList *tlist = factory_get_list_from_hashtable(fclass);
+//
+////    g_strfreev(tmp);
+//    for(; tlist; tlist = tlist->next)
+//    {
+//        FactoryStructItem *fst = tlist->data;
+//        fst->orgclass = fclass;
+//    }
+//}
 void factory_set_original_class(STRUCTClass *fclass)
 {
     GList *tlist = factory_get_list_from_hashtable(fclass);
@@ -3368,6 +3371,16 @@ void factory_set_original_class(STRUCTClass *fclass)
     {
         FactoryStructItem *fst = tlist->data;
         fst->orgclass = fclass;
+    }
+}
+
+void factory_set_structsave_class(STRUCTClass *fclass)
+{
+    GList *tlist = fclass->widgetSave;
+    for(; tlist; tlist = tlist->next)
+    {
+        SaveStruct *sst = tlist->data;
+        sst->sclass = fclass;
     }
 }
 

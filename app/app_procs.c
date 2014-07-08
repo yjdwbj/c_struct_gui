@@ -1121,6 +1121,8 @@ void  app_init (int argc, char **argv)
 //                diagram_update_extents(diagram);
 //                diagram->is_default = TRUE;
 //            }
+        factory_sheet_toggled(ACT_SWIN,FALSE);
+        factory_sheet_toggled(TEMPL_SWIN,FALSE);
         }
         else
         {

@@ -480,6 +480,12 @@ dia_layer_select_callback(GtkWidget *widget, gpointer data)
     {
         diagram_remove_all_selected(lw->dia, TRUE);
     }
+
+    /* ÊÇ·ñÏÔÊ¾Ä£°æ */
+    factory_sheet_toggled("templ_swin",!lw->dia->isTemplate);
+
+
+
     diagram_update_extents(lw->dia);
     data_set_active_layer(lw->dia->data, lw->layer);
     diagram_add_update_all(lw->dia);
@@ -590,6 +596,7 @@ layer_dialog_delete_callback(GtkWidget *widget, gpointer gdata)
 
         gtk_list_select_item(GTK_LIST(layer_dialog->layer_list), pos);
     }
+
 }
 
 static void

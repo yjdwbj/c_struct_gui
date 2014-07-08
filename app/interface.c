@@ -58,6 +58,8 @@
 
 #include "create_object.h"
 
+
+
 /* HB: file dnd stuff lent by The Gimp, not fully understood but working ...
  */
 enum
@@ -498,15 +500,15 @@ display_data_received_callback (GtkWidget *widget,
 //            int newnum = GPOINTER_TO_INT(factoryContainer->act_num) +
 //            GPOINTER_TO_INT(tooldata->user_data);
 //            tooldata->user_data  = (gpointer)newnum;
-             ddisplay_drop_object(ddisp, x, y,
-                             object_get_type(CLASS_STRUCT),
-                             tooldata->user_data);
+            ddisplay_drop_object(ddisp, x, y,
+                                 object_get_type(CLASS_STRUCT),
+                                 tooldata->user_data);
         }
         else
 
-        ddisplay_drop_object(ddisp, x, y,
-                             otype,
-                             tooldata->user_data);
+            ddisplay_drop_object(ddisp, x, y,
+                                 otype,
+                                 tooldata->user_data);
 //        factory_debug_to_log(g_strdup_printf(factory_utf8("拖入对像回调完成,名字:%s.\n"),"null"));
         gtk_drag_finish (context, TRUE, FALSE, time);
     }
@@ -1321,7 +1323,77 @@ get_sheet_by_name(const gchar *name)
 }
 
 
+static void factory_add_item_to_sheet(SheetObject *sheet_obj)
+{
+//        SheetObject *sheet_obj = tmp->data;
+    GdkPixmap *pixmap = NULL;
+    GdkBitmap *mask = NULL;
+    GtkWidget *pixmapwidget;
+    GtkWidget *button;
+    ToolButtonData *data;
+    if(sheet_obj->ftitm)
+    {
+        FactoryStructItemList *fsil = sheet_obj->ftitm->fsil;
 
+        gpointer exist= g_hash_table_lookup(factoryContainer->structTable,
+                                            fsil->sname);
+        if(exist)
+        {
+
+            GtkWidget * msg_dialog = gtk_message_dialog_new (GTK_WINDOW (NULL),
+                                     GTK_DIALOG_MODAL,
+                                     GTK_MESSAGE_WARNING,
+                                     GTK_BUTTONS_CLOSE,
+                                     factory_utf8(g_strdup_printf("%s,该对像已经存在!!!!",
+                                                  fsil->sname)));
+            gtk_dialog_run (GTK_DIALOG (msg_dialog));
+            gtk_widget_destroy (msg_dialog);
+        }
+        else
+        {
+            fsil->number = g_list_length(factoryContainer->structList);
+            sheet_obj->user_data = GINT_TO_POINTER(fsil->number);
+            factoryContainer->structList =
+                g_list_append(factoryContainer->structList,fsil);
+            g_hash_table_insert(factoryContainer->structTable,
+                                fsil->sname,fsil);
+        }
+
+    }
+
+    button = gtk_radio_button_new_with_label (tool_group,sheet_obj->description);
+    gtk_toggle_button_set_mode (GTK_TOGGLE_BUTTON (button), FALSE);
+    gtk_container_set_border_width (GTK_CONTAINER (button), 0);
+    tool_group = gtk_radio_button_group (GTK_RADIO_BUTTON (button));
+
+    gtk_wrap_box_pack_wrapped(GTK_WRAP_BOX(sheet_wbox), button,
+                              TRUE, TRUE, FALSE, TRUE, sheet_obj->line_break);
+    gtk_widget_show(button);
+
+    data = g_new(ToolButtonData, 1);
+    data->type = CREATE_OBJECT_TOOL;
+    data->extra_data = sheet_obj->object_type;
+    data->user_data = sheet_obj->user_data;
+    gtk_object_set_data_full(GTK_OBJECT(button), "Dia::ToolButtonData",
+                             data, (GdkDestroyNotify)g_free);
+//        if (first_button == NULL) first_button = button;
+
+    g_signal_connect (GTK_OBJECT (button), "clicked",
+                      G_CALLBACK (tool_select_update), data);
+    g_signal_connect (GTK_OBJECT (button), "button_press_event",
+                      G_CALLBACK (tool_button_press), data);
+
+    tool_setup_drag_source(button, data, pixmap, mask);
+
+//        message_warning(sheet_obj->description);
+    gtk_tooltips_set_tip (tool_tips, button,
+                          sheet_obj->description, NULL);
+//    if (active_tool != NULL &&
+//            active_tool->type == CREATE_OBJECT_TOOL &&
+//            button != NULL)
+//        gtk_signal_emit_by_name(GTK_OBJECT(button), "toggled",
+//                                GTK_BUTTON(button), NULL);
+}
 
 
 static void
@@ -1347,97 +1419,40 @@ fill_sheet_wbox(Sheet *sheet)
                                   COLUMNS * 1.0 / rows);
 
 //    style = gtk_widget_get_style(sheet_wbox);
-    int n = 0;
-    for (tmp = sheet->objects; tmp != NULL; tmp = tmp->next,n++)
+
+    for (tmp = sheet->objects; tmp != NULL; tmp = tmp->next)
     {
-        SheetObject *sheet_obj = tmp->data;
-        GdkPixmap *pixmap = NULL;
-        GdkBitmap *mask = NULL;
-        GtkWidget *pixmapwidget;
-        GtkWidget *button;
-        ToolButtonData *data;
-        if(sheet_obj->ftitm)
-        {
-            FactoryStructItemList *fsil = sheet_obj->ftitm->fsil;
-            fsil->number = g_list_length(factoryContainer->structList);
-            factoryContainer->structList =
-                g_list_append(factoryContainer->structList,fsil);
-            gpointer exist= g_hash_table_lookup(factoryContainer->structTable,
-                                                fsil->sname);
-            if(exist)
-            {
-                GtkWidget * msg_dialog = gtk_message_dialog_new (GTK_WINDOW (NULL),
-                                         GTK_DIALOG_MODAL,
-                                         GTK_MESSAGE_WARNING,
-                                         GTK_BUTTONS_CLOSE,
-                                         factory_utf8("该对像已经存在!!!!"));
-                gtk_dialog_run (GTK_DIALOG (msg_dialog));
-                gtk_widget_destroy (msg_dialog);
-            }
-            else
-                g_hash_table_insert(factoryContainer->structTable,
-                                    fsil->sname,fsil);
-        }
-
-        button = gtk_radio_button_new_with_label (tool_group,sheet_obj->description);
-        gtk_toggle_button_set_mode (GTK_TOGGLE_BUTTON (button), FALSE);
-        gtk_container_set_border_width (GTK_CONTAINER (button), 0);
-        tool_group = gtk_radio_button_group (GTK_RADIO_BUTTON (button));
-
-        gtk_wrap_box_pack_wrapped(GTK_WRAP_BOX(sheet_wbox), button,
-                                  TRUE, TRUE, FALSE, TRUE, sheet_obj->line_break);
-        gtk_widget_show(button);
-
-        data = g_new(ToolButtonData, 1);
-        data->type = CREATE_OBJECT_TOOL;
-        data->extra_data = sheet_obj->object_type;
-        data->user_data = sheet_obj->ftitm ? factoryContainer->act_num :
-                    sheet_obj->user_data;
-        gtk_object_set_data_full(GTK_OBJECT(button), "Dia::ToolButtonData",
-                                 data, (GdkDestroyNotify)g_free);
-        if (first_button == NULL) first_button = button;
-
-        g_signal_connect (GTK_OBJECT (button), "clicked",
-                          G_CALLBACK (tool_select_update), data);
-        g_signal_connect (GTK_OBJECT (button), "button_press_event",
-                          G_CALLBACK (tool_button_press), data);
-
-        tool_setup_drag_source(button, data, pixmap, mask);
-
-//        message_warning(sheet_obj->description);
-        gtk_tooltips_set_tip (tool_tips, button,
-                              sheet_obj->description, NULL);
-
+        factory_add_item_to_sheet(tmp->data);
     }
     /* If the selection is in the old sheet, steal it */
-    if (active_tool != NULL &&
-            active_tool->type == CREATE_OBJECT_TOOL &&
-            first_button != NULL)
-        gtk_signal_emit_by_name(GTK_OBJECT(first_button), "toggled",
-                                GTK_BUTTON(first_button), NULL);
+//    if (active_tool != NULL &&
+//            active_tool->type == CREATE_OBJECT_TOOL &&
+//            first_button != NULL)
+//        gtk_signal_emit_by_name(GTK_OBJECT(first_button), "toggled",
+//                                GTK_BUTTON(first_button), NULL);
 }
 
 
 
 void factory_template_open_template_filename(const gchar *filename)
 {
-        Diagram *diagram = new_diagram(filename);
-        factory_template_load_by_diagram(diagram);
-        FactoryTemplateItem *templ = diagram->templ_item;
-        SheetObject *sobj = g_new0(SheetObject,1);
+    Diagram *diagram = new_diagram(filename);
+    factory_template_load_by_diagram(diagram);
+    FactoryTemplateItem *templ = diagram->templ_item;
+    SheetObject *sobj = g_new0(SheetObject,1);
 
-        sobj->ftitm = templ;
-        sobj->object_type = g_strdup(TYPE_TEMPLATE);
-        sobj->description =  g_strdup(templ->fsil->vname);
-        sobj->pixmap = NULL;
-        sobj->user_data = GINT_TO_POINTER(templ->fsil->number);
-        sobj->user_data_type = USER_DATA_IS_INTDATA; /* sure,   */
+    sobj->ftitm = templ;
+    sobj->object_type = g_strdup(TYPE_TEMPLATE);
+    sobj->description =  g_strdup(templ->fsil->vname);
+    sobj->pixmap = NULL;
+    sobj->user_data = GINT_TO_POINTER(templ->fsil->number);
+    sobj->user_data_type = USER_DATA_IS_INTDATA; /* sure,   */
 
-        sobj->has_icon_on_sheet = TRUE;
-        sobj->line_break = FALSE;
+    sobj->has_icon_on_sheet = TRUE;
+    sobj->line_break = FALSE;
 
-        factory_template_add_item(sobj,NULL); /* 显示一个模版 */
-        diagram_destroy(diagram);
+    factory_template_add_item(sobj,NULL); /* 显示一个模版 */
+    diagram_destroy(diagram);
 }
 
 
@@ -1447,22 +1462,31 @@ void factory_template_add_item(SheetObject *sobj,const gchar *sname)
     if(sheet)
     {
         sheet->objects = g_list_append(sheet->objects,sobj);
-        fill_sheet_wbox(sheet);
+        factory_add_item_to_sheet(sobj);
     }
 }
 
 
+void factory_sheet_toggled(const gchar *sheet_name,const gboolean toggled)
+{
+    GtkWidget *win = interface_get_toolbox_shell();
+    GtkWidget *wrapbox = g_object_get_data(win,"wrapbox");
+    GtkWidget *widget = g_object_get_data(wrapbox,sheet_name);
+    gtk_widget_set_sensitive(widget,toggled);
+
+}
+
 GList *factory_template_get_widgetsave(int pos)
 {
-     Sheet  *sheet = get_sheet_by_name(TYPE_TEMPLATE); /* 模版区间 */
+    Sheet  *sheet = get_sheet_by_name(TYPE_TEMPLATE); /* 模版区间 */
     if(sheet)
     {
-       int n = pos - GPOINTER_TO_INT(factoryContainer->act_num);
-      SheetObject *sobj =  g_list_nth_data(sheet->objects,n);
-      if(sobj)
+        int n = pos - GPOINTER_TO_INT(factoryContainer->act_num);
+        SheetObject *sobj =  g_list_nth_data(sheet->objects,n);
+        if(sobj)
             return g_list_copy(sobj->ftitm->widgetSave);
-      else
-        return NULL;
+        else
+            return NULL;
     }
     return NULL;
 }
@@ -1593,6 +1617,8 @@ void create_template_sheets(GtkWidget *parent)
     gtk_wrap_box_set_line_justify(GTK_WRAP_BOX(sheet_wbox), GTK_JUSTIFY_LEFT);
     gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(swin), sheet_wbox);
     gtk_widget_show(sheet_wbox);
+    g_object_set_data(G_OBJECT(parent),TEMPL_SWIN,
+                      swin);
     sheet = get_sheet_by_name(TYPE_TEMPLATE); /* 模版区间 */
     if(sheet)
     {
@@ -1636,7 +1662,7 @@ create_sheets(GtkWidget *parent)
     gtk_wrap_box_set_line_justify(GTK_WRAP_BOX(sheet_wbox), GTK_JUSTIFY_LEFT);
     gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(swin), sheet_wbox);
     gtk_widget_show(sheet_wbox);
-
+    g_object_set_data(G_OBJECT(parent),ACT_SWIN,swin);
 //    sheetname = persistence_register_string("last-sheet-selected", _("Flowchart"));
 //    sheet = get_sheet_by_name(sheetname);
 //    if (sheet == NULL)
@@ -1920,7 +1946,7 @@ create_integrated_ui (void)
     gtk_wrap_box_set_aspect_ratio(GTK_WRAP_BOX(wrapbox), 144.0 / 318.0);
     gtk_wrap_box_set_justify(GTK_WRAP_BOX(wrapbox), GTK_JUSTIFY_TOP);
     gtk_wrap_box_set_line_justify(GTK_WRAP_BOX(wrapbox), GTK_JUSTIFY_LEFT);
-
+    g_object_set_data(G_OBJECT(window),"wrapbox",wrapbox);
     /* pack the rest of the stuff */
     gtk_box_pack_start (GTK_BOX (hbox), wrapbox, FALSE, TRUE, 0);
     gtk_container_set_border_width (GTK_CONTAINER (wrapbox), 0);

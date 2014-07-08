@@ -46,7 +46,7 @@
 
 #include "../objects/Struct/template_proc.h"
 
-
+#include "interface.h"
 
 
 static GList *open_diagrams = NULL;
@@ -132,11 +132,21 @@ diagram_finalize(GObject *object)
 static void
 _diagram_removed (Diagram* dia)
 {
+    if(g_list_length(open_diagrams) == 1 &&
+       !dia->loadOnly)
+    {
+        factory_sheet_toggled(TEMPL_SWIN,FALSE);
+        factory_sheet_toggled(ACT_SWIN,FALSE);
+    }
 }
 
 static void
 _diagram_selection_changed (Diagram* dia, int n)
 {
+    if(!dia->loadOnly)
+    {
+        factory_sheet_toggled(TEMPL_SWIN,!dia->isTemplate);
+    }
 }
 
 static void
@@ -415,8 +425,10 @@ new_diagram(const char *filename)  /* Note: filename is copied */
         fsil->vname = g_strdup(tname);
         fsil->sname = g_strdup(TYPE_TEMPLATE);
         fsil->sfile = g_strdup("act.inf");
+        factory_sheet_toggled(TEMPL_SWIN,FALSE);
         g_free(tname);
     }
+    factory_sheet_toggled(ACT_SWIN,TRUE);
 
     if (diagram_init(dia, filename))
     {

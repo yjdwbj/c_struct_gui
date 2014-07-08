@@ -51,7 +51,6 @@ query_tooltip_tree_view_cb (GtkWidget  *widget,
     gtk_tree_path_free (path);
     g_free (pathstring);
 
-
     return TRUE;
 }
 
@@ -85,7 +84,7 @@ static GList* factory_template_get_editable_item(GList *oldlist)
             }
 //            newlist = g_list_append(newlist,sst->org);
             NewItem *nitem = g_new0(NewItem,1);
-            nitem->label = g_strdup(sst->org->Cname);
+            nitem->mname = g_strdup(sst->org->Cname);
 //            nitem->fixed = TRUE;
             nitem->expand = TRUE;
             nitem->children = NULL;
@@ -169,7 +168,7 @@ static void factory_append_struct_to_model(GtkTreeModel *model,NewItem *topitem)
     GtkTreeIter iter;
     gtk_tree_store_append (GTK_TREE_STORE(model), &iter,NULL);
     gtk_tree_store_set(GTK_TREE_STORE(model),&iter,
-                       ITEM_NAME,topitem->label,
+                       ITEM_NAME,topitem->mname,
                        ITEM_BOOL,FALSE,
                        ITEM_VISIBLE,FALSE,
                        -1);
@@ -182,7 +181,7 @@ static void factory_append_struct_to_model(GtkTreeModel *model,NewItem *topitem)
         if(!childitem) continue;
         gtk_tree_store_append (GTK_TREE_STORE(model), &child_iter, &iter);
         gtk_tree_store_set(GTK_TREE_STORE(model),&child_iter,
-                           ITEM_NAME,childitem->label,
+                           ITEM_NAME,childitem->mname,
                            ITEM_BOOL,childitem->ischecked,
                            ITEM_VISIBLE,TRUE,
                            -1);
@@ -391,15 +390,15 @@ static NewItem *factory_template_find_old_item(GSList *slist,const gchar *str)
 }
 static gboolean factory_template_newitem_sorted(NewItem *org,NewItem *cmp)
 {
-    return factory_str_compare(org->label,cmp->label);
+    return factory_str_compare(org->mname,cmp->mname);
 }
 
 static NewItem * factory_template_create_model_by_name(const gchar *name)
 {
     NewItem *topitem =  g_new0(NewItem,1);
 //    static_temp->modellist = g_slist_append(static_temp->modellist,topitem);
-    topitem->label = g_strdup(name);
-    topitem->name_quark = g_quark_from_string(topitem->label);
+    topitem->mname = g_strdup(name);
+    topitem->name_quark = g_quark_from_string(topitem->mname);
 //            topitem->fixed = FALSE;
     topitem->expand = FALSE;
     topitem->pos = 0;
@@ -425,8 +424,8 @@ static void factory_template_create(DiaObject *dia)
         diagram->templ_item->entrypoint = g_strdup(fclass->name);
     NewItem *topitem =  g_new0(NewItem,1);
     static_temp->modellist = g_slist_append(static_temp->modellist,topitem);
-    topitem->label = g_strdup(fclass->name);
-    topitem->name_quark = g_quark_from_string(topitem->label);
+    topitem->mname = g_strdup(fclass->name);
+    topitem->name_quark = g_quark_from_string(topitem->mname);
 //            topitem->fixed = FALSE;
     topitem->expand = FALSE;
     topitem->pos = 0;
@@ -648,22 +647,37 @@ static void factory_template_free_templlist(GList *valist)
     g_list_free1(valist);
 }
 
+void factory_template_item_vname_changed(const gchar *oldname,const gchar *newname)
+{
+    GList *mlist = static_temp->modellist;
+    GQuark nqu = g_quark_from_string(oldname);
+    for(;mlist; mlist = mlist->next)
+    {
+        NewItem *topitem = mlist->data;
+        if(topitem->name_quark == nqu)
+        {
+            g_free(topitem->mname);
+            topitem->mname = g_strdup(newname);
+            topitem->name_quark = g_quark_from_string(newname);
+            break;
+        }
+    }
+}
 
 GList * factory_template_get_values_to_save()
 {
     /* 取得那些是须要保存到文件的 */
 
-    GList *mlist = static_temp->modellist;
+    GSList *mlist = static_temp->modellist;
 
     GList *vallist = NULL;
-    int index = 0;
-    for(; mlist; mlist = mlist->next,index++)
+    for(; mlist; mlist = mlist->next)
     {
         NewItem *topitem = mlist->data;
         FactoryItemInOriginalMap *fiiom;/* = g_list_nth_data(static_temp->templlist,index);*/
 
         fiiom = g_new0(FactoryItemInOriginalMap,1);
-        fiiom->act_name = g_strdup(topitem->label);
+        fiiom->act_name = g_strdup(topitem->mname);
         STRUCTClass *fclass = g_hash_table_lookup(curLayer->defnames,
                               fiiom->act_name);
         if(fclass)
@@ -673,8 +687,8 @@ GList * factory_template_get_values_to_save()
         else
         {
             /* error */
-            factory_critical_error_exit(factory_utf8(g_strdup_printf("找不到对像!\n名字:%s\n",
-                                        fiiom->act_name)));
+            factory_critical_error_exit(g_strdup_printf(factory_utf8("找不到对像!\n名字:%s\n"),
+                                        fiiom->act_name));
         }
         vallist = g_list_append(vallist,fiiom);
 
@@ -685,7 +699,8 @@ GList * factory_template_get_values_to_save()
             NewItem *chitem = chlist->data;
             if(chitem->ischecked) /* 这一项是要对外开放编辑的 */
             {
-                fiiom->itemslist = g_list_append(fiiom->itemslist,g_strdup_printf("%d",chitem->pos));
+                fiiom->itemslist = g_list_append(fiiom->itemslist,
+                                                 g_strdup_printf("%d",chitem->pos));
             }
         }
     }
@@ -1021,9 +1036,29 @@ void factory_template_actionid_verifyed(Diagram *diagram)
     }
 }
 
+gint factory_newitem_sorted(NewItem *n1,NewItem *n2)
+{
+    return factory_gint_compare((gpointer)n1->pos,(gpointer)n2->pos);
+}
+
+gint factory_template_find_exist_item(NewItem *topitem,int pos)
+{
+    GList *plist = topitem->children;
+    for(;plist ; plist = plist->next)
+    {
+        NewItem *citem  = plist->data;
+        if(citem->pos == pos)
+        {
+            return pos;
+        }
+    }
+    return -1;
+}
+
 void factory_template_update_actionid_state(Diagram *diagram,SaveStruct *sst,int val)
 
 {
+    /* 这里针对下一个行为的,添加和删除. */
     STRUCTClass *fclass = sst->sclass;
 
     if(static_temp != diagram->templ_item)
@@ -1041,16 +1076,25 @@ void factory_template_update_actionid_state(Diagram *diagram,SaveStruct *sst,int
             int npos = g_list_index(fclass->widgetSave,sst);
             if(val >0)
             {
-//                gpointer odata = g_list_nth_data(topitem->children,npos);
-//                topitem->children = g_list_remove(topitem->children,odata);
-//                g_free(odata);
-                g_list_free1(topitem->children);
+                GList *clist = topitem->children;
+                for(;clist;clist = clist->next)
+                {
+                    NewItem *citem = clist->data;
+                    if(npos == citem->pos)
+                    {
+                        topitem->children = g_list_remove(topitem->children,
+                                                          citem);
+                        g_free(citem);
+                        break;
+                    }
+                }
             }
             else
             {
+               if( npos == factory_template_find_exist_item(topitem,npos))
+                    continue;
                 NewItem *nitem = g_new0(NewItem,1);
-                nitem->label = g_strdup(sst->org->Cname);
-//            nitem->fixed = TRUE;
+                nitem->mname = g_strdup(sst->org->Cname);
                 nitem->expand = TRUE;
                 nitem->children = NULL;
                 nitem->tooltips = g_strdup(sst->org->Comment);
@@ -1058,7 +1102,7 @@ void factory_template_update_actionid_state(Diagram *diagram,SaveStruct *sst,int
                 nitem->ischecked = TRUE;
                 topitem->children = g_list_append(topitem->children,nitem);
                 topitem->children = g_list_sort(topitem->children,
-                                            factory_str_compare);
+                                                factory_newitem_sorted);
             }
             break;
         }

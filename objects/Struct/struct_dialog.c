@@ -3008,7 +3008,9 @@ static void factory_connectionto_object(DDisplay *ddisp,DiaObject *obj,STRUCTCla
     handle->pos = fclass->connections[8].pos;
 
     ConnectionPoint *connectionpoint = NULL;
-    connectionpoint = object_find_connectpoint_display(ddisp, &fclass->connections[8].pos, obj, TRUE);
+    connectionpoint = object_find_connectpoint_display(ddisp,
+                                                       &fclass->connections[8].pos,
+                                                        obj, TRUE);
     if(connectionpoint != NULL)
     {
         handle->pos = connectionpoint->pos;
@@ -3409,7 +3411,11 @@ void factory_change_view_name(STRUCTClass *fclass)
         if(!exists && curLayer)
         {
             g_return_if_fail(curLayer->defnames);
+            if(ddisplay_active_diagram()->isTemplate)
+                factory_template_item_vname_changed(fclass->name,
+                                                    pps->name);
             g_hash_table_remove(curLayer->defnames,fclass->name);
+
             fclass->name = g_strdup(pps->name);
             g_hash_table_insert(curLayer->defnames,fclass->name,fclass);
         }

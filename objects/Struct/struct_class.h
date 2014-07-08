@@ -30,7 +30,7 @@
 #include "connection.h"
 #include "widgets.h"
 
-#include "struct.h"
+//#include "struct.h"
 #include "display.h"
 #define DIA_OBJECT(x) (DiaObject*)(x)
 
