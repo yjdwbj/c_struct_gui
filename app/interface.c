@@ -1306,7 +1306,7 @@ gchar *interface_current_sheet_name;
 
 
 
-static Sheet *
+Sheet *
 get_sheet_by_name(const gchar *name)
 {
     GSList *tmp;
@@ -1476,20 +1476,6 @@ void factory_sheet_toggled(const gchar *sheet_name,const gboolean toggled)
 
 }
 
-GList *factory_template_get_widgetsave(int pos)
-{
-    Sheet  *sheet = get_sheet_by_name(TYPE_TEMPLATE); /* Ä£°æÇø¼ä */
-    if(sheet)
-    {
-        int n = pos - GPOINTER_TO_INT(factoryContainer->act_num);
-        SheetObject *sobj =  g_list_nth_data(sheet->objects,n);
-        if(sobj)
-            return g_list_copy(sobj->ftitm->widgetSave);
-        else
-            return NULL;
-    }
-    return NULL;
-}
 
 
 static void

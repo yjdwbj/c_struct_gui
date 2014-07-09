@@ -28,7 +28,7 @@
 	"diatypes.h"
 	"geometry.h"
 
-1404733032 o:\tool\dvs50\lib\diatypes.h
+1404903783 o:\tool\dvs50\lib\diatypes.h
 	"diavar.h"
 
 1394621090 o:\tool\dvs50\lib\geometry.h
@@ -1232,7 +1232,7 @@
 	"geometry.h"
 	"display.h"
 
-1404785895 o:\tool\dvs50\app\interface.h
+1404894140 o:\tool\dvs50\app\interface.h
 	"display.h"
 	"menus.h"
 	"disp_callbacks.h"
@@ -1770,7 +1770,7 @@
 	"object_ops.h"
 	"group.h"
 
-1404798001 source:o:\tool\dvs50\app\interface.c
+1404894141 source:o:\tool\dvs50\app\interface.c
 	<config.h>
 	<gnome.h>
 	<gtk/gtk.h>
@@ -2386,7 +2386,7 @@
 	"connectionpoint.h"
 	"dia_xml.h"
 
-1404785785 o:\tool\dvs50\objects\struct\struct_class.h
+1404907340 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2394,14 +2394,14 @@
 	"widgets.h"
 	"display.h"
 
-1404263843 source:o:\tool\dvs50\objects\struct\musicfilemanager.c
+1404896199 source:o:\tool\dvs50\objects\struct\musicfilemanager.c
 	"musicfilemanager.h"
 
 1403160764 o:\tool\dvs50\objects\struct\musicfilemanager.h
 	"object.h"
 	"struct_class.h"
 
-1404701005 source:o:\tool\dvs50\objects\struct\struct.c
+1404907331 source:o:\tool\dvs50\objects\struct\struct.c
 	<config.h>
 	<string.h>
 	<stdio.h>
@@ -2411,7 +2411,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1404818584 source:o:\tool\dvs50\objects\struct\struct_class.c
+1404906956 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2430,7 +2430,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1404801522 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1404906643 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2607,11 +2607,11 @@
 1394081802 source:o:\tool\dvs50\gtk-demo\ui_manager.c
 	<gtk/gtk.h>
 
-1404800642 source:o:\tool\dvs50\objects\struct\template_proc.c
+1404906187 source:o:\tool\dvs50\objects\struct\template_proc.c
 	"template_proc.h"
 	"sheet.h"
 
-1404800541 o:\tool\dvs50\objects\struct\template_proc.h
+1404892173 o:\tool\dvs50\objects\struct\template_proc.h
 	"object.h"
 	"struct_class.h"
 

@@ -36,6 +36,7 @@ extern DiaObjectType template_type;
 extern DiaObjectType factory_systeminfo_type;
 extern GList* factory_get_download_name_list(const gchar *path);
 extern TemplateOps templops;
+extern empty_quark;
 
 
 DIA_PLUGIN_CHECK_INIT
@@ -61,6 +62,8 @@ dia_plugin_init(PluginInfo *info)
    factoryContainer->color = color;
    templ_ops = g_new0(TemplateOps,1);
    templ_ops = &templops;
+
+   empty_quark = g_quark_from_static_string("");
   return DIA_PLUGIN_INIT_OK;
 }
 

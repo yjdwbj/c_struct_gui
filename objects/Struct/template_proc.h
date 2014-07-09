@@ -47,4 +47,6 @@ static void factory_setback_model_values(GSList *mlist);
 static gboolean factory_find_item_pos(GSList *list,const gchar *str);
 static NewItem *factory_template_find_old_item(GSList *slist,const gchar *str);
 
+GList *factory_template_get_widgetsave(int pos,gpointer fclass);
+
 #endif // TEMPLATE_PROC_H_INCLUDED

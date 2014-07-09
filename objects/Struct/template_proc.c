@@ -71,14 +71,14 @@ static GList* factory_template_get_editable_item(GList *oldlist)
 
             if(!g_ascii_strncasecmp(sst->name,ACTION_ID,6))
             {
-                NextID *nid = &sst->value.nextid;
+                ActIDArr *nid = &sst->value.nextid;
                 if( g_list_length(nid->actlist)>0)
                 {
                     ActionID *aid = nid->actlist->data;
-                   if(aid->index > 0)
-                   {
+                    if(aid->index > 0)
+                    {
                         continue;
-                   }
+                    }
 
                 }
             }
@@ -226,35 +226,7 @@ void factory_template_select_all_callback(GtkWidget *btn,gpointer user_data)
     gtk_tree_model_foreach(model,factory_select_all_foreach,NULL);
 }
 
-static GtkTreeModel *factory_template_create_entrypoint_model(GList *itemlist)
-{
-    GtkListStore *model = gtk_list_store_new (1, G_TYPE_STRING);
-    GList *tlist = itemlist;
-    for(; tlist; tlist = tlist->next)
-    {
-        factory_append_iten_to_cbmodal(model,tlist->data);
-    }
-    return GTK_TREE_MODEL(model);
-}
-static GQuark ptrquark = 0;
 
-static gboolean factory_entrypoint_compre_foreach(GtkTreeModel *model,
-        GtkTreePath *path,
-        GtkTreeIter *iter,
-        gpointer data)
-{
-
-    gchar *curstr;
-    gtk_tree_model_get(model,iter,0,&curstr,-1);
-    GQuark quark = g_quark_from_string(curstr);
-    if(ptrquark == quark)
-    {
-        gtk_combo_box_set_active_iter(GTK_COMBO_BOX(data),iter);
-        return TRUE;
-    }
-
-    return FALSE;
-}
 
 
 
@@ -325,14 +297,14 @@ static void factory_template_layout(GtkWidget *dialog,GtkWidget *parent)
     label = gtk_label_new(factory_utf8("模版入口行为:"));
     entry = gtk_combo_box_new_text();
     GList *names = factory_get_objects_from_layer(curLayer);
-    GtkTreeModel *emodel = factory_template_create_entrypoint_model(names);
+    GtkTreeModel *emodel = factory_create_combox_model(names);
     gtk_combo_box_set_model(GTK_COMBO_BOX(entry),emodel);
 //    emodel = gtk_combo_box_get_model(GTK_COMBO_BOX(entry));
     if(static_temp->entrypoint)
     {
         GtkTreeIter iter;
         ptrquark = g_quark_from_string(static_temp->entrypoint);
-        gtk_tree_model_foreach(emodel,factory_entrypoint_compre_foreach,entry);
+        gtk_tree_model_foreach(emodel,factory_comobox_compre_foreach,entry);
 
     }
     else
@@ -369,7 +341,7 @@ void factory_template_update_item(const gchar *act_name)
     NewItem *topitem = factory_template_find_old_item(static_temp->modellist,act_name);
     if(topitem)
     {
-        static_temp->modellist =  g_slist_remove(static_temp->modellist,topitem);
+        static_temp->modellist =  g_list_remove(static_temp->modellist,topitem);
         g_free(topitem);
     }
 }
@@ -396,7 +368,6 @@ static gboolean factory_template_newitem_sorted(NewItem *org,NewItem *cmp)
 static NewItem * factory_template_create_model_by_name(const gchar *name)
 {
     NewItem *topitem =  g_new0(NewItem,1);
-//    static_temp->modellist = g_slist_append(static_temp->modellist,topitem);
     topitem->mname = g_strdup(name);
     topitem->name_quark = g_quark_from_string(topitem->mname);
 //            topitem->fixed = FALSE;
@@ -423,7 +394,7 @@ static void factory_template_create(DiaObject *dia)
     if(!diagram->templ_item->entrypoint)
         diagram->templ_item->entrypoint = g_strdup(fclass->name);
     NewItem *topitem =  g_new0(NewItem,1);
-    static_temp->modellist = g_slist_append(static_temp->modellist,topitem);
+    static_temp->modellist = g_list_append(static_temp->modellist,topitem);
     topitem->mname = g_strdup(fclass->name);
     topitem->name_quark = g_quark_from_string(topitem->mname);
 //            topitem->fixed = FALSE;
@@ -435,7 +406,7 @@ static void factory_template_create(DiaObject *dia)
 }
 
 
-GtkTreeView * factory_template_create_treeview(GSList *list)
+GtkTreeView * factory_template_create_treeview(GList *list)
 {
     model = GTK_TREE_MODEL(gtk_tree_store_new(ITEM_COUNT,
                            G_TYPE_STRING,
@@ -482,7 +453,7 @@ void factory_template_edit_callback(GtkAction *action)
                            ddisplay_active()->shell);
     gtk_window_set_modal(GTK_WINDOW(newdialog),TRUE);
     GtkWidget *dlgvbox = GTK_DIALOG(newdialog)->vbox;
-    static_temp->modellist = g_slist_sort(static_temp->modellist,
+    static_temp->modellist = g_list_sort(static_temp->modellist,
                                           factory_template_newitem_sorted);
     GtkTreeView *treeview = factory_template_create_treeview(static_temp->modellist);
     factory_template_layout(newdialog,vbox);
@@ -508,7 +479,7 @@ static gboolean factory_restore_items_values(GtkTreeModel *model,
     int *indces = gtk_tree_path_get_indices(path);
     int n1 = indces[0];
     int n2 = indces[1];
-    NewItem *item = g_slist_nth_data(static_temp->modellist,n1); /* 所在顶层结点*/
+    NewItem *item = g_list_nth_data(static_temp->modellist,n1); /* 所在顶层结点*/
     NewItem *citem = g_list_nth_data(item->children,n2);
     gtk_tree_store_set (GTK_TREE_STORE (model), &iter, ITEM_BOOL,
                         citem->ischecked, -1);
@@ -548,7 +519,7 @@ static gboolean factory_filter_checked_item(GtkTreeModel *model,
     if(depth==2) /* depth == 2 */
     {
         /* 保存每一个项的状态 */
-        NewItem *item = g_slist_nth_data(static_temp->modellist,n1); /* 所在顶层结点*/
+        NewItem *item = g_list_nth_data(static_temp->modellist,n1); /* 所在顶层结点*/
         NewItem *citem = g_list_nth_data(item->children,n2);
         citem->ischecked = toggle_item;
     }
@@ -651,7 +622,7 @@ void factory_template_item_vname_changed(const gchar *oldname,const gchar *newna
 {
     GList *mlist = static_temp->modellist;
     GQuark nqu = g_quark_from_string(oldname);
-    for(;mlist; mlist = mlist->next)
+    for(; mlist; mlist = mlist->next)
     {
         NewItem *topitem = mlist->data;
         if(topitem->name_quark == nqu)
@@ -668,7 +639,7 @@ GList * factory_template_get_values_to_save()
 {
     /* 取得那些是须要保存到文件的 */
 
-    GSList *mlist = static_temp->modellist;
+    GList *mlist = static_temp->modellist;
 
     GList *vallist = NULL;
     for(; mlist; mlist = mlist->next)
@@ -875,7 +846,7 @@ static gboolean factory_template_setvalue_foreach(GtkTreeModel *model,
         /* 保存每一个项的状态 */
         FactoryItemInOriginalMap *fiiom = g_list_nth_data(vlist,n1);
 
-        NewItem *item = g_slist_nth_data(static_temp->modellist,n1); /* 所在顶层结点*/
+        NewItem *item = g_list_nth_data(static_temp->modellist,n1); /* 所在顶层结点*/
         NewItem *citem = g_list_nth_data(item->children,n2);
         int pos = factory_find_item_pos(fiiom->itemslist,g_strdup_printf("%d",citem->pos));
         citem->ischecked = pos == -1 ? FALSE : TRUE;
@@ -974,7 +945,7 @@ void factory_template_read_from_xml(STRUCTClass *fclass,
         }
         if(!diagram->loadOnly) /* 加载模块使用的 */
         {
-            templ->modellist = g_slist_append(templ->modellist,
+            templ->modellist = g_list_append(templ->modellist,
                                               factory_template_create_model_by_name(fiiom->act_name));
             gpointer mitem = g_hash_table_lookup(curLayer->defnames,
                                                  fiiom->struct_name);
@@ -1018,19 +989,25 @@ void factory_template_read_from_xml(STRUCTClass *fclass,
 void factory_template_actionid_verifyed(Diagram *diagram)
 {
     return ;
-   GList *p = g_hash_table_get_values(curLayer->defnames);
-    for(;p;p=p->next)
+    GList *p = g_hash_table_get_values(curLayer->defnames);
+    for(; p; p=p->next)
     {
         STRUCTClass *sclass = p->data;
         GList *slist = sclass->widgetSave;
-        for(;slist;slist = slist->next)
+        for(; slist; slist = slist->next)
         {
             SaveStruct *sst = slist->data;
             if(!g_ascii_strncasecmp(sst->name,ACTION_ID,6))
             {
-                NextID *nid = &sst->value.nextid;
-                ActionID *aid = g_list_first(nid->actlist)->data;
-                factory_template_update_actionid_state(diagram,sst,aid->index);
+                if(g_str_has_suffix(sst->name,"]"))
+                {
+
+                }
+                else
+                {
+                    ActionID *aid = &sst->value.actid;
+                    factory_template_update_actionid_state(diagram,sst,aid->index);
+                }
             }
         }
     }
@@ -1044,7 +1021,7 @@ gint factory_newitem_sorted(NewItem *n1,NewItem *n2)
 gint factory_template_find_exist_item(NewItem *topitem,int pos)
 {
     GList *plist = topitem->children;
-    for(;plist ; plist = plist->next)
+    for(; plist ; plist = plist->next)
     {
         NewItem *citem  = plist->data;
         if(citem->pos == pos)
@@ -1066,7 +1043,7 @@ void factory_template_update_actionid_state(Diagram *diagram,SaveStruct *sst,int
 
     if(static_fsil != diagram->templ_item->fsil)
         static_fsil = diagram->templ_item->fsil;
-    GSList *mlist = static_temp->modellist;
+    GList *mlist = static_temp->modellist;
     GQuark nquark = g_quark_from_string(fclass->name);
     for(; mlist; mlist = mlist->next)
     {
@@ -1077,7 +1054,7 @@ void factory_template_update_actionid_state(Diagram *diagram,SaveStruct *sst,int
             if(val >0)
             {
                 GList *clist = topitem->children;
-                for(;clist;clist = clist->next)
+                for(; clist; clist = clist->next)
                 {
                     NewItem *citem = clist->data;
                     if(npos == citem->pos)
@@ -1091,7 +1068,7 @@ void factory_template_update_actionid_state(Diagram *diagram,SaveStruct *sst,int
             }
             else
             {
-               if( npos == factory_template_find_exist_item(topitem,npos))
+                if( npos == factory_template_find_exist_item(topitem,npos))
                     continue;
                 NewItem *nitem = g_new0(NewItem,1);
                 nitem->mname = g_strdup(sst->org->Cname);
@@ -1109,4 +1086,31 @@ void factory_template_update_actionid_state(Diagram *diagram,SaveStruct *sst,int
     }
 
 
+}
+
+
+GList *factory_template_get_widgetsave(int pos,
+                                       gpointer fclass)
+{
+    Sheet  *sheet = get_sheet_by_name(TYPE_TEMPLATE); /* 模版区间 */
+    GList *newlist = NULL;
+    if(sheet)
+    {
+        int n = pos - GPOINTER_TO_INT(factoryContainer->act_num);
+        SheetObject *sobj =  g_list_nth_data(sheet->objects,n);
+        if(sobj)
+        {
+            GList *u = sobj->ftitm->widgetSave;
+            for(; u; u = u->next)
+            {
+                SaveStruct *sst = factory_savestruct_copy(u->data);
+                sst->sclass = fclass;
+                newlist = g_list_append(newlist,sst) ;
+            }
+            return newlist;
+        }
+        else
+            return NULL;
+    }
+    return NULL;
 }

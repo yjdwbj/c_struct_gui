@@ -246,7 +246,7 @@ struct _FactoryTemplateItem
 {
     FactoryStructItemList *fsil;
     gchar *entrypoint; /* 入口行为的名字 */
-    GSList *modellist; /* model top list */
+    GList *modellist; /* model top list */
     TemplateOps *templ_ops; /* 关于模版相关的函数 */
     GList *member_lst; /* 这个模版里的所有成员的列表 */
     GList *widgetSave; /* 模版的初始值就是用从文件里读出来的 */

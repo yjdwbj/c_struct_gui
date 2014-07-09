@@ -3230,18 +3230,9 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
     break;
     case OCOMBO:
     {
-        NextID *nid = &sss->value.nextid;
-        g_return_if_fail(nid);
-        if( g_list_length(nid->actlist)>0)
-        {
-            ActionID *aid = nid->actlist->data;
-            factory_get_value_from_comobox(sss,sss->widget2,aid);
-        }
-        else
-        {
-            /* error */
-        }
-
+        ActionID *aid = &sss->value.actid;
+        g_return_if_fail(aid);
+        factory_get_value_from_comobox(sss,sss->widget2,aid);
         /* 2014-4-3 lcy  在指定位置创建一条线的标准控件, 线条是标准控件,这里调用drop 回调函数 */
     }
     break;
@@ -3281,14 +3272,18 @@ static void factory_get_value_from_comobox(SaveStruct *sst,
     STRUCTClass *startclass = sst->sclass;
     g_return_if_fail(aid);
     DDisplay *ddisp =  ddisplay_active();
+//    GtkTreeIter iter ;
+//    gtk_combo_box_get_active_iter(GTK_COMBO_BOX(comobox),&iter);
     int  curindex = gtk_combo_box_get_active(GTK_COMBO_BOX(comobox));
     gchar *pname = gtk_combo_box_get_active_text(GTK_COMBO_BOX(comobox));
+    GQuark pquark = g_quark_from_string(pname);
 //    if(!g_ascii_strcasecmp(pname,aid->pre_name))
 //        return;
     aid->conn_ptr = g_hash_table_lookup(curLayer->defnames,pname);
 
-    gpointer  lastobj = g_hash_table_lookup(curLayer->defnames,aid->pre_name);
-    if(!curindex) /*下标零，删除上一次的画线*/
+    gpointer  lastobj = g_hash_table_lookup(curLayer->defnames,
+                                            aid->pre_name);/*上次的选项*/
+    if(pquark == empty_quark) /*下标零，删除上一次的画线*/
         goto DELL;
     else
     {
@@ -3317,8 +3312,7 @@ static void factory_get_value_from_comobox(SaveStruct *sst,
     }
 
 DELL:
-    if(aid->index && aid->index != curindex &&
-            (aid->conn_ptr != startclass)) /* 上次非零,名字又不是自己,要删除线*/
+    if(aid->conn_ptr != startclass) /* 上次非零,名字又不是自己,要删除线*/
     {
         factory_delete_line_between_two_objects(startclass,lastobj);
         g_free(aid->value);
@@ -3327,14 +3321,17 @@ DELL:
     }
 
 SETV:
+    g_free(aid->pre_name);
     aid->pre_name = g_strdup(pname);
-    aid->index  = curindex;
+//    aid->index  = curindex;
     if(aid->conn_ptr)
-        aid->value  = g_strdup_printf("%d",((DiaObject*)aid->conn_ptr)->oindex);
+        aid->value  = g_strdup_printf("%d",
+                                      ((DiaObject*)aid->conn_ptr)->oindex);
 //    aid->conn_ptr = g_hash_table_lookup(curLayer->defnames,pname);
     if(ddisplay_active_diagram()->isTemplate)
     {
-        factory_template_update_actionid_state(ddisplay_active_diagram(),sst,curindex);
+        factory_template_update_actionid_state(ddisplay_active_diagram()
+                                               ,sst,curindex);
     }
     diagram_flush(ddisp->diagram);
     g_free(pname);
@@ -3654,8 +3651,10 @@ static GtkWidget *factory_create_variant_object(SaveStruct *sss)
 //        gdouble maxlength = sey->col * sey->row; // 得到文本框的大小。
         if(sey->isString)
         {
-            columTwo =  sey->data ? factory_create_text_widget(sey->data,sey->arr_base->reallen):
-                        factory_create_text_widget(item->Value,sey->arr_base->reallen);
+            columTwo =  sey->data ? factory_create_text_widget(sey->data,
+                                                               sey->arr_base.reallen):
+                        factory_create_text_widget(item->Value,
+                                                   sey->arr_base.reallen);
         }
 
     }
@@ -3749,32 +3748,28 @@ FIRST:
     case OCOMBO:
     {
         STRUCTClass *orgclass = sss->sclass;
-        NextID *nextid = &sss->value.nextid;
+        ActionID *aid = &sss->value.actid;
         columTwo = gtk_combo_box_new_text();
         gtk_combo_box_popdown(GTK_COMBO_BOX(columTwo));
-//        Layer *curlayer = orgclass->element.object.parent_layer;
-//        GList *objlist = curlayer->objects;
-        g_list_free1(nextid->itemlist);
-        nextid->itemlist = NULL;
-
-        nextid->itemlist = factory_get_objects_from_layer(curLayer);
-        nextid->itemlist = g_list_insert(nextid->itemlist,g_strdup(""),0);
-        if(g_list_length(nextid->actlist)>1)
-        {
-            message_error(g_strdup_printf("%s类型错误",sss->type));
-        }
-        ActionID *aid = nextid->actlist->data;
+        GList *olist = factory_get_objects_from_layer(curLayer);
+        olist = g_list_insert(olist,g_strdup(""),0);
         if(!aid)
             factory_critical_error_exit(g_strdup_printf(factory_utf8("下一个行为ID指针为空.\n结构体名:%s .类型名:%s \n"),sss->name,sss->type));
         if(aid->pre_name && !aid->conn_ptr)
         {
             /* 有名字没有指针,有可能是刚加载回来的. */
-            aid->conn_ptr = g_hash_table_lookup(curLayer->defnames,aid->pre_name);
+            aid->conn_ptr = g_hash_table_lookup(curLayer->defnames,
+                                                aid->pre_name);
         }
 
-        GList *tlist = nextid->itemlist;
-        columTwo = factory_create_combo_widget(tlist,aid->index);
-        factory_update_ActionId_object(columTwo,aid, nextid->itemlist);
+        GList *tlist = olist;
+        GtkTreeModel *emodel = factory_create_combox_model(olist);
+        gtk_combo_box_set_model(GTK_COMBO_BOX(columTwo),emodel );
+        ptrquark = g_quark_from_string(aid->pre_name);
+        gtk_tree_model_foreach(emodel,factory_comobox_compre_foreach,
+                               columTwo);
+//        columTwo = factory_create_combo_widget(olist,aid->index);
+        factory_update_ActionId_object(columTwo,aid,tlist);
     }
     break;
     case LBTN:
@@ -3947,7 +3942,7 @@ void factory_save_objectbutton_dialog(GtkWidget *widget,
                                       gpointer   user_data)
 {
     SaveStruct *sst = (SaveStruct *)user_data;
-    NextID *nid = &sst->value.nextid;
+    ActIDArr *nid = &sst->value.nextid;
     GList *wlist = nid->wlist;
     if (   response_id == GTK_RESPONSE_APPLY
             || response_id == GTK_RESPONSE_OK)
@@ -4404,7 +4399,7 @@ void factory_create_io_port_dialog(GtkWidget *button,SaveStruct *sst)
     int tnum = 0;
     gboolean sensitive = TRUE;
     gboolean onetime = TRUE;
-    ArrayBaseProp *abp = sebtn->arr_base;
+    ArrayBaseProp *abp = &sebtn->arr_base;
 
     for(; r < abp->row ; r++)
     {
@@ -4424,11 +4419,8 @@ void factory_create_io_port_dialog(GtkWidget *button,SaveStruct *sst)
                 sensitive = FALSE;
             }
 
-//            GtkWidget *comobox = factory_create_combo_widget(sys_info->IO_List,
-//                                                             sea->senum->index == sys_info->io_mindex
-//                                                             ? io_max : sea->senum->index);
-//            GtkWidget *comobox = factory_create_combo_widget(sys_info->IO_List,sea->senum->index);
-            GtkWidget *comobox = factory_create_combo_widget(sea->senum->enumList,sea->senum->index);
+            GtkWidget *comobox = factory_create_combo_widget(sea->senum->enumList,
+                                                             sea->senum->index);
             gtk_widget_set_sensitive(comobox,sensitive);
             if((sea->senum->index  == io_max) && onetime )
             {
@@ -4452,7 +4444,6 @@ void factory_create_io_port_dialog(GtkWidget *button,SaveStruct *sst)
 
     gtk_widget_show_all(newdialog);
     gtk_dialog_run(newdialog);
-
     gtk_widget_destroy(newdialog);
 }
 
@@ -4474,7 +4465,7 @@ void factory_create_enumbutton_dialog(GtkWidget *button,SaveStruct *sst)
     int r = 0;
     int pos = 0;
     int tnum = 0;
-    ArrayBaseProp *abp = sebtn->arr_base;
+    ArrayBaseProp *abp = &sebtn->arr_base;
 
     for(; r < abp->row ; r++)
     {
@@ -4488,7 +4479,8 @@ void factory_create_enumbutton_dialog(GtkWidget *button,SaveStruct *sst)
                 break;
             GtkWidget *hbox = abp->row > 8 ? gtk_vbox_new(FALSE,0): gtk_hbox_new(FALSE,0) ;
             SaveEnumArr *sea = g_list_nth_data(sebtn->ebtnwlist,pos);
-            GtkWidget *comobox = factory_create_combo_widget(sea->senum->enumList,sea->senum->index);
+            GtkWidget *comobox = factory_create_combo_widget(sea->senum->enumList,
+                                                             sea->senum->index);
             GtkWidget *wid = gtk_label_new(g_strdup_printf(fmt,pos));
             sea->widget1 = wid;
             sea->widget2 = comobox;
@@ -4512,12 +4504,14 @@ void factory_create_objectbutton_dialog(GtkWidget *button,SaveStruct *sst)
 {
     /* 这里是多个 数组 */
     GtkWidget *sdialog = gtk_hbox_new(FALSE,0);
-    GtkWidget *subdig = factory_create_new_dialog_with_buttons(sst->name,gtk_widget_get_toplevel(button));
+    GQuark tqaruk = g_quark_from_string(sst->name);
+    GtkWidget *subdig = factory_create_new_dialog_with_buttons(g_quark_to_string(tqaruk),
+                                                               gtk_widget_get_toplevel(button));
     GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
     gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
     gtk_window_set_modal(GTK_WINDOW(subdig),TRUE);
 
-    NextID *nextid = &sst->value.nextid;
+    ActIDArr *nextid = &sst->value.nextid;
     STRUCTClass *orgclass = sst->sclass;
     nextid->itemlist = factory_get_objects_from_layer(curLayer);
     nextid->itemlist = g_list_insert(nextid->itemlist,g_strdup(""),0);
@@ -4525,7 +4519,7 @@ void factory_create_objectbutton_dialog(GtkWidget *button,SaveStruct *sst)
     int r = 0;
     int pos = 0;
     int tnum = 0;
-    ArrayBaseProp *abp = nextid->arr_base;
+    ArrayBaseProp *abp = &nextid->arr_base;
     for(; r < abp->row ; r++)
     {
         GtkWidget *vbox = gtk_vbox_new(TRUE,0);
@@ -4539,7 +4533,8 @@ void factory_create_objectbutton_dialog(GtkWidget *button,SaveStruct *sst)
             GtkWidget *hbox = gtk_hbox_new(FALSE,0);
             ActionID *aid = g_list_nth_data(nextid->actlist,pos);
             GtkWidget *comobox = factory_create_combo_widget(nextid->itemlist,aid->index);
-            factory_update_ActionId_object(comobox,aid, nextid->itemlist);
+            factory_update_ActionId_object(comobox,aid,
+                                            nextid->itemlist);
             GtkWidget *wid = gtk_label_new(aid->title_name);
             nextid->wlist = g_list_append(nextid->wlist,comobox);
             gtk_box_pack_start(GTK_BOX(hbox),wid,FALSE,FALSE,0);
@@ -4721,8 +4716,8 @@ GtkWidget *factory_create_many_checkbox(SaveStruct *sss)
     SaveEntry *sey = &sss->value.sentry;
     GtkTooltips *tips = gtk_tooltips_new();
 
-    int row = sey->arr_base->row;
-    int col = sey->arr_base->col;
+    int row = sey->arr_base.row;
+    int col = sey->arr_base.col;
     int r = 0 ;
     GtkWidget *vbox  = gtk_vbox_new(FALSE,0);
     gtk_tooltips_set_tip(tips,vbox,sss->org->Comment,NULL);
@@ -4754,8 +4749,8 @@ GtkWidget *factory_create_many_entry_box(SaveStruct *sss)
     GtkTooltips *tips = gtk_tooltips_new();
 
     GList *wlist = NULL;
-    int row = sey->arr_base->row;
-    int col = sey->arr_base->col;
+    int row = sey->arr_base.row;
+    int col = sey->arr_base.col;
 //    if( (row == 1) && (col > 8))
 //    {
 //        /* 2014-3-31 lcy 一维数组化成二维数组用来显示*/
@@ -5586,60 +5581,5 @@ static ObjectChange *factory_new_change(STRUCTClass *obj, STRUCTClassState *save
 
     return (ObjectChange *)change;
 }
-
-
-//static ObjectChange *
-//new_structclass_change(STRUCTClass *obj, STRUCTClassState *saved_state,
-//		    GList *added, GList *deleted, GList *disconnected)
-//{
-//  STRUCTClassChange *change;
-//
-//  change = g_new0(STRUCTClassChange, 1);
-//
-//  change->obj_change.apply =
-//    (ObjectChangeApplyFunc) structclass_change_apply;
-//  change->obj_change.revert =
-//    (ObjectChangeRevertFunc) structclass_change_revert;
-//  change->obj_change.free =
-//    (ObjectChangeFreeFunc) structclass_change_free;
-//
-//  change->obj = obj;
-//  change->saved_state = saved_state;
-//  change->applied = 1;
-//
-//  change->added_cp = added;
-//  change->deleted_cp = deleted;
-//  change->disconnected = disconnected;
-//
-//  return (ObjectChange *)change;
-//}
-/*
-        get the contents of a comment text view.
-*/
-//const gchar * get_comment(GtkTextView *view)
-//{
-//    GtkTextBuffer * buffer = gtk_text_view_get_buffer(view);
-//    GtkTextIter start;
-//    GtkTextIter end;
-//
-//    gtk_text_buffer_get_start_iter(buffer, &start);
-//    gtk_text_buffer_get_end_iter(buffer, &end);
-//
-//    return gtk_text_buffer_get_text(buffer, &start, &end, FALSE);
-//}
-//
-//void
-//set_comment(GtkTextView *view, gchar *text)
-//{
-//    GtkTextBuffer * buffer = gtk_text_view_get_buffer(view);
-//    GtkTextIter start;
-//    GtkTextIter end;
-//
-//    gtk_text_buffer_get_start_iter(buffer, &start);
-//    gtk_text_buffer_get_end_iter(buffer, &end);
-//    gtk_text_buffer_delete(buffer,&start,&end);
-//    gtk_text_buffer_get_start_iter(buffer, &start);
-//    gtk_text_buffer_insert( buffer, &start, text, strlen(text));
-//}
 
 

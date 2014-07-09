@@ -498,7 +498,7 @@ void factory_create_list_array_manager_dialog(GtkWidget *button,SaveStruct *sst)
 
     gboolean sensitive = TRUE;
 
-    ArrayBaseProp *abp = lbtn->arr_base;
+    ArrayBaseProp *abp = &lbtn->arr_base;
     GtkWidget *vbox = gtk_vbox_new(TRUE,0);
     for(; r < abp->row ; r++)
     {

@@ -63,6 +63,9 @@
 
 Layer *curLayer;
 static GQuark item_reserverd = 0;
+GQuark empty_quark;
+
+static GQuark ptrquark = 0;
 typedef struct _STRUCTClass STRUCTClass;
 typedef struct _STRUCTClassDialog STRUCTClassDialog;
 
@@ -78,10 +81,11 @@ struct _STRUCTClassDialog
     GtkWidget *mainTable; // 2014-3-19 lcy 这里添一个表格,用来布局显示.
 };
 
-typedef enum{
+typedef enum
+{
     N_COLOR,  /* 正常的 */
     H_COLOR /* 高亮显示的 */
-}ViewColor;
+} ViewColor;
 
 typedef struct  _FactoryClassDialog  FactoryClassDialog;
 
@@ -121,9 +125,10 @@ typedef enum
 typedef struct _ActionId ActionID;
 struct _ActionId
 {
-    int index; // comobox index
-    gchar* value;
+//    int index; // comobox index
+    gchar* value; /* 最终要保存的对像的自身ID */
     gchar *pre_name;
+//   int pre_quark; /* 就是当前选择的文字GQuark 值,原来这里是字符串 */
     gchar *title_name;
     gpointer conn_ptr; /* 就指向对像指针，名字与ID都不能对应更改名字操作 */
 };
@@ -137,21 +142,21 @@ struct _ArrayBaseProp
     int reallen;
 };
 
-typedef struct _IDListArg IDListArg; /* 创建ID list 的参数 */
-struct _IDListArg
-{
-    gchar *value;  /* 这是一个指向其它指针*/
-    GList *filist; /* 最后一列的要填充的链表 */
-};
+//typedef struct _IDListArg IDListArg; /* 创建ID list 的参数 */
+//struct _IDListArg
+//{
+//    gchar *value;  /* 这是一个指向其它指针*/
+//    GList *filist; /* 最后一列的要填充的链表 */
+//};
 
 
-typedef struct _NextId NextID;
+typedef struct _NextId ActIDArr;
 struct _NextId
 {
-    GList *itemlist;
+    GList *itemlist; /* 保存 ActionID 的结构体*/
     GList *actlist;
     GList *wlist; /* widget list */
-    ArrayBaseProp *arr_base;
+    ArrayBaseProp arr_base;
 };
 
 typedef struct _CheckSave CheckSave;
@@ -195,7 +200,7 @@ typedef struct _ListBtn ListBtn;
 struct _ListBtn
 {
     GList *vlist; /* save ListBtnArr */
-    ArrayBaseProp *arr_base;/* 如果有数组 */
+    ArrayBaseProp arr_base;/* 如果有数组 */
 };
 
 
@@ -248,11 +253,12 @@ struct _SaveMusicFileMan
     } man_opt;
 };
 
-typedef   enum{
-        SEQUENCE, /*序号*/
-        INDEX, /*索引*/
-        PHY/*物理号*/
-}FMSaveType; /* 索引号 序号或者偏移量　*/;
+typedef   enum
+{
+    SEQUENCE, /*序号*/
+    INDEX, /*索引*/
+    PHY/*物理号*/
+} FMSaveType; /* 索引号 序号或者偏移量　*/;
 
 
 
@@ -357,10 +363,7 @@ typedef struct _SaveEntry SaveEntry;
 struct _SaveEntry
 {
     gboolean isString;
-//    int row;
-//    int col;   /* default is 1 */
-//    int reallen; /* 实际长度比 9,10,4 不是8的倍数的. */
-    ArrayBaseProp *arr_base;
+    ArrayBaseProp arr_base;
     int width;
     gpointer data;
     GList *wlist;   /* GtkWidget List  */
@@ -378,12 +381,24 @@ typedef struct _SaveEbtn SaveEbtn;
 struct _SaveEbtn
 {
     gchar* width;
-    ArrayBaseProp *arr_base;
+    ArrayBaseProp arr_base;
     GList *ebtnslist; /* 枚举的数据源链表 */
     GList *ebtnwlist; /* 全部是枚举的控件  存放 SaveEnumArr的链表  */
 };
 
 
+typedef union
+{
+    SaveEntry sentry; // entry value
+    gchar *vnumber; // spinbox value or actionid max items
+    SaveEnum senum;  // enum value;
+    SaveUnion sunion; // 第二个值,指针类
+    ActIDArr nextid;  // 保存连线的 ocomobox 数组;
+    ActionID actid; /* 单独的一个 ocomobox */
+    SaveUbtn ssubtn; /* 联合体按键 */
+    SaveEbtn ssebtn; /* 枚举数组 */
+    ListBtn slbtn;
+} _value;
 
 typedef struct _SaveStruct
 {
@@ -396,17 +411,7 @@ typedef struct _SaveStruct
     gboolean isPointer; /* FALSE == pointer , TRUE = single*/
 //    gboolean isSensitive; /* 是否可编辑 */
 //    gboolean isVisible; /* 是否可显示 */
-    union
-    {
-        SaveEntry sentry; // entry value
-        gchar *vnumber; // spinbox value or actionid max items
-        SaveEnum senum;  // enum value;
-        SaveUnion sunion; // 第二个值,指针类
-        NextID nextid;  // 保存连线的 comobox;
-        SaveUbtn ssubtn; /* 联合体按键 */
-        SaveEbtn ssebtn; /* 枚举数组 */
-        ListBtn slbtn;
-    } value;
+    _value value;
     FactoryStructItem *org;
     STRUCTClass *sclass; /* 它的最上层的对像 */
     CloseWidgetAndSave  *close_func; /* 指向保存函数 */
@@ -618,7 +623,7 @@ gboolean factory_search_connected_link(STRUCTClass *structclass,gint depth);
 
 
 void factory_select(STRUCTClass *structclass, Point *clicked_point,
-                           DiaRenderer *interactive_renderer);
+                    DiaRenderer *interactive_renderer);
 
 typedef void (*factory_button_callback)(GtkWidget *self);
 
@@ -693,4 +698,12 @@ void factory_template_write_to_xml(GList *templlist,ObjectNode obj_node);
 void factory_template_read_from_xml(STRUCTClass *fclass, ObjectNode attr_node,const gchar *filename);
 void factory_template_update_item(const gchar *act_name);
 
+
+gboolean factory_comobox_compre_foreach(GtkTreeModel *model,
+        GtkTreePath *path,
+        GtkTreeIter *iter,
+        gpointer data);
+
+
+GtkTreeModel *factory_create_combox_model(GList *itemlist);
 #endif /* CLASS_H */

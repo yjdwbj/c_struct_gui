@@ -82,7 +82,7 @@ void factory_handle_entry_item(SaveEntry* sey,FactoryStructItem *fst);
 //static DiaObject *structclass_load(ObjectNode obj_node, int version,
 //			     const char *filename);
 void factory_read_initial_to_struct(STRUCTClass *fclass);
-gpointer *factory_read_object_comobox_value_from_file(AttributeNode attr_node);
+void factory_read_object_comobox_value_from_file(AttributeNode attr_node, ActionID *aid);
 static DiaMenu * structclass_object_menu(DiaObject *obj, Point *p);
 static ObjectChange *structclass_show_comments_callback(DiaObject *obj, Point *pos, gpointer data);
 
@@ -2360,7 +2360,7 @@ factory_struct_items_create(Point *startpoint,
         obj->isTemplate = TRUE;
         structclass->isInitial = TRUE;
         structclass->widgetSave =
-            factory_template_get_widgetsave(index);
+            factory_template_get_widgetsave(index,structclass);
         structclass->EnumsAndStructs = factoryContainer;
         factory_set_original_class(structclass);
         factory_set_structsave_class(structclass);
@@ -2460,7 +2460,7 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         return;
     }
 
-    if(!key) return NULL;
+    if(!key) return ;
 
     if(!g_ascii_strncasecmp((gchar*)key,"ECOMBO",6))
     {
@@ -2506,17 +2506,8 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
     else if(!g_ascii_strncasecmp((gchar*)key,"OCOMBO",6))
     {
         sss->celltype = OCOMBO;
-        NextID *nid = &sss->value.nextid;
-
-        ActionID *aid = factory_read_object_comobox_value_from_file(attr_node);
-        if(g_list_length(nid->actlist) == 1)
-        {
-            ActionID *exists = nid->actlist->data;
-            *exists = *aid;
-        }
-        else
-            nid->actlist = g_list_append(nid->actlist,aid);
-        Diagram *diagram = ddisplay_active_diagram();
+        ActionID *acid = &sss->value.actid;
+        factory_read_object_comobox_value_from_file(attr_node,acid);
     }
     else if(!g_ascii_strncasecmp((gchar*)key,"OBTN",4))
     {
@@ -2524,7 +2515,7 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         sss->isPointer = TRUE;
         sss->newdlg_func = factory_create_objectbutton_dialog;
         sss->close_func = factory_save_objectbutton_dialog;
-        NextID *nid = &sss->value.nextid;
+        ActIDArr *nid = &sss->value.nextid;
         /* 读它下面的子节点 */
         g_list_free1(nid->actlist); /* 这里是清理掉默认值 */
         nid->actlist = NULL;
@@ -2541,7 +2532,8 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
                 key = xmlGetProp(obtn_node,(xmlChar *)"name");
                 if(key)
                 {
-                    ActionID *aid = factory_read_object_comobox_value_from_file(obtn_node);
+                    ActionID *aid = g_new0(ActionID,1);
+                    factory_read_object_comobox_value_from_file(obtn_node,aid);
                     nid->actlist = g_list_append(nid->actlist,aid);
                 }
                 xmlFree(key);
@@ -2564,11 +2556,11 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
             gchar **split = g_strsplit((gchar*)key,",",-1);
             int len = g_strv_length(split);
 
-            if(len < ltb->arr_base->reallen)
+            if(len < ltb->arr_base.reallen)
             {
 
                 factory_critical_error_exit(g_strdup_printf(factory_utf8("读取的数组个数小于当前定义的．当前:%d,读取:%d"),
-                                            ltb->arr_base->reallen,len));
+                                            ltb->arr_base.reallen,len));
             }
             GList *vlist = ltb->vlist;
             int n = 0;
@@ -2868,16 +2860,17 @@ void factory_read_value_from_xml(STRUCTClass *fclass,
 
 }
 
-gpointer *factory_read_object_comobox_value_from_file(AttributeNode attr_node)
+void factory_read_object_comobox_value_from_file(AttributeNode attr_node,
+        ActionID *aid)
 {
-    ActionID *aid = g_new0(ActionID,1);
-    aid->index = 0;
+//    ActionID *aid = g_new0(ActionID,1);
+//    aid->index = 0;
     aid->pre_name = g_strdup("");
     aid->value = g_strdup("-1");
     xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"index");
     if(key)
     {
-        aid->index = atoi((gchar*)key);
+//        aid->index = atoi((gchar*)key);
         xmlFree(key);
     }
     key  =  xmlGetProp(attr_node,(xmlChar *)"idname");
@@ -2900,7 +2893,7 @@ gpointer *factory_read_object_comobox_value_from_file(AttributeNode attr_node)
         aid->value = g_strdup((gchar*)key);
         xmlFree(key);
     }
-    return aid;
+//    return aid;
 }
 
 
@@ -2993,7 +2986,7 @@ void factory_inital_ebtn(SaveStruct *sss,const FactoryStructItem *fst)
     gchar *name =  g_strconcat(title[0],"(%d)",NULL);
     g_strfreev(title);
     n = 0;
-    for(; n < sebtn->arr_base->reallen; n++)
+    for(; n < sebtn->arr_base.reallen; n++)
     {
         SaveEnum *see = g_new0(SaveEnum,1);
         see->enumList = fill_list;
@@ -3011,13 +3004,14 @@ void factory_inital_ebtn(SaveStruct *sss,const FactoryStructItem *fst)
 
 SaveStruct *factory_get_action_savestruct(SaveStruct *sss,FactoryStructItem *fst)
 {
-    sss->celltype = OCOMBO;
-    NextID *nid = &sss->value.nextid;
-    nid->itemlist = NULL;
-    nid->actlist = NULL;
-    nid->wlist = NULL;
+
+
     if(g_str_has_suffix(sss->name,"]"))
     {
+        ActIDArr *nid = &sss->value.nextid;
+        nid->itemlist = NULL;
+        nid->actlist = NULL;
+        nid->wlist = NULL;
         sss->celltype = OBTN; /* 这里是数组了,需要按键创建新窗口来设置 */
         sss->newdlg_func = factory_create_objectbutton_dialog;
         sss->close_func = factory_save_objectbutton_dialog;
@@ -3030,10 +3024,10 @@ SaveStruct *factory_get_action_savestruct(SaveStruct *sss,FactoryStructItem *fst
         g_strfreev(title);
 
         int n = 0;
-        for(; n < nid->arr_base->reallen; n++ )
+        for(; n < nid->arr_base.reallen; n++ )
         {
             ActionID *aid = g_new0(ActionID,1);
-            aid->index = 0;
+//            aid->index = 0;
             aid->pre_name = g_strdup("");
             aid->value = g_strdup("-1");
             aid->title_name = g_strdup_printf(name,n);
@@ -3044,12 +3038,12 @@ SaveStruct *factory_get_action_savestruct(SaveStruct *sss,FactoryStructItem *fst
     }
     else
     {
-        ActionID *aid = g_new0(ActionID,1);
-        aid->index = 0;
+        sss->celltype = OCOMBO;
+        ActionID *aid = &sss->value.actid;
+//        aid->index = 0;
         aid->pre_name = g_strdup("");
         aid->value = g_strdup("-1");
         aid->title_name = g_strdup(sss->name);
-        nid->actlist = g_list_append(nid->actlist,aid);
     }
     sss->org = fst;
     return sss;
@@ -3101,7 +3095,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
                 if( 2 == strlen(fst->SType) && !g_ascii_strcasecmp(fst->SType,"u1"))
                 {
                     int n = 0 ;
-                    int maxi = sey->arr_base->reallen;
+                    int maxi = sey->arr_base.reallen;
                     for( ; n < maxi; n++)
                     {
                         /* 初始值 */
@@ -3130,7 +3124,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
                         fmt = g_strdup("0x%02x");
                     }
                     int n = 0 ;
-                    int maxi = sey->arr_base->reallen;
+                    int maxi = sey->arr_base.reallen;
                     int first = g_strtod(fst->Value,NULL);
                     for( ; n < maxi; n++)
                     {
@@ -3227,17 +3221,12 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
                 factory_handle_entry_item(&tmp,fst);
                 ltb->arr_base = tmp.arr_base;
                 int r = 0;
-                for(; r < ltb->arr_base->reallen ; r++ ) /* 初始化一下 */
+                for(; r < ltb->arr_base.reallen ; r++ ) /* 初始化一下 */
                 {
                     ListBtnArr *lba = g_new0(ListBtnArr,1);
-//                    SaveKV *skv = g_new0(SaveKV,1);
-//                    lba->skv = skv;
                     lba->widget1 = NULL;
                     lba->vnumber  =  g_new0(gchar**,1);
                     *lba->vnumber = g_strdup(fst->Value);
-//                    skv->value = g_strdup(fst->Value);
-//                    skv->radindex = -1;
-//                    skv->vname = g_strdup("");
                     ltb->vlist = g_list_append(ltb->vlist,lba);
                 }
 
@@ -3247,11 +3236,6 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             else
             {
                 /* sss->value.vnumber  原定义为一个gchar 指针，在这里当做gpointer 用了*/
-//                SaveKV *skv = g_new0(SaveKV,1);
-//                smd->skv = skv;
-//                skv->value = g_strdup(fst->Value);
-//                skv->radindex = -1;
-//                sss->value.vnumber = skv;
                 sss->value.vnumber = g_strdup(fst->Value);
 //                smd->vnumber = sss->value.vnumber;
                 smd->btnname = g_strdup(fst->Cname);
@@ -3411,8 +3395,7 @@ factory_handle_entry_item(SaveEntry* sey,FactoryStructItem *fst)
     /* 2014-3-25 lcy 这里是字符串，需用文本框显示了*/
     /* lcy  array[3][2]   ==>  ooo[0]="array", ooo[1]="3", ooo[2]="", ooo[3]="2" ,ooo[4]="" */
 
-    ArrayBaseProp *abp  = g_new0(ArrayBaseProp,1);
-    sey->arr_base = abp;
+    ArrayBaseProp *abp  = &sey->arr_base;
     abp->reallen = 0; /* 总长度 r * c */
     gchar **ooo = g_strsplit_set (fst->Name,"[]",-1);
     int num = g_strv_length(ooo);
@@ -3854,7 +3837,7 @@ static void factory_write_object_comobox(ActionID *aid,ObjectNode ccc ,const gch
     xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
 
     xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)aid->value );
-    xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf(_("%d"),aid->index));
+//    xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf(_("%d"),aid->index));
 
     xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)aid->pre_name );
 }
@@ -3879,30 +3862,15 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
     break;
     case OCOMBO:
     {
-        NextID *nid  = &sss->value.nextid;
-        g_return_if_fail(nid);
         ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
-        GList *tlist = nid->actlist;
-        ActionID *aid = g_list_first(tlist)->data;
-//        if(aid && strlen(aid->pre_name )> 0)
-//        {
-//            DiaObject *obj = g_hash_table_lookup(curLayer->defnames,aid->pre_name);
-//            if(obj == aid->conn_ptr ) /* 防止自身ＩＤ更新 */
-//            {
-//                aid->value = g_strdup_printf("%d",obj->oindex);
-//            }
-//            else
-//            {
-//                message_error(factory_utf8("名字与指针的内容不一致.\n结构体名:%s,成员:%s\n"),aid->pre_name,sss->name);
-//            }
-//        }
+        ActionID *aid = &sss->value.actid;
         factory_write_object_comobox(aid,ccc,sss->type);
         /*每一项用JL_item 做节点名，存放多个属性*/
     }
     break;
     case OBTN:
     {
-        NextID *nid  = &sss->value.nextid;
+        ActIDArr *nid  = &sss->value.nextid;
         g_return_if_fail(nid);
         GList *tlist = nid->actlist;
         ObjectNode obtn = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_obtn", NULL);
@@ -3975,7 +3943,6 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
 //            xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)skv->value);
 //            xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf("%d",skv->radindex));
 //            xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)skv->vname);
-
         }
         else if(!g_strcasecmp(stype,TYPE_IDLST))
         {
@@ -3996,8 +3963,6 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
 
         }
         g_strfreev(split);
-
-
     }
     break;
     }
@@ -4365,3 +4330,166 @@ structclass_sanity_check(STRUCTClass *c, gchar *msg)
 }
 
 
+void factory_actionid_copy(const ActionID *onid,
+                           ActionID *nnid)
+{
+//    nnid->index = onid->index;
+    nnid->value = g_strdup(onid->value);
+    nnid->pre_name = g_strdup(onid->pre_name);
+    nnid->title_name = g_strdup(onid->title_name);
+    nnid->conn_ptr = onid->conn_ptr;
+}
+
+/* 这里就是一个很复杂的完全copy */
+SaveStruct *factory_savestruct_copy(const SaveStruct *old)
+{
+    SaveStruct *newsst = g_new0(SaveStruct,1);
+    newsst->name = g_strdup(old->name);
+    newsst->widget1 = NULL;
+    newsst->widget2 = NULL;
+    newsst->type = g_strdup(old->type);
+    newsst->celltype = old->celltype;
+    newsst->isPointer = old->isPointer;
+    int t = offsetof(SaveStruct,value);
+    memcpy(((char*)newsst)+t,((char*)old)+t,
+           sizeof(_value));
+
+    switch(old->celltype)
+    {
+ECOMBO:
+        {
+            SaveEnum *osen = &old->value.senum;
+            SaveEnum *nsen = &old->value.senum;
+            nsen->evalue = g_strdup(osen->evalue);
+            nsen->enumList = g_list_copy(osen->enumList);
+            nsen->width = g_strdup(osen->width);
+        }
+        break;
+UCOMBO:
+        {
+            SaveUnion *osuptr = &old->value.sunion;
+            SaveUnion *nsuptr = &newsst->value.sunion;
+            nsuptr->saveVal = g_hash_table_new_full(g_str_hash,
+                                                    g_str_equal,
+                                                    g_free,
+                                                    g_free);
+            nsuptr->comobox = NULL;
+            nsuptr->vbox = NULL;
+            nsuptr->curkey = g_strdup(osuptr->curkey);
+            nsuptr->curtext = g_strdup(osuptr->curtext);
+            nsuptr->structlist = g_list_copy(osuptr->structlist);
+
+        }
+        break; /* union comobox */
+OBTN:
+        {
+            ActIDArr *nnid = &newsst->value.nextid;
+            ActIDArr *onid = &old->value.nextid;
+            nnid->actlist = g_list_copy(onid->actlist);
+            nnid->wlist = NULL;
+            GList *olist = onid->itemlist;
+            g_list_free1(nnid->itemlist);
+            nnid->itemlist = NULL;
+            for(; olist; olist = olist->next)
+            {
+                ActionID *aid = g_new0(ActionID,1);
+                factory_actionid_copy(olist->data,aid);
+                nnid->itemlist = g_list_append(nnid->itemlist,aid);
+            }
+        }
+        break;
+OCOMBO:
+        {
+            ActionID *nnid = &newsst->value.actid;
+            ActionID *onid = &old->value.actid;
+            factory_actionid_copy(onid,nnid);
+        }
+        break;/* object combox*/
+ENTRY:
+        {
+            SaveEntry *osey = &old->value.sentry;
+            SaveEntry *nsey = &newsst->value.sentry;
+            if(osey->isString)
+            {
+                nsey->data = g_strdup(osey->data);
+            }
+            else
+            {
+                nsey->data = g_list_copy(osey->data);
+            }
+            nsey->wlist = g_list_copy(osey->wlist);
+        }
+        break; /* 文本 */
+SPINBOX:
+        {
+
+            newsst->value.vnumber = g_strdup(old->value.vnumber);
+        }
+        break;
+BBTN:
+        {
+            SaveEntry *osey = &old->value.sentry;
+            SaveEntry *nsey = &newsst->value.sentry;
+            nsey->data = g_list_copy(osey->data);
+
+            nsey->wlist = g_list_copy(osey->wlist);
+        }
+        break;
+UBTN:
+
+        break;/* 这里是按键按钮 */
+EBTN:
+        {
+            SaveEbtn *osebtn = &old->value.ssebtn;
+            SaveEbtn *nsebtn = &newsst->value.ssebtn;
+            nsebtn->width = g_strdup(osebtn->width);
+            nsebtn->ebtnwlist = NULL;
+            nsebtn->ebtnslist = g_list_copy(osebtn->ebtnslist);
+        }
+        break;/* 枚举也有数组 */
+LBTN:
+        {
+            ListBtn *oltb = &old->value.slbtn;
+            ListBtn *nltb = &newsst->value.slbtn;
+            nltb->vlist = g_list_copy(oltb->vlist);
+        }
+        break; /* 文件管理与ID管理 数组形式的按键 */
+    default:
+        break;
+    }
+    newsst->org = old->org;
+    newsst->close_func = old->close_func;
+    newsst->newdlg_func = old->newdlg_func;
+    return newsst;
+}
+
+
+GtkTreeModel *factory_create_combox_model(GList *itemlist)
+{
+    GtkListStore *model = gtk_list_store_new (1, G_TYPE_STRING);
+    GList *tlist = itemlist;
+    for(; tlist; tlist = tlist->next)
+    {
+        factory_append_iten_to_cbmodal(model,tlist->data);
+    }
+    return GTK_TREE_MODEL(model);
+}
+
+
+gboolean factory_comobox_compre_foreach(GtkTreeModel *model,
+        GtkTreePath *path,
+        GtkTreeIter *iter,
+        gpointer data)
+{
+
+    gchar *curstr;
+    gtk_tree_model_get(model,iter,0,&curstr,-1);
+    GQuark quark = g_quark_from_string(curstr);
+    if(ptrquark == quark)
+    {
+        gtk_combo_box_set_active_iter(GTK_COMBO_BOX(data),iter);
+        return TRUE;
+    }
+
+    return FALSE;
+}
