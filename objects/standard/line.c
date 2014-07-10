@@ -433,6 +433,7 @@ line_create(Point *startpoint,
 
   obj->type = &line_type;
   obj->ops = &line_ops;
+  obj->isTemplate = FALSE;
 
   connection_init(conn, 2, 0);
 
@@ -468,6 +469,7 @@ line_copy(Line *line)
   newline = g_malloc0(sizeof(Line));
   newconn = &newline->connection;
   newobj = &newconn->object;
+  newobj->isTemplate = line->connection.object.isTemplate ;
 
   connection_copy(conn, newconn);
 
@@ -481,6 +483,7 @@ line_copy(Line *line)
   newline->end_arrow = line->end_arrow;
   newline->absolute_start_gap = line->absolute_start_gap;
   newline->absolute_end_gap = line->absolute_end_gap;
+
 
   line_update_data(line);
 

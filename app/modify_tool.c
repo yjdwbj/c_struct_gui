@@ -858,7 +858,7 @@ modify_button_release(ModifyTool *tool, GdkEventButton *event,
         }
 
         break;
-    case STATE_BOX_SELECT:
+    case STATE_BOX_SELECT: /* 2014-7-10 这里是托框选择 */
 
         gdk_pointer_ungrab (event->time);
         /* Remember the currently active object for reactivating. */

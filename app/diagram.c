@@ -330,11 +330,12 @@ diagram_load_into(Diagram         *diagram,
 
 void factory_template_load_by_diagram(Diagram *diagram)
 {
-
+    /* 从每一个模版文件加载一个模版 */
     diagram->loadOnly = TRUE;
 //        GList *tlist = dia_open_diagrams();
     open_diagrams = g_list_append(open_diagrams,diagram);
     GList *templ_list =  factory_template_load_only(diagram->filename);
+    diagram->templ_item->member_lst = templ_list;
     open_diagrams = g_list_remove(open_diagrams,diagram);
 
 }
@@ -391,10 +392,10 @@ diagram_load(const char *filename, DiaImportFilter *ifilter)
             display_set_active (diagram->displays->data);
     }
 
-    if(diagram->isTemplate && !diagram->loadOnly)
-    {
-        diagram->templ_item->templ_ops->templ_verify(diagram);
-    }
+//    if(diagram->isTemplate && !diagram->loadOnly)
+//    {
+//        diagram->templ_item->templ_ops->templ_verify(diagram);
+//    }
     return diagram;
 }
 

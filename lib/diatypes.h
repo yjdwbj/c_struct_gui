@@ -237,7 +237,6 @@ struct _TemplateOps
     TemplateEdit templ_edit;
     TemplateSaveToFile templ_save;
     TemplateCreate templ_create;
-    TemplateVerifyActionID templ_verify;
     void      (*(unused[4]))(DiaObject *obj,...);
 };
 //typedef int (*DiagramDataRawSave)(DiagramData *data, const char *filename);

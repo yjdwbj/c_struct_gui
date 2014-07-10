@@ -28,7 +28,7 @@
 	"diatypes.h"
 	"geometry.h"
 
-1404903783 o:\tool\dvs50\lib\diatypes.h
+1404959770 o:\tool\dvs50\lib\diatypes.h
 	"diavar.h"
 
 1394621090 o:\tool\dvs50\lib\geometry.h
@@ -129,7 +129,7 @@
 	"orth_conn.h"
 	"autoroute.h"
 
-1404799875 o:\tool\dvs50\lib\object.h
+1404980117 o:\tool\dvs50\lib\object.h
 	"diatypes.h"
 	<gtk/gtk.h>
 	"geometry.h"
@@ -1514,7 +1514,7 @@
 	<gdk/gdk.h>
 	<gtk/gtkcontainer.h>
 
-1404788382 source:o:\tool\dvs50\app\diagram.c
+1404980117 source:o:\tool\dvs50\app\diagram.c
 	<config.h>
 	<assert.h>
 	<string.h>
@@ -1837,7 +1837,7 @@
 	"intl.h"
 	<math.h>
 
-1404731269 source:o:\tool\dvs50\app\load_save.c
+1404982513 source:o:\tool\dvs50\app\load_save.c
 	<config.h>
 	<sys/stat.h>
 	<unistd.h>
@@ -2266,7 +2266,7 @@
 	"properties.h"
 	"tool-icons.h"
 
-1403598011 source:o:\tool\dvs50\objects\standard\line.c
+1404980575 source:o:\tool\dvs50\objects\standard\line.c
 	<config.h>
 	<assert.h>
 	<math.h>
@@ -2386,12 +2386,13 @@
 	"connectionpoint.h"
 	"dia_xml.h"
 
-1404907340 o:\tool\dvs50\objects\struct\struct_class.h
+1404989211 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
 	"connection.h"
 	"widgets.h"
+	"struct.h"
 	"display.h"
 
 1404896199 source:o:\tool\dvs50\objects\struct\musicfilemanager.c
@@ -2401,7 +2402,7 @@
 	"object.h"
 	"struct_class.h"
 
-1404907331 source:o:\tool\dvs50\objects\struct\struct.c
+1404959361 source:o:\tool\dvs50\objects\struct\struct.c
 	<config.h>
 	<string.h>
 	<stdio.h>
@@ -2411,7 +2412,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1404906956 source:o:\tool\dvs50\objects\struct\struct_class.c
+1404990330 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2430,7 +2431,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1404906643 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1404975723 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2607,11 +2608,26 @@
 1394081802 source:o:\tool\dvs50\gtk-demo\ui_manager.c
 	<gtk/gtk.h>
 
-1404906187 source:o:\tool\dvs50\objects\struct\template_proc.c
+1404982513 source:o:\tool\dvs50\objects\struct\template_proc.c
 	"template_proc.h"
 	"sheet.h"
 
-1404892173 o:\tool\dvs50\objects\struct\template_proc.h
+1404959660 o:\tool\dvs50\objects\struct\template_proc.h
 	"object.h"
 	"struct_class.h"
+
+1402995151 source:o:\tool\dvs50\listview.c
+	<gtk/gtk.h>
+	<gtk/gtk.h>
+	<string.h>
+	<stdlib.h>
+
+1398425391 source:o:\tool\dvs50\app\winmain.c
+	<config.h>
+	<stdlib.h>
+	<glib.h>
+	<gtk/gtk.h>
+	<windows.h>
+	"app_procs.h"
+	"interface.h"
 

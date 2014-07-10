@@ -10,8 +10,7 @@ TemplateOps templops =
 {
     factory_template_edit_callback,
     factory_template_save,
-    factory_template_create,
-    factory_template_actionid_verifyed
+    factory_template_create
 };
 
 static gboolean
@@ -71,16 +70,28 @@ static GList* factory_template_get_editable_item(GList *oldlist)
 
             if(!g_ascii_strncasecmp(sst->name,ACTION_ID,6))
             {
-                ActIDArr *nid = &sst->value.nextid;
-                if( g_list_length(nid->actlist)>0)
+                if(g_str_has_suffix(sst->name,"]"))
                 {
-                    ActionID *aid = nid->actlist->data;
-                    if(aid->index > 0)
+                    ActIDArr *nid = &sst->value.nextid;
+                    if( g_list_length(nid->actlist)>0)
                     {
-                        continue;
-                    }
+                        ActionID *aid = nid->actlist->data;
+                        if(aid->pre_quark != empty_quark)
+                            continue;
+//                    if(aid->index > 0)
+//                    {
+//                        continue;
+//                    }
 
+                    }
                 }
+                else
+                {
+                    ActionID *aid = &sst->value.actid;
+                     if(aid->pre_quark != empty_quark)
+                            continue;
+                }
+
             }
 //            newlist = g_list_append(newlist,sst->org);
             NewItem *nitem = g_new0(NewItem,1);
@@ -299,12 +310,14 @@ static void factory_template_layout(GtkWidget *dialog,GtkWidget *parent)
     GList *names = factory_get_objects_from_layer(curLayer);
     GtkTreeModel *emodel = factory_create_combox_model(names);
     gtk_combo_box_set_model(GTK_COMBO_BOX(entry),emodel);
-//    emodel = gtk_combo_box_get_model(GTK_COMBO_BOX(entry));
     if(static_temp->entrypoint)
     {
         GtkTreeIter iter;
-        ptrquark = g_quark_from_string(static_temp->entrypoint);
-        gtk_tree_model_foreach(emodel,factory_comobox_compre_foreach,entry);
+//        ptrquark = g_quark_from_string(static_temp->entrypoint);
+        ComboxCmp cc = {.combox = entry,
+                        .qindex = g_quark_from_string(static_temp->entrypoint)
+                       };
+        gtk_tree_model_foreach(emodel,factory_comobox_compre_foreach,&cc);
 
     }
     else
@@ -346,9 +359,9 @@ void factory_template_update_item(const gchar *act_name)
     }
 }
 
-static NewItem *factory_template_find_old_item(GSList *slist,const gchar *str)
+static NewItem *factory_template_find_old_item(GList *slist,const gchar *str)
 {
-    GSList *sslist = slist;
+    GList *sslist = slist;
     GQuark q1  = g_quark_from_string(str);
     for(; sslist; sslist = sslist->next)
     {
@@ -414,7 +427,7 @@ GtkTreeView * factory_template_create_treeview(GList *list)
                            G_TYPE_BOOLEAN));
 
     DiaObjectType *ct = object_get_type(CLASS_LINE);
-    GSList *objects = list;
+    GList *objects = list;
 
     for(; objects; objects = objects->next) /* 按控件个数,树状显示 */
     {
@@ -454,7 +467,7 @@ void factory_template_edit_callback(GtkAction *action)
     gtk_window_set_modal(GTK_WINDOW(newdialog),TRUE);
     GtkWidget *dlgvbox = GTK_DIALOG(newdialog)->vbox;
     static_temp->modellist = g_list_sort(static_temp->modellist,
-                                          factory_template_newitem_sorted);
+                                         factory_template_newitem_sorted);
     GtkTreeView *treeview = factory_template_create_treeview(static_temp->modellist);
     factory_template_layout(newdialog,vbox);
     GtkWidget *sroll_win = g_object_get_data (G_OBJECT(newdialog),
@@ -475,7 +488,6 @@ static gboolean factory_restore_items_values(GtkTreeModel *model,
         GtkTreeIter *iter,
         gpointer data)
 {
-//         GSList *plist = (GSList*)data;
     int *indces = gtk_tree_path_get_indices(path);
     int n1 = indces[0];
     int n2 = indces[1];
@@ -486,7 +498,7 @@ static gboolean factory_restore_items_values(GtkTreeModel *model,
 }
 
 
-static int factory_find_item_pos(GSList *list,const gchar *str)
+static int factory_find_item_pos(GList *list,const gchar *str)
 {
     int pos = -1;
     GList *tlist = list;
@@ -712,7 +724,7 @@ gboolean factory_template_save(FactoryStructItemList *fssl)
 static gboolean factory_template_has_sheet()
 {
     gboolean flag = FALSE;
-    GSList *sheetp = get_sheets_list();
+    GList *sheetp = get_sheets_list();
     while(sheetp)
     {
         Sheet *sheet = sheetp->data;
@@ -848,7 +860,8 @@ static gboolean factory_template_setvalue_foreach(GtkTreeModel *model,
 
         NewItem *item = g_list_nth_data(static_temp->modellist,n1); /* 所在顶层结点*/
         NewItem *citem = g_list_nth_data(item->children,n2);
-        int pos = factory_find_item_pos(fiiom->itemslist,g_strdup_printf("%d",citem->pos));
+        int pos = factory_find_item_pos(fiiom->itemslist,
+                                        g_strdup_printf("%d",citem->pos));
         citem->ischecked = pos == -1 ? FALSE : TRUE;
     }
 
@@ -856,7 +869,8 @@ static gboolean factory_template_setvalue_foreach(GtkTreeModel *model,
 }
 
 void factory_template_read_from_xml(STRUCTClass *fclass,
-                                    ObjectNode attr_node,const gchar *filename)
+                                    ObjectNode attr_node,
+                                    const gchar *filename)
 {
 
     GQuark pquark = g_quark_from_string(filename);
@@ -916,6 +930,7 @@ void factory_template_read_from_xml(STRUCTClass *fclass,
         key = xmlGetProp(child_node,(xmlChar*)"items");
         if(key)
         {
+            /* 读选择上的pos */
             gchar **split = g_strsplit((gchar*)key,",",-1);
             int n =0;
             while(split[n])
@@ -930,6 +945,8 @@ void factory_template_read_from_xml(STRUCTClass *fclass,
                 {
                     int pos = g_strtod(nstr,NULL);
                     SaveStruct *sst = g_list_nth_data(sclass->widgetSave,pos);
+                    sst->templ_pos = pos;
+                    sst->templ_quark = g_quark_from_string(sclass->name);
                     templ->widgetSave = g_list_append(templ->widgetSave,
                                                       sst);
                     newlist = g_list_append(newlist,sst->org);
@@ -946,7 +963,7 @@ void factory_template_read_from_xml(STRUCTClass *fclass,
         if(!diagram->loadOnly) /* 加载模块使用的 */
         {
             templ->modellist = g_list_append(templ->modellist,
-                                              factory_template_create_model_by_name(fiiom->act_name));
+                                             factory_template_create_model_by_name(fiiom->act_name));
             gpointer mitem = g_hash_table_lookup(curLayer->defnames,
                                                  fiiom->struct_name);
             if(mitem)
@@ -966,6 +983,8 @@ void factory_template_read_from_xml(STRUCTClass *fclass,
         SaveStruct *sst = g_list_nth_data(sclass->widgetSave,0);
         templ->widgetSave = g_list_prepend(templ->widgetSave,
                                            sst);
+        sst->templ_pos = 0;
+        sst->templ_quark = g_quark_from_string(sclass->name);
         newlist = g_list_prepend(newlist,sst->org);
     }
     else
@@ -986,32 +1005,32 @@ void factory_template_read_from_xml(STRUCTClass *fclass,
 }
 
 
-void factory_template_actionid_verifyed(Diagram *diagram)
-{
-    return ;
-    GList *p = g_hash_table_get_values(curLayer->defnames);
-    for(; p; p=p->next)
-    {
-        STRUCTClass *sclass = p->data;
-        GList *slist = sclass->widgetSave;
-        for(; slist; slist = slist->next)
-        {
-            SaveStruct *sst = slist->data;
-            if(!g_ascii_strncasecmp(sst->name,ACTION_ID,6))
-            {
-                if(g_str_has_suffix(sst->name,"]"))
-                {
-
-                }
-                else
-                {
-                    ActionID *aid = &sst->value.actid;
-                    factory_template_update_actionid_state(diagram,sst,aid->index);
-                }
-            }
-        }
-    }
-}
+//void factory_template_actionid_verifyed(Diagram *diagram)
+//{
+//    return ;
+//    GList *p = g_hash_table_get_values(curLayer->defnames);
+//    for(; p; p=p->next)
+//    {
+//        STRUCTClass *sclass = p->data;
+//        GList *slist = sclass->widgetSave;
+//        for(; slist; slist = slist->next)
+//        {
+//            SaveStruct *sst = slist->data;
+//            if(!g_ascii_strncasecmp(sst->name,ACTION_ID,6))
+//            {
+//                if(g_str_has_suffix(sst->name,"]"))
+//                {
+//
+//                }
+//                else
+//                {
+//                    ActionID *aid = &sst->value.actid;
+//                    factory_template_update_actionid_state(diagram,sst,aid->index);
+//                }
+//            }
+//        }
+//    }
+//}
 
 gint factory_newitem_sorted(NewItem *n1,NewItem *n2)
 {
@@ -1032,7 +1051,8 @@ gint factory_template_find_exist_item(NewItem *topitem,int pos)
     return -1;
 }
 
-void factory_template_update_actionid_state(Diagram *diagram,SaveStruct *sst,int val)
+void factory_template_update_actionid_state(Diagram *diagram,
+        SaveStruct *sst,GQuark quark)
 
 {
     /* 这里针对下一个行为的,添加和删除. */
@@ -1051,7 +1071,7 @@ void factory_template_update_actionid_state(Diagram *diagram,SaveStruct *sst,int
         if(topitem->name_quark == nquark)
         {
             int npos = g_list_index(fclass->widgetSave,sst);
-            if(val >0)
+            if(quark != empty_quark)
             {
                 GList *clist = topitem->children;
                 for(; clist; clist = clist->next)
@@ -1114,3 +1134,48 @@ GList *factory_template_get_widgetsave(int pos,
     }
     return NULL;
 }
+
+
+/*把模版还原成基本对像保存*/
+static void factory_template_to_many_objects(FactoryTemplateItem *templ,
+                                             STRUCTClass *fclass)
+{
+    GList *end_tome = NULL; /* 指向该对像的 */
+    GList *start_fromme = NULL;
+    GList *connlist = fclass->connections[8].connected; /* 本对像连接多少条线 */
+    for(; connlist; connlist = connlist->next)
+    {
+        Connection *connection  = (Connection *)connlist->data;
+        g_return_if_fail(connection);
+        ConnectionPoint *start_cp, *end_cp;
+        start_cp = connection->endpoint_handles[0].connected_to;
+        end_cp = connection->endpoint_handles[1].connected_to;
+        STRUCTClass *tclass = NULL;
+        if(start_cp)
+        {
+            /* 把这条线从对像里删掉*/
+            tclass = start_cp->object;
+            if(tclass != fclass)
+            {
+                tclass->connections[8].connected =g_list_remove(tclass->connections[8].connected,connection);
+//                factory_update_ActionId_for_structclass(tclass);
+            }
+
+        }
+        if(end_cp)
+        {
+            tclass = end_cp->object;
+            if(tclass != fclass)
+                end_tome = g_list_append(end_tome,tclass);
+
+        }
+
+//        diagram_select(ddisplay_active()->diagram,connection);
+//        edit_delete_callback(NULL); /*调用一个现有的函数删除线条*/
+        layer_remove_object(curLayer,connection);
+        diagram_flush(ddisplay_active()->diagram);
+    }
+
+}
+
+

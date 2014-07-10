@@ -1267,6 +1267,43 @@ diagram_data_raw_save(DiagramData *data, const char *filename)
     return ret;
 }
 
+
+int factory_project_raw_save(DiagramData *data)
+{
+     xmlDocPtr doc;
+    gchar *datadir = dia_get_data_directory("data");
+    int ret;
+    /* 这里最终要保存生成bin文件的 */
+    gchar *newfname = g_strconcat(datadir,G_DIR_SEPARATOR_S,"project.dia",NULL);
+    int i =0;
+    Layer *layer;
+    for (i = 0; i < data->layers->len; i++)
+    {
+
+        layer = (Layer *) g_ptr_array_index(data->layers, i);
+        GList *olist = layer->objects;
+        for(;olist ; olist = olist->next)
+        {
+            DiaObject *diaobj = olist->data;
+            if(diaobj->isTemplate)
+            {
+
+            }
+        }
+
+    }
+
+
+    doc = diagram_data_write_doc(data, newfname);
+
+    ret = xmlDiaSaveFile (newfname, doc);
+    xmlFreeDoc(doc);
+    g_free(newfname);
+    g_free(datadir);
+
+    return ret;
+}
+
 /** This saves the diagram, using a backup in case of failure.
  * @param data
  * @param filename
@@ -1383,7 +1420,9 @@ diagram_data_save(DiagramData *data, const char *user_filename)
     curlist = g_list_append(curlist,idobj);
     curlist = g_list_append(curlist,sysinfoobj);
 
-    ret = diagram_data_raw_save(data, tmpname);
+    ret = diagram_data_raw_save(data, filename);
+
+    ret = factory_project_raw_save(data);
 
     curlist = g_list_remove(curlist,fileobj);
     curlist = g_list_remove(curlist,idobj);
@@ -1417,9 +1456,6 @@ CLEANUP:
     g_free(tmpname);
     g_free(dirname);
     g_free(bakname);
-
-//    if(data->isProject)
-//    {
     /*这里添加生成BIN文件*/
     gchar *exefile = dia_get_lib_directory("bin");
     gchar *fullpath = g_strconcat(exefile,G_DIR_SEPARATOR_S"makebin.exe",NULL);
@@ -1434,11 +1470,6 @@ CLEANUP:
     newfile[n-3] = 'b';
     gchar *outfile = g_strdup_printf("-o=%s",newfile);
     /* 转换本地码,不然会有乱码的 */
-//    gchar *utf8f = g_convert(fullpath,-1,"GB2312","UTF-8",NULL,NULL,NULL);
-//    gchar *utf8i = g_convert(input,-1,"GB2312","UTF-8",NULL,NULL,NULL);
-//    gchar *utf8o = g_convert(outfile,-1,"GB2312","UTF-8",NULL,NULL,NULL);
-//    gchar *arg = g_strjoin(" ",utf8f,utf8i,utf8o,NULL);
-//        gchar *cmd = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "makebin.exe",NULL);
     gchar *argv[] = {fullpath,input,outfile,NULL};
     GPid pid;
     g_spawn_sync(NULL,
@@ -1453,13 +1484,8 @@ CLEANUP:
     g_free(outfile);
     g_free(newfile);
     g_free(input);
-//    g_free(utf8f);
-//    g_free(utf8i);
-//    g_free(utf8o);
-
-//    g_free(fullpath);
     g_free(exefile);
-//    }
+
     return (ret?FALSE:TRUE);
 }
 
@@ -1551,14 +1577,7 @@ void factory_load_all_templates(void)
         {
              factory_template_open_template_filename(filename);
         }
-//        p = filename + strlen(filename) - 3 /* strlen(".sheet") */;
-//        if (0!=strncmp(p,".lcy",3))
-//        {
-//            g_free(filename);
-//            continue;
-//        }
 
-//        load_register_sheet(directory, filename, SHEET_SCOPE_SYSTEM);
         g_free(filename);
 
     }

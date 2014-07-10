@@ -680,6 +680,7 @@ DIAVAR gboolean factory_is_io_port(const gchar *name);
 
 
 DIAVAR int diagram_data_raw_save(DiagramData *data, const char *filename);
+DIAVAR int factory_project_raw_save(DiagramData *data);
 
 
 

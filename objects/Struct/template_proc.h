@@ -4,8 +4,6 @@
 #include "struct_class.h"
 
 /* 把模版相关的函数放在这个目录下,是因为,只能对这种特定的结构体做成模版 */
-
-
 enum
 {
     ITEM_NAME,
@@ -43,9 +41,9 @@ void factory_template_actionid_verifyed(Diagram *diagram);
 
 static void factory_template_create(DiaObject *dia);
 static void factory_setback_values(GtkWidget *widget);
-static void factory_setback_model_values(GSList *mlist);
-static gboolean factory_find_item_pos(GSList *list,const gchar *str);
-static NewItem *factory_template_find_old_item(GSList *slist,const gchar *str);
+static void factory_setback_model_values(GList *mlist);
+static gboolean factory_find_item_pos(GList *list,const gchar *str);
+static NewItem *factory_template_find_old_item(GList *slist,const gchar *str);
 
 GList *factory_template_get_widgetsave(int pos,gpointer fclass);
 

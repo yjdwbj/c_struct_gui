@@ -587,23 +587,6 @@ structclass_select(STRUCTClass *structclass, Point *clicked_point,
 /*  2014-4-4 lcy 更新界面上所有对像的ID号*/
 static void factory_update_index(STRUCTClass *fclass)
 {
-
-//    DiaObject *obj = &fclass->element.object;
-//    Layer *curlay = obj->parent_layer;
-//    GList *list = curlay->objects;
-//
-//
-//    obj->oindex  = g_list_index(list,fclass);
-//    factory_rename_structclass(fclass);
-
-
-//    gchar **tmp =  g_strsplit(fclass->name,"(",-1);
-//    gchar *newname = g_strconcat(tmp[0],g_strdup_printf(_("(%03d)"), n),NULL);
-//    g_strfreev(tmp);
-//    g_free(fclass->name);
-//    fclass->name =  g_strdup(newname);
-//    g_free(newname);
-//    obj->name = fclass->name;
     structclass_calculate_data(fclass);
     if(!fclass->isInitial)
     {
@@ -2357,6 +2340,7 @@ factory_struct_items_create(Point *startpoint,
     structclass->EnumsAndStructs = factoryContainer;
     if(index >= factoryContainer->act_num)
     {
+        /* 这里是从模版区间拖入的 */
         obj->isTemplate = TRUE;
         structclass->isInitial = TRUE;
         structclass->widgetSave =
@@ -2865,19 +2849,22 @@ void factory_read_object_comobox_value_from_file(AttributeNode attr_node,
 {
 //    ActionID *aid = g_new0(ActionID,1);
 //    aid->index = 0;
-    aid->pre_name = g_strdup("");
+//    aid->pre_name = g_strdup("");
+    aid->pre_quark = empty_quark;
     aid->value = g_strdup("-1");
-    xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"index");
+//    xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"index");
+//    if(key)
+//    {
+////        aid->index = atoi((gchar*)key);
+//        xmlFree(key);
+//    }
+    xmlChar *key  =  xmlGetProp(attr_node,(xmlChar *)"idname");
     if(key)
     {
-//        aid->index = atoi((gchar*)key);
-        xmlFree(key);
-    }
-    key  =  xmlGetProp(attr_node,(xmlChar *)"idname");
-    if(key)
-    {
-        aid->pre_name = g_strdup((gchar*)key);
-        aid->conn_ptr =  g_hash_table_lookup(curLayer->defnames,aid->pre_name);
+//        aid->pre_name = g_strdup((gchar*)key);
+        aid->pre_quark = g_quark_from_string((gchar*)key);
+        aid->conn_ptr =  g_hash_table_lookup(curLayer->defnames,
+                                             (gchar*)key);
         xmlFree(key);
     }
 
@@ -2900,12 +2887,6 @@ void factory_read_object_comobox_value_from_file(AttributeNode attr_node,
 
 void factory_update_view_names(STRUCTClass *fclass)
 {
-//    DiaObject *obj = &fclass->element.object;
-//    if(factory_is_system_data(obj->name))
-//    {
-//        factoryContainer->otp_obj = NULL;
-//        return;  /* 系统信息删掉了 */
-//    }
     g_hash_table_remove(curLayer->defnames,fclass->name);
     GList *connlist = fclass->connections[8].connected; /* 本对像连接多少条线 */
     for(; connlist; connlist = connlist->next)
@@ -3005,7 +2986,6 @@ void factory_inital_ebtn(SaveStruct *sss,const FactoryStructItem *fst)
 SaveStruct *factory_get_action_savestruct(SaveStruct *sss,FactoryStructItem *fst)
 {
 
-
     if(g_str_has_suffix(sss->name,"]"))
     {
         ActIDArr *nid = &sss->value.nextid;
@@ -3027,8 +3007,7 @@ SaveStruct *factory_get_action_savestruct(SaveStruct *sss,FactoryStructItem *fst
         for(; n < nid->arr_base.reallen; n++ )
         {
             ActionID *aid = g_new0(ActionID,1);
-//            aid->index = 0;
-            aid->pre_name = g_strdup("");
+            aid->pre_quark = empty_quark;
             aid->value = g_strdup("-1");
             aid->title_name = g_strdup_printf(name,n);
             aid->conn_ptr = NULL;
@@ -3040,8 +3019,7 @@ SaveStruct *factory_get_action_savestruct(SaveStruct *sss,FactoryStructItem *fst
     {
         sss->celltype = OCOMBO;
         ActionID *aid = &sss->value.actid;
-//        aid->index = 0;
-        aid->pre_name = g_strdup("");
+        aid->pre_quark = empty_quark;
         aid->value = g_strdup("-1");
         aid->title_name = g_strdup(sss->name);
     }
@@ -3062,6 +3040,8 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
     sss->sclass = fst->orgclass;
     sss->close_func = NULL;
     sss->newdlg_func = NULL;
+    sss->templ_pos = 0;
+    sss->templ_quark =0;
 
     if(!sss->name)
     {
@@ -3543,6 +3523,7 @@ structclass_copy(STRUCTClass *structclass)
     newelem = &newstructclass->element;
     newobj = &newelem->object;
     newobj->name = g_strdup(elem->object.name);
+
     if(factory_is_system_data(newobj->name))
     {
         return NULL; /* 系统信息不能copy*/
@@ -3575,7 +3556,7 @@ structclass_copy(STRUCTClass *structclass)
 //  newstructclass->comment_font =
 //          dia_font_copy(structclass->comment_font);
     newstructclass->name = g_strdup(structclass->name);
-    newstructclass->isInitial = FALSE;
+    newstructclass->isInitial = TRUE;
     newstructclass->hasIdnumber = FALSE;
 
 
@@ -3700,6 +3681,16 @@ structclass_copy(STRUCTClass *structclass)
     newstructclass->EnumsAndStructs = factoryContainer;
 //    newstructclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
     newstructclass->widgetSave = NULL;
+
+
+    GList *plist = structclass->widgetSave;
+    for(;plist;plist = plist->next)
+    {
+        SaveStruct *sst = factory_savestruct_copy(plist->data);
+        sst->sclass = newstructclass;
+        newstructclass->widgetSave =
+        g_list_append(newstructclass->widgetSave,sst);
+    }
 //    g_hash_table_foreach(structclass->widgetmap,factory_hashtable_copy,newstructclass->widgetmap);
     newstructclass->properties_dialog = NULL;
 
@@ -3827,7 +3818,7 @@ static void factory_write_object_comobox(ActionID *aid,ObjectNode ccc ,const gch
 //        aid->value=g_strdup("-1");
 //
 //    }
-    if(!aid->conn_ptr && !strlen(aid->pre_name))
+    if(!aid->conn_ptr && (aid->pre_quark == empty_quark))
     {
         g_free(aid->value);
         aid->value = g_strdup("-1");
@@ -3838,8 +3829,8 @@ static void factory_write_object_comobox(ActionID *aid,ObjectNode ccc ,const gch
 
     xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)aid->value );
 //    xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf(_("%d"),aid->index));
-
-    xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)aid->pre_name );
+    gchar *pre_name = g_quark_to_string(aid->pre_quark);
+    xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)pre_name );
 }
 
 static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node)
@@ -4207,7 +4198,8 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
         g_free(rows);
         factory_save_idlist_items(obj_node,sid->idlists); /* 2014-6-19 更改用这个函数保存*/
     }
-    else if(structclass->element.object.isTemplate)
+    else if(structclass->element.object.isTemplate &&
+            ddisplay_active_diagram()->isTemplate)
     {
         /*保存模版*/
 
@@ -4335,8 +4327,9 @@ void factory_actionid_copy(const ActionID *onid,
 {
 //    nnid->index = onid->index;
     nnid->value = g_strdup(onid->value);
-    nnid->pre_name = g_strdup(onid->pre_name);
+//    nnid->pre_name = g_strdup(onid->pre_name);
     nnid->title_name = g_strdup(onid->title_name);
+    nnid->pre_quark = onid->pre_quark;
     nnid->conn_ptr = onid->conn_ptr;
 }
 
@@ -4350,110 +4343,119 @@ SaveStruct *factory_savestruct_copy(const SaveStruct *old)
     newsst->type = g_strdup(old->type);
     newsst->celltype = old->celltype;
     newsst->isPointer = old->isPointer;
+    newsst->templ_pos = old->templ_pos;
+    newsst->templ_quark = old->templ_quark;
     int t = offsetof(SaveStruct,value);
     memcpy(((char*)newsst)+t,((char*)old)+t,
            sizeof(_value));
 
     switch(old->celltype)
     {
-ECOMBO:
-        {
-            SaveEnum *osen = &old->value.senum;
-            SaveEnum *nsen = &old->value.senum;
-            nsen->evalue = g_strdup(osen->evalue);
-            nsen->enumList = g_list_copy(osen->enumList);
-            nsen->width = g_strdup(osen->width);
-        }
-        break;
-UCOMBO:
-        {
-            SaveUnion *osuptr = &old->value.sunion;
-            SaveUnion *nsuptr = &newsst->value.sunion;
-            nsuptr->saveVal = g_hash_table_new_full(g_str_hash,
-                                                    g_str_equal,
-                                                    g_free,
-                                                    g_free);
-            nsuptr->comobox = NULL;
-            nsuptr->vbox = NULL;
-            nsuptr->curkey = g_strdup(osuptr->curkey);
-            nsuptr->curtext = g_strdup(osuptr->curtext);
-            nsuptr->structlist = g_list_copy(osuptr->structlist);
+    case ECOMBO:
+    {
+        SaveEnum *osen = &old->value.senum;
+        SaveEnum *nsen = &old->value.senum;
+        nsen->evalue = g_strdup(osen->evalue);
+        nsen->enumList = osen->enumList;
+        nsen->width = g_strdup(osen->width);
+        nsen->index = osen->index;
+    }
+    break;
+    case UCOMBO:
+    {
+        SaveUnion *osuptr = &old->value.sunion;
+        SaveUnion *nsuptr = &newsst->value.sunion;
+        nsuptr->saveVal = g_hash_table_new_full(g_str_hash,
+                                                g_str_equal,
+                                                g_free,
+                                                g_free);
+        nsuptr->comobox = NULL;
+        nsuptr->vbox = NULL;
+        nsuptr->curkey = g_strdup(osuptr->curkey);
+        nsuptr->curtext = g_strdup(osuptr->curtext);
+        nsuptr->structlist = g_list_copy(osuptr->structlist);
+        nsuptr->index = osuptr->index;
 
-        }
-        break; /* union comobox */
-OBTN:
+    }
+    break; /* union comobox */
+    case OBTN:
+    {
+        ActIDArr *nnid = &newsst->value.nextid;
+        ActIDArr *onid = &old->value.nextid;
+        nnid->arr_base = onid->arr_base;
+        nnid->actlist = g_list_copy(onid->actlist);
+        nnid->wlist = NULL;
+        GList *olist = onid->itemlist;
+        g_list_free1(nnid->itemlist);
+        nnid->itemlist = NULL;
+        for(; olist; olist = olist->next)
         {
-            ActIDArr *nnid = &newsst->value.nextid;
-            ActIDArr *onid = &old->value.nextid;
-            nnid->actlist = g_list_copy(onid->actlist);
-            nnid->wlist = NULL;
-            GList *olist = onid->itemlist;
-            g_list_free1(nnid->itemlist);
-            nnid->itemlist = NULL;
-            for(; olist; olist = olist->next)
-            {
-                ActionID *aid = g_new0(ActionID,1);
-                factory_actionid_copy(olist->data,aid);
-                nnid->itemlist = g_list_append(nnid->itemlist,aid);
-            }
+            ActionID *aid = g_new0(ActionID,1);
+            factory_actionid_copy(olist->data,aid);
+            nnid->itemlist = g_list_append(nnid->itemlist,aid);
         }
-        break;
-OCOMBO:
+    }
+    break;
+    case OCOMBO:
+    {
+        ActionID *nnid = &newsst->value.actid;
+        ActionID *onid = &old->value.actid;
+        factory_actionid_copy(onid,nnid);
+    }
+    break;/* object combox*/
+    case ENTRY:
+    {
+        SaveEntry *osey = &old->value.sentry;
+        SaveEntry *nsey = &newsst->value.sentry;
+        nsey->arr_base = osey->arr_base;
+        if(osey->isString)
         {
-            ActionID *nnid = &newsst->value.actid;
-            ActionID *onid = &old->value.actid;
-            factory_actionid_copy(onid,nnid);
+            nsey->data = g_strdup(osey->data);
         }
-        break;/* object combox*/
-ENTRY:
+        else
         {
-            SaveEntry *osey = &old->value.sentry;
-            SaveEntry *nsey = &newsst->value.sentry;
-            if(osey->isString)
-            {
-                nsey->data = g_strdup(osey->data);
-            }
-            else
-            {
-                nsey->data = g_list_copy(osey->data);
-            }
-            nsey->wlist = g_list_copy(osey->wlist);
-        }
-        break; /* 文本 */
-SPINBOX:
-        {
-
-            newsst->value.vnumber = g_strdup(old->value.vnumber);
-        }
-        break;
-BBTN:
-        {
-            SaveEntry *osey = &old->value.sentry;
-            SaveEntry *nsey = &newsst->value.sentry;
             nsey->data = g_list_copy(osey->data);
-
-            nsey->wlist = g_list_copy(osey->wlist);
         }
-        break;
-UBTN:
+        nsey->wlist = g_list_copy(osey->wlist);
+    }
+    break; /* 文本 */
+    case SPINBOX:
+    {
+
+        newsst->value.vnumber = g_strdup(old->value.vnumber);
+    }
+    break;
+    case BBTN:
+    {
+        SaveEntry *osey = &old->value.sentry;
+        SaveEntry *nsey = &newsst->value.sentry;
+        nsey->arr_base = osey->arr_base;
+        nsey->data = g_list_copy(osey->data);
+
+        nsey->wlist = g_list_copy(osey->wlist);
+    }
+    break;
+    case UBTN:
 
         break;/* 这里是按键按钮 */
-EBTN:
-        {
-            SaveEbtn *osebtn = &old->value.ssebtn;
-            SaveEbtn *nsebtn = &newsst->value.ssebtn;
-            nsebtn->width = g_strdup(osebtn->width);
-            nsebtn->ebtnwlist = NULL;
-            nsebtn->ebtnslist = g_list_copy(osebtn->ebtnslist);
-        }
-        break;/* 枚举也有数组 */
-LBTN:
-        {
-            ListBtn *oltb = &old->value.slbtn;
-            ListBtn *nltb = &newsst->value.slbtn;
-            nltb->vlist = g_list_copy(oltb->vlist);
-        }
-        break; /* 文件管理与ID管理 数组形式的按键 */
+    case EBTN:
+    {
+        SaveEbtn *osebtn = &old->value.ssebtn;
+        SaveEbtn *nsebtn = &newsst->value.ssebtn;
+        nsebtn->arr_base = osebtn->arr_base;
+        nsebtn->width = g_strdup(osebtn->width);
+        nsebtn->ebtnwlist = NULL;
+        nsebtn->ebtnslist = g_list_copy(osebtn->ebtnslist);
+    }
+    break;/* 枚举也有数组 */
+    case LBTN:
+    {
+        ListBtn *oltb = &old->value.slbtn;
+        ListBtn *nltb = &newsst->value.slbtn;
+        nltb->arr_base = oltb->arr_base;
+        nltb->vlist = g_list_copy(oltb->vlist);
+    }
+    break; /* 文件管理与ID管理 数组形式的按键 */
     default:
         break;
     }
@@ -4477,17 +4479,17 @@ GtkTreeModel *factory_create_combox_model(GList *itemlist)
 
 
 gboolean factory_comobox_compre_foreach(GtkTreeModel *model,
-        GtkTreePath *path,
-        GtkTreeIter *iter,
-        gpointer data)
+                                        GtkTreePath *path,
+                                        GtkTreeIter *iter,
+                                        gpointer data)
 {
-
+    ComboxCmp *cc = (ComboxCmp*)data;
     gchar *curstr;
     gtk_tree_model_get(model,iter,0,&curstr,-1);
     GQuark quark = g_quark_from_string(curstr);
-    if(ptrquark == quark)
+    if(cc->qindex == quark)
     {
-        gtk_combo_box_set_active_iter(GTK_COMBO_BOX(data),iter);
+        gtk_combo_box_set_active_iter(GTK_COMBO_BOX(cc->combox),iter);
         return TRUE;
     }
 

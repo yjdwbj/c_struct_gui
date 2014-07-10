@@ -30,7 +30,7 @@
 #include "connection.h"
 #include "widgets.h"
 
-//#include "struct.h"
+#include "struct.h"
 #include "display.h"
 #define DIA_OBJECT(x) (DiaObject*)(x)
 
@@ -63,7 +63,7 @@
 
 Layer *curLayer;
 static GQuark item_reserverd = 0;
-GQuark empty_quark;
+GQuark empty_quark; /* g_quark_from_string("") 空字符串 */
 
 static GQuark ptrquark = 0;
 typedef struct _STRUCTClass STRUCTClass;
@@ -87,6 +87,13 @@ typedef enum
     H_COLOR /* 高亮显示的 */
 } ViewColor;
 
+typedef struct _ComboxCmp ComboxCmp;
+
+struct _ComboxCmp
+{
+    GtkWidget *combox;
+    GQuark qindex;
+};
 typedef struct  _FactoryClassDialog  FactoryClassDialog;
 
 struct _FactoryClassDialog
@@ -127,8 +134,8 @@ struct _ActionId
 {
 //    int index; // comobox index
     gchar* value; /* 最终要保存的对像的自身ID */
-    gchar *pre_name;
-//   int pre_quark; /* 就是当前选择的文字GQuark 值,原来这里是字符串 */
+//    gchar *pre_name;
+    GQuark pre_quark; /* 就是当前选择的文字GQuark 值,原来这里是字符串 */
     gchar *title_name;
     gpointer conn_ptr; /* 就指向对像指针，名字与ID都不能对应更改名字操作 */
 };
@@ -409,13 +416,14 @@ typedef struct _SaveStruct
 //    gchar* pname;  /* 上一级名字, NULL 就是最上级 */
     CellType celltype;
     gboolean isPointer; /* FALSE == pointer , TRUE = single*/
-//    gboolean isSensitive; /* 是否可编辑 */
-//    gboolean isVisible; /* 是否可显示 */
     _value value;
     FactoryStructItem *org;
     STRUCTClass *sclass; /* 它的最上层的对像 */
     CloseWidgetAndSave  *close_func; /* 指向保存函数 */
     CreateNewDialog *newdlg_func; /* 指向显示窗口的函数,也是用来做按键消息回调的函数 */
+    /* 这两项是扩展给从模版生成来的对像 */
+    int templ_pos;
+    GQuark templ_quark;
 };
 
 typedef struct _PublicSection PublicSection; /* 显示一些公共的信息 */
@@ -668,6 +676,7 @@ GList* factory_get_download_name_list(const gchar *path);
 
 void factory_reset_object_color_to_default();
 void factory_set_fill_color();
+SaveStruct *factory_savestruct_copy(const SaveStruct *old);
 
 /*ID LIST*/
 void factory_new_idlist_dialog(GtkWidget *parent,SaveStruct *sst);
