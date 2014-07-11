@@ -1264,7 +1264,7 @@ factory_critical_error_exit(const gchar *msg_err)
                              GTK_DIALOG_MODAL,
                              GTK_MESSAGE_ERROR,
                              GTK_BUTTONS_CLOSE,
-                             g_strdup_printf(lastmsg,msg_err));
+                             lastmsg,msg_err);
 
     gint yes_or_no = gtk_dialog_run (GTK_DIALOG (msg_dialog));
 

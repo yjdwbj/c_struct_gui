@@ -1,4 +1,4 @@
-cscope 15 O:\tool\dvs50"               0002759050
+cscope 15 O:\tool\dvs50"               0002771744
 	@O:\tool\dvs50\app\app_procs.c
 
 19 
@@ -328270,12 +328270,10 @@ GTK_BUTTONS_CLOSE
 ,
 
 1267 
-	`g_°rdup_¥ötf
-(
 œ°msg
 ,
 msg_îr
-));
+);
 
 1269 
 göt
@@ -413281,7 +413279,7 @@ gpoöãr
 d©a
 )
 
-11 
+10 
 GtkTªeModñ
  *
 modñ
@@ -413289,7 +413287,7 @@ modñ
 d©a
 ;
 
-12 
+11 
 GtkTªeP©h
  *
 ∑th
@@ -413299,13 +413297,13 @@ GtkTªeP©h
 ∑th_°rög
 );
 
-13 
+12 
 GtkTªeIãr
  
 ôî
 ;
 
-15 
+13 
 göt
  
 cﬁumn
@@ -413319,7 +413317,7 @@ cﬁumn
 ˚Œ
 ), "column"));
 
-17 
+14 
 	`gtk_åì_modñ_gë_ôî
  (
 modñ
@@ -413329,13 +413327,13 @@ modñ
 ∑th
 );
 
-19 if(
+15 if(
 cﬁumn
  =
 COLUMN_ITEM_IDNAME
 )
 
-22 
+18 
 	`gtk_li°_°‹e_£t
  (
 	`GTK_LIST_STORE
@@ -413347,21 +413345,21 @@ modñ
 cﬁumn
 ,
 
-23 
+19 
 √w_ãxt
 , -1);
 
-26 
+21 
 	`gtk_åì_∑th_‰ì
  (
 ∑th
 );
 
-27 
+22 
 	}
 }
 
-31 
+26 
 	$Á˘‹y_add_idli°_cﬁumns
  (
 GtkTªeVõw
@@ -413373,19 +413371,19 @@ GtkTªeModñ
 cbmodñ
 )
 
-34 
+29 
 GtkCñlRídîî
  *
 ªndîî
 ;
 
-35 
+30 
 GtkTªeVõwCﬁumn
  *
 cﬁumn
 ;
 
-36 
+31 
 GtkLi°St‹e
  *
 modÆ
@@ -413395,13 +413393,13 @@ modÆ
 åìvõw
 );
 
-39 
+34 
 ªndîî
  = 
 	`gtk_˚Œ_ªndîî_ãxt_√w
  ();
 
-40 
+35 
 cﬁumn
  = 
 	`gtk_åì_võw_cﬁumn_√w_wôh_©åibuãs
@@ -413409,19 +413407,19 @@ cﬁumn
 	`Á˘‹y_utf8
 ("–Ú∫≈"),
 
-41 
+36 
 ªndîî
 ,
 
-43 
+38 
 COLUMN_ITEM_SEQUENCE
 ,
 
-44 
+39 
 NULL
 );
 
-46 
+41 
 	`gtk_åì_võw_cﬁumn_£t_sizög
  (
 cﬁumn
@@ -413429,7 +413427,7 @@ cﬁumn
 GTK_TREE_VIEW_COLUMN_AUTOSIZE
 );
 
-47 
+42 
 	`gtk_åì_võw_≠≥nd_cﬁumn
  (
 åìvõw
@@ -413437,13 +413435,13 @@ GTK_TREE_VIEW_COLUMN_AUTOSIZE
 cﬁumn
 );
 
-50 
+45 
 ªndîî
  = 
 	`gtk_˚Œ_ªndîî_ãxt_√w
  ();
 
-51 
+46 
 cﬁumn
  = 
 	`gtk_åì_võw_cﬁumn_√w_wôh_©åibuãs
@@ -413451,19 +413449,19 @@ cﬁumn
 	`Á˘‹y_utf8
 ("µÿ÷∑"),
 
-52 
+47 
 ªndîî
 ,
 
-54 
+49 
 COLUMN_ITEM_ADDR
 ,
 
-55 
+50 
 NULL
 );
 
-57 
+52 
 	`gtk_åì_võw_cﬁumn_£t_sizög
  (
 cﬁumn
@@ -413471,7 +413469,7 @@ cﬁumn
 GTK_TREE_VIEW_COLUMN_AUTOSIZE
 );
 
-58 
+53 
 	`gtk_åì_võw_≠≥nd_cﬁumn
  (
 åìvõw
@@ -413479,41 +413477,41 @@ GTK_TREE_VIEW_COLUMN_AUTOSIZE
 cﬁumn
 );
 
-62 
+57 
 ªndîî
  = 
 	`gtk_˚Œ_ªndîî_combo_√w
  ();
 
-65 
+60 
 	`g_obje˘_£t
  (
 ªndîî
 ,
 
-66 "modñ", 
+61 "modñ", 
 cbmodñ
 ,
 
-68 "has-íåy", 
+63 "has-íåy", 
 FALSE
 ,
 
-69 "edôabÀ", 
+64 "edôabÀ", 
 TRUE
 ,
 
-70 
+65 
 NULL
 );
 
-71 
+66 
 	`g_sig«l_c⁄√˘
  (
 ªndîî
 , "edited",
 
-72 
+67 
 	`G_CALLBACK
  (
 Á˘‹y_id˚Œ_edôed
@@ -413521,7 +413519,7 @@ NULL
 modÆ
 );
 
-77 
+72 
 	`g_obje˘_£t_d©a
  (
 	`G_OBJECT
@@ -413533,7 +413531,7 @@ modÆ
 COLUMN_ITEM_IDNAME
 ));
 
-79 
+74 
 	`gtk_åì_võw_ö£π_cﬁumn_wôh_©åibuãs
  (
 	`GTK_TREE_VIEW
@@ -413541,25 +413539,25 @@ COLUMN_ITEM_IDNAME
 åìvõw
 ),
 
-80 -1,
+75 -1,
 	`Á˘‹y_utf8
 ("––Œ™(µ„ª˜±æ¡–ø’∞◊¥¶)"), 
 ªndîî
 ,
 
-81 "ãxt", 
+76 "ãxt", 
 COLUMN_ITEM_IDNAME
 ,
 
-82 
+77 
 NULL
 );
 
-84 
+79 
 	}
 }
 
-88 
+83 
 	$Á˘‹y_≠≥nd_ôem_to_idli°_modñ
 (
 GtkLi°St‹e
@@ -413571,13 +413569,13 @@ IDLi°St‹e
 idßve
 )
 
-91 
+86 
 GtkTªeIãr
  
 ôî
 ;
 
-92 
+87 
 	`gtk_li°_°‹e_≠≥nd
  (
 °‹e
@@ -413585,7 +413583,7 @@ GtkTªeIãr
 ôî
 );
 
-93 
+88 
 	`gtk_li°_°‹e_£t
 (
 °‹e
@@ -413593,7 +413591,7 @@ GtkTªeIãr
 ôî
 ,
 
-94 
+89 
 COLUMN_ITEM_SEQUENCE
 ,
 idßve
@@ -413601,7 +413599,7 @@ idßve
 £quí˚
 ,
 
-95 
+90 
 COLUMN_ITEM_ADDR
 ,
 idßve
@@ -413609,7 +413607,7 @@ idßve
 id_addr
 ,
 
-96 
+91 
 COLUMN_ITEM_IDNAME
 ,
 idßve
@@ -413617,11 +413615,111 @@ idßve
 id_ãxt
 ,
 
-98 
+93 
 	}
 }
 
-101 
+96 
+	$Á˘‹y_≠≥nd_°rôem_to_idli°_modñ
+(
+GtkLi°St‹e
+ *
+°‹e
+,
+
+97 
+gch¨
+ *
+°r
+)
+
+99 
+GtkTªeIãr
+ 
+ôî
+;
+
+100 
+göt
+ 
+n
+ = 
+	`GTK_LIST_STORE
+(
+°‹e
+)->
+Àngth
+ ;
+
+101 
+	`gtk_li°_°‹e_≠≥nd
+ (
+°‹e
+, &
+ôî
+);
+
+102 
+	`gtk_li°_°‹e_£t
+(
+°‹e
+,&
+ôî
+,
+
+103 
+COLUMN_ITEM_SEQUENCE
+,
+n
+,
+
+104 
+COLUMN_ITEM_ADDR
+,
+n
+*2,
+
+105 
+COLUMN_ITEM_IDNAME
+,
+°r
+,
+
+107 
+	}
+}
+
+110 
+	$Á˘‹y_add_°rôem_to_idli°_modñ
+(
+gpoöãr
+ 
+u£r_d©a
+)
+
+112 
+SaveIdDülog
+ *
+sid
+ = (SaveIdDülog *)
+u£r_d©a
+;
+
+114 
+	}
+}
+
+118 
+gch¨
+* 
+	$Á˘‹y_idli°_subli°_dülog
+()
+
+123 
+	}
+}
+
+125 
 	$Á˘‹y_add_ôem_to_idli°_modñ
 (
 GtkWidgë
@@ -413633,7 +413731,7 @@ gpoöãr
 u£r_d©a
 )
 
-103 
+127 
 SaveIdDülog
  *
 sid
@@ -413641,7 +413739,7 @@ sid
 u£r_d©a
 ;
 
-104 
+128 
 göt
  
 Àn
@@ -413655,7 +413753,7 @@ id_°‹e
 Àngth
  ;
 
-105 
+129 
 IDLi°St‹e
  *
 idßve
@@ -413663,7 +413761,7 @@ idßve
 	`g_√w0
 (IDListStore,1);
 
-106 
+130 
 idßve
 ->
 £quí˚
@@ -413671,7 +413769,7 @@ idßve
 Àn
 ;
 
-107 
+131 
 idßve
 ->
 id_addr
@@ -413679,7 +413777,7 @@ id_addr
 Àn
 *2;
 
-108 
+132 
 idßve
 ->
 id_ãxt
@@ -413687,7 +413785,7 @@ id_ãxt
 	`g_°rdup
 ("");
 
-110 
+134 
 	`Á˘‹y_≠≥nd_ôem_to_idli°_modñ
 (
 sid
@@ -413697,7 +413795,7 @@ id_°‹e
 idßve
 );
 
-111 
+135 
 sid
 ->
 idli°s
@@ -413707,11 +413805,11 @@ idli°s
 idßve
 );
 
-112 
+136 
 	}
 }
 
-114 
+140 
 GtkTªeModñ
  *
 	$Á˘‹y_¸óã_idcombox_modñ
@@ -413721,19 +413819,19 @@ GLi°
 idli°
 )
 
-116 
+142 
 GtkLi°St‹e
  *
 modñ
 ;
 
-117 
+143 
 GtkTªeIãr
  
 ôî
 ;
 
-119 
+145 
 modñ
  = 
 	`gtk_li°_°‹e_√w
@@ -413741,7 +413839,7 @@ modñ
 G_TYPE_STRING
 );
 
-121 
+147 
 GLi°
  *
 Êi°
@@ -413749,19 +413847,19 @@ GLi°
 idli°
 ;
 
-122 
+148 
 	`Á˘‹y_≠≥nd_ôí_to_cbmodÆ
 (
 modñ
 ,"");
 
-123 ; 
+149 ; 
 Êi°
 ; fli° = fli°->
 √xt
 )
 
-125 
+151 
 	`Á˘‹y_≠≥nd_ôí_to_cbmodÆ
 (
 modñ
@@ -413771,17 +413869,17 @@ modñ
 d©a
 );
 
-127  
+153  
 	`GTK_TREE_MODEL
 (
 modñ
 );
 
-128 
+154 
 	}
 }
 
-130 
+156 
 	$Á˘‹y_dñëe_œ°_modñ_ôem
 (
 GtkWidgë
@@ -413793,13 +413891,13 @@ gpoöãr
 u£r_d©a
 )
 
-133 
+159 
 GtkTªeIãr
  
 ôî
 ;
 
-134 
+160 
 SaveIdDülog
  *
 sid
@@ -413807,7 +413905,7 @@ sid
 u£r_d©a
 ;
 
-135 
+161 
 GtkTªeModñ
  *
 modñ
@@ -413817,7 +413915,7 @@ sid
 id_°‹e
 ;
 
-137 
+163 
 göt
  
 rows
@@ -413831,17 +413929,17 @@ modñ
 NULL
 );
 
-138 if(0 =
+164 if(0 =
 rows
 ) ;
 
-139 
+165 
 GtkTªeP©h
  *
 ∑th
 ;
 
-140 
+166 
 ∑th
  = 
 	`gtk_åì_∑th_√w_‰om_ödi˚s
@@ -413849,7 +413947,7 @@ GtkTªeP©h
 rows
  - 1, -1);
 
-141 
+167 
 	`gtk_åì_modñ_gë_ôî
 (
 	`GTK_TREE_MODEL
@@ -413861,7 +413959,7 @@ modñ
 ∑th
 );
 
-142 
+168 
 	`gtk_li°_°‹e_ªmove
  (
 	`GTK_LIST_STORE
@@ -413871,13 +413969,13 @@ modñ
 ôî
 );
 
-143 
+169 
 	`gtk_åì_∑th_‰ì
  (
 ∑th
 );
 
-144 
+170 
 gpoöãr
  
 œ°±r
@@ -413891,7 +413989,7 @@ idli°s
 rows
 -1);
 
-145 
+171 
 sid
 ->
 idli°s
@@ -413901,11 +413999,11 @@ idli°s
 œ°±r
 );
 
-146 
+172 
 	}
 }
 
-148 
+174 
 gboﬁón
  
 	$Á˘‹y_ßve_idli°_œ°cﬁumn_f‹óch
@@ -413915,25 +414013,25 @@ GtkTªeModñ
 modñ
 ,
 
-149 
+175 
 GtkTªeP©h
  *
 ∑th
 ,
 
-150 
+176 
 GtkTªeIãr
  *
 ôî
 ,
 
-151 
+177 
 gpoöãr
  
 d©a
 )
 
-153 
+179 
 SaveMusicDülog
  *
 smd
@@ -413941,7 +414039,7 @@ smd
 curLayî
 ->smd;
 
-154 
+180 
 göt
  
 pos
@@ -413951,7 +414049,7 @@ pos
 ∑th
 )[0];
 
-155 
+181 
 IDLi°St‹e
  *
 idßve
@@ -413963,7 +414061,7 @@ d©a
 pos
 );
 
-156 
+182 
 	`gtk_åì_modñ_gë
 (
 modñ
@@ -413977,15 +414075,15 @@ idßve
 id_ãxt
 ,-1);
 
-158  
+184  
 FALSE
 ;
 
-159 
+185 
 	}
 }
 
-162 
+188 
 	$Á˘oy_idli°_ª•⁄£
 (
 GtkWidgë
@@ -413993,25 +414091,25 @@ GtkWidgë
 dlg
 ,
 
-163 
+189 
 göt
  
 ª•⁄£
 ,
 
-164 
+190 
 gpoöãr
  
 u£r_d©a
 )
 
-167 if(
+193 if(
 ª•⁄£
  =
 GTK_RESPONSE_OK
 )
 
-169 
+195 
 SaveIdDülog
  *
 sid
@@ -414019,7 +414117,7 @@ sid
 curLayî
 ->sid;
 
-170 
+196 
 SaveSåu˘
  *
 s°
@@ -414027,13 +414125,13 @@ s°
 u£r_d©a
 ;
 
-173 
+199 
 GtkTªeIãr
  
 ôî
 ;
 
-174 
+200 
 GLi°
  *
 éi°
@@ -414043,7 +414141,7 @@ sid
 idli°s
 ;
 
-175 
+201 
 	`gtk_åì_modñ_f‹óch
 (
 sid
@@ -414055,7 +414153,7 @@ id_°‹e
 idli°s
 );
 
-176 
+202 
 GtkTªeSñe˘i⁄
  *
 £À˘i⁄
@@ -414067,7 +414165,7 @@ sid
 id_åìvõw
 );
 
-177 i‡(
+203 i‡(
 	`gtk_åì_£À˘i⁄_gë_£À˘ed
  (
 £À˘i⁄
@@ -414077,13 +414175,13 @@ NULL
 ôî
 ))
 
-179 
+205 
 GtkTªeP©h
  *
 ∑th
 ;
 
-180 
+206 
 ∑th
  = 
 	`gtk_åì_modñ_gë_∑th
@@ -414095,7 +414193,7 @@ id_°‹e
 ôî
 );
 
-181 
+207 
 s°
 ->
 vÆue
@@ -414109,13 +414207,13 @@ vnumbî
 ∑th
 ));
 
-182 
+208 
 	`gtk_åì_∑th_‰ì
 (
 ∑th
 );
 
-186 
+212 
 s°
 ->
 vÆue
@@ -414125,7 +414223,7 @@ vnumbî
 	`g_°rdup
 ("-1");
 
-189 
+215 
 	`gtk_buâ⁄_£t_œbñ
 (
 	`GTK_BUTTON
@@ -414139,17 +414237,647 @@ vÆue
 vnumbî
  );
 
-192 
+218 
 	`gtk_widgë_de°roy
 (
 dlg
 );
 
-193 
+219 
 	}
 }
 
-195 
+222 
+	$Á˘‹y_idli°_db˛ick
+(
+GtkTªeVõw
+ *
+åìvõw
+,
+
+223 
+GtkTªeP©h
+ *
+∑th
+,
+
+224 
+GtkTªeVõwCﬁumn
+ *
+cﬁ
+,
+
+225 
+gpoöãr
+ 
+u£r_d©a
+)
+
+227 
+GtkTªeModñ
+ *
+modñ
+;
+
+228 
+GtkTªeIãr
+ 
+ôî
+;
+
+229 
+GtkWidgë
+ *
+dülog
+ = 
+	`gtk_mesßge_dülog_√w
+ (
+NULL
+, 0,
+
+230 
+GTK_MESSAGE_ERROR
+,
+
+231 
+GTK_BUTTONS_CLOSE
+,
+
+234 
+	`gtk_dülog_run
+(
+dülog
+);
+
+235 
+	`gtk_widgë_de°roy
+(
+dülog
+);
+
+236 
+	}
+}
+
+241 
+	$võw_p›up_míu_⁄DoSomëhög
+ (
+GtkWidgë
+ *
+míuôem
+, 
+gpoöãr
+ 
+u£rd©a
+)
+
+244 
+GtkTªeVõw
+ *
+åìvõw
+ = 
+	`GTK_TREE_VIEW
+(
+u£rd©a
+);
+
+246 
+	`g_¥öt
+ ("Do something!\n");
+
+247 
+	}
+}
+
+249 
+gch¨
+ *
+	gid›t
+[] = {"ÃÌº”","≤Â»Î","…æ≥˝",
+NULL
+};
+
+251 
+	$Á˘‹y_add_míuôem_li°
+(
+GtkWidgë
+ *
+míu
+)
+
+254 
+GtkWidgë
+ *
+míuôem
+;
+
+255 
+n
+ = 0;
+
+258 if(
+NULL
+==
+id›t
+[
+n
+])
+
+260 
+míuôem
+ = 
+	`gtk_míu_ôem_√w_wôh_œbñ
+(
+	`Á˘‹y_utf8
+(
+id›t
+[
+n
+]));
+
+261 
+	`g_obje˘_£t_d©a
+(
+míu
+,
+	`g_°rdup_¥ötf
+("%d",
+n
+),
+míuôem
+);
+
+262 
+	`gtk_míu_shñl_≠≥nd
+(
+	`GTK_MENU_SHELL
+(
+míu
+), 
+míuôem
+);
+
+264 ++
+n
+);
+
+265 
+	}
+}
+
+268 
+	$võw_p›up_míu
+ (
+GtkWidgë
+ *
+åìvõw
+, 
+GdkEvítBuâ⁄
+ *
+evít
+,
+
+269 
+gpoöãr
+ 
+u£rd©a
+)
+
+271 
+GtkWidgë
+ *
+míu
+, *
+míuôem
+;
+
+272 
+göt
+ 
+n
+ = 
+	`GPOINTER_TO_INT
+(
+u£rd©a
+);
+
+273 
+míu
+ = 
+	`gtk_míu_√w
+();
+
+274 
+	`Á˘‹y_add_míuôem_li°
+(
+míu
+);
+
+275 if(
+n
+ <= 0)
+
+277 
+GtkWidgë
+ *
+wid
+ = 
+	`g_obje˘_gë_d©a
+(
+míu
+,
+
+278 
+	`g_°rdup_¥ötf
+("%d",1));
+
+279 
+	`gtk_widgë_£t_£nsôive
+(
+wid
+,
+FALSE
+);
+
+280 
+wid
+ = 
+	`g_obje˘_gë_d©a
+(
+míu
+,
+
+281 
+	`g_°rdup_¥ötf
+("%d",2));
+
+282 
+	`gtk_widgë_£t_£nsôive
+(
+wid
+,
+FALSE
+);
+
+284 
+	`gtk_widgë_show_Æl
+(
+míu
+);
+
+288 
+	`gtk_míu_p›up
+(
+	`GTK_MENU
+(
+míu
+), 
+NULL
+, NULL, NULL, NULL,
+
+289 (
+evít
+ !
+NULL
+Ë?Évít->
+buâ⁄
+ : 0,
+
+290 
+	`gdk_evít_gë_time
+((
+GdkEvít
+*)
+evít
+));
+
+291 
+	}
+}
+
+293 
+gboﬁón
+
+
+294 
+	$åì_võw_gë_˚Œ_‰om_pos
+(
+GtkTªeVõw
+ *
+võw
+, 
+guöt
+ 
+x
+, guöà
+y
+, 
+GtkCñlRídîî
+ **
+˚Œ
+)
+
+296 
+GtkTªeVõwCﬁumn
+ *
+cﬁ
+ = 
+NULL
+;
+
+297 
+GLi°
+ *
+node
+, *
+cﬁumns
+, *
+˚Œs
+;
+
+298 
+guöt
+ 
+cﬁx
+ = 0;
+
+300 
+	`g_ªtu∫_vÆ_if_Áû
+ ( 
+võw
+ !
+NULL
+, 
+FALSE
+ );
+
+301 
+	`g_ªtu∫_vÆ_if_Áû
+ ( 
+˚Œ
+ !
+NULL
+, 
+FALSE
+ );
+
+305 
+cﬁumns
+ = 
+	`gtk_åì_võw_gë_cﬁumns
+(
+võw
+);
+
+307 
+node
+ = 
+cﬁumns
+;Çodê!
+NULL
+ && 
+cﬁ
+ =NULL;Çodênode->
+√xt
+)
+
+309 
+GtkTªeVõwCﬁumn
+ *
+checkcﬁ
+ = (GtkTªeVõwCﬁumn*Ë
+node
+->
+d©a
+;
+
+311 i‡(
+x
+ >
+cﬁx
+ && x < (cﬁx + 
+checkcﬁ
+->
+width
+))
+
+312 
+cﬁ
+ = 
+checkcﬁ
+;
+
+314 
+cﬁx
+ +
+checkcﬁ
+->
+width
+;
+
+317 
+	`g_li°_‰ì
+(
+cﬁumns
+);
+
+319 i‡(
+cﬁ
+ =
+NULL
+)
+
+320  
+FALSE
+;
+
+324 
+˚Œs
+ = 
+	`gtk_åì_võw_cﬁumn_gë_˚Œ_ªndîîs
+(
+cﬁ
+);
+
+326 
+node
+ = 
+˚Œs
+;Çodê!
+NULL
+;Çodênode->
+√xt
+)
+
+328 
+GtkCñlRídîî
+ *
+check˚Œ
+ = (GtkCñlRídîî*Ë
+node
+->
+d©a
+;
+
+329 
+guöt
+ 
+width
+ = 0, 
+height
+ = 0;
+
+334 
+	`gtk_˚Œ_ªndîî_gë_size
+(
+check˚Œ
+, 
+	`GTK_WIDGET
+(
+võw
+), 
+NULL
+, NULL, NULL, &
+width
+, NULL);
+
+336 i‡(
+x
+ >
+cﬁx
+ && x < (cﬁx + 
+width
+))
+
+338 *
+˚Œ
+ = 
+check˚Œ
+;
+
+339 
+	`g_li°_‰ì
+(
+˚Œs
+);
+
+340  
+TRUE
+;
+
+343 
+cﬁx
+ +
+width
+;
+
+346 
+	`g_li°_‰ì
+(
+˚Œs
+);
+
+347  
+FALSE
+;
+
+348 
+	}
+}
+
+351 
+gboﬁón
+ 
+	$Á˘‹y_idli°_åìvõw_buâ⁄¥ess
+(
+GtkWidgë
+ *
+åìvõw
+,
+
+352 
+GdkEvítBuâ⁄
+ *
+evít
+,
+
+353 
+gpoöãr
+ 
+u£r_d©a
+)
+
+356 if(
+evít
+->
+ty≥
+ =
+GDK_BUTTON_PRESS
+ &&Évít->
+buâ⁄
+ == 3)
+
+358 
+GtkCñlRídîî
+ *
+ªndîî
+ = 
+NULL
+;
+
+376 
+GtkTªeSñe˘i⁄
+ *
+£À˘i⁄
+;
+
+377 
+£À˘i⁄
+ = 
+	`gtk_åì_võw_gë_£À˘i⁄
+(
+
+378 
+	`GTK_TREE_VIEW
+(
+åìvõw
+));
+
+379 
+göt
+ 
+n
+ = 
+	`gtk_åì_£À˘i⁄_cou¡_£À˘ed_rows
+(
+£À˘i⁄
+);
+
+381 
+	`võw_p›up_míu
+(
+åìvõw
+,
+evít
+,(
+gpoöãr
+)
+n
+);
+
+383  
+TRUE
+;
+
+385  
+FALSE
+;
+
+386 
+	}
+}
+
+388 
 	$Á˘‹y_√w_idli°_dülog
 (
 GtkWidgë
@@ -414161,7 +414889,7 @@ SaveSåu˘
 s°
 )
 
-197 
+390 
 GtkWidgë
  *
 maöBox
@@ -414171,7 +414899,7 @@ maöBox
 FALSE
 ,0);
 
-198 
+391 
 SaveIdDülog
  *
 sid
@@ -414179,7 +414907,7 @@ sid
 curLayî
 ->sid;
 
-199 
+392 
 GtkWidgë
  *
 ∑ª¡
@@ -414189,7 +414917,7 @@ GtkWidgë
 buâ⁄
 );
 
-200 
+393 
 GtkWidgë
  *
 subdig
@@ -414198,12 +414926,14 @@ subdig
 (
 	`Á˘‹y_utf8
 ("ID¡–±Ì"),
+
+394 
 	`gtk_widgë_gë_t›Àvñ
 (
 buâ⁄
 ));
 
-201 
+395 
 GtkWidgë
  *
 dülog_vbox
@@ -414215,7 +414945,7 @@ subdig
 vbox
 ;
 
-202 
+396 
 	`gtk_wödow_£t_modÆ
 (
 	`GTK_WINDOW
@@ -414225,7 +414955,7 @@ subdig
 TRUE
 );
 
-203 
+397 
 	`gtk_wödow_£t_ªsizabÀ
  (
 	`GTK_WINDOW
@@ -414235,13 +414965,13 @@ subdig
 TRUE
 );
 
-204 
+398 
 	`gtk_widgë_£t_size_ªque°
  (
 subdig
 ,300,500);
 
-205 
+399 
 	`gtk_c⁄èöî_add
 (
 	`GTK_CONTAINER
@@ -414251,7 +414981,7 @@ dülog_vbox
 maöBox
 );
 
-206 
+400 
 GtkWidgë
  *
 wid_idli°
@@ -414261,7 +414991,7 @@ wid_idli°
 NULL
 ,NULL);
 
-207 
+401 
 	`gtk_s¸ﬁÀd_wödow_£t_pﬁicy
 (
 	`GTK_SCROLLED_WINDOW
@@ -414269,33 +414999,25 @@ NULL
 wid_idli°
 ),
 
-208 
+402 
 GTK_POLICY_NEVER
 ,
 GTK_POLICY_ALWAYS
 );
 
-212 
-sid
-->
-Êi°
- = 
-	`Á˘‹y_gë_obje˘s_‰om_œyî
-(
-curLayî
-);
-
-214 
+408 
 sid
 ->
 id_cbmodñ
  = 
 	`Á˘‹y_¸óã_idcombox_modñ
-(sid->
-Êi°
-);
+(
+	`Á˘‹y_gë_obje˘s_‰om_œyî
+(
+curLayî
+));
 
-216 
+410 
 	`gtk_box_∑ck_°¨t
 (
 	`GTK_BOX
@@ -414307,7 +415029,7 @@ wid_idli°
 TRUE
 ,TRUE,0);
 
-219 
+413 
 sid
 ->
 id_°‹e
@@ -414321,7 +415043,7 @@ G_TYPE_INT
 G_TYPE_STRING
 );
 
-221 
+415 
 sid
 ->
 id_åìvõw
@@ -414331,7 +415053,43 @@ id_åìvõw
 id_°‹e
 );
 
-222 
+416 
+	`g_sig«l_c⁄√˘
+(
+sid
+->
+id_åìvõw
+,
+
+417 "row-a˘iv©ed",
+	`G_CALLBACK
+(
+Á˘‹y_idli°_db˛ick
+),
+
+418 
+NULL
+);
+
+420 
+	`g_sig«l_c⁄√˘
+(
+sid
+->
+id_åìvõw
+,
+
+422 
+	`G_CALLBACK
+(
+Á˘‹y_idli°_åìvõw_buâ⁄¥ess
+),
+
+423 
+NULL
+);
+
+424 
 	`gtk_åì_võw_£t_grid_löes
  (
 sid
@@ -414341,7 +415099,7 @@ id_åìvõw
 GTK_TREE_VIEW_GRID_LINES_BOTH
 );
 
-224 
+426 
 	`Á˘‹y_add_idli°_cﬁumns
 (
 sid
@@ -414351,7 +415109,7 @@ id_åìvõw
 id_cbmodñ
 );
 
-227 
+429 
 	`gtk_åì_võw_£t_ruÀs_höt
  (
 	`GTK_TREE_VIEW
@@ -414363,7 +415121,7 @@ id_åìvõw
 TRUE
 );
 
-228 
+430 
 	`gtk_åì_£À˘i⁄_£t_mode
  (
 	`gtk_åì_võw_gë_£À˘i⁄
@@ -414375,29 +415133,29 @@ sid
 id_åìvõw
 )),
 
-229 
+431 
 GTK_SELECTION_SINGLE
 );
 
-231 
+433 
 GtkTªeIãr
  
 ôî
 ;
 
-232 if(
+434 if(
 sid
 ->
 idli°s
 )
 
-234 
+436 
 GtkTªeP©h
  *
 ∑th
 ;
 
-235 
+437 
 GLi°
  *
 éi°
@@ -414407,13 +415165,13 @@ sid
 idli°s
 ;
 
-236 ; 
+438 ; 
 éi°
  ;Åli° =Åli°->
 √xt
 )
 
-238 
+440 
 IDLi°St‹e
  *
 idßve
@@ -414423,19 +415181,21 @@ idßve
 d©a
 ;
 
-240 
+442 
 	`Á˘‹y_≠≥nd_ôem_to_idli°_modñ
 (
 sid
 ->
 id_°‹e
 ,
+
+443 
 éi°
 ->
 d©a
 );
 
-242 
+445 
 ∑th
  = 
 	`gtk_åì_∑th_√w_‰om_°rög
@@ -414447,7 +415207,7 @@ vÆue
 vnumbî
 );
 
-243 
+446 
 	`gtk_åì_modñ_gë_ôî
 (
 	`GTK_TREE_MODEL
@@ -414461,7 +415221,7 @@ id_°‹e
 ∑th
 );
 
-244 
+447 
 GtkTªeSñe˘i⁄
  *
 £À˘i⁄
@@ -414473,7 +415233,7 @@ sid
 id_åìvõw
 );
 
-245 
+448 
 	`gtk_åì_£À˘i⁄_£À˘_ôî
  (
 £À˘i⁄
@@ -414481,7 +415241,7 @@ id_åìvõw
 ôî
 );
 
-246 
+449 
 	`gtk_åì_võw_s¸ﬁl_to_˚Œ
  (
 	`GTK_TREE_VIEW
@@ -414497,13 +415257,13 @@ NULL
 TRUE
 , 1.0, 0);
 
-247 
+450 
 	`gtk_åì_∑th_‰ì
 (
 ∑th
 );
 
-250 
+453 
 	`gtk_c⁄èöî_add
  (
 	`GTK_CONTAINER
@@ -414515,7 +415275,7 @@ sid
 id_åìvõw
 );
 
-252 
+455 
 	`g_obje˘_uƒef
  (
 sid
@@ -414523,7 +415283,7 @@ sid
 id_°‹e
 );
 
-253 
+456 
 	`g_obje˘_uƒef
 (
 sid
@@ -414531,75 +415291,13 @@ sid
 id_cbmodñ
 );
 
-255 
-GtkWidgë
- *
-›thbox
- = 
-	`gtk_hbox_√w
-(
-TRUE
-,10);
-
-256 
-	`gtk_box_∑ck_°¨t
-(
-	`GTK_BOX
-(
-›thbox
-),
-
-257 
-	`Á˘‹y_√w_add_buâ⁄
-(
-Á˘‹y_add_ôem_to_idli°_modñ
-,
-sid
-),
-FALSE
-,
-TRUE
-,0);
-
-258 
-	`gtk_box_∑ck_°¨t
-(
-	`GTK_BOX
-(
-›thbox
-),
-
-259 
-	`Á˘‹y_dñëe_œ°_buâ⁄
-(
-Á˘‹y_dñëe_œ°_modñ_ôem
-,
-sid
-),
-FALSE
-,
-TRUE
-,0);
-
-260 
-	`gtk_box_∑ck_°¨t
-(
-	`GTK_BOX
-(
-maöBox
-),
-›thbox
-,
-FALSE
-,FALSE,0);
-
-263 
+466 
 	`gtk_widgë_show_Æl
 (
 subdig
 );
 
-264 
+467 
 	`g_sig«l_c⁄√˘
 (
 	`G_OBJECT
@@ -414613,11 +415311,11 @@ subdig
 s°
 );
 
-271 
+474 
 	}
 }
 
-273 
+476 
 	$Á˘‹y_ßve_idli°_to_xml
 (
 SaveSåu˘
@@ -414629,7 +415327,7 @@ Obje˘Node
 obj_node
 )
 
-275 
+478 
 Obje˘Node
  
 ccc
@@ -414643,7 +415341,7 @@ NULL
 xmlCh¨
  *)"JL_item", NULL);
 
-276 
+479 
 	`xmlSëPr›
 (
 ccc
@@ -414655,7 +415353,7 @@ sss
 «me
 );
 
-277 
+480 
 	`xmlSëPr›
 (
 ccc
@@ -414663,7 +415361,7 @@ ccc
 xmlCh¨
  *)"type", (xmlChar *)"u16");
 
-278 
+481 
 	`xmlSëPr›
 (
 ccc
@@ -414675,7 +415373,7 @@ sss
 ty≥
 );
 
-280 
+483 
 	`xmlSëPr›
 (
 ccc
@@ -414689,7 +415387,7 @@ vÆue
 vnumbî
 );
 
-282 
+485 
 SaveIdDülog
  *
 sid
@@ -414697,7 +415395,7 @@ sid
 curLayî
 ->sid;
 
-283 
+486 
 gch¨
  *
 id«me
@@ -414705,13 +415403,13 @@ id«me
 	`g_°rdup
 ("");
 
-284 if(
+487 if(
 sid
 ->
 idli°s
 )
 
-286 
+489 
 pos
  = 
 	`g_°πod
@@ -414725,7 +415423,7 @@ vnumbî
 NULL
 );
 
-287 
+490 
 IDLi°St‹e
  *
 idßve
@@ -414739,11 +415437,11 @@ idli°s
 pos
 );
 
-288 if(
+491 if(
 idßve
 )
 
-290 
+493 
 id«me
  = 
 	`g_°rdup
@@ -414753,7 +415451,7 @@ idßve
 id_ãxt
 );
 
-293 
+496 
 	`xmlSëPr›
 (
 ccc
@@ -414763,17 +415461,17 @@ xmlCh¨
 id«me
 );
 
-294 
+497 
 	`g_‰ì
 (
 id«me
 );
 
-295 
+498 
 	}
 }
 
-299 
+502 
 	$Á˘‹y_ªad_idli°_ôems
 (
 Obje˘Node
@@ -414781,7 +415479,7 @@ Obje˘Node
 obj_node
 )
 
-301 
+504 
 SaveIdDülog
  *
 sid
@@ -414789,7 +415487,7 @@ sid
 curLayî
 ->sid;
 
-302 
+505 
 AâribuãNode
  
 ©å_node
@@ -414797,13 +415495,13 @@ AâribuãNode
 obj_node
 ;
 
-303 
+506 
 ©å_node
  = 
 	`d©a_√xt
 (attr_node))
 
-305 
+508 
 xmlCh¨
  *
 key
@@ -414813,11 +415511,11 @@ key
 ©å_node
 ,(xmlChar *)"name");
 
-306 if(!
+509 if(!
 key
 ) ;
 
-307 
+510 
 IDLi°St‹e
  *
 idßve
@@ -414825,7 +415523,7 @@ idßve
 	`g_√w0
 (IDListStore,1);
 
-308 
+511 
 idßve
 ->
 £quí˚
@@ -414839,7 +415537,7 @@ key
 NULL
 );
 
-309 
+512 
 key
  = 
 	`xmlGëPr›
@@ -414849,11 +415547,11 @@ key
 xmlCh¨
  *)"addr");
 
-310 if(!
+513 if(!
 key
 )
 
-312 
+515 
 idßve
 ->
 id_addr
@@ -414861,7 +415559,7 @@ id_addr
 £quí˚
  * 2;
 
-315 
+518 
 idßve
 ->
 id_addr
@@ -414875,7 +415573,7 @@ key
 NULL
 );
 
-316 
+519 
 key
  = 
 	`xmlGëPr›
@@ -414885,11 +415583,11 @@ key
 xmlCh¨
  *)"idname");
 
-317 if(!
+520 if(!
 key
 )
 
-319 
+522 
 idßve
 ->
 id_ãxt
@@ -414897,7 +415595,7 @@ id_ãxt
 	`g_°rdup
 ("");
 
-322 
+525 
 idßve
 ->
 id_ãxt
@@ -414909,7 +415607,7 @@ gch¨
 key
 );
 
-324 
+527 
 sid
 ->
 idli°s
@@ -414919,11 +415617,11 @@ idli°s
 idßve
 );
 
-327 
+530 
 	}
 }
 
-330 
+533 
 	$Á˘‹y_ßve_idli°_ôems
 (
 Obje˘Node
@@ -414935,7 +415633,7 @@ GLi°
 ßvñi°
 )
 
-332 
+535 
 GLi°
  *
 idli°
@@ -414943,13 +415641,13 @@ idli°
 ßvñi°
 ;
 
-333 ; 
+536 ; 
 idli°
 ; idli° = idli°->
 √xt
 )
 
-335 
+538 
 IDLi°St‹e
  *
 idßve
@@ -414959,7 +415657,7 @@ idli°
 d©a
 ;
 
-336 
+539 
 Obje˘Node
  
 ccc
@@ -414973,7 +415671,7 @@ NULL
 xmlCh¨
  *)"JL_item", NULL);
 
-337 
+540 
 	`xmlSëPr›
 (
 ccc
@@ -414987,7 +415685,7 @@ idßve
 £quí˚
 ));
 
-338 
+541 
 	`xmlSëPr›
 (
 ccc
@@ -414995,7 +415693,7 @@ ccc
 xmlCh¨
  *)"type", (xmlChar *)"u16");
 
-339 
+542 
 gch¨
  *
 vÆ
@@ -415003,7 +415701,7 @@ vÆ
 	`g_°rdup
 ("-1");
 
-340 
+543 
 DüObje˘
  *
 düobj
@@ -415019,11 +415717,11 @@ idßve
 id_ãxt
 );
 
-341 if(!
+544 if(!
 düobj
 )
 
-343 
+546 
 	`g_‰ì
 (
 idßve
@@ -415031,7 +415729,7 @@ idßve
 id_ãxt
 );
 
-344 
+547 
 idßve
 ->
 id_ãxt
@@ -415039,7 +415737,7 @@ id_ãxt
 	`g_°rdup
 ("");
 
-348 
+551 
 vÆ
  = 
 	`g_°rdup_¥ötf
@@ -415049,7 +415747,7 @@ düobj
 oödex
 );
 
-351 
+554 
 	`xmlSëPr›
 (
 ccc
@@ -415059,7 +415757,7 @@ xmlCh¨
 vÆ
 );
 
-352 
+555 
 	`xmlSëPr›
 (
 ccc
@@ -415073,7 +415771,7 @@ idßve
 id_addr
 ));
 
-353 
+556 
 	`xmlSëPr›
 (
 ccc
@@ -415085,13 +415783,13 @@ idßve
 id_ãxt
 );
 
-355 
+558 
 	`g_‰ì
 (
 vÆ
 );
 
-357 
+560 
 	}
 }
 
@@ -421594,6 +422292,1404 @@ CÀ¨_AŒ
 65 
 	}
 };
+
+	@O:\tool\dvs50\objects\Struct\newidlist.c
+
+1 
+	~"°ru˘_˛ass.h
+"
+
+2 
+	~"obje˘.h
+"
+
+3 
+	#WIDTH
+ 300
+
+	)
+
+4 
+	#HEIGHT
+ 500
+
+	)
+
+5 
+gch¨
+ *
+	gsub›t
+[] = {"ÃÌº”","≤Â»Î","…æ≥˝",
+NULL
+};
+
+7 
+GtkWidgë
+ *
+	$Á˘‹y_¸óã_a˘i⁄_li°_widgë
+()
+
+10 
+GtkTªeModñ
+ *
+a˘_modñ
+;
+
+11 
+GtkTªeVõw
+ *
+a˘_åìvõw
+;
+
+12 
+GtkCñlRídîî
+ *
+ªndîî
+;
+
+13 
+GtkTªeVõwCﬁumn
+ *
+cﬁumn
+;
+
+15 
+GtkWidgë
+ *
+maöBox
+ = 
+	`gtk_vbox_√w
+(
+FALSE
+,0);
+
+16 
+GtkWidgë
+ *
+wid_idli°
+ = 
+	`gtk_s¸ﬁÀd_wödow_√w
+ (
+NULL
+,NULL);
+
+17 
+	`gtk_s¸ﬁÀd_wödow_£t_pﬁicy
+(
+	`GTK_SCROLLED_WINDOW
+(
+wid_idli°
+),
+
+18 
+GTK_POLICY_NEVER
+,
+GTK_POLICY_ALWAYS
+);
+
+22 
+a˘_modñ
+ = 
+	`gtk_li°_°‹e_√w
+(
+G_TYPE_STRING
+);
+
+23 
+a˘_åìvõw
+ = 
+	`gtk_åì_võw_√w_wôh_modñ
+(
+a˘_modñ
+);
+
+25 
+	`gtk_åì_£À˘i⁄_£t_mode
+ (
+	`gtk_åì_võw_gë_£À˘i⁄
+ (
+	`GTK_TREE_VIEW
+ (
+a˘_åìvõw
+)),
+
+26 
+GTK_SELECTION_MULTIPLE
+);
+
+28 
+	`g_obje˘_£t_d©a
+(
+wid_idli°
+,"a˘_åìvõw",
+a˘_åìvõw
+);
+
+29 
+ªndîî
+ = 
+	`gtk_˚Œ_ªndîî_ãxt_√w
+ ();
+
+30 
+cﬁumn
+ = 
+	`gtk_åì_võw_cﬁumn_√w_wôh_©åibuãs
+ (
+	`Á˘‹y_utf8
+("––Œ™¡–±Ì"),
+
+31 
+ªndîî
+,
+
+34 
+NULL
+);
+
+35 
+	`gtk_åì_võw_cﬁumn_£t_sizög
+ (
+cﬁumn
+, 
+GTK_TREE_VIEW_COLUMN_AUTOSIZE
+);
+
+36 
+	`gtk_åì_võw_≠≥nd_cﬁumn
+ (
+a˘_åìvõw
+, 
+cﬁumn
+);
+
+37 
+GLi°
+ *
+a˘li°
+ = 
+	`Á˘‹y_gë_obje˘s_‰om_œyî
+(
+curLayî
+->
+de‚ames
+);
+
+38 ; 
+a˘li°
+;á˘li° =á˘li°->
+√xt
+)
+
+40 
+	`Á˘‹y_≠≥nd_ôí_to_cbmodÆ
+(
+a˘_modñ
+,
+a˘li°
+->
+d©a
+);
+
+42 
+	`gtk_c⁄èöî_add
+ (
+	`GTK_CONTAINER
+ (
+wid_idli°
+), 
+a˘_åìvõw
+);
+
+44 
+	`g_obje˘_uƒef
+ (
+a˘_modñ
+);
+
+46  
+wid_idli°
+;
+
+47 
+	}
+}
+
+51 
+GtkWidgë
+ *
+	mÀ·
+;
+
+52 
+GtkWidgë
+ *
+	mright
+;
+
+53 } 
+	ttwoWidgë
+;
+
+55 
+	$Á˘‹y_≠≥nd_ôem_to_subli°_modñ
+(
+GtkLi°St‹e
+ *
+°‹e
+,
+
+56 
+gch¨
+ *
+°r
+)
+
+58 
+GtkTªeIãr
+ 
+ôî
+;
+
+59 
+göt
+ 
+n
+ = 
+	`GTK_LIST_STORE
+(
+°‹e
+)->
+Àngth
+ ;
+
+60 
+	`gtk_li°_°‹e_≠≥nd
+ (
+°‹e
+, &
+ôî
+);
+
+61 
+	`gtk_li°_°‹e_£t
+(
+°‹e
+,&
+ôî
+,
+
+62 
+COLUMN_ITEM_SEQUENCE
+,
+n
+,
+
+63 
+COLUMN_ITEM_ADDR
+,
+n
+*2,
+
+64 
+COLUMN_ITEM_IDNAME
+,
+°r
+,
+
+66 
+	}
+}
+
+68 
+	$Á˘‹y_subli°_≠≥nd_ˇŒback
+(
+GtkWidgë
+ *
+bä
+,
+gpoöãr
+ 
+u£r_d©a
+)
+
+71 
+GtkTªeIãr
+ 
+ôî
+;
+
+72 
+twoWidgë
+ *
+tw
+ = (twoWidgë*)
+u£r_d©a
+;
+
+73 
+GtkTªeVõw
+ *
+a˘_åìvõw
+ = 
+	`g_obje˘_gë_d©a
+(
+tw
+->
+right
+,"act_treeview");
+
+74 
+GtkTªeModñ
+ *
+a˘_modñ
+ = 
+	`gtk_åì_võw_gë_modñ
+(
+a˘_åìvõw
+);
+
+77 
+GtkTªeVõw
+ *
+sub_åìvõw
+ = 
+	`g_obje˘_gë_d©a
+(
+tw
+->
+À·
+,"sub_treeview");
+
+78 
+GtkTªeModñ
+ *
+sub_modñ
+ = 
+	`gtk_åì_võw_gë_modñ
+(
+sub_åìvõw
+);
+
+80 
+GtkTªeSñe˘i⁄
+ *
+£À˘i⁄
+ = 
+	`gtk_åì_võw_gë_£À˘i⁄
+ (
+a˘_åìvõw
+);
+
+81 
+scou¡
+ = 
+	`gtk_åì_£À˘i⁄_cou¡_£À˘ed_rows
+ (
+£À˘i⁄
+);
+
+82 i‡(
+scou¡
+ >= 1 )
+
+85 
+GLi°
+ *
+åìli°
+ = 
+	`gtk_åì_£À˘i⁄_gë_£À˘ed_rows
+ (
+£À˘i⁄
+,
+
+86 &
+a˘_modñ
+);
+
+87 ;
+åìli°
+;Åªñi° =Åªñi°->
+√xt
+)
+
+89 
+gch¨
+ *
+txt
+;
+
+90 
+	`gtk_åì_modñ_gë_ôî
+ (
+a˘_modñ
+,&
+ôî
+,
+åìli°
+->
+d©a
+);
+
+91 
+GtkTªeIãr
+ 
+sôî
+;
+
+92 
+	`gtk_åì_modñ_gë
+(
+a˘_modñ
+,&
+ôî
+,0,&
+txt
+,-1);
+
+93 
+	`Á˘‹y_≠≥nd_ôem_to_subli°_modñ
+(
+sub_modñ
+,
+txt
+);
+
+94 
+	`g_‰ì
+(
+txt
+);
+
+98 
+	}
+}
+
+100 
+	$Á˘‹y_subli°_ö£π_ˇŒback
+(
+GtkWidgë
+ *
+bä
+,
+gpoöãr
+ 
+u£r_d©a
+)
+
+102 
+GtkTªeIãr
+ 
+ôî
+;
+
+103 
+twoWidgë
+ *
+tw
+ = (twoWidgë*)
+u£r_d©a
+;
+
+104 
+GtkTªeVõw
+ *
+a˘_åìvõw
+ = 
+	`g_obje˘_gë_d©a
+(
+tw
+->
+right
+,"act_treeview");
+
+105 
+GtkTªeModñ
+ *
+a˘_modñ
+ = 
+	`gtk_åì_võw_gë_modñ
+(
+a˘_åìvõw
+);
+
+108 
+GtkTªeVõw
+ *
+sub_åìvõw
+ = 
+	`g_obje˘_gë_d©a
+(
+tw
+->
+À·
+,"sub_treeview");
+
+109 
+GtkTªeModñ
+ *
+sub_modñ
+ = 
+	`gtk_åì_võw_gë_modñ
+(
+sub_åìvõw
+);
+
+111 
+GtkTªeSñe˘i⁄
+ *
+£À˘i⁄
+ = 
+	`gtk_åì_võw_gë_£À˘i⁄
+ (
+a˘_åìvõw
+);
+
+112 
+scou¡
+ = 
+	`gtk_åì_£À˘i⁄_cou¡_£À˘ed_rows
+ (
+£À˘i⁄
+);
+
+113 i‡(
+scou¡
+ >= 1 )
+
+116 
+GtkTªeSñe˘i⁄
+ *
+sub£l
+ = 
+	`gtk_åì_võw_gë_£À˘i⁄
+(
+sub_åìvõw
+);
+
+117 
+scou¡
+ = 
+	`gtk_åì_£À˘i⁄_cou¡_£À˘ed_rows
+ (
+£À˘i⁄
+);
+
+118 if(
+scou¡
+ < 1)
+
+123 
+GLi°
+ *
+åìli°
+ = 
+	`gtk_åì_£À˘i⁄_gë_£À˘ed_rows
+ (
+£À˘i⁄
+,
+
+124 &
+a˘_modñ
+);
+
+125 ;
+åìli°
+;Åªñi° =Åªñi°->
+√xt
+)
+
+127 
+gch¨
+ *
+txt
+;
+
+128 
+GtkTªeIãr
+ 
+sôî
+;
+
+129 
+	`gtk_åì_modñ_gë
+(
+a˘_modñ
+,&
+ôî
+,0,&
+txt
+,-1);
+
+130 
+	`Á˘‹y_≠≥nd_ôem_to_subli°_modñ
+(
+sub_modñ
+,
+txt
+);
+
+131 
+	`g_‰ì
+(
+txt
+);
+
+134 
+	}
+}
+
+137 
+	$Á˘‹y_subli°_dñëe_ˇŒback
+(
+GtkWidgë
+ *
+bä
+,
+gpoöãr
+ 
+u£r_d©a
+)
+
+140 
+	}
+}
+
+145 
+GtkWidgë
+ *
+	$Á˘‹y_subli°_›î©‹s
+(
+GtkWidgë
+ *
+À·
+,
+
+146 
+GtkWidgë
+ *
+right
+)
+
+148 
+twoWidgë
+ 
+tw
+ = {.
+À·
+ =Üeft,
+
+149 .
+right
+ =Ñight
+
+151 
+GtkWidgë
+ *
+maöBox
+ = 
+	`gtk_vbox_√w
+(
+FALSE
+,0);
+
+152 
+GtkWidgë
+ *
+bä
+ =
+
+153 
+	`gtk_buâ⁄_√w_wôh_œbñ
+(
+	`Á˘‹y_utf8
+("ÃÌº”"));
+
+154 
+	`g_obje˘_£t_d©a
+(
+	`G_OBJECT
+(
+maöBox
+),"≠≥nd",
+bä
+);
+
+155 
+	`gtk_box_∑ck_°¨t
+(
+	`GTK_BOX
+(
+maöBox
+),
+bä
+,
+TRUE
+,TRUE,0);
+
+157 
+	`g_sig«l_c⁄√˘
+(
+bä
+,"clicked",
+
+158 
+	`G_CALLBACK
+(
+Á˘‹y_subli°_≠≥nd_ˇŒback
+),&
+tw
+);
+
+161 
+bä
+ = 
+	`gtk_buâ⁄_√w_wôh_œbñ
+(
+	`Á˘‹y_utf8
+("≤Â»Î"));
+
+162 
+	`g_obje˘_£t_d©a
+(
+	`G_OBJECT
+(
+maöBox
+),"ö£π",
+bä
+);
+
+163 
+	`gtk_box_∑ck_°¨t
+(
+	`GTK_BOX
+(
+maöBox
+),
+bä
+,
+TRUE
+,TRUE,0);
+
+164 
+	`g_sig«l_c⁄√˘
+(
+bä
+,"clicked",
+
+165 
+	`G_CALLBACK
+(
+Á˘‹y_subli°_ö£π_ˇŒback
+),&
+tw
+);
+
+167 
+bä
+ = 
+	`gtk_buâ⁄_√w_wôh_œbñ
+(
+	`Á˘‹y_utf8
+("…æ≥˝"));
+
+168 
+	`g_obje˘_£t_d©a
+(
+	`G_OBJECT
+(
+maöBox
+),"dñëe",
+bä
+);
+
+169 
+	`gtk_box_∑ck_°¨t
+(
+	`GTK_BOX
+(
+maöBox
+),
+bä
+,
+TRUE
+,TRUE,0);
+
+170 
+	`g_sig«l_c⁄√˘
+(
+bä
+,"clicked",
+
+171 
+	`G_CALLBACK
+(
+Á˘‹y_subli°_dñëe_ˇŒback
+),&
+tw
+);
+
+172  
+maöBox
+;
+
+173 
+	}
+}
+
+175 
+GtkWidgë
+ *
+	$Á˘‹y_subli°_ª•⁄£_buâ⁄s
+()
+
+177 
+GtkWidgë
+ *
+c‹c
+ = 
+	`gtk_hbox_√w
+(
+TRUE
+,10);
+
+178 
+GtkWidgë
+ *
+bä
+ =
+
+179 
+	`gtk_buâ⁄_√w_wôh_œbñ
+(
+	`Á˘‹y_utf8
+("Ã·Ωª"));
+
+180 
+	`g_obje˘_£t_d©a
+(
+	`G_OBJECT
+(
+c‹c
+),"≠∂y",
+bä
+);
+
+181 
+	`gtk_box_∑ck_°¨t
+(
+	`GTK_BOX
+(
+c‹c
+),
+bä
+,
+TRUE
+,TRUE,0);
+
+183 
+	`gtk_buâ⁄_√w_wôh_œbñ
+(
+	`Á˘‹y_utf8
+("»°œ˚"));
+
+184 
+	`g_obje˘_£t_d©a
+(
+	`G_OBJECT
+(
+c‹c
+),"ˇn˚l",
+bä
+);
+
+185 
+	`gtk_box_∑ck_°¨t
+(
+	`GTK_BOX
+(
+c‹c
+),
+bä
+,
+TRUE
+,TRUE,0);
+
+186  
+c‹c
+;
+
+187 
+	}
+}
+
+190 
+	$Á˘‹y_add_subli°_cﬁumns
+ (
+GtkTªeVõw
+ *
+åìvõw
+,
+GtkTªeModñ
+ *
+cbmodñ
+)
+
+193 
+GtkCñlRídîî
+ *
+ªndîî
+;
+
+194 
+GtkTªeVõwCﬁumn
+ *
+cﬁumn
+;
+
+195 
+GtkLi°St‹e
+ *
+modÆ
+ = 
+	`gtk_åì_võw_gë_modñ
+(
+åìvõw
+);
+
+198 
+ªndîî
+ = 
+	`gtk_˚Œ_ªndîî_ãxt_√w
+ ();
+
+199 
+cﬁumn
+ = 
+	`gtk_åì_võw_cﬁumn_√w_wôh_©åibuãs
+ (
+	`Á˘‹y_utf8
+("–Ú∫≈"),
+
+200 
+ªndîî
+,
+
+202 
+COLUMN_ITEM_SEQUENCE
+,
+
+203 
+NULL
+);
+
+205 
+	`gtk_åì_võw_cﬁumn_£t_sizög
+ (
+cﬁumn
+, 
+GTK_TREE_VIEW_COLUMN_AUTOSIZE
+);
+
+206 
+	`gtk_åì_võw_≠≥nd_cﬁumn
+ (
+åìvõw
+, 
+cﬁumn
+);
+
+209 
+ªndîî
+ = 
+	`gtk_˚Œ_ªndîî_ãxt_√w
+ ();
+
+210 
+cﬁumn
+ = 
+	`gtk_åì_võw_cﬁumn_√w_wôh_©åibuãs
+ (
+	`Á˘‹y_utf8
+("µÿ÷∑"),
+
+211 
+ªndîî
+,
+
+213 
+COLUMN_ITEM_ADDR
+,
+
+214 
+NULL
+);
+
+216 
+	`gtk_åì_võw_cﬁumn_£t_sizög
+ (
+cﬁumn
+, 
+GTK_TREE_VIEW_COLUMN_AUTOSIZE
+);
+
+217 
+	`gtk_åì_võw_≠≥nd_cﬁumn
+ (
+åìvõw
+, 
+cﬁumn
+);
+
+221 
+ªndîî
+ = 
+	`gtk_˚Œ_ªndîî_ãxt_√w
+ ();
+
+222 
+cﬁumn
+ = 
+	`gtk_åì_võw_cﬁumn_√w_wôh_©åibuãs
+ (
+	`Á˘‹y_utf8
+("––Œ™√˚≥∆"),
+
+223 
+ªndîî
+,
+
+225 
+COLUMN_ITEM_ADDR
+,
+
+226 
+NULL
+);
+
+228 
+	`gtk_åì_võw_cﬁumn_£t_sizög
+ (
+cﬁumn
+, 
+GTK_TREE_VIEW_COLUMN_AUTOSIZE
+);
+
+229 
+	`gtk_åì_võw_≠≥nd_cﬁumn
+ (
+åìvõw
+, 
+cﬁumn
+);
+
+231 
+	}
+}
+
+233 
+	$Á˘‹y_¸óã_subli°_dülog
+(
+GtkWidgë
+ *
+∑ª¡
+)
+
+235 
+GtkWidgë
+ *
+maöBox
+ = 
+	`gtk_vbox_√w
+(
+FALSE
+,0);
+
+236 
+SaveIdDülog
+ *
+sid
+ = (SaveIdDülog *)
+curLayî
+->sid;
+
+238 
+GtkWidgë
+ *
+subdig
+ = 
+	`Á˘‹y_¸óã_√w_dülog_wôh_buâ⁄s
+(
+	`Á˘‹y_utf8
+("ID¡–±Ì"),
+
+239 
+∑ª¡
+);
+
+240 
+GtkWidgë
+ *
+dülog_vbox
+ = 
+	`GTK_DIALOG
+(
+subdig
+)->
+vbox
+;
+
+241 
+	`gtk_wödow_£t_modÆ
+(
+	`GTK_WINDOW
+(
+subdig
+),
+TRUE
+);
+
+242 
+	`gtk_wödow_£t_ªsizabÀ
+ (
+	`GTK_WINDOW
+ (
+subdig
+),
+TRUE
+);
+
+243 
+	`gtk_widgë_£t_size_ªque°
+ (
+subdig
+,300,500);
+
+244 
+	`gtk_c⁄èöî_add
+(
+	`GTK_CONTAINER
+(
+dülog_vbox
+),
+maöBox
+);
+
+245 
+GtkWidgë
+ *
+wid_idli°
+ = 
+	`gtk_s¸ﬁÀd_wödow_√w
+ (
+NULL
+,NULL);
+
+246 
+	`gtk_s¸ﬁÀd_wödow_£t_pﬁicy
+(
+	`GTK_SCROLLED_WINDOW
+(
+wid_idli°
+),
+
+247 
+GTK_POLICY_NEVER
+,
+GTK_POLICY_ALWAYS
+);
+
+249 
+GtkTªeModñ
+ *
+sub_modñ
+;
+
+250 
+sub_modñ
+ = 
+	`gtk_li°_°‹e_√w
+(
+NUM_OF_COLS
+,
+G_TYPE_INT
+,G_TYPE_INT,
+G_TYPE_STRING
+);
+
+252 
+GtkTªeVõw
+ *
+sub_åìvõw
+ = 
+	`gtk_åì_võw_√w_wôh_modñ
+ (
+sub_modñ
+);
+
+253 
+	`g_obje˘_£t_d©a
+(
+	`G_OBJECT
+(
+wid_idli°
+),"sub_åìvõw",
+sub_åìvõw
+);
+
+255 
+	`gtk_åì_võw_£t_grid_löes
+ (
+sub_åìvõw
+,
+GTK_TREE_VIEW_GRID_LINES_BOTH
+);
+
+257 
+	`Á˘‹y_add_subli°_cﬁumns
+(
+sub_åìvõw
+,
+sub_modñ
+);
+
+259 
+	`gtk_åì_võw_£t_ruÀs_höt
+ (
+	`GTK_TREE_VIEW
+ (
+sub_åìvõw
+), 
+TRUE
+);
+
+260 
+	`gtk_åì_£À˘i⁄_£t_mode
+ (
+	`gtk_åì_võw_gë_£À˘i⁄
+ (
+	`GTK_TREE_VIEW
+ (
+sid
+->
+id_åìvõw
+)),
+
+261 
+GTK_SELECTION_SINGLE
+);
+
+262 
+	`gtk_c⁄èöî_add
+ (
+	`GTK_CONTAINER
+ (
+wid_idli°
+),
+sub_åìvõw
+);
+
+265 
+GtkWidgë
+ *
+a˘_widgë
+ = 
+	`Á˘‹y_¸óã_a˘i⁄_li°_widgë
+();
+
+266 
+GtkWidgë
+ *
+midhbox
+ = 
+	`gtk_hbox_√w
+(
+FALSE
+,0);
+
+267 
+	`gtk_box_∑ck_°¨t
+(
+	`GTK_BOX
+(
+midhbox
+),
+wid_idli°
+,
+TRUE
+,TRUE,0);
+
+268 
+	`gtk_box_∑ck_°¨t
+(
+	`GTK_BOX
+(
+midhbox
+),
+
+269 
+	`Á˘‹y_subli°_›î©‹s
+(
+wid_idli°
+,
+a˘_widgë
+),
+
+270 
+TRUE
+,TRUE,0);
+
+271 
+	`gtk_box_∑ck_°¨t
+(
+	`GTK_BOX
+(
+midhbox
+),
+a˘_widgë
+ ,
+TRUE
+,TRUE,0);
+
+273 
+	`gtk_box_∑ck_°¨t
+(
+	`GTK_BOX
+(
+maöBox
+),
+midhbox
+,
+TRUE
+,TRUE,0);
+
+274 
+	`g_obje˘_uƒef
+ (
+sub_modñ
+);
+
+276 
+	`gtk_box_∑ck_°¨t
+(
+	`GTK_BOX
+(
+maöBox
+),
+Á˘‹y_subli°_ª•⁄£_buâ⁄s
+,
+FALSE
+,FALSE,0);
+
+279 
+	`gtk_widgë_show_Æl
+(
+subdig
+);
+
+281 
+	}
+}
 
 	@O:\tool\dvs50\objects\Struct\struct.c
 
@@ -434907,7 +437003,13 @@ qu¨k
 cur°r
 );
 
-4490 if(
+4490 
+	`g_‰ì
+(
+cur°r
+);
+
+4491 if(
 cc
 ->
 qödex
@@ -434915,7 +437017,7 @@ qödex
 qu¨k
 )
 
-4492 
+4493 
 	`gtk_combo_box_£t_a˘ive_ôî
 (
 	`GTK_COMBO_BOX
@@ -434927,15 +437029,15 @@ combox
 ôî
 );
 
-4493  
+4494  
 TRUE
 ;
 
-4496  
+4497  
 FALSE
 ;
 
-4497 
+4498 
 	}
 }
 
@@ -435464,290 +437566,284 @@ idli°s
 ;
 
 219 
+GLi°
+ *
+subli°
+;
+
+220 
 gch¨
  *
 tôÀ
 ;
 
 221 
-GLi°
- *
-Êi°
-;
-
-222 
-GtkWidgë
- *
-idli°_míu
-;
-
-223 
 GtkLi°St‹e
  *
 id_°‹e
 ;
 
-224 
+222 
 GtkLi°St‹e
  *
 id_cbmodñ
 ;
 
-225 
+223 
 GtkWidgë
  *
 id_åìvõw
 ;
 
-233 
+231 
 _SaveMusicFûe
  
 	tSaveMusicFûe
 ;
 
-234 
+232 
 	s_SaveMusicFûe
 
 
-236 
+234 
 ödex
 ;
 
-237 
+235 
 fûe_addr
 ;
 
-238 
+236 
 gch¨
 * 
 ba£_«me
 ;
 
-239 
+237 
 gch¨
 * 
 fuŒ_«me
 ;
 
-240 
+238 
 gch¨
 * 
 down_«me
 ;
 
-244 
+242 
 _SaveMusicFûeM™
  
 	tSaveMusicFûeM™
 ;
 
-245 
+243 
 	s_SaveMusicFûeM™
 
 
-248 
+246 
 off£t
 ;
 
-250 
+248 
 gch¨
  *
 œ°Dú
 ;
 
-251 
+249 
 GtkWidgë
  *
 ›ídlg
 ;
 
-252 
+250 
 GLi°
  *
 fûñi°
 ;
 
-253 
+251 
 GtkWidgë
  *
 wid_off£t
 ;
 
-254 
+252 
 GtkTªeModñ
  *
 wid_°‹e
 ;
 
-255 
+253 
 GtkTªeVõw
  *
 wid_åìvõw
 ;
 
-258 
+256 
 OPT_APPEND
 ,
 
-259 
+257 
 OPT_INSERT
 
 
-260 } 
+258 } 
 m™_›t
 ;
 
-265 
+263 
 SEQUENCE
 ,
 
-266 
+264 
 INDEX
 ,
 
-267 
+265 
 PHY
 
 
-268 } 
+266 } 
 	tFMSaveTy≥
 ; ;
 
-274 
+272 
 _MusicFûeM™agîO±s
  
 	tMusicFûeM™agîO±s
 ;
 
-277 
+275 
 	s_SaveMusicDülog
 
 
-279 
+277 
 gch¨
  *
 tôÀ
 ;
 
-280 
+278 
 gch¨
  *
 bä«me
 ;
 
-281 
+279 
 FMSaveTy≥
  
 fm°
 ;
 
-282 
+280 
 gch¨
  **
 vnumbî
 ;
 
-283 
+281 
 GLi°
  *
 ôemli°
 ;
 
-284 
+282 
 GLi°
  *
 cboxli°
 ;
 
-285 
+283 
 GtkLi°St‹e
  *
 id_°‹e
 ;
 
-286 
+284 
 GtkTªeVõw
  *
 id_åìvõw
 ;
 
-287 
+285 
 GtkLi°St‹e
  *
 id_cbmodÆ
 ;
 
-288 
+286 
 GtkWidgë
  *
 wödow
 ;
 
-289 
+287 
 SaveMusicFûeM™
  *
 smfm
 ;
 
-290 
+288 
 MusicFûeM™agîO±s
  *
 mfmos
 ;
 
-296 (*
+294 (*
 	tO≥nDülog
 )(
 	tSaveMusicDülog
 *);
 
-297 (*
+295 (*
 	tAµlyDülog
 )(
 	tSaveMusicDülog
 *);
 
-299 (*
+297 (*
 	tIãm_Added
 Ë(
 	tSaveMusicDülog
 *);
 
-300 (*
+298 (*
 	tCÀ¨_AŒ
 Ë(
 	tSaveMusicFûeM™
 *);
 
-303 
+301 
 	s_MusicFûeM™agîO±s
 
 
-305 
+303 
 O≥nDülog
  
 m_›ídûog
 ;
 
-306 
+304 
 AµlyDülog
  
 m_≠∂ydülog
 ;
 
-307 
+305 
 Iãm_Added
  
 m_ôemadded
 ;
 
-308 
+306 
 CÀ¨_AŒ
  
 m_˛óøŒ
 ;
 
-309 (*(
+307 (*(
 unu£d
 [4]))(
 gpoöãr
@@ -435755,457 +437851,457 @@ gpoöãr
 obj
 ,...);
 
-316 
+314 
 _SaveMusicIãm
  
 	tSaveMusicIãm
 ;
 
-317 
+315 
 	s_SaveMusicIãm
 
 
-319 
+317 
 id_ödex
 ;
 
-320 
+318 
 id_addr
 ;
 
-321 
+319 
 a˘ive
 ;
 
-322 
+320 
 gch¨
  *
 d«me
 ;
 
-323 
+321 
 gch¨
  *
 ‚ame
 ;
 
-326 
+324 
 _SaveMusicIãm
  
 	tSaveIdIãm
 ;
 
-331 
+329 
 _SaveEnum
  
 	tSaveEnum
 ;
 
-332 
+330 
 	s_SaveEnum
 
 
-334 
+332 
 GLi°
  *
 íumLi°
 ;
 
-335 
+333 
 ödex
 ;
 
-336 
+334 
 gch¨
 * 
 evÆue
 ;
 
-337 
+335 
 gch¨
 * 
 width
 ;
 
-340 
+338 
 _SaveEnumAº
  
 	tSaveEnumAº
 ;
 
-341 
+339 
 	s_SaveEnumAº
 
 
-343 
+341 
 GtkWidgë
  *
 widgë1
 ;
 
-344 
+342 
 GtkWidgë
  *
 widgë2
 ;
 
-345 
+343 
 SaveEnum
  *
 £num
 ;
 
-348 
+346 
 _SaveUbä
  
 	tSaveUbä
 ;
 
-349 
+347 
 	s_SaveUbä
 
 
-351 
+349 
 GLi°
  *
 °ru˘li°
 ;
 
-353 
+351 
 GLi°
 * 
 ßvñi°
 ;
 
-357 
+355 
 _SaveUni⁄
  
 	tSaveUni⁄
 ;
 
-358 
+356 
 	s_SaveUni⁄
 
 
-360 
+358 
 ödex
 ;
 
-361 
+359 
 gch¨
  *
 cuπext
 ;
 
-362 
+360 
 gch¨
  *
 curkey
 ;
 
-363 
+361 
 GtkWidgë
  *
 vbox
 ;
 
-364 
+362 
 GtkWidgë
  *
 comobox
 ;
 
-365 
+363 
 GLi°
  *
 °ru˘li°
 ;
 
-366 
+364 
 GHashTabÀ
 * 
 ßveVÆ
 ;
 
-369 
+367 
 _SaveE¡ry
  
 	tSaveE¡ry
 ;
 
-370 
+368 
 	s_SaveE¡ry
 
 
-372 
+370 
 gboﬁón
  
 isSåög
 ;
 
-373 
+371 
 AºayBa£Pr›
  
 ¨r_ba£
 ;
 
-374 
+372 
 width
 ;
 
-375 
+373 
 gpoöãr
  
 d©a
 ;
 
-376 
+374 
 GLi°
  *
 wli°
 ;
 
-380 
+378 
 _NameIndex
  
 	tNameIndex
 ;
 
-381 
+379 
 	s_NameIndex
 
 
-383 
+381 
 gch¨
  *
 tôÀ
 ;
 
-384 
+382 
 ödex
 ;
 
-387 
+385 
 _SaveEbä
  
 	tSaveEbä
 ;
 
-388 
+386 
 	s_SaveEbä
 
 
-390 
+388 
 gch¨
 * 
 width
 ;
 
-391 
+389 
 AºayBa£Pr›
  
 ¨r_ba£
 ;
 
-392 
+390 
 GLi°
  *
 ebä¶i°
 ;
 
-393 
+391 
 GLi°
  *
 ebäwli°
 ;
 
-399 
+397 
 SaveE¡ry
  
 £¡ry
 ;
 
-400 
+398 
 gch¨
  *
 vnumbî
 ;
 
-401 
+399 
 SaveEnum
  
 £num
 ;
 
-402 
+400 
 SaveUni⁄
  
 suni⁄
 ;
 
-403 
+401 
 A˘IDAº
  
 √xtid
 ;
 
-404 
+402 
 A˘i⁄ID
  
 a˘id
 ;
 
-405 
+403 
 SaveUbä
  
 ssubä
 ;
 
-406 
+404 
 SaveEbä
  
 s£bä
 ;
 
-407 
+405 
 Li°Bä
  
 ¶bä
 ;
 
-408 } 
+406 } 
 	t_vÆue
 ;
 
-410 
+408 
 	s_SaveSåu˘
 
 
-412 
+410 
 GtkWidgë
  *
 widgë1
 ;
 
-413 
+411 
 GtkWidgë
  *
 widgë2
 ;
 
-414 
+412 
 gch¨
 * 
 ty≥
 ;
 
-415 
+413 
 gch¨
 * 
 «me
 ;
 
-417 
+415 
 CñlTy≥
  
 ˚Œty≥
 ;
 
-418 
+416 
 gboﬁón
  
 isPoöãr
 ;
 
-419 
+417 
 _vÆue
  
 vÆue
 ;
 
-420 
+418 
 Fa˘‹ySåu˘Iãm
  *
 ‹g
 ;
 
-421 
+419 
 STRUCTCœss
  *
 s˛ass
 ;
 
-422 
+420 
 Clo£WidgëAndSave
  *
 ˛o£_func
 ;
 
-423 
+421 
 Cª©eNewDülog
  *
 √wdlg_func
 ;
 
-425 
+423 
 ãm∂_pos
 ;
 
-426 
+424 
 GQu¨k
  
 ãm∂_qu¨k
 ;
 
-429 
+427 
 _PublicSe˘i⁄
  
 	tPublicSe˘i⁄
 ;
 
-430 
+428 
 	s_PublicSe˘i⁄
 
 
-432 
+430 
 GtkWidgë
  *
 wid_hasföished
 ;
 
-433 
+431 
 gboﬁón
  
 hasföished
 ;
 
-434 
+432 
 GtkWidgë
  *
 wid_ª«me_íåy
 ;
 
-435 
+433 
 gch¨
  *
 «me
 ;
 
-443 
+441 
 	s_STRUCTCœss
 
 
-445 
+443 
 EÀmít
  
 ñemít
 ;
 
-448 #ifde‡
+446 #ifde‡
 STRUCT_MAINPOINT
 
 
-449 
+447 
 C⁄√˘i⁄Poöt
  
 c⁄√˘i⁄s
@@ -436213,7 +438309,7 @@ c⁄√˘i⁄s
 STRUCTCLASS_CONNECTIONPOINTS
  + 1];
 
-451 
+449 
 C⁄√˘i⁄Poöt
  
 c⁄√˘i⁄s
@@ -436221,143 +438317,143 @@ c⁄√˘i⁄s
 STRUCTCLASS_CONNECTIONPOINTS
 ];
 
-456 
+454 
 ªÆ
  
 löe_width
 ;
 
-457 
+455 
 ªÆ
  
 f⁄t_height
 ;
 
-458 
+456 
 ªÆ
  
 ab°ø˘_f⁄t_height
 ;
 
-459 
+457 
 ªÆ
  
 pﬁym‹phic_f⁄t_height
 ;
 
-460 
+458 
 ªÆ
  
 ˛as¢ame_f⁄t_height
 ;
 
-461 
+459 
 ªÆ
  
 ab°ø˘_˛as¢ame_f⁄t_height
 ;
 
-462 
+460 
 ªÆ
  
 commít_f⁄t_height
 ;
 
-464 
+462 
 DüF⁄t
  *
 n‹mÆ_f⁄t
 ;
 
-467 
+465 
 DüF⁄t
  *
 ˛as¢ame_f⁄t
 ;
 
-471 *
+469 *
 «me
 ;
 
-486 
+484 
 Cﬁ‹
  
 löe_cﬁ‹
 ;
 
-487 
+485 
 Cﬁ‹
  
 fûl_cﬁ‹
 ;
 
-488 
+486 
 Cﬁ‹
  
 ãxt_cﬁ‹
 ;
 
-504 
+502 
 ªÆ
  
 «mebox_height
 ;
 
-518 
+516 
 STRUCTCœssDülog
  *
 ¥›îtõs_dülog
 ;
 
-524 
+522 
 gboﬁón
  
 isInôül
 ;
 
-525 
+523 
 gboﬁón
  
 hasIdnumbî
 ;
 
-526 
+524 
 gboﬁón
  
 de°royed
 ;
 
-527 
+525 
 göt
  
 dïth
 ;
 
-528 
+526 
 VõwCﬁ‹
  
 vcﬁ‹
 ;
 
-530 
+528 
 GLi°
  *
 widgëSave
 ;
 
-531 
+529 
 Fa˘‹ySåu˘IãmAŒ
  *
 EnumsAndSåu˘s
  ;
 
-532 
+530 
 PublicSe˘i⁄
  *
 µs
 ;
 
-535 
+533 
 	`°ru˘˛ass_dülog_‰ì
  (
 STRUCTCœssDülog
@@ -436365,7 +438461,7 @@ STRUCTCœssDülog
 dülog
 );
 
-536 
+534 
 GtkWidgë
  *
 	`°ru˘˛ass_gë_¥›îtõs
@@ -436379,7 +438475,7 @@ gboﬁón
 is_deÁu…
 );
 
-537 
+535 
 Obje˘Ch™ge
  *
 	`°ru˘˛ass_≠∂y_¥›s_‰om_dülog
@@ -436393,7 +438489,7 @@ GtkWidgë
 widgë
 );
 
-538 
+536 
 	`°ru˘˛ass_ˇlcuœã_d©a
 (
 STRUCTCœss
@@ -436401,7 +438497,7 @@ STRUCTCœss
 °ru˘˛ass
 );
 
-539 
+537 
 	`°ru˘˛ass_upd©e_d©a
 (
 STRUCTCœss
@@ -436409,7 +438505,7 @@ STRUCTCœss
 °ru˘˛ass
 );
 
-541 
+539 
 	`©åibuãs_upd©e_evít
 (
 GtkWidgë
@@ -436425,7 +438521,7 @@ STRUCTCœss
 °ru˘˛ass
 );
 
-543 
+541 
 	`©åibuãs_upd©e
 (
 GtkWidgë
@@ -436437,7 +438533,7 @@ STRUCTCœss
 °ru˘˛ass
 );
 
-545 
+543 
 	`Á˘‹y_ba£_ôem_ßve
 (
 SaveSåu˘
@@ -436449,7 +438545,7 @@ Obje˘Node
 ccc
 );
 
-548 
+546 
 	`©åibuãs_li°_£À˘i⁄_ch™ged_ˇŒback
 (
 GtkWidgë
@@ -436457,13 +438553,13 @@ GtkWidgë
 gtkli°
 ,
 
-549 
+547 
 STRUCTCœss
  *
 °ru˘˛ass
 );
 
-550 
+548 
 	`Á˘‹y_c⁄√˘i⁄_two_obje˘
 (
 STRUCTCœss
@@ -436471,13 +438567,13 @@ STRUCTCœss
 f˛ass
 ,
 
-551 
+549 
 STRUCTCœss
  *
 obj˛ass
  );
 
-555 
+553 
 	`°ru˘˛ass_ßnôy_check
 (
 STRUCTCœss
@@ -436489,7 +438585,7 @@ gch¨
 msg
 );
 
-558 
+556 
 gboﬁón
  
 	`Á˘‹y_föd_¨øy_Êag
@@ -436499,7 +438595,7 @@ gch¨
 d©a
 );
 
-560 
+558 
 	`Á˘‹y_ˇlcuœã_d©a
 (
 STRUCTCœss
@@ -436507,11 +438603,11 @@ STRUCTCœss
 °ru˘˛ass
 );
 
-562 
+560 
 GtkWidgë
  *
 
-563 
+561 
 	`Á˘‹y_gë_¥›îtõs
 (
 STRUCTCœss
@@ -436523,7 +438619,7 @@ gboﬁón
 is_deÁu…
 );
 
-565 
+563 
 GtkWidgë
  *
 	`Á˘‹y_¸óã_m™y_íåy_box
@@ -436533,7 +438629,7 @@ SaveSåu˘
 sss
 );
 
-566 
+564 
 GtkWidgë
  *
 	`Á˘‹y_¸óã_m™y_checkbox
@@ -436543,7 +438639,7 @@ SaveSåu˘
 sss
 );
 
-568 
+566 
 	`Á˘‹y_¸óã_ba£buâ⁄_dülog
 (
 GtkWidgë
@@ -436555,7 +438651,7 @@ SaveSåu˘
 sss
 );
 
-569 
+567 
 	`Á˘‹y_¸óã_uni⁄buâ⁄_dülog
 (
 GtkWidgë
@@ -436567,7 +438663,7 @@ SaveSåu˘
 s°
 );
 
-570 
+568 
 	`Á˘‹y_¸óã_checkbuâ⁄s_by_li°
 (
 GtkWidgë
@@ -436579,7 +438675,7 @@ SaveSåu˘
 s°
 );
 
-571 
+569 
 	`Á˘‹y_¸óã_obje˘buâ⁄_dülog
 (
 GtkWidgë
@@ -436591,7 +438687,7 @@ SaveSåu˘
 s°
 );
 
-572 
+570 
 	`Á˘‹y_¸óã_íumbuâ⁄_dülog
 (
 GtkWidgë
@@ -436603,7 +438699,7 @@ SaveSåu˘
 s°
 );
 
-573 
+571 
 	`Á˘‹y_ßve_íumbuâ⁄_dülog
 (
 GtkWidgë
@@ -436619,7 +438715,7 @@ gpoöãr
 u£r_d©a
 );
 
-574 
+572 
 	`Á˘‹y_ßve_obje˘buâ⁄_dülog
 (
 GtkWidgë
@@ -436635,7 +438731,7 @@ gpoöãr
 u£r_d©a
 );
 
-575 
+573 
 	`Á˘‹y_ßve_uni⁄buâ⁄_dülog
 (
 GtkWidgë
@@ -436651,7 +438747,7 @@ gpoöãr
 u£r_d©a
 );
 
-576 
+574 
 	`Á˘‹y_ßve_ba£buâ⁄_dülog
 (
 GtkWidgë
@@ -436667,7 +438763,7 @@ gpoöãr
 u£r_d©a
 );
 
-577 
+575 
 	`Á˘‹y_¸óã_io_p‹t_dülog
 (
 GtkWidgë
@@ -436679,7 +438775,7 @@ SaveSåu˘
 s°
 );
 
-580 
+578 
 	`Á˘‹y_öôÆ_ebä
 (
 SaveSåu˘
@@ -436691,7 +438787,7 @@ Fa˘‹ySåu˘Iãm
 f°
 );
 
-584 
+582 
 GLi°
 * 
 	`Á˘‹y_gë_obje˘s_‰om_œyî
@@ -436701,7 +438797,7 @@ Layî
 œyî
 );
 
-586 
+584 
 	`Á˘‹y_gë_vÆue_‰om_comobox
 (
 SaveSåu˘
@@ -436717,7 +438813,7 @@ A˘i⁄ID
 aid
 );
 
-588 
+586 
 	`Á˘‹y_°rjoö
 (
 gch¨
@@ -436729,7 +438825,7 @@ d°
 £p
 );
 
-589 
+587 
 	`Á˘oy_ch™ged_ôem
 (
 gpoöãr
@@ -436739,7 +438835,7 @@ gpoöãr
 u£r_d©a
 );
 
-590 
+588 
 STRUCTCœss
  *
 	`Á˘‹y_föd_düobje˘_by_«me
@@ -436753,7 +438849,7 @@ gch¨
 «me
 );
 
-591 
+589 
 DüObje˘
  *
 	`Á˘‹y_föd_ßme_düobje˘_vü_gli°
@@ -436765,7 +438861,7 @@ GLi°
 com¥ñi°
 );
 
-593 
+591 
 	`Á˘‹y_¸óã_™d_fûl_dülog
 (
 STRUCTCœss
@@ -436777,7 +438873,7 @@ gboﬁón
 is_deÁu…
 );
 
-594 
+592 
 	`Á˘‹y_≠≥nd_public_öfo
 (
 GtkWidgë
@@ -436789,7 +438885,7 @@ STRUCTCœss
 °ru˘˛ass
 );
 
-595 
+593 
 	`Á˘‹y_¸óã_°ru˘_dülog
 (
 GtkWidgë
@@ -436801,7 +438897,7 @@ GLi°
 d©Æi°
 );
 
-597 
+595 
 gboﬁón
  
 	`Á˘‹y_is_c⁄√˘ed
@@ -436813,7 +438909,7 @@ C⁄√˘i⁄Poöt
 ˝°¨t
 );
 
-599 
+597 
 	`Á˘‹y_£t_ßve°ru˘_widgës
 (
 SaveSåu˘
@@ -436821,7 +438917,7 @@ SaveSåu˘
 sss
 );
 
-600 
+598 
 SaveSåu˘
  * 
 	`Á˘‹y_gë_ßve°ru˘
@@ -436831,7 +438927,7 @@ Fa˘‹ySåu˘Iãm
 f°
 );
 
-603 
+601 
 gch¨
 * 
 	`Á˘‹y_íåy_check
@@ -436839,7 +438935,7 @@ gch¨
 °r
 );
 
-604 
+602 
 	`Á˘‹y_edôabÀ_ö£π_ˇŒback
 (
 GtkE¡ry
@@ -436847,31 +438943,31 @@ GtkE¡ry
 íåy
 ,
 
-605 
+603 
 gch¨
 * 
 √w_ãxt
 ,
 
-606 
+604 
 göt
  
 √w_Àngth
 ,
 
-607 
+605 
 gpoöãr
  
 posôi⁄
 ,
 
-608 
+606 
 gpoöãr
  
 d©a
 );
 
-610 
+608 
 	`Á˘‹y_edôabÀ_dñëe_ˇŒback
 (
 GtkEdôabÀ
@@ -436879,19 +438975,19 @@ GtkEdôabÀ
 edôabÀ
 ,
 
-611 
+609 
 göt
  
 °¨t_pos
 ,
 
-612 
+610 
 göt
  
 íd_pos
 );
 
-613 
+611 
 	`Á˘‹y_edôabÀ_a˘ive_ˇŒback
 (
 GtkEdôabÀ
@@ -436903,11 +438999,11 @@ gpoöãr
 d©a
 );
 
-616 
+614 
 Obje˘Ch™ge
  *
 
-617 
+615 
 	`Á˘‹y_≠∂e_¥›s_‰om_dülog
 (
 STRUCTCœss
@@ -436919,7 +439015,7 @@ GtkWidgë
 widgë
 );
 
-620 
+618 
 	`Á˘‹y_¸óã_toﬁb¨_buâ⁄
 (c⁄° 
 göt8
@@ -436935,13 +439031,13 @@ GtkToﬁb¨
 toﬁb¨
 ,
 
-621 
+619 
 gpoöãr
  *
 ˇŒback
 );
 
-625 
+623 
 	`Á˘‹y_¸óã_fûe_m™agî_dülog
 (
 GtkWidgë
@@ -436953,7 +439049,7 @@ Li°DlgArg
 lda
 );
 
-626 
+624 
 	`Á˘‹y_fûe_m™agî_dülog
 (
 GtkWidgë
@@ -436965,7 +439061,7 @@ SaveSåu˘
 s°
 );
 
-627 
+625 
 	`Á˘‹y_¸óã_li°_¨øy_m™agî_dülog
 (
 GtkWidgë
@@ -436977,7 +439073,7 @@ SaveSåu˘
 s°
 );
 
-628 
+626 
 	`Á˘‹y_ßve_li°_¨øy_m™agî_dülog
 (
 GtkWidgë
@@ -436993,7 +439089,7 @@ gpoöãr
 u£r_d©a
 );
 
-630 
+628 
 gboﬁón
  
 	`Á˘‹y_£¨ch_c⁄√˘ed_lök
@@ -437007,7 +439103,7 @@ göt
 dïth
 );
 
-633 
+631 
 	`Á˘‹y_£À˘
 (
 STRUCTCœss
@@ -437019,13 +439115,13 @@ Poöt
 ˛icked_poöt
 ,
 
-634 
+632 
 DüRídîî
  *
 öãø˘ive_ªndîî
 );
 
-636 (*
+634 (*
 	tÁ˘‹y_buâ⁄_ˇŒback
 )(
 	tGtkWidgë
@@ -437033,7 +439129,7 @@ DüRídîî
 	t£lf
 );
 
-638 
+636 
 	`Á˘‹y_add_ôem_to_music_m™agî
 (
 GtkBuâ⁄
@@ -437045,7 +439141,7 @@ gpoöãr
 u£r_d©a
 );
 
-639 
+637 
 GtkWidgë
  *
 	`Á˘‹y_√w_add_buâ⁄
@@ -437059,7 +439155,7 @@ gpoöãr
 li°
 );
 
-640 
+638 
 GtkWidgë
  *
 	`Á˘‹y_gë_√w_idôem
@@ -437073,7 +439169,7 @@ GLi°
 Êi°
 );
 
-641 
+639 
 GtkWidgë
  *
 	`Á˘‹y_gë_√w_musicôem
@@ -437087,7 +439183,7 @@ GLi°
 fûli°
 );
 
-644 
+642 
 GtkWidgë
  *
 	`Á˘‹y_music_fûe_m™agî_wôh_modñ
@@ -437099,7 +439195,7 @@ SaveMusicDülog
 smd
 );
 
-646 
+644 
 GtkWidgë
  *
 	`Á˘‹y_music_fûe_m™agî
@@ -437111,7 +439207,7 @@ SaveMusicDülog
 smd
 );
 
-647 
+645 
 GtkWidgë
  *
 	`Á˘‹y_dow∆ﬂd_fûe_m™agî
@@ -437123,7 +439219,7 @@ SaveMusicDülog
 smd
 );
 
-651 
+649 
 	`Á˘‹y_add_ôem_to_idli°
 (
 GtkBuâ⁄
@@ -437135,7 +439231,7 @@ gpoöãr
 u£r_d©a
 );
 
-652 
+650 
 	`Á˘‹y_dñëe_œ°_ôem
 (
 GtkBuâ⁄
@@ -437147,7 +439243,7 @@ gpoöãr
 u£r_d©a
 );
 
-657 
+655 
 	`Á˘‹y_£t_‹igöÆ_˛ass
 (
 STRUCTCœss
@@ -437155,7 +439251,7 @@ STRUCTCœss
 f˛ass
 );
 
-659 
+657 
 gboﬁón
  
 	`Á˘‹y_music_fm_gë_ty≥
@@ -437165,7 +439261,7 @@ gch¨
 °r
 );
 
-661 
+659 
 	`Á˘‹y_fm_gë_cboxli°
 (
 SaveMusicDülog
@@ -437173,7 +439269,7 @@ SaveMusicDülog
 smd
 );
 
-663 
+661 
 	`Á˘‹y_upd©e_A˘i⁄Id_obje˘
 (
 GtkWidgë
@@ -437189,7 +439285,7 @@ GLi°
 ˛i°
 );
 
-665 
+663 
 	`Á˘‹y_£âög_sy°emd©a
 (
 STRUCTCœss
@@ -437197,11 +439293,11 @@ STRUCTCœss
 °ru˘˛ass
 );
 
-667 
+665 
 	`Á˘‹y_sy°emöfo_¸óã
 ();
 
-668 
+666 
 	`Á˘‹y_sy°emöfo_≠∂y_dülog
 (
 GtkWidgë
@@ -437217,11 +439313,11 @@ gpoöãr
 u£r_d©a
 );
 
-669 
+667 
 	`Á˘‹y_sy°emöfo_lﬂd
 ();
 
-670 
+668 
 	`Á˘‹y_sy°em_dülog
 (
 GLi°
@@ -437233,7 +439329,7 @@ GtkWidgë
 ∑ª¡
 );
 
-672 
+670 
 	`Á˘‹y_sy°emöfo_ˇŒback
 (
 GtkWidgë
@@ -437241,7 +439337,7 @@ GtkWidgë
 ∑ª¡
 );
 
-673 
+671 
 GLi°
 * 
 	`Á˘‹y_gë_dow∆ﬂd_«me_li°
@@ -437251,15 +439347,15 @@ gch¨
 ∑th
 );
 
-677 
+675 
 	`Á˘‹y_ª£t_obje˘_cﬁ‹_to_deÁu…
 ();
 
-678 
+676 
 	`Á˘‹y_£t_fûl_cﬁ‹
 ();
 
-679 
+677 
 SaveSåu˘
  *
 	`Á˘‹y_ßve°ru˘_c›y
@@ -437267,7 +439363,7 @@ SaveSåu˘
 ﬁd
 );
 
-682 
+680 
 	`Á˘‹y_√w_idli°_dülog
 (
 GtkWidgë
@@ -437279,7 +439375,7 @@ SaveSåu˘
 s°
 );
 
-683 
+681 
 GtkTªeModñ
  *
 	`Á˘‹y_¸óã_idcombox_modñ
@@ -437289,7 +439385,7 @@ GLi°
 idli°
 );
 
-684 
+682 
 	`Á˘‹y_≠≥nd_ôí_to_cbmodÆ
 (
 GtkLi°St‹e
@@ -437301,7 +439397,7 @@ gch¨
 °r
 );
 
-685 
+683 
 	`Á˘‹y_ßve_idli°_ôems
 (
 Obje˘Node
@@ -437313,7 +439409,7 @@ GLi°
 ßvñi°
 );
 
-686 
+684 
 	`Á˘‹y_ªad_idli°_ôems
 (
 Obje˘Node
@@ -437321,7 +439417,7 @@ Obje˘Node
 obj_node
 );
 
-688 
+686 
 	`Á˘‹y_ßve_idli°_to_xml
 (
 SaveSåu˘
@@ -437333,7 +439429,7 @@ Obje˘Node
 obj_node
 );
 
-693 
+691 
 	`Á˘‹y_wrôe_mfûe_fûñi°
 (
 Obje˘Node
@@ -437341,23 +439437,23 @@ Obje˘Node
 obj_node
 );
 
-696 
+694 
 COLUMN_ITEM_SEQUENCE
 ,
 
-697 
+695 
 COLUMN_ITEM_ADDR
 ,
 
-698 
+696 
 COLUMN_ITEM_IDNAME
 ,
 
-699 
+697 
 NUM_OF_COLS
 
 
-706 
+704 
 	`Á˘‹y_ãm∂©e_wrôe_to_xml
 (
 GLi°
@@ -437369,7 +439465,7 @@ Obje˘Node
 obj_node
 );
 
-707 
+705 
 	`Á˘‹y_ãm∂©e_ªad_‰om_xml
 (
 STRUCTCœss
@@ -437385,7 +439481,7 @@ gch¨
 fûíame
 );
 
-708 
+706 
 	`Á˘‹y_ãm∂©e_upd©e_ôem
 (c⁄° 
 gch¨
@@ -437393,7 +439489,7 @@ gch¨
 a˘_«me
 );
 
-711 
+709 
 gboﬁón
  
 	`Á˘‹y_comobox_com¥e_f‹óch
@@ -437403,25 +439499,25 @@ GtkTªeModñ
 modñ
 ,
 
-712 
+710 
 GtkTªeP©h
  *
 ∑th
 ,
 
-713 
+711 
 GtkTªeIãr
  *
 ôî
 ,
 
-714 
+712 
 gpoöãr
  
 d©a
 );
 
-717 
+715 
 GtkTªeModñ
  *
 	`Á˘‹y_¸óã_combox_modñ
@@ -441233,17 +443329,7 @@ sss
 ty≥
 ));
 
-3757 if((
-aid
-->
-¥e_qu¨k
- !
-em±y_qu¨k
-Ë&& !aid->
-c⁄n_±r
-)
-
-3760 c⁄° 
+3758 c⁄° 
 gch¨
  *
 ¥e_«me
@@ -441255,7 +443341,17 @@ aid
 ¥e_qu¨k
 );
 
-3761 
+3759 if((
+aid
+->
+¥e_qu¨k
+ !
+em±y_qu¨k
+Ë&& !aid->
+c⁄n_±r
+)
+
+3763 
 aid
 ->
 c⁄n_±r
@@ -441267,11 +443363,77 @@ curLayî
 de‚ames
 ,
 
-3762 
+3764 
 ¥e_«me
 );
 
-3765 
+3768 if((
+aid
+->
+¥e_qu¨k
+ !
+em±y_qu¨k
+Ë&&áid->
+c⁄n_±r
+)
+
+3770 
+gpoöãr
+ 
+födobj
+ = 
+	`g_hash_èbÀ_lookup
+(
+curLayî
+->
+de‚ames
+,
+
+3771 
+¥e_«me
+);
+
+3773 
+idx
+ = 
+	`g_li°_ödex
+(
+curLayî
+->
+obje˘s
+,
+
+3774 
+aid
+->
+c⁄n_±r
+);
+
+3775 if(!
+födobj
+ && 
+idx
+ > 0)
+
+3777 
+aid
+->
+¥e_qu¨k
+ =
+
+3778 
+	`g_qu¨k_‰om_°rög
+(((
+STRUCTCœss
+*)
+aid
+->
+c⁄n_±r
+)->
+«me
+);
+
+3782 
 GLi°
  *
 éi°
@@ -441279,7 +443441,7 @@ GLi°
 ﬁi°
 ;
 
-3766 
+3783 
 GtkTªeModñ
  *
 emodñ
@@ -441289,7 +443451,7 @@ emodñ
 ﬁi°
 );
 
-3767 
+3784 
 	`gtk_combo_box_£t_modñ
 (
 	`GTK_COMBO_BOX
@@ -441299,7 +443461,7 @@ cﬁumTwo
 emodñ
  );
 
-3769 
+3786 
 ComboxCmp
  
 cc
@@ -441309,7 +443471,7 @@ combox
 cﬁumTwo
 ,
 
-3770 .
+3787 .
 qödex
  = 
 aid
@@ -441317,7 +443479,7 @@ aid
 ¥e_qu¨k
 };
 
-3771 
+3788 
 	`gtk_åì_modñ_f‹óch
 (
 emodñ
@@ -441325,15 +443487,15 @@ emodñ
 Á˘‹y_comobox_com¥e_f‹óch
 ,
 
-3772 &
+3789 &
 cc
 );
 
-3777 
+3794 
 LBTN
 :
 
-3779 
+3796 
 cﬁumTwo
  =
 	`gtk_buâ⁄_√w_wôh_œbñ
@@ -441343,7 +443505,7 @@ cﬁumTwo
 Name
 );
 
-3780 
+3797 
 	`g_sig«l_c⁄√˘
  (
 	`G_OBJECT
@@ -441357,23 +443519,23 @@ sss
 √wdlg_func
 ), sss);
 
-3783 
+3800 
 OBTN
 :
 
-3784 
+3801 
 EBTN
 :
 
-3785 
+3802 
 UBTN
 :
 
-3786 
+3803 
 BBTN
 :
 
-3788 
+3805 
 cﬁumTwo
  =
 	`gtk_buâ⁄_√w_wôh_œbñ
@@ -441383,7 +443545,7 @@ cﬁumTwo
 Name
 );
 
-3789 
+3806 
 Fa˘‹ySåu˘Iãm
  *
 fsi
@@ -441393,7 +443555,7 @@ sss
 ‹g
 ;
 
-3791 if(!
+3808 if(!
 	`g_ascii_°rˇ£cmp
 (
 ôem
@@ -441403,7 +443565,7 @@ STy≥
 TYPE_FILELST
 ))
 
-3793 
+3810 
 Li°DlgArg
  *
 lda
@@ -441411,7 +443573,7 @@ lda
 	`g_√w0
 (ListDlgArg,1);
 
-3794 
+3811 
 lda
 ->
 isAºay
@@ -441419,7 +443581,7 @@ isAºay
 FALSE
 ;
 
-3795 
+3812 
 lda
 ->
 odw_func
@@ -441427,7 +443589,7 @@ odw_func
 NULL
 ;
 
-3796 
+3813 
 lda
 ->
 ty≥
@@ -441439,7 +443601,7 @@ sss
 «me
 ,".");
 
-3797 
+3814 
 lda
 ->
 u£r_d©a
@@ -441451,7 +443613,7 @@ vÆue
 vnumbî
 ;
 
-3800 
+3817 
 	`gtk_buâ⁄_£t_œbñ
 (
 	`GTK_BUTTON
@@ -441465,7 +443627,7 @@ vÆue
 vnumbî
  );
 
-3801 
+3818 
 	`g_sig«l_c⁄√˘
  (
 	`G_OBJECT
@@ -441481,7 +443643,7 @@ sss
 lda
 );
 
-3803 if(!
+3820 if(!
 	`g_ascii_°rˇ£cmp
 (
 ôem
@@ -441491,7 +443653,7 @@ STy≥
 TYPE_IDLST
 ))
 
-3807 
+3824 
 	`gtk_buâ⁄_£t_œbñ
 (
 	`GTK_BUTTON
@@ -441505,7 +443667,7 @@ vÆue
 vnumbî
  );
 
-3809 
+3826 
 	`g_sig«l_c⁄√˘
  (
 	`G_OBJECT
@@ -441519,7 +443681,7 @@ sss
 √wdlg_func
 ),sss);
 
-3813 
+3830 
 	`g_sig«l_c⁄√˘
  (
 	`G_OBJECT
@@ -441533,7 +443695,7 @@ sss
 √wdlg_func
 ), sss);
 
-3820 
+3837 
 sss
 ->
 widgë2
@@ -441541,15 +443703,15 @@ widgë2
 cﬁumTwo
 ;
 
-3821  
+3838  
 cﬁumTwo
 ;
 
-3822 
+3839 
 	}
 }
 
-3825 
+3842 
 gboﬁón
  
 	$Á˘‹y_music_fm_gë_ty≥
@@ -441559,7 +443721,7 @@ gch¨
 «me
 )
 
-3827 
+3844 
 SaveMusicDülog
  *
 smd
@@ -441567,7 +443729,7 @@ smd
 curLayî
 ->smd;
 
-3828 
+3845 
 gch¨
  *
 skey
@@ -441577,7 +443739,7 @@ skey
 «me
 ,".");
 
-3829 
+3846 
 gboﬁón
  
 Êag
@@ -441585,21 +443747,21 @@ gboﬁón
 FALSE
 ;
 
-3830 if(!
+3847 if(!
 smd
 )
 
-3831  
+3848  
 Êag
 ;
 
-3832 if(!
+3849 if(!
 	`g_ascii_°∫ˇ£cmp
 (
 skey
 ,"aIndex_Number",13))
 
-3834 
+3851 
 smd
 ->
 fm°
@@ -441607,19 +443769,19 @@ fm°
 INDEX
 ;
 
-3835 
+3852 
 Êag
  = 
 TRUE
 ;
 
-3838 if(!
+3855 if(!
 	`g_ascii_°∫ˇ£cmp
 (
 skey
 ,"aFile_Number",12))
 
-3840 
+3857 
 smd
 ->
 fm°
@@ -441627,19 +443789,19 @@ fm°
 SEQUENCE
 ;
 
-3841 
+3858 
 Êag
  = 
 TRUE
 ;
 
-3844 if(!
+3861 if(!
 	`g_ascii_°∫ˇ£cmp
 (
 skey
 ,"aPhy_Number",11))
 
-3846 
+3863 
 smd
 ->
 fm°
@@ -441647,27 +443809,27 @@ fm°
 PHY
 ;
 
-3847 
+3864 
 Êag
  = 
 TRUE
 ;
 
-3849 
+3866 
 	`g_‰ì
 (
 skey
 );
 
-3850  
+3867  
 Êag
 ;
 
-3851 
+3868 
 	}
 }
 
-3856 
+3873 
 	$Á˘‹y_£t_ßve°ru˘_widgës
 (
 SaveSåu˘
@@ -441675,19 +443837,19 @@ SaveSåu˘
 sss
 )
 
-3858 
+3875 
 GtkWidgë
  *
 Name
  ;
 
-3859 
+3876 
 GtkWidgë
  *
 cﬁumTwo
 ;
 
-3860 
+3877 
 GtkToﬁtùs
  *
 toﬁ_tùs
@@ -441695,13 +443857,13 @@ toﬁ_tùs
 	`gtk_toﬁtùs_√w
 ();
 
-3863 if(
+3880 if(
 sss
  && sss->
 ‹g
  )
 
-3865 
+3882 
 Name
  = 
 	`gtk_œbñ_√w
@@ -441713,7 +443875,7 @@ sss
 C«me
 );
 
-3866 
+3883 
 	`gtk_toﬁtùs_£t_tù
 (
 toﬁ_tùs
@@ -441731,7 +443893,7 @@ Commít
 NULL
 );
 
-3869 if(!
+3886 if(!
 	`g_ascii_°∫ˇ£cmp
 (
 sss
@@ -441741,7 +443903,7 @@ sss
 WACDID
 ,6))
 
-3871 
+3888 
 DüObje˘
  *
 obj
@@ -441751,7 +443913,7 @@ sss
 s˛ass
 ;
 
-3872 
+3889 
 sss
 ->
 vÆue
@@ -441765,7 +443927,7 @@ obj
 oödex
 );
 
-3882 
+3899 
 cﬁumTwo
  = 
 	`Á˘‹y_¸óã_v¨ü¡_obje˘
@@ -441773,7 +443935,7 @@ cﬁumTwo
 sss
 );
 
-3883 
+3900 
 	`gtk_widgë_£t_£nsôive
 (
 cﬁumTwo
@@ -441785,7 +443947,7 @@ sss
 isSísôive
 );
 
-3884 
+3901 
 	`gtk_toﬁtùs_£t_tù
 (
 toﬁ_tùs
@@ -441803,7 +443965,7 @@ Commít
 NULL
 );
 
-3886 
+3903 
 sss
 ->
 widgë1
@@ -441811,11 +443973,11 @@ widgë1
 Name
 ;
 
-3889 
+3906 
 	}
 }
 
-3892 
+3909 
 Fa˘‹ySåu˘Iãm
  * 
 	$Á˘‹y_föd_a_°ru˘_ôem
@@ -441829,7 +443991,7 @@ gch¨
 ãxt
 )
 
-3894 
+3911 
 Fa˘‹ySåu˘Iãm
  *
 fsi
@@ -441837,7 +443999,7 @@ fsi
 NULL
 ;
 
-3895 
+3912 
 GLi°
  *
 uli°
@@ -441845,13 +444007,13 @@ uli°
 ôemli°
 ;
 
-3896 ; 
+3913 ; 
 uli°
 ; uli° = uli°->
 √xt
 )
 
-3898 
+3915 
 fsi
  = 
 uli°
@@ -441859,7 +444021,7 @@ uli°
 d©a
 ;
 
-3899 if(!
+3916 if(!
 	`g_ascii_°rˇ£cmp
 (
 fsi
@@ -441869,15 +444031,15 @@ Name
 ãxt
 ))
 
-3904  
+3921  
 fsi
 ;
 
-3905 
+3922 
 	}
 }
 
-3907 
+3924 
 	$Á˘‹y_ßve_íumbuâ⁄_dülog
 (
 GtkWidgë
@@ -441893,7 +444055,7 @@ gpoöãr
 u£r_d©a
 )
 
-3909 
+3926 
 SaveSåu˘
  *
 s°
@@ -441901,7 +444063,7 @@ s°
 u£r_d©a
 ;
 
-3910 
+3927 
 SaveEbä
  *
 £bä
@@ -441913,7 +444075,7 @@ vÆue
 s£bä
 ;
 
-3911 
+3928 
 GLi°
  *
 wli°
@@ -441923,23 +444085,23 @@ wli°
 ebäwli°
 ;
 
-3912 if(
+3929 if(
 ª•⁄£_id
  =
 GTK_RESPONSE_APPLY
 
 
-3913 || 
+3930 || 
 ª•⁄£_id
  =
 GTK_RESPONSE_OK
 )
 
-3915 
+3932 
 n
  = 0;
 
-3916 
+3933 
 gch¨
  *
 key
@@ -441947,13 +444109,13 @@ key
 NULL
 ;
 
-3917 ; 
+3934 ; 
 wli°
 ; wli° = wli°->
 √xt
 )
 
-3919 
+3936 
 SaveEnumAº
  *
 £a
@@ -441963,7 +444125,7 @@ wli°
 d©a
 ;
 
-3920 
+3937 
 SaveEnum
  *
 £
@@ -441973,7 +444135,7 @@ SaveEnum
 £num
 ;
 
-3921 
+3938 
 £
 ->
 ödex
@@ -441987,7 +444149,7 @@ SaveEnum
 widgë2
 ));
 
-3922 
+3939 
 key
  = 
 	`gtk_combo_box_gë_a˘ive_ãxt
@@ -441999,7 +444161,7 @@ key
 widgë2
 ));
 
-3923 
+3940 
 GLi°
  *
 éi°
@@ -442009,13 +444171,13 @@ GLi°
 ebä¶i°
 ;
 
-3924 ; 
+3941 ; 
 éi°
  ;Åli° =Åli°->
 √xt
 )
 
-3926 
+3943 
 Fa˘‹ySåu˘Enum
  *
 f£
@@ -442025,7 +444187,7 @@ f£
 d©a
 ;
 
-3927 if(!
+3944 if(!
 	`g_ascii_°rˇ£cmp
 (
 f£
@@ -442033,7 +444195,7 @@ f£
 key
 ,key))
 
-3929 
+3946 
 £
 ->
 evÆue
@@ -442043,7 +444205,7 @@ f£
 vÆue
 ;
 
-3934 
+3951 
 	`dügøm_£t_modifõd
 (
 	`ddi•œy_a˘ive_dügøm
@@ -442051,17 +444213,17 @@ vÆue
 TRUE
 );
 
-3937 
+3954 
 	`gtk_widgë_de°roy
 (
 widgë
 );
 
-3939 
+3956 
 	}
 }
 
-3942 
+3959 
 	$Á˘‹y_ªcheck_obje˘buâ⁄_c⁄√˘i⁄
 (
 STRUCTCœss
@@ -442069,13 +444231,13 @@ STRUCTCœss
 f˛ass
 ,
 
-3943 
+3960 
 GLi°
  *
 ˛i°
 )
 
-3945 
+3962 
 GLi°
  *
 wli°
@@ -442083,13 +444245,13 @@ wli°
 ˛i°
 ;
 
-3946 ; 
+3963 ; 
 wli°
 ; wli° = wli°->
 √xt
 )
 
-3948 
+3965 
 A˘i⁄ID
  *
 aid
@@ -442099,7 +444261,7 @@ wli°
 d©a
 ;
 
-3949 
+3966 
 	`Á˘‹y_c⁄√˘i⁄_two_obje˘
 (
 f˛ass
@@ -442109,11 +444271,11 @@ aid
 c⁄n_±r
 );
 
-3951 
+3968 
 	}
 }
 
-3953 
+3970 
 	$Á˘‹y_ßve_obje˘buâ⁄_dülog
 (
 GtkWidgë
@@ -442121,19 +444283,19 @@ GtkWidgë
 widgë
 ,
 
-3954 
+3971 
 göt
  
 ª•⁄£_id
 ,
 
-3955 
+3972 
 gpoöãr
  
 u£r_d©a
 )
 
-3957 
+3974 
 SaveSåu˘
  *
 s°
@@ -442141,7 +444303,7 @@ s°
 u£r_d©a
 ;
 
-3958 
+3975 
 A˘IDAº
  *
 nid
@@ -442153,7 +444315,7 @@ vÆue
 √xtid
 ;
 
-3959 
+3976 
 GLi°
  *
 wli°
@@ -442161,23 +444323,23 @@ wli°
 nid
 ->wlist;
 
-3960 i‡–
+3977 i‡–
 ª•⁄£_id
  =
 GTK_RESPONSE_APPLY
 
 
-3961 || 
+3978 || 
 ª•⁄£_id
  =
 GTK_RESPONSE_OK
 )
 
-3963 
+3980 
 n
  = 0;
 
-3964 ; 
+3981 ; 
 wli°
 ; wli° = wli°->
 √xt
@@ -442185,7 +444347,7 @@ wli°
 n
 ++)
 
-3966 
+3983 
 GtkWidgë
  *
 wid
@@ -442195,7 +444357,7 @@ wli°
 d©a
 ;
 
-3967 
+3984 
 A˘i⁄ID
  *
 aid
@@ -442209,7 +444371,7 @@ a˘li°
 n
 );
 
-3968 
+3985 
 	`Á˘‹y_gë_vÆue_‰om_comobox
 (
 s°
@@ -442219,7 +444381,7 @@ wid
 aid
 );
 
-3970 
+3987 
 	`dügøm_£t_modifõd
 (
 	`ddi•œy_a˘ive_dügøm
@@ -442227,13 +444389,13 @@ aid
 TRUE
 );
 
-3972 
+3989 
 	`gtk_widgë_de°roy
 (
 widgë
 );
 
-3973 
+3990 
 	`g_li°_‰ì1
 (
 nid
@@ -442241,7 +444403,7 @@ nid
 wli°
 );
 
-3974 
+3991 
 nid
 ->
 wli°
@@ -442249,11 +444411,11 @@ wli°
 NULL
 ;
 
-3975 
+3992 
 	}
 }
 
-3977 
+3994 
 	$Á˘‹y_ßve_uni⁄buâ⁄_dülog
 (
 GtkWidgë
@@ -442261,31 +444423,31 @@ GtkWidgë
 widgë
 ,
 
-3978 
+3995 
 göt
  
 ª•⁄£_id
 ,
 
-3979 
+3996 
 gpoöãr
  
 u£r_d©a
 )
 
-3982 i‡–
+3999 i‡–
 ª•⁄£_id
  =
 GTK_RESPONSE_APPLY
 
 
-3983 || 
+4000 || 
 ª•⁄£_id
  =
 GTK_RESPONSE_OK
 )
 
-3986 
+4003 
 SaveSåu˘
  *
 s°
@@ -442293,7 +444455,7 @@ s°
 u£r_d©a
 ;
 
-3988 
+4005 
 SaveUbä
  *
 sbä
@@ -442305,7 +444467,7 @@ vÆue
 ssubä
 ;
 
-3992 
+4009 
 GLi°
  *
 wli°
@@ -442315,13 +444477,13 @@ sbä
 ßvñi°
 ;
 
-3993 ; 
+4010 ; 
 wli°
 ; wli° = wli°->
 √xt
 )
 
-3995 
+4012 
 SaveSåu˘
  *
 vss
@@ -442331,11 +444493,11 @@ wli°
 d©a
 ;
 
-3996 if(
+4013 if(
 vss
 )
 
-3997 
+4014 
 	`Á˘‹y_ªad_¥›s_‰om_widgë
 (
 NULL
@@ -442343,7 +444505,7 @@ NULL
 vss
 ,NULL);
 
-4000 
+4017 
 	`dügøm_£t_modifõd
 (
 	`ddi•œy_a˘ive_dügøm
@@ -442351,17 +444513,17 @@ vss
 TRUE
 );
 
-4003 
+4020 
 	`gtk_widgë_de°roy
 (
 widgë
 );
 
-4005 
+4022 
 	}
 }
 
-4007 
+4024 
 	$Á˘‹y_ßve_vÆue_‰om_widgë
 (
 SaveSåu˘
@@ -442369,17 +444531,17 @@ SaveSåu˘
 sss
 )
 
-4010 
+4027 
 sss
 ->
 ˚Œty≥
 )
 
-4012 
+4029 
 ECOMBO
 :
 
-4014 
+4031 
 sss
 ->
 vÆue
@@ -442395,7 +444557,7 @@ vÆue
 widgë2
 ));
 
-4015 
+4032 
 Fa˘‹ySåu˘Enum
  *
 km≠
@@ -442413,11 +444575,11 @@ vÆue
 ödex
 );
 
-4016 if(
+4033 if(
 km≠
 )
 
-4017 
+4034 
 sss
 ->
 vÆue
@@ -442429,11 +444591,11 @@ evÆue
 km≠
 ->value;
 
-4020 
+4037 
 ENTRY
 :
 
-4022 
+4039 
 SaveE¡ry
  *
 £y
@@ -442445,13 +444607,13 @@ vÆue
 £¡ry
 ;
 
-4024 if(
+4041 if(
 £y
 ->
 isSåög
 )
 
-4026 
+4043 
 £y
 ->
 d©a
@@ -442469,11 +444631,11 @@ widgë2
 NULL
 ,NULL,NULL);
 
-4030 
+4047 
 SPINBOX
 :
 
-4032 
+4049 
 guöt
  
 v
@@ -442487,7 +444649,7 @@ sss
 widgë2
 ));
 
-4033 
+4050 
 sss
 ->
 vÆue
@@ -442499,11 +444661,11 @@ vnumbî
 v
 );
 
-4037 
+4054 
 UCOMBO
 :
 
-4039 
+4056 
 SaveUni⁄
  *
 ssu
@@ -442515,7 +444677,7 @@ vÆue
 suni⁄
 ;
 
-4040 
+4057 
 SaveSåu˘
  *
 p
@@ -442529,39 +444691,39 @@ ssu
 curkey
 );
 
-4041 if(
+4058 if(
 p
 )
 
-4043 
+4060 
 p
 ->
 ˚Œty≥
 )
 
-4045 
+4062 
 SPINBOX
 :
 
-4046 
+4063 
 ENTRY
 :
 
-4047 
+4064 
 ECOMBO
 :
 
-4048 
+4065 
 	`Á˘‹y_ßve_vÆue_‰om_widgë
 (
 p
 );
 
-4057 
+4074 
 	}
 }
 
-4061 
+4078 
 	$Á˘‹y_ßve_ba£buâ⁄_dülog
 (
 GtkWidgë
@@ -442569,25 +444731,25 @@ GtkWidgë
 widgë
 ,
 
-4062 
+4079 
 göt
  
 ª•⁄£_id
 ,
 
-4063 
+4080 
 gpoöãr
  
 d©a
 )
 
-4065 
+4082 
 GLi°
  *
 tmp
 ;
 
-4066 
+4083 
 SaveE¡ry
  *
 £y
@@ -442595,19 +444757,19 @@ SaveE¡ry
 d©a
 ;
 
-4068 i‡–
+4085 i‡–
 ª•⁄£_id
  =
 GTK_RESPONSE_APPLY
 
 
-4069 || 
+4086 || 
 ª•⁄£_id
  =
 GTK_RESPONSE_OK
 )
 
-4072 
+4089 
 Æign
  = 2+
 £y
@@ -442615,7 +444777,7 @@ GTK_RESPONSE_OK
 width
 *2;
 
-4073 
+4090 
 tmp
  = 
 £y
@@ -442623,7 +444785,7 @@ tmp
 wli°
 ;
 
-4074 
+4091 
 	`g_li°_‰ì1
 (
 £y
@@ -442631,7 +444793,7 @@ wli°
 d©a
 );
 
-4075 
+4092 
 £y
 ->
 d©a
@@ -442639,13 +444801,13 @@ d©a
 NULL
 ;
 
-4076  ; 
+4093  ; 
 tmp
 ;Åm∞tmp->
 √xt
 )
 
-4078 
+4095 
 gch¨
  *
 °r
@@ -442661,7 +444823,7 @@ d©a
 NULL
 ,NULL,NULL);
 
-4079 
+4096 
 n
  = 
 Æign
@@ -442671,11 +444833,11 @@ n
 °r
 );
 
-4080 if(
+4097 if(
 n
 )
 
-4083 
+4100 
 gch¨
  *
 p
@@ -442685,7 +444847,7 @@ p
 Æign
 );
 
-4084 
+4101 
 	`mem£t
 (
 p
@@ -442693,23 +444855,23 @@ p
 Æign
 );
 
-4085 
+4102 
 p
  = 
 	`°∫˝y
 (p,"0x",2);
 
-4086 
+4103 
 n
 --)
 
-4088 
+4105 
 	`°∫ˇt
 (
 p
 ,"0",1);
 
-4090 
+4107 
 	`°∫ˇt
 (
 p
@@ -442719,19 +444881,19 @@ p
 	`°æí
 (&str[2]));
 
-4091 
+4108 
 	`g_‰ì
 (
 °r
 );
 
-4092 
+4109 
 °r
  = 
 p
 ;
 
-4094 
+4111 
 £y
 ->
 d©a
@@ -442741,21 +444903,21 @@ d©a
 °r
 );
 
-4098 
+4115 
 	`gtk_widgë_de°roy
 (
 widgë
 );
 
-4105 
+4122 
 	}
 }
 
-4108 
+4125 
 göt
 
 
-4109 
+4126 
 	$Á˘‹y_subdig_checkbäs_ª•⁄d
 (
 GtkWidgë
@@ -442771,7 +444933,7 @@ gpoöãr
 d©a
 )
 
-4111 
+4128 
 GLi°
  *
 wli°
@@ -442779,7 +444941,7 @@ wli°
 NULL
 ;
 
-4112 
+4129 
 SaveE¡ry
  *
 £y
@@ -442787,25 +444949,25 @@ SaveE¡ry
 d©a
 ;
 
-4114 i‡–
+4131 i‡–
 ª•⁄£_id
  =
 GTK_RESPONSE_APPLY
 
 
-4115 || 
+4132 || 
 ª•⁄£_id
  =
 GTK_RESPONSE_OK
 )
 
-4117 
+4134 
 wli°
  = 
 £y
 ->wlist;
 
-4118 
+4135 
 	`g_li°_‰ì1
 (
 £y
@@ -442813,7 +444975,7 @@ wli°
 d©a
 );
 
-4119 
+4136 
 £y
 ->
 d©a
@@ -442821,13 +444983,13 @@ d©a
 NULL
 ;
 
-4120  ; 
+4137  ; 
 wli°
 ; wli° = wli°->
 √xt
 )
 
-4122 
+4139 
 v
  = 
 	`gtk_toggÀ_buâ⁄_gë_a˘ive
@@ -442839,7 +445001,7 @@ wli°
 d©a
 )) ? 1 : 0;
 
-4123 
+4140 
 £y
 ->
 d©a
@@ -442851,21 +445013,21 @@ d©a
 v
 ));
 
-4128 
+4145 
 	`gtk_widgë_hide
 (
 widgë
 );
 
-4130  
+4147  
 ª•⁄£_id
 ;
 
-4131 
+4148 
 	}
 }
 
-4147 
+4164 
 	$Á˘oy_ch™ged_ôem
 (
 gpoöãr
@@ -442875,7 +445037,7 @@ widgë
 u£r_d©a
 )
 
-4151 
+4168 
 SaveSåu˘
  *
 sss
@@ -442883,7 +445045,7 @@ sss
 u£r_d©a
 ;
 
-4152 
+4169 
 SaveUni⁄
  *
 su±r
@@ -442895,7 +445057,7 @@ vÆue
 suni⁄
 ;
 
-4154 
+4171 
 GtkWidgë
  *
 a˘iveWidgë
@@ -442903,7 +445065,7 @@ a˘iveWidgë
 NULL
 ;
 
-4157 
+4174 
 GLi°
  *
 wli°
@@ -442917,13 +445079,13 @@ su±r
 vbox
 ));
 
-4158 ; 
+4175 ; 
 wli°
 ; wli° = wli°->
 √xt
 )
 
-4160 
+4177 
 GtkWidgë
  *
 rwidgë
@@ -442933,7 +445095,7 @@ wli°
 d©a
 ;
 
-4161 if(
+4178 if(
 rwidgë
  !
 su±r
@@ -442941,7 +445103,7 @@ su±r
 comobox
 )
 
-4163 
+4180 
 	`gtk_c⁄èöî_ªmove
 (
 	`GTK_CONTAINER
@@ -442953,13 +445115,13 @@ vbox
 rwidgë
 );
 
-4164 
+4181 
 	`gtk_widgë_de°roy
  (
 rwidgë
 );
 
-4168 
+4185 
 gch¨
  *
 ãxt
@@ -442971,7 +445133,7 @@ gch¨
 widgë
 ));
 
-4175 
+4192 
 Fa˘‹ySåu˘Iãm
  *
 sf°
@@ -442985,11 +445147,11 @@ su±r
 ãxt
 );
 
-4176 if(
+4193 if(
 sf°
 )
 
-4178 
+4195 
 SaveSåu˘
  *
 exi°S
@@ -442997,7 +445159,7 @@ exi°S
 NULL
 ;
 
-4179 
+4196 
 su±r
 ->
 curkey
@@ -443013,7 +445175,7 @@ Name
 NULL
 );
 
-4180 if(
+4197 if(
 	`g_hash_èbÀ_size
 (
 su±r
@@ -443021,7 +445183,7 @@ su±r
 ßveVÆ
 ))
 
-4182 
+4199 
 exi°S
  = 
 	`g_hash_èbÀ_lookup
@@ -443033,19 +445195,19 @@ su±r
 curkey
 );
 
-4183 if(!
+4200 if(!
 exi°S
 )
 
-4185 
+4202 
 CFIRST
 ;
 
-4192 
+4209 
 CFIRST
 :
 
-4193 
+4210 
 exi°S
  = 
 	`Á˘‹y_gë_ßve°ru˘
@@ -443053,7 +445215,7 @@ exi°S
 sf°
 );
 
-4194 
+4211 
 exi°S
 ->
 s˛ass
@@ -443061,7 +445223,7 @@ s˛ass
 sss
 ->sclass;
 
-4195 
+4212 
 	`Á˘‹y_°rjoö
 (&
 exi°S
@@ -443071,7 +445233,7 @@ exi°S
 sss
 ->name,".");
 
-4196 
+4213 
 	`g_hash_èbÀ_ö£π
 (
 su±r
@@ -443083,7 +445245,7 @@ curkey
 exi°S
 );
 
-4199 
+4216 
 a˘iveWidgë
  = 
 	`Á˘‹y_¸óã_v¨ü¡_obje˘
@@ -443091,13 +445253,13 @@ a˘iveWidgë
 exi°S
 );
 
-4200 if(
+4217 if(
 exi°S
 ->
 isPoöãr
  )
 
-4203 
+4220 
 SaveUbä
  *
 sbä
@@ -443109,7 +445271,7 @@ vÆue
 ssubä
 ;
 
-4204 
+4221 
 	`g_li°_‰ì1
 (
 sbä
@@ -443117,7 +445279,7 @@ sbä
 ßvñi°
 );
 
-4205 
+4222 
 sbä
 ->
 ßvñi°
@@ -443125,13 +445287,13 @@ sbä
 NULL
 ;
 
-4206 if(
+4223 if(
 sbä
 ->
 °ru˘li°
 )
 
-4208 
+4225 
 GLi°
  *
 ¶i°
@@ -443141,13 +445303,13 @@ sbä
 °ru˘li°
 ;
 
-4209 ; 
+4226 ; 
 ¶i°
 ; sli° = sli°->
 √xt
 )
 
-4211 
+4228 
 Fa˘‹ySåu˘Iãm
  *
 o
@@ -443157,7 +445319,7 @@ o
 d©a
 ;
 
-4212 
+4229 
 SaveSåu˘
  *
 s
@@ -443167,7 +445329,7 @@ s
 o
 );
 
-4213 
+4230 
 s
 ->
 s˛ass
@@ -443175,7 +445337,7 @@ s˛ass
 sss
 ->sclass;
 
-4214 
+4231 
 	`Á˘‹y_°rjoö
 (&
 s
@@ -443185,7 +445347,7 @@ s
 sss
 ->name,".");
 
-4215 
+4232 
 sbä
 ->
 ßvñi°
@@ -443195,7 +445357,7 @@ sbä
 s
 );
 
-4220 
+4237 
 	`gtk_box_∑ck_°¨t_deÁu…s
 (
 	`GTK_BOX
@@ -443207,7 +445369,7 @@ vbox
 a˘iveWidgë
 );
 
-4221 
+4238 
 	`gtk_c⁄èöî_ªsize_chûdªn
  (
 	`GTK_CONTAINER
@@ -443217,7 +445379,7 @@ su±r
 vbox
 ));
 
-4224 
+4241 
 	`gtk_widgë_show_Æl
 (
 su±r
@@ -443225,11 +445387,11 @@ su±r
 vbox
 );
 
-4226 
+4243 
 	}
 }
 
-4228 
+4245 
 	$Á˘‹y_°rjoö
 (
 gch¨
@@ -443241,7 +445403,7 @@ d°
 £p
 )
 
-4230 
+4247 
 gch¨
  *
 ⁄ame
@@ -443251,13 +445413,13 @@ gch¨
 d°
 );
 
-4231 
+4248 
 	`g_‰ì
 (*
 d°
 );
 
-4232 *
+4249 *
 d°
  = 
 	`g_°rjoö
@@ -443271,17 +445433,17 @@ d°
 NULL
 );
 
-4233 
+4250 
 	`g_‰ì
 (
 ⁄ame
 );
 
-4234 
+4251 
 	}
 }
 
-4239 
+4256 
 	$Á˘‹y_¸óã_ba£buâ⁄_dülog
 (
 GtkWidgë
@@ -443293,7 +445455,7 @@ SaveSåu˘
 sss
 )
 
-4242 
+4259 
 GtkWidgë
  *
 sdülog
@@ -443303,7 +445465,7 @@ sdülog
 FALSE
 ,0);
 
-4243 
+4260 
 GtkWidgë
  *
 subdig
@@ -443319,7 +445481,7 @@ sss
 buâ⁄
 ));
 
-4244 
+4261 
 GtkWidgë
  *
 dülog_vbox
@@ -443331,7 +445493,7 @@ subdig
 vbox
 ;
 
-4245 
+4262 
 	`gtk_c⁄èöî_add
 (
 	`GTK_CONTAINER
@@ -443341,7 +445503,7 @@ dülog_vbox
 sdülog
 );
 
-4246 
+4263 
 	`gtk_wödow_£t_modÆ
 (
 	`GTK_WINDOW
@@ -443351,7 +445513,7 @@ subdig
 TRUE
 );
 
-4250 
+4267 
 	`gtk_wödow_£t_posôi⁄
  (
 	`GTK_WINDOW
@@ -443361,7 +445523,7 @@ subdig
 GTK_WIN_POS_MOUSE
 );
 
-4252 
+4269 
 gch¨
  **
 vvv
@@ -443373,7 +445535,7 @@ sss
 ty≥
 ,".",-1);
 
-4253 
+4270 
 Àn
  = 
 	`g_°rv_Àngth
@@ -443381,7 +445543,7 @@ ty≥
 vvv
 ) -1 ;
 
-4254 
+4271 
 SaveE¡ry
  *
 £y
@@ -443393,7 +445555,7 @@ vÆue
 £¡ry
 ;
 
-4264 
+4281 
 	`gtk_box_∑ck_°¨t
 (
 	`GTK_BOX
@@ -443407,7 +445569,7 @@ sss
 FALSE
 ,FALSE,0);
 
-4265 
+4282 
 	`g_sig«l_c⁄√˘
 (
 	`G_OBJECT
@@ -443423,23 +445585,23 @@ sss
 £y
 );
 
-4267 
+4284 
 	`g_°r‰ìv
 (
 vvv
 );
 
-4268 
+4285 
 	`gtk_widgë_show_Æl
 (
 subdig
 );
 
-4269 
+4286 
 	}
 }
 
-4273 
+4290 
 	$Á˘‹y_io_p‹t_ch™ged_ª•⁄£
 (
 GtkWidgë
@@ -443451,13 +445613,13 @@ gpoöãr
 u£r_d©a
 )
 
-4275 
+4292 
 	`g_ªtu∫_if_Áû
 (
 Á˘‹yC⁄èöî
 );
 
-4276 
+4293 
 Fa˘‹ySy°emInfo
  *
 sys_öfo
@@ -443465,7 +445627,7 @@ sys_öfo
 Á˘‹yC⁄èöî
 ->sys_info;
 
-4277 
+4294 
 SaveEbä
  *
 £bä
@@ -443473,7 +445635,7 @@ SaveEbä
 u£r_d©a
 ;
 
-4278 
+4295 
 Àn
  = 
 	`g_li°_Àngth
@@ -443483,7 +445645,7 @@ u£r_d©a
 ebäwli°
 );
 
-4279 
+4296 
 GLi°
  *
 éi°
@@ -443493,13 +445655,13 @@ GLi°
 ebäwli°
 ;
 
-4281 ; 
+4298 ; 
 éi°
 ;Åli°Òli°->
 √xt
 )
 
-4283 
+4300 
 SaveEnumAº
  *
 £a
@@ -443509,7 +445671,7 @@ SaveEnumAº
 d©a
 ;
 
-4284 
+4301 
 io_max
  = 
 	`g_li°_Àngth
@@ -443521,7 +445683,7 @@ io_max
 íumLi°
 )-1;
 
-4285 if(
+4302 if(
 £a
 ->
 widgë2
@@ -443529,7 +445691,7 @@ widgë2
 widgë
 )
 
-4287 
+4304 
 pos
  = 
 	`gtk_combo_box_gë_a˘ive
@@ -443539,7 +445701,7 @@ pos
 widgë
 ));
 
-4288 
+4305 
 gch¨
  *
 txt
@@ -443551,25 +445713,25 @@ txt
 widgë
 ));
 
-4289 if(
+4306 if(
 pos
  !
 io_max
 )
 
-4300 
+4317 
 éi°
 Òli°->
 √xt
 ;
 
-4301 
+4318 
 	`g_ªtu∫_if_Áû
 (
 éi°
 );
 
-4302 
+4319 
 SaveEnumAº
  *
 s£a
@@ -443579,7 +445741,7 @@ s£a
 d©a
 ;
 
-4303 
+4320 
 	`gtk_widgë_£t_£nsôive
 (
 s£a
@@ -443589,13 +445751,13 @@ widgë2
 TRUE
 );
 
-4316 ; 
+4333 ; 
 éi°
 ;Åli°Òli°->
 √xt
 )
 
-4318 
+4335 
 SaveEnumAº
  *
 t£a
@@ -443605,7 +445767,7 @@ t£a
 d©a
 ;
 
-4319 
+4336 
 	`gtk_combo_box_£t_a˘ive
 (
 	`GTK_COMBO_BOX
@@ -443617,7 +445779,7 @@ widgë2
 pos
 );
 
-4320 
+4337 
 	`gtk_widgë_£t_£nsôive
 (
 t£a
@@ -443627,7 +445789,7 @@ widgë2
 FALSE
 );
 
-4335 
+4352 
 	`gtk_widgë_£t_£nsôive
 (
 	`GTK_COMBO_BOX
@@ -443637,17 +445799,17 @@ widgë
 TRUE
 );
 
-4336 
+4353 
 	`g_ªtu∫_if_Áû
 (
 éi°
 );
 
-4341 
+4358 
 	}
 }
 
-4343 
+4360 
 	$Á˘‹y_¸óã_io_p‹t_dülog
 (
 GtkWidgë
@@ -443659,13 +445821,13 @@ SaveSåu˘
 s°
 )
 
-4345 
+4362 
 	`g_ªtu∫_if_Áû
 (
 Á˘‹yC⁄èöî
 );
 
-4346 
+4363 
 Fa˘‹ySy°emInfo
  *
 sys_öfo
@@ -443673,7 +445835,7 @@ sys_öfo
 Á˘‹yC⁄èöî
 ->sys_info;
 
-4347 
+4364 
 GtkWidgë
  *
 sdülog
@@ -443683,7 +445845,7 @@ sdülog
 FALSE
 ,0);
 
-4348 
+4365 
 GtkWidgë
  *
 √wdülog
@@ -443699,7 +445861,7 @@ s°
 buâ⁄
 ));
 
-4349 
+4366 
 GtkWidgë
  *
 dülog_vbox
@@ -443711,7 +445873,7 @@ dülog_vbox
 vbox
 ;
 
-4350 
+4367 
 	`gtk_c⁄èöî_add
 (
 	`GTK_CONTAINER
@@ -443721,7 +445883,7 @@ dülog_vbox
 sdülog
 );
 
-4351 
+4368 
 	`gtk_wödow_£t_modÆ
 (
 	`GTK_WINDOW
@@ -443731,7 +445893,7 @@ sdülog
 TRUE
 );
 
-4352 
+4369 
 SaveEbä
  *
 £bä
@@ -443743,7 +445905,7 @@ vÆue
 s£bä
 ;
 
-4357 
+4374 
 gch¨
  **
 tôÀ
@@ -443755,7 +445917,7 @@ s°
 «me
 ,"[",-1);
 
-4358 
+4375 
 gch¨
  *
 fmt
@@ -443767,25 +445929,25 @@ tôÀ
 NULL
 );
 
-4359 
+4376 
 	`g_°r‰ìv
 (
 tôÀ
 );
 
-4361 
+4378 
 r
  = 0;
 
-4362 
+4379 
 pos
  = 0;
 
-4363 
+4380 
 äum
  = 0;
 
-4364 
+4381 
 gboﬁón
  
 £nsôive
@@ -443793,7 +445955,7 @@ gboﬁón
 TRUE
 ;
 
-4365 
+4382 
 gboﬁón
  
 ⁄ëime
@@ -443801,7 +445963,7 @@ gboﬁón
 TRUE
 ;
 
-4366 
+4383 
 AºayBa£Pr›
  *
 abp
@@ -443811,7 +445973,7 @@ abp
 ¨r_ba£
 ;
 
-4368 ; 
+4385 ; 
 r
  < 
 abp
@@ -443819,7 +445981,7 @@ abp
 row
  ;Ñ++)
 
-4370 
+4387 
 GtkWidgë
  *
 vbox
@@ -443829,11 +445991,11 @@ vbox
 TRUE
 ,0);
 
-4371 
+4388 
 c
  = 0;
 
-4372 
+4389 
 äum
  = 
 r
@@ -443843,7 +446005,7 @@ abp
 cﬁ
 ;
 
-4373 ; 
+4390 ; 
 c
  < 
 abp
@@ -443851,7 +446013,7 @@ abp
 cﬁ
  ; c++)
 
-4375 
+4392 
 pos
  = 
 äum
@@ -443859,7 +446021,7 @@ pos
 c
 ;
 
-4376 if–
+4393 if–
 pos
  >
 abp
@@ -443867,7 +446029,7 @@ abp
 ªÆÀn
 )
 
-4378 
+4395 
 GtkWidgë
  *
 hbox
@@ -443883,7 +446045,7 @@ FALSE
 	`gtk_hbox_√w
 (FALSE,0) ;
 
-4379 
+4396 
 SaveEnumAº
  *
 £a
@@ -443897,7 +446059,7 @@ ebäwli°
 pos
 );
 
-4380 
+4397 
 io_max
  = 
 	`g_li°_Àngth
@@ -443909,7 +446071,7 @@ io_max
 íumLi°
 )-1;
 
-4381 if(
+4398 if(
 pos
  && (
 £a
@@ -443921,13 +446083,13 @@ pos
 io_max
 ))
 
-4383 
+4400 
 £nsôive
  = 
 FALSE
 ;
 
-4386 
+4403 
 GtkWidgë
  *
 comobox
@@ -443941,7 +446103,7 @@ comobox
 íumLi°
 ,
 
-4387 
+4404 
 £a
 ->
 £num
@@ -443949,7 +446111,7 @@ comobox
 ödex
 );
 
-4388 
+4405 
 	`gtk_widgë_£t_£nsôive
 (
 comobox
@@ -443957,7 +446119,7 @@ comobox
 £nsôive
 );
 
-4389 if((
+4406 if((
 £a
 ->
 £num
@@ -443969,7 +446131,7 @@ io_max
 ⁄ëime
  )
 
-4391 
+4408 
 	`gtk_widgë_£t_£nsôive
 (
 comobox
@@ -443977,13 +446139,13 @@ comobox
 TRUE
 );
 
-4392 
+4409 
 ⁄ëime
  = 
 FALSE
 ;
 
-4395 
+4412 
 	`g_sig«l_c⁄√˘
 (
 	`G_OBJECT
@@ -443997,7 +446159,7 @@ comobox
 £bä
 );
 
-4396 
+4413 
 GtkWidgë
  *
 wid
@@ -444011,7 +446173,7 @@ fmt
 pos
 ));
 
-4397 
+4414 
 £a
 ->
 widgë1
@@ -444019,7 +446181,7 @@ widgë1
 wid
 ;
 
-4398 
+4415 
 £a
 ->
 widgë2
@@ -444027,7 +446189,7 @@ widgë2
 comobox
 ;
 
-4399 
+4416 
 	`gtk_box_∑ck_°¨t
 (
 	`GTK_BOX
@@ -444039,7 +446201,7 @@ wid
 FALSE
 ,FALSE,0);
 
-4400 
+4417 
 	`gtk_box_∑ck_°¨t
 (
 	`GTK_BOX
@@ -444051,7 +446213,7 @@ comobox
 FALSE
 ,FALSE,0);
 
-4401 
+4418 
 	`gtk_box_∑ck_°¨t
 (
 	`GTK_BOX
@@ -444063,7 +446225,7 @@ hbox
 FALSE
 ,FALSE,0);
 
-4402 
+4419 
 	`gtk_c⁄èöî_add
 (
 	`GTK_CONTAINER
@@ -444073,7 +446235,7 @@ vbox
 hbox
 );
 
-4404 
+4421 
 	`gtk_c⁄èöî_add
 (
 	`GTK_CONTAINER
@@ -444083,7 +446245,7 @@ sdülog
 vbox
 );
 
-4406 
+4423 
 	`g_sig«l_c⁄√˘
 (
 	`G_OBJECT
@@ -444091,7 +446253,7 @@ vbox
 √wdülog
 ), "response",
 
-4407 
+4424 
 	`G_CALLBACK
  (
 s°
@@ -444099,29 +446261,29 @@ s°
 ˛o£_func
 ), sst);
 
-4409 
+4426 
 	`gtk_widgë_show_Æl
 (
 √wdülog
 );
 
-4410 
+4427 
 	`gtk_dülog_run
 (
 √wdülog
 );
 
-4411 
+4428 
 	`gtk_widgë_de°roy
 (
 √wdülog
 );
 
-4412 
+4429 
 	}
 }
 
-4415 
+4432 
 	$Á˘‹y_¸óã_íumbuâ⁄_dülog
 (
 GtkWidgë
@@ -444133,7 +446295,7 @@ SaveSåu˘
 s°
 )
 
-4417 
+4434 
 GtkWidgë
  *
 sdülog
@@ -444143,7 +446305,7 @@ sdülog
 FALSE
 ,0);
 
-4418 
+4435 
 GtkWidgë
  *
 √wdülog
@@ -444159,7 +446321,7 @@ s°
 buâ⁄
 ));
 
-4419 
+4436 
 GtkWidgë
  *
 dülog_vbox
@@ -444171,7 +446333,7 @@ dülog_vbox
 vbox
 ;
 
-4420 
+4437 
 	`gtk_c⁄èöî_add
 (
 	`GTK_CONTAINER
@@ -444181,7 +446343,7 @@ dülog_vbox
 sdülog
 );
 
-4421 
+4438 
 	`gtk_wödow_£t_modÆ
 (
 	`GTK_WINDOW
@@ -444191,7 +446353,7 @@ sdülog
 TRUE
 );
 
-4422 
+4439 
 SaveEbä
  *
 £bä
@@ -444203,7 +446365,7 @@ vÆue
 s£bä
 ;
 
-4425 
+4442 
 gch¨
  **
 tôÀ
@@ -444215,7 +446377,7 @@ s°
 «me
 ,"[",-1);
 
-4426 
+4443 
 gch¨
  *
 fmt
@@ -444227,25 +446389,25 @@ tôÀ
 NULL
 );
 
-4427 
+4444 
 	`g_°r‰ìv
 (
 tôÀ
 );
 
-4429 
+4446 
 r
  = 0;
 
-4430 
+4447 
 pos
  = 0;
 
-4431 
+4448 
 äum
  = 0;
 
-4432 
+4449 
 AºayBa£Pr›
  *
 abp
@@ -444255,7 +446417,7 @@ abp
 ¨r_ba£
 ;
 
-4434 ; 
+4451 ; 
 r
  < 
 abp
@@ -444263,7 +446425,7 @@ abp
 row
  ;Ñ++)
 
-4436 
+4453 
 GtkWidgë
  *
 vbox
@@ -444273,11 +446435,11 @@ vbox
 TRUE
 ,0);
 
-4437 
+4454 
 c
  = 0;
 
-4438 
+4455 
 äum
  = 
 r
@@ -444287,7 +446449,7 @@ abp
 cﬁ
 ;
 
-4439 ; 
+4456 ; 
 c
  < 
 abp
@@ -444295,7 +446457,7 @@ abp
 cﬁ
  ; c++)
 
-4441 
+4458 
 pos
  = 
 äum
@@ -444303,7 +446465,7 @@ pos
 c
 ;
 
-4442 if–
+4459 if–
 pos
  >
 abp
@@ -444311,7 +446473,7 @@ abp
 ªÆÀn
 )
 
-4444 
+4461 
 GtkWidgë
  *
 hbox
@@ -444327,7 +446489,7 @@ FALSE
 	`gtk_hbox_√w
 (FALSE,0) ;
 
-4445 
+4462 
 SaveEnumAº
  *
 £a
@@ -444341,7 +446503,7 @@ ebäwli°
 pos
 );
 
-4446 
+4463 
 GtkWidgë
  *
 comobox
@@ -444355,7 +446517,7 @@ comobox
 íumLi°
 ,
 
-4447 
+4464 
 £a
 ->
 £num
@@ -444363,7 +446525,7 @@ comobox
 ödex
 );
 
-4448 
+4465 
 GtkWidgë
  *
 wid
@@ -444377,7 +446539,7 @@ fmt
 pos
 ));
 
-4449 
+4466 
 £a
 ->
 widgë1
@@ -444385,7 +446547,7 @@ widgë1
 wid
 ;
 
-4450 
+4467 
 £a
 ->
 widgë2
@@ -444393,7 +446555,7 @@ widgë2
 comobox
 ;
 
-4451 
+4468 
 	`gtk_box_∑ck_°¨t
 (
 	`GTK_BOX
@@ -444405,7 +446567,7 @@ wid
 FALSE
 ,FALSE,0);
 
-4452 
+4469 
 	`gtk_box_∑ck_°¨t
 (
 	`GTK_BOX
@@ -444417,7 +446579,7 @@ comobox
 FALSE
 ,FALSE,0);
 
-4453 
+4470 
 	`gtk_box_∑ck_°¨t
 (
 	`GTK_BOX
@@ -444429,7 +446591,7 @@ hbox
 FALSE
 ,FALSE,0);
 
-4454 
+4471 
 	`gtk_c⁄èöî_add
 (
 	`GTK_CONTAINER
@@ -444439,7 +446601,7 @@ vbox
 hbox
 );
 
-4456 
+4473 
 	`gtk_c⁄èöî_add
 (
 	`GTK_CONTAINER
@@ -444449,7 +446611,7 @@ sdülog
 vbox
 );
 
-4458 
+4475 
 	`g_sig«l_c⁄√˘
 (
 	`G_OBJECT
@@ -444457,7 +446619,7 @@ vbox
 √wdülog
 ), "response",
 
-4459 
+4476 
 	`G_CALLBACK
  (
 s°
@@ -444465,29 +446627,29 @@ s°
 ˛o£_func
 ), sst);
 
-4461 
+4478 
 	`gtk_widgë_show_Æl
 (
 √wdülog
 );
 
-4462 
+4479 
 	`gtk_dülog_run
 (
 √wdülog
 );
 
-4463 
+4480 
 	`gtk_widgë_de°roy
 (
 √wdülog
 );
 
-4464 
+4481 
 	}
 }
 
-4467 
+4484 
 	$Á˘‹y_¸óã_obje˘buâ⁄_dülog
 (
 GtkWidgë
@@ -444499,7 +446661,7 @@ SaveSåu˘
 s°
 )
 
-4470 
+4487 
 GtkWidgë
  *
 sdülog
@@ -444509,7 +446671,7 @@ sdülog
 FALSE
 ,0);
 
-4471 
+4488 
 GQu¨k
  
 tq¨uk
@@ -444521,7 +446683,7 @@ s°
 «me
 );
 
-4472 
+4489 
 GtkWidgë
  *
 subdig
@@ -444533,13 +446695,13 @@ subdig
 tq¨uk
 ),
 
-4473 
+4490 
 	`gtk_widgë_gë_t›Àvñ
 (
 buâ⁄
 ));
 
-4474 
+4491 
 GtkWidgë
  *
 dülog_vbox
@@ -444551,7 +446713,7 @@ subdig
 vbox
 ;
 
-4475 
+4492 
 	`gtk_c⁄èöî_add
 (
 	`GTK_CONTAINER
@@ -444561,7 +446723,7 @@ dülog_vbox
 sdülog
 );
 
-4476 
+4493 
 	`gtk_wödow_£t_modÆ
 (
 	`GTK_WINDOW
@@ -444571,7 +446733,7 @@ subdig
 TRUE
 );
 
-4478 
+4495 
 A˘IDAº
  *
 √xtid
@@ -444581,7 +446743,7 @@ s°
 vÆue
 .nextid;
 
-4479 
+4496 
 STRUCTCœss
  *
 ‹g˛ass
@@ -444591,7 +446753,7 @@ s°
 s˛ass
 ;
 
-4480 
+4497 
 √xtid
 ->
 ôemli°
@@ -444601,7 +446763,7 @@ s˛ass
 curLayî
 );
 
-4481 
+4498 
 √xtid
 ->
 ôemli°
@@ -444609,25 +446771,25 @@ curLayî
 	`g_li°_ö£π
 (nextid->itemlist,
 
-4482 
+4499 
 	`g_qu¨k_to_°rög
 (
 em±y_qu¨k
 ),0);
 
-4484 
+4501 
 r
  = 0;
 
-4485 
+4502 
 pos
  = 0;
 
-4486 
+4503 
 äum
  = 0;
 
-4487 
+4504 
 GtkTªeModñ
  *
 modñ
@@ -444639,7 +446801,7 @@ modñ
 ôemli°
 );
 
-4488 
+4505 
 AºayBa£Pr›
  *
 abp
@@ -444649,7 +446811,7 @@ abp
 ¨r_ba£
 ;
 
-4489 ; 
+4506 ; 
 r
  < 
 abp
@@ -444657,7 +446819,7 @@ abp
 row
  ;Ñ++)
 
-4491 
+4508 
 GtkWidgë
  *
 vbox
@@ -444667,11 +446829,11 @@ vbox
 TRUE
 ,0);
 
-4492 
+4509 
 c
  = 0;
 
-4493 
+4510 
 äum
  = 
 r
@@ -444681,7 +446843,7 @@ abp
 cﬁ
 ;
 
-4494 ; 
+4511 ; 
 c
  < 
 abp
@@ -444689,7 +446851,7 @@ abp
 cﬁ
  ; c++)
 
-4496 
+4513 
 pos
  = 
 äum
@@ -444697,7 +446859,7 @@ pos
 c
 ;
 
-4497 if–
+4514 if–
 pos
  >
 abp
@@ -444705,7 +446867,7 @@ abp
 ªÆÀn
 )
 
-4499 
+4516 
 GtkWidgë
  *
 hbox
@@ -444715,7 +446877,7 @@ hbox
 FALSE
 ,0);
 
-4500 
+4517 
 A˘i⁄ID
  *
 aid
@@ -444729,7 +446891,7 @@ a˘li°
 pos
 );
 
-4502 
+4519 
 GtkWidgë
  *
 comobox
@@ -444737,7 +446899,7 @@ comobox
 	`gtk_combo_box_√w_ãxt
 ();
 
-4503 
+4520 
 	`gtk_combo_box_£t_modñ
 (
 	`GTK_COMBO_BOX
@@ -444747,7 +446909,7 @@ comobox
 modñ
 );
 
-4504 
+4521 
 ComboxCmp
  
 cc
@@ -444757,7 +446919,7 @@ combox
 comobox
 ,
 
-4505 .
+4522 .
 qödex
  = 
 aid
@@ -444765,7 +446927,7 @@ aid
 ¥e_qu¨k
 };
 
-4506 
+4523 
 	`gtk_åì_modñ_f‹óch
 (
 modñ
@@ -444775,7 +446937,7 @@ modñ
 cc
 );
 
-4509 
+4526 
 GtkWidgë
  *
 wid
@@ -444787,7 +446949,7 @@ aid
 tôÀ_«me
 );
 
-4510 
+4527 
 √xtid
 ->
 wli°
@@ -444797,7 +446959,7 @@ wli°
 comobox
 );
 
-4511 
+4528 
 	`gtk_box_∑ck_°¨t
 (
 	`GTK_BOX
@@ -444809,7 +446971,7 @@ wid
 FALSE
 ,FALSE,0);
 
-4512 
+4529 
 	`gtk_box_∑ck_°¨t
 (
 	`GTK_BOX
@@ -444821,7 +446983,7 @@ comobox
 FALSE
 ,FALSE,0);
 
-4513 
+4530 
 	`gtk_box_∑ck_°¨t
 (
 	`GTK_BOX
@@ -444833,7 +446995,7 @@ hbox
 FALSE
 ,FALSE,0);
 
-4514 
+4531 
 	`gtk_c⁄èöî_add
 (
 	`GTK_CONTAINER
@@ -444843,7 +447005,7 @@ vbox
 hbox
 );
 
-4516 
+4533 
 	`gtk_c⁄èöî_add
 (
 	`GTK_CONTAINER
@@ -444853,7 +447015,7 @@ sdülog
 vbox
 );
 
-4518 
+4535 
 	`g_sig«l_c⁄√˘
 (
 	`G_OBJECT
@@ -444861,7 +447023,7 @@ vbox
 subdig
 ), "response",
 
-4519 
+4536 
 	`G_CALLBACK
  (
 s°
@@ -444869,29 +447031,29 @@ s°
 ˛o£_func
 ), sst);
 
-4521 
+4538 
 	`gtk_widgë_show_Æl
 (
 subdig
 );
 
-4523 
+4540 
 	`gtk_dülog_run
 (
 subdig
 );
 
-4525 
+4542 
 	`gtk_widgë_de°roy
 (
 subdig
 );
 
-4527 
+4544 
 	}
 }
 
-4530 
+4547 
 	$Á˘‹y_¸óã_£À˘Æl_™d_ªvî£
 (
 GtkWidgë
@@ -444903,7 +447065,7 @@ GtkWidgë
 ªvî£
 )
 
-4532 
+4549 
 GtkWidgë
  *
 £p1
@@ -444911,7 +447073,7 @@ GtkWidgë
 	`gtk_h£∑øt‹_√w
 ();
 
-4533 
+4550 
 	`gtk_box_∑ck_°¨t
 (
 	`GTK_BOX
@@ -444923,7 +447085,7 @@ GtkWidgë
 TRUE
 ,TRUE,1);
 
-4535 *
+4552 *
 £À˘Æl
  = 
 	`gtk_buâ⁄_√w_wôh_œbñ
@@ -444935,7 +447097,7 @@ TRUE
 NULL
 ,NULL,NULL));
 
-4536 *
+4553 *
 ªvî£
  = 
 	`gtk_buâ⁄_√w_wôh_œbñ
@@ -444947,7 +447109,7 @@ NULL
 NULL
 ,NULL,NULL));
 
-4537 
+4554 
 GtkWidgë
  *
 hbox
@@ -444957,7 +447119,7 @@ hbox
 FALSE
 ,0);
 
-4538 
+4555 
 	`gtk_box_∑ck_°¨t
 (
 	`GTK_BOX
@@ -444969,7 +447131,7 @@ hbox
 TRUE
 ,TRUE,1);
 
-4539 
+4556 
 	`gtk_box_∑ck_íd
 (
 	`GTK_BOX
@@ -444981,7 +447143,7 @@ hbox
 FALSE
 ,FALSE,0);
 
-4540 
+4557 
 	`gtk_box_∑ck_íd
 (
 	`GTK_BOX
@@ -444993,7 +447155,7 @@ hbox
 FALSE
 ,FALSE,0);
 
-4541 
+4558 
 GtkWidgë
  *
 £p2
@@ -445001,7 +447163,7 @@ GtkWidgë
 	`gtk_h£∑øt‹_√w
 ();
 
-4542 
+4559 
 	`gtk_box_∑ck_°¨t
 (
 	`GTK_BOX
@@ -445013,11 +447175,11 @@ GtkWidgë
 TRUE
 ,TRUE,1);
 
-4543 
+4560 
 	}
 }
 
-4546 
+4563 
 	$Á˘‹y_h™dÀ_£À˘_Æl
 (
 GtkWidgë
@@ -445029,7 +447191,7 @@ GLi°
 u£r_d©a
 )
 
-4548 
+4565 
 GLi°
  *
 wli°
@@ -445037,13 +447199,13 @@ wli°
 u£r_d©a
 ;
 
-4549 ; 
+4566 ; 
 wli°
 ; wli° = wli°->
 √xt
 )
 
-4551 
+4568 
 	`gtk_toggÀ_buâ⁄_£t_a˘ive
 (
 wli°
@@ -445053,11 +447215,11 @@ d©a
 TRUE
 );
 
-4553 
+4570 
 	}
 }
 
-4555 
+4572 
 	$Á˘‹y_h™dÀ_ªvî£_£À˘
 (
 GtkWidgë
@@ -445069,7 +447231,7 @@ GLi°
 u£r_d©a
 )
 
-4557 
+4574 
 GLi°
  *
 wli°
@@ -445077,13 +447239,13 @@ wli°
 u£r_d©a
 ;
 
-4558 ; 
+4575 ; 
 wli°
 ; wli° = wli°->
 √xt
 )
 
-4560 
+4577 
 gboﬁón
  
 b
@@ -445095,7 +447257,7 @@ wli°
 d©a
 );
 
-4561 
+4578 
 	`gtk_toggÀ_buâ⁄_£t_a˘ive
 (
 wli°
@@ -445105,11 +447267,11 @@ d©a
 b
 );
 
-4563 
+4580 
 	}
 }
 
-4567 
+4584 
 STRUCTCœss
  *
 	$Á˘‹y_föd_düobje˘_by_«me
@@ -445123,7 +447285,7 @@ gch¨
 «me
 )
 
-4571 
+4588 
 GQu¨k
  
 q1
@@ -445133,7 +447295,7 @@ q1
 «me
 );
 
-4572 
+4589 
 GLi°
  *
 objli°
@@ -445141,11 +447303,11 @@ objli°
 NULL
 ;
 
-4573 if(
+4590 if(
 cuæayî
 )
 
-4574 
+4591 
 objli°
  = 
 cuæayî
@@ -445153,7 +447315,7 @@ cuæayî
 obje˘s
 ;
 
-4575 
+4592 
 STRUCTCœss
  *
 obj˛ass
@@ -445161,13 +447323,13 @@ obj˛ass
 NULL
 ;
 
-4576 ; 
+4593 ; 
 objli°
  ; objli° = objli°->
 √xt
  )
 
-4578 if(!
+4595 if(!
 	`Á˘‹y_is_°ru˘_ty≥
 (
 objli°
@@ -445175,7 +447337,7 @@ objli°
 d©a
 ))
 
-4580 
+4597 
 obj˛ass
  = 
 objli°
@@ -445183,7 +447345,7 @@ objli°
 d©a
 ;
 
-4581 
+4598 
 GQu¨k
  
 q2
@@ -445195,21 +447357,21 @@ obj˛ass
 «me
 );
 
-4583 if(
+4600 if(
 q2
  =
 q1
 )
 
-4589  
+4606  
 obj˛ass
 ;
 
-4590 
+4607 
 	}
 }
 
-4592 
+4609 
 gboﬁón
  
 	$Á˘‹y_is_c⁄√˘ed
@@ -445221,7 +447383,7 @@ C⁄√˘i⁄Poöt
 ˝°¨t
 )
 
-4594 
+4611 
 gboﬁón
  
 isc⁄√˘ed
@@ -445229,7 +447391,7 @@ isc⁄√˘ed
 FALSE
 ;
 
-4595 
+4612 
 DüObje˘
  *
 obj
@@ -445243,11 +447405,11 @@ c⁄√˘ed
 ˝°¨t
 ->connected);
 
-4596 if(
+4613 if(
 obj
 )
 
-4598 if((
+4615 if((
 obj
 ->
 h™dÀs
@@ -445257,7 +447419,7 @@ c⁄√˘ed_to
 ˝°¨t
 ) &&
 
-4599 (
+4616 (
 obj
 ->
 h™dÀs
@@ -445267,21 +447429,21 @@ c⁄√˘ed_to
 ˝íd
 ))
 
-4600 
+4617 
 isc⁄√˘ed
  = 
 TRUE
 ;
 
-4602  
+4619  
 isc⁄√˘ed
 ;
 
-4603 
+4620 
 	}
 }
 
-4608 
+4625 
 GLi°
  * 
 	$Á˘‹y_gë_obje˘s_‰om_œyî
@@ -445291,7 +447453,7 @@ Layî
 œyî
 )
 
-4610 
+4627 
 GLi°
  *
 li°
@@ -445299,11 +447461,11 @@ li°
 NULL
 ;
 
-4611 if(
+4628 if(
 œyî
 )
 
-4614 
+4631 
 li°
  = 
 	`g_hash_èbÀ_gë_keys
@@ -445313,13 +447475,13 @@ li°
 de‚ames
 );
 
-4615 if(
+4632 if(
 	`g_li°_Àngth
 (
 li°
 )>1)
 
-4616 
+4633 
 li°
  = 
 	`g_li°_s‹t
@@ -445327,15 +447489,15 @@ li°
 Á˘‹y_°r_com∑ª
 );
 
-4618  
+4635  
 li°
 ;
 
-4619 
+4636 
 	}
 }
 
-4625 
+4642 
 	$Á˘‹y_¸óã_uni⁄buâ⁄_dülog
 (
 GtkWidgë
@@ -445347,7 +447509,7 @@ SaveSåu˘
 s°
 )
 
-4628 
+4645 
 SaveUbä
  *
 sbä
@@ -445359,13 +447521,13 @@ vÆue
 ssubä
 ;
 
-4629 
+4646 
 	`g_ªtu∫_if_Áû
 (
 sbä
 );
 
-4633 
+4650 
 GtkWidgë
  *
 subdig
@@ -445377,13 +447539,13 @@ s°
 «me
 ,
 
-4634 
+4651 
 	`gtk_widgë_gë_t›Àvñ
 (
 buâ⁄
 ));
 
-4635 
+4652 
 	`gtk_wödow_£t_ty≥_höt
 (
 	`GTK_WINDOW
@@ -445393,7 +447555,7 @@ subdig
 GDK_WINDOW_TYPE_HINT_DOCK
 );
 
-4638 
+4655 
 GtkWidgë
  *
 dülog_vbox
@@ -445405,7 +447567,7 @@ subdig
 vbox
 ;
 
-4640 
+4657 
 	`gtk_wödow_£t_modÆ
 (
 	`GTK_WINDOW
@@ -445415,7 +447577,7 @@ subdig
 TRUE
 );
 
-4641 
+4658 
 	`gtk_wödow_£t_posôi⁄
  (
 	`GTK_WINDOW
@@ -445425,7 +447587,7 @@ subdig
 GTK_WIN_POS_MOUSE
 );
 
-4643 
+4660 
 num
  = 
 	`g_li°_Àngth
@@ -445435,7 +447597,7 @@ sbä
 °ru˘li°
 );
 
-4644 
+4661 
 GtkTabÀ
  *
 èbÀ
@@ -445447,7 +447609,7 @@ num
 FALSE
 );
 
-4647 
+4664 
 	`gtk_c⁄èöî_add
 (
 	`GTK_CONTAINER
@@ -445457,7 +447619,7 @@ dülog_vbox
 èbÀ
 );
 
-4649 
+4666 
 GLi°
  *
 subôem
@@ -445467,11 +447629,11 @@ sbä
 ßvñi°
 ;
 
-4650 if(
+4667 if(
 subôem
 )
 
-4651 
+4668 
 	`Á˘‹y_¸óã_°ru˘_dülog
 (
 	`GTK_WIDGET
@@ -445481,13 +447643,13 @@ subôem
 subôem
 );
 
-4654 if(
+4671 if(
 sbä
 ->
 °ru˘li°
 )
 
-4656 
+4673 
 	`g_li°_‰ì1
 (
 sbä
@@ -445495,7 +447657,7 @@ sbä
 ßvñi°
 );
 
-4657 
+4674 
 sbä
 ->
 ßvñi°
@@ -445503,7 +447665,7 @@ sbä
 NULL
 ;
 
-4658 
+4675 
 GLi°
  *
 ¶i°
@@ -445513,13 +447675,13 @@ sbä
 °ru˘li°
 ;
 
-4659 ; 
+4676 ; 
 ¶i°
 ; sli° = sli°->
 √xt
 )
 
-4661 
+4678 
 Fa˘‹ySåu˘Iãm
  *
 o
@@ -445529,7 +447691,7 @@ o
 d©a
 ;
 
-4662 
+4679 
 SaveSåu˘
  *
 s
@@ -445539,7 +447701,7 @@ s
 o
 );
 
-4663 
+4680 
 s
 ->
 s˛ass
@@ -445547,7 +447709,7 @@ s˛ass
 s°
 ->sclass;
 
-4664 
+4681 
 	`Á˘‹y_°rjoö
 (&
 s
@@ -445557,7 +447719,7 @@ s
 s°
 ->name,".");
 
-4665 
+4682 
 sbä
 ->
 ßvñi°
@@ -445567,7 +447729,7 @@ sbä
 s
 );
 
-4667 
+4684 
 subôem
  = 
 sbä
@@ -445575,11 +447737,11 @@ sbä
 ßvñi°
 ;
 
-4668 if(
+4685 if(
 subôem
 )
 
-4670 
+4687 
 	`Á˘‹y_¸óã_°ru˘_dülog
 (
 	`GTK_WIDGET
@@ -445589,7 +447751,7 @@ subôem
 subôem
 );
 
-4675 
+4692 
 	`gtk_èbÀ_£t_cﬁ_•acög
 (
 	`GTK_TABLE
@@ -445597,7 +447759,7 @@ subôem
 èbÀ
 ),1,20);
 
-4676 
+4693 
 	`g_sig«l_c⁄√˘
 (
 	`G_OBJECT
@@ -445611,29 +447773,29 @@ s°
 ˛o£_func
 ), sst);
 
-4677 
+4694 
 	`gtk_widgë_show_Æl
 (
 subdig
 );
 
-4678 
+4695 
 	`gtk_dülog_run
 (
 subdig
 );
 
-4679 
+4696 
 	`gtk_widgë_de°roy
 (
 subdig
 );
 
-4681 
+4698 
 	}
 }
 
-4685 
+4702 
 GtkWidgë
  *
 	$Á˘‹y_¸óã_m™y_checkbox
@@ -445643,7 +447805,7 @@ SaveSåu˘
 sss
 )
 
-4687 
+4704 
 SaveE¡ry
  *
 £y
@@ -445655,7 +447817,7 @@ vÆue
 £¡ry
 ;
 
-4688 
+4705 
 GtkToﬁtùs
  *
 tùs
@@ -445663,7 +447825,7 @@ tùs
 	`gtk_toﬁtùs_√w
 ();
 
-4690 
+4707 
 row
  = 
 £y
@@ -445671,7 +447833,7 @@ row
 ¨r_ba£
 .row;
 
-4691 
+4708 
 cﬁ
  = 
 £y
@@ -445679,11 +447841,11 @@ cﬁ
 ¨r_ba£
 .col;
 
-4692 
+4709 
 r
  = 0 ;
 
-4693 
+4710 
 GtkWidgë
  *
 vbox
@@ -445693,7 +447855,7 @@ vbox
 FALSE
 ,0);
 
-4694 
+4711 
 	`gtk_toﬁtùs_£t_tù
 (
 tùs
@@ -445709,7 +447871,7 @@ Commít
 NULL
 );
 
-4695 
+4712 
 	`g_li°_‰ì1
 (
 £y
@@ -445717,7 +447879,7 @@ NULL
 wli°
 );
 
-4696 
+4713 
 £y
 ->
 wli°
@@ -445725,13 +447887,13 @@ wli°
 NULL
 ;
 
-4697 ; 
+4714 ; 
 r
  < 
 row
  ;Ñ++)
 
-4699 
+4716 
 GtkWidgë
  *
 hbox
@@ -445741,7 +447903,7 @@ hbox
 FALSE
 ,0);
 
-4700 
+4717 
 	`gtk_box_∑ck_°¨t
 (
 	`GTK_BOX
@@ -445753,17 +447915,17 @@ hbox
 FALSE
 ,FALSE,0);
 
-4701 
+4718 
 c
  = 0;
 
-4702 ; 
+4719 ; 
 c
  < 
 cﬁ
  ; c++)
 
-4704 
+4721 
 GtkWidgë
  *
 checkbä
@@ -445777,7 +447939,7 @@ checkbä
 c
 ));
 
-4705 
+4722 
 gch¨
  *
 vÆ
@@ -445795,7 +447957,7 @@ cﬁ
 c
 );
 
-4706 
+4723 
 	`gtk_toggÀ_buâ⁄_£t_a˘ive
 (
 	`GTK_TOGGLE_BUTTON
@@ -445803,7 +447965,7 @@ c
 checkbä
 ),
 
-4707 !
+4724 !
 	`g_ascii_°∫ˇ£cmp
 (
 vÆ
@@ -445815,7 +447977,7 @@ TRUE
 FALSE
 );
 
-4708 
+4725 
 	`gtk_box_∑ck_°¨t
 (
 	`GTK_BOX
@@ -445827,7 +447989,7 @@ checkbä
 FALSE
 ,FALSE,1);
 
-4709 
+4726 
 £y
 ->
 wli°
@@ -445837,15 +447999,15 @@ wli°
 checkbä
 );
 
-4712  
+4729  
 vbox
 ;
 
-4713 
+4730 
 	}
 }
 
-4715 
+4732 
 GtkWidgë
  *
 	$Á˘‹y_¸óã_m™y_íåy_box
@@ -445855,7 +448017,7 @@ SaveSåu˘
 sss
 )
 
-4719 
+4736 
 SaveE¡ry
  *
 £y
@@ -445867,7 +448029,7 @@ vÆue
 £¡ry
 ;
 
-4720 
+4737 
 GtkToﬁtùs
  *
 tùs
@@ -445875,7 +448037,7 @@ tùs
 	`gtk_toﬁtùs_√w
 ();
 
-4722 
+4739 
 GLi°
  *
 wli°
@@ -445883,7 +448045,7 @@ wli°
 NULL
 ;
 
-4723 
+4740 
 row
  = 
 £y
@@ -445891,7 +448053,7 @@ row
 ¨r_ba£
 .row;
 
-4724 
+4741 
 cﬁ
  = 
 £y
@@ -445899,11 +448061,11 @@ cﬁ
 ¨r_ba£
 .col;
 
-4731 
+4748 
 r
  = 0 ;
 
-4732 
+4749 
 GtkWidgë
  *
 vbox
@@ -445913,7 +448075,7 @@ vbox
 TRUE
 ,0);
 
-4733 
+4750 
 	`gtk_toﬁtùs_£t_tù
 (
 tùs
@@ -445929,13 +448091,13 @@ Commít
 NULL
 );
 
-4734 ; 
+4751 ; 
 r
  < 
 row
  ;Ñ++)
 
-4736 
+4753 
 GtkWidgë
  *
 hbox
@@ -445945,17 +448107,17 @@ hbox
 TRUE
 ,0);
 
-4737 
+4754 
 c
  = 0;
 
-4738 ; 
+4755 ; 
 c
  < 
 cﬁ
  ; c++)
 
-4740 
+4757 
 GtkWidgë
  *
 íåy
@@ -445963,7 +448125,7 @@ GtkWidgë
 	`gtk_íåy_√w
 ();
 
-4742 
+4759 
 maxÀngth
  = 2+
 £y
@@ -445971,7 +448133,7 @@ maxÀngth
 width
  * 2;
 
-4743 
+4760 
 	`gtk_íåy_£t_max_Àngth
  (
 	`GTK_ENTRY
@@ -445981,7 +448143,7 @@ width
 maxÀngth
 );
 
-4744 
+4761 
 	`gtk_íåy_£t_width_ch¨s
 (
 	`GTK_ENTRY
@@ -445991,7 +448153,7 @@ maxÀngth
 maxÀngth
 );
 
-4745 
+4762 
 gch¨
  *
 °r
@@ -446009,11 +448171,11 @@ cﬁ
 c
 );
 
-4746 if(
+4763 if(
 °r
 )
 
-4747 
+4764 
 	`gtk_íåy_£t_ãxt
 (
 	`GTK_ENTRY
@@ -446023,7 +448185,7 @@ c
 °r
 );
 
-4750 
+4767 
 	`gtk_íåy_£t_ãxt
 (
 	`GTK_ENTRY
@@ -446031,11 +448193,11 @@ c
 íåy
 ),"0x");
 
-4751 
+4768 
 w
  = 0;
 
-4752 
+4769 
 w
 ; w < 
 £y
@@ -446043,7 +448205,7 @@ w
 width
 ; w++ )
 
-4753 
+4770 
 	`gtk_íåy_≠≥nd_ãxt
 (
 	`GTK_ENTRY
@@ -446051,7 +448213,7 @@ width
 íåy
 ),"ff");
 
-4756 
+4773 
 	`g_sig«l_c⁄√˘
 (
 íåy
@@ -446063,7 +448225,7 @@ width
 NULL
 );
 
-4757 
+4774 
 	`g_sig«l_c⁄√˘
 (
 íåy
@@ -446075,7 +448237,7 @@ NULL
 NULL
 );
 
-4758 
+4775 
 	`g_sig«l_c⁄√˘
 (
 	`GTK_OBJECT
@@ -446089,7 +448251,7 @@ NULL
 NULL
 );
 
-4759 
+4776 
 	`g_sig«l_c⁄√˘
 (
 	`GTK_OBJECT
@@ -446103,7 +448265,7 @@ NULL
 NULL
 );
 
-4760 
+4777 
 	`gtk_box_∑ck_°¨t
 (
 	`GTK_BOX
@@ -446115,7 +448277,7 @@ hbox
 FALSE
 ,FALSE,0);
 
-4761 
+4778 
 wli°
  = 
 	`g_li°_≠≥nd
@@ -446123,7 +448285,7 @@ wli°
 íåy
 );
 
-4763 
+4780 
 	`gtk_box_∑ck_°¨t
 (
 	`GTK_BOX
@@ -446135,7 +448297,7 @@ hbox
 FALSE
 ,FALSE,0);
 
-4765 
+4782 
 	`g_li°_‰ì
 (
 £y
@@ -446143,23 +448305,23 @@ FALSE
 wli°
 );
 
-4766 
+4783 
 £y
 ->
 wli°
  = wlist;
 
-4767  (
+4784  (
 GtkWidgë
  *)
 vbox
 ;
 
-4768 
+4785 
 	}
 }
 
-4770 
+4787 
 	$Á˘‹y_edôabÀ_dñëe_ˇŒback
 (
 GtkEdôabÀ
@@ -446167,19 +448329,19 @@ GtkEdôabÀ
 edô
 ,
 
-4771 
+4788 
 göt
  
 °¨t_pos
 ,
 
-4772 
+4789 
 göt
  
 íd_pos
 )
 
-4774 
+4791 
 gch¨
  *
 txt
@@ -446189,7 +448351,7 @@ txt
 edô
 ,0,-1);
 
-4777 if–(2==
+4794 if–(2==
 	`°æí
 (
 txt
@@ -446197,7 +448359,7 @@ txt
 	`g_ascii_°∫ˇ£cmp
 (txt,"0x",2)))
 
-4779 
+4796 
 	`g_sig«l_°›_emissi⁄_by_«me
  (
 	`G_OBJECT
@@ -446205,11 +448367,11 @@ txt
 edô
 ), "delete_text");
 
-4782 if(
+4799 if(
 °¨t_pos
  < 2)
 
-4784 
+4801 
 	`g_sig«l_°›_emissi⁄_by_«me
  (
 	`G_OBJECT
@@ -446217,7 +448379,7 @@ edô
 edô
 ), "delete_text");
 
-4785 
+4802 
 	`gtk_edôabÀ_£À˘_ªgi⁄
 (
 edô
@@ -446225,7 +448387,7 @@ edô
 íd_pos
 );
 
-4786 
+4803 
 	`gtk_edôabÀ_dñëe_ãxt
  (
 edô
@@ -446233,11 +448395,11 @@ edô
 íd_pos
 );
 
-4788 
+4805 
 	}
 }
 
-4790 
+4807 
 	$Á˘‹y_edôabÀ_a˘ive_ˇŒback
 (
 GtkEdôabÀ
@@ -446249,13 +448411,13 @@ gpoöãr
 d©a
 )
 
-4792 
+4809 
 	`gtk_edôabÀ_£À˘_ªgi⁄
 (
 edô
 ,2,-1);
 
-4793 
+4810 
 	`g_sig«l_°›_emissi⁄_by_«me
  (
 	`G_OBJECT
@@ -446263,11 +448425,11 @@ edô
 edô
 ), "selection_clear_event");
 
-4795 
+4812 
 	}
 }
 
-4797 
+4814 
 	$Á˘‹y_edôabÀ_ö£π_ˇŒback
 (
 GtkE¡ry
@@ -446275,31 +448437,31 @@ GtkE¡ry
 íåy
 ,
 
-4798 
+4815 
 gch¨
 * 
 √w_ãxt
 ,
 
-4799 
+4816 
 göt
  
 √w_Àngth
 ,
 
-4800 
+4817 
 gpoöãr
  
 posôi⁄
 ,
 
-4801 
+4818 
 gpoöãr
  
 d©a
 )
 
-4803 
+4820 
 GtkEdôabÀ
  *
 edô
@@ -446309,7 +448471,7 @@ edô
 íåy
 );
 
-4804 
+4821 
 gch¨
  *
 tmp
@@ -446317,7 +448479,7 @@ tmp
 √w_ãxt
 ;
 
-4805 
+4822 
 gch¨
  *
 ªsu…
@@ -446327,7 +448489,7 @@ gch¨
 √w_Àngth
 );
 
-4806 
+4823 
 	`mem£t
 (
 ªsu…
@@ -446335,7 +448497,7 @@ gch¨
 √w_Àngth
 );
 
-4807 
+4824 
 gch¨
  *
 ns
@@ -446343,33 +448505,33 @@ ns
 ªsu…
 ;
 
-4808 *
+4825 *
 tmp
 )
 
-4810 if–*
+4827 if–*
 tmp
  ='x' || 
 	`g_ascii_isxdigô
 (*tmp))
 
-4812 *
+4829 *
 ns
 ++ = *
 tmp
 ++;
 
-4815 *
+4832 *
 tmp
 ++;
 
-4819 if(
+4836 if(
 ns
  - 
 ªsu…
 )
 
-4821 
+4838 
 	`g_sig«l_h™dÀrs_block_by_func
 (
 	`G_OBJECT
@@ -446377,17 +448539,17 @@ ns
 edô
 ),
 
-4822 
+4839 
 	`G_CALLBACK
 (
 Á˘‹y_edôabÀ_ö£π_ˇŒback
 ),
 
-4823 
+4840 
 d©a
 );
 
-4824 
+4841 
 	`gtk_edôabÀ_ö£π_ãxt
 (
 edô
@@ -446399,7 +448561,7 @@ ns
 posôi⁄
 );
 
-4825 
+4842 
 	`g_sig«l_h™dÀrs_unblock_by_func
  (
 	`G_OBJECT
@@ -446407,7 +448569,7 @@ posôi⁄
 edô
 ),
 
-4826 
+4843 
 	`G_CALLBACK
  (
 Á˘‹y_edôabÀ_ö£π_ˇŒback
@@ -446415,7 +448577,7 @@ edô
 d©a
 );
 
-4828 
+4845 
 	`g_sig«l_°›_emissi⁄_by_«me
  (
 	`G_OBJECT
@@ -446423,11 +448585,11 @@ d©a
 edô
 ), "insert_text");
 
-4829 
+4846 
 	}
 }
 
-4832 
+4849 
 	$Á˘‹y_¸óã_°ru˘_dülog
 (
 GtkWidgë
@@ -446439,7 +448601,7 @@ GLi°
 d©Æi°
 )
 
-4836 
+4853 
 GLi°
  *
 ôem
@@ -446447,17 +448609,17 @@ GLi°
 d©Æi°
 ;
 
-4837 
+4854 
 row
  = 0;
 
-4838 ; 
+4855 ; 
 ôem
  ; iãm = iãm->
 √xt
 )
 
-4840 
+4857 
 SaveSåu˘
  *
 s°
@@ -446467,7 +448629,7 @@ s°
 d©a
 ;
 
-4841 
+4858 
 	`Á˘‹y_debug_to_log
 (
 	`g_°rdup_¥ötf
@@ -446479,13 +448641,13 @@ s°
 «me
 ));
 
-4842 
+4859 
 	`Á˘‹y_£t_ßve°ru˘_widgës
 (
 s°
 );
 
-4845 if(
+4862 if(
 s°
 ->
 ‹g
@@ -446493,7 +448655,7 @@ s°
 isVisibÀ
 )
 
-4847 
+4864 
 	`Á˘‹y_£t_twoxtwo_èbÀ
 (
 dülog
@@ -446507,11 +448669,11 @@ widgë2
 row
 ++);
 
-4850 
+4867 
 	}
 }
 
-4853 
+4870 
 	$Á˘‹y_≠≥nd_public_öfo
 (
 GtkWidgë
@@ -446523,7 +448685,7 @@ STRUCTCœss
 f˛ass
 )
 
-4855 
+4872 
 GtkWidgë
  *
 chbox
@@ -446535,7 +448697,7 @@ chbox
 	`_
 ("±‡º≠ÕÍ≥…")));
 
-4856 
+4873 
 GtkWidgë
  *
 íåy
@@ -446543,7 +448705,7 @@ GtkWidgë
 	`gtk_íåy_√w
 ();
 
-4858 
+4875 
 GtkWidgë
  *
 £p
@@ -446551,7 +448713,7 @@ GtkWidgë
 	`gtk_h£∑øt‹_√w
 ();
 
-4859 
+4876 
 	`gtk_c⁄èöî_add
 (
 	`GTK_CONTAINER
@@ -446561,7 +448723,7 @@ dülog
 £p
 );
 
-4860 
+4877 
 PublicSe˘i⁄
  *
 µs
@@ -446569,7 +448731,7 @@ PublicSe˘i⁄
 NULL
 ;
 
-4861 if(
+4878 if(
 NULL
  =
 f˛ass
@@ -446577,7 +448739,7 @@ f˛ass
 µs
 )
 
-4863 
+4880 
 µs
  = 
 	`g_√w0
@@ -446585,13 +448747,13 @@ f˛ass
 PublicSe˘i⁄
 ,1);
 
-4864 
+4881 
 f˛ass
 ->
 µs
  =Öps;
 
-4865 
+4882 
 µs
 ->
 hasföished
@@ -446599,7 +448761,7 @@ hasföished
 FALSE
 ;
 
-4866 
+4883 
 µs
 ->
 «me
@@ -446609,13 +448771,13 @@ FALSE
 f˛ass
 ->name);
 
-4870 
+4887 
 µs
  = 
 f˛ass
 ->pps;
 
-4872 
+4889 
 µs
 ->
 wid_hasföished
@@ -446623,7 +448785,7 @@ wid_hasföished
 chbox
  ;
 
-4873 
+4890 
 GtkWidgë
  *
 hbox
@@ -446633,7 +448795,7 @@ hbox
 FALSE
 ,0);
 
-4874 
+4891 
 GtkWidgë
  *
 «me_œb
@@ -446647,7 +448809,7 @@ GtkWidgë
 NULL
 ,NULL,NULL));
 
-4875 
+4892 
 µs
 ->
 wid_ª«me_íåy
@@ -446655,7 +448817,7 @@ wid_ª«me_íåy
 íåy
 ;
 
-4876 
+4893 
 	`gtk_toggÀ_buâ⁄_£t_a˘ive
  (
 	`GTK_TOGGLE_BUTTON
@@ -446667,7 +448829,7 @@ chbox
 hasföished
 );
 
-4877 
+4894 
 	`gtk_íåy_£t_ãxt
 –
 	`GTK_ENTRY
@@ -446679,7 +448841,7 @@ wid_ª«me_íåy
 «me
 );
 
-4878 
+4895 
 	`gtk_íåy_£t_max_Àngth
 (
 	`GTK_ENTRY
@@ -446689,7 +448851,7 @@ wid_ª«me_íåy
 wid_ª«me_íåy
 ),50);
 
-4879 
+4896 
 	`gtk_box_∑ck_°¨t
 (
 	`GTK_BOX
@@ -446701,7 +448863,7 @@ hbox
 FALSE
 , FALSE, 0);
 
-4880 
+4897 
 	`gtk_box_∑ck_°¨t
 (
 	`GTK_BOX
@@ -446715,7 +448877,7 @@ wid_ª«me_íåy
 TRUE
 , TRUE, 0);
 
-4882 
+4899 
 	`gtk_c⁄èöî_add
 (
 	`GTK_CONTAINER
@@ -446727,7 +448889,7 @@ dülog
 wid_hasföished
 );
 
-4883 
+4900 
 	`gtk_c⁄èöî_add
 (
 	`GTK_CONTAINER
@@ -446737,11 +448899,11 @@ dülog
 hbox
 );
 
-4886 
+4903 
 	}
 }
 
-4914 
+4931 
 göt
  
 	$Á˘‹y_gë_ocombox_ödex
@@ -446755,7 +448917,7 @@ gch¨
 «me
 )
 
-4916 
+4933 
 GLi°
  *
 fûl_li°
@@ -446763,11 +448925,11 @@ fûl_li°
 ˛i°
 ;
 
-4917 
+4934 
 pos
  = 0;
 
-4918 ; 
+4935 ; 
 fûl_li°
 ; fûl_li° = fûl_li°->
 √xt
@@ -446775,7 +448937,7 @@ fûl_li°
 pos
 ++)
 
-4920 if(!
+4937 if(!
 	`g_ascii_°rˇ£cmp
 (
 fûl_li°
@@ -446785,15 +448947,15 @@ d©a
 «me
 ))
 
-4925  
+4942  
 pos
 ;
 
-4926 
+4943 
 	}
 }
 
-4929 
+4946 
 	$Á˘‹y_upd©e_A˘i⁄Id_obje˘
 (
 GtkWidgë
@@ -446801,7 +448963,7 @@ GtkWidgë
 comobox
 ,
 
-4930 
+4947 
 A˘i⁄ID
  *
 aid
@@ -446811,7 +448973,7 @@ GLi°
 ˛i°
 )
 
-4933 if(
+4950 if(
 aid
 ->
 ¥e_qu¨k
@@ -446819,7 +448981,7 @@ aid
 em±y_qu¨k
 )
 
-4935 
+4952 
 gpoöãr
  
 exi°
@@ -446831,17 +448993,17 @@ curLayî
 obje˘s
 ,
 
-4936 
+4953 
 aid
 ->
 c⁄n_±r
 );
 
-4937 if(
+4954 if(
 exi°
 )
 
-4940 
+4957 
 STRUCTCœss
  *
 p˛ass
@@ -446851,7 +449013,7 @@ aid
 c⁄n_±r
 ;
 
-4941 
+4958 
 GQu¨k
  
 tq
@@ -446863,7 +449025,7 @@ p˛ass
 «me
 );
 
-4942 if(
+4959 if(
 tq
  !
 aid
@@ -446871,7 +449033,7 @@ aid
 ¥e_qu¨k
 )
 
-4947 
+4964 
 aid
 ->
 ¥e_qu¨k
@@ -446879,7 +449041,7 @@ aid
 tq
 ;
 
-4955 
+4972 
 aid
 ->
 ¥e_qu¨k
@@ -446887,7 +449049,7 @@ aid
 em±y_qu¨k
 ;
 
-4956 
+4973 
 aid
 ->
 c⁄n_±r
@@ -446895,7 +449057,7 @@ c⁄n_±r
 NULL
 ;
 
-4971 
+4988 
 ComboxCmp
  
 cc
@@ -446905,7 +449067,7 @@ combox
 comobox
 ,
 
-4972 .
+4989 .
 qödex
  = 
 aid
@@ -446913,7 +449075,7 @@ aid
 ¥e_qu¨k
 };
 
-4973 
+4990 
 GtkTªeModñ
  *
 emodñ
@@ -446925,7 +449087,7 @@ emodñ
 comobox
 ));
 
-4974 
+4991 
 	`gtk_åì_modñ_f‹óch
 (
 emodñ
@@ -446933,15 +449095,15 @@ emodñ
 Á˘‹y_comobox_com¥e_f‹óch
 ,
 
-4975 &
+4992 &
 cc
 );
 
-4978 
+4995 
 	}
 }
 
-4981 
+4998 
 	$Á˘‹y_¸óã_™d_fûl_dülog
 (
 STRUCTCœss
@@ -446953,13 +449115,13 @@ gboﬁón
 is_deÁu…
 )
 
-4984 
+5001 
 curLayî
  = 
 Á˘‹yC⁄èöî
 ->curLayer;
 
-4985 
+5002 
 STRUCTCœssDülog
  *
 ¥›_dülog
@@ -446969,7 +449131,7 @@ f˛ass
 ¥›îtõs_dülog
 ;
 
-4986 
+5003 
 	`Á˘‹y_debug_to_log
 (
 	`g_°rdup_¥ötf
@@ -446981,7 +449143,7 @@ f˛ass
 «me
 ));
 
-4988 
+5005 
 GLi°
  *
 èrgëli°
@@ -446991,17 +449153,17 @@ f˛ass
 widgëSave
 ;
 
-4989 if(!
+5006 if(!
 èrgëli°
 )
 
-4991 
+5008 
 	`Á˘‹y_ªad_öôül_to_°ru˘
 (
 f˛ass
 );
 
-4993 
+5010 
 num
  = 
 	`g_li°_Àngth
@@ -447009,7 +449171,7 @@ num
 èrgëli°
 );
 
-4994 
+5011 
 ¥›_dülog
 ->
 maöTabÀ
@@ -447021,7 +449183,7 @@ num
 FALSE
 );
 
-4995 
+5012 
 	`Á˘‹y_¸óã_°ru˘_dülog
 (
 ¥›_dülog
@@ -447031,7 +449193,7 @@ maöTabÀ
 èrgëli°
 );
 
-4996 
+5013 
 	`gtk_c⁄èöî_add
 (
 	`GTK_CONTAINER
@@ -447043,7 +449205,7 @@ dülog
 maöTabÀ
 );
 
-4999 
+5016 
 	`Á˘‹y_≠≥nd_public_öfo
 (
 ¥›_dülog
@@ -447053,7 +449215,7 @@ dülog
 f˛ass
 );
 
-5000 
+5017 
 	`gtk_èbÀ_£t_cﬁ_•acög
 (
 	`GTK_TABLE
@@ -447063,11 +449225,11 @@ f˛ass
 maöTabÀ
 ),1,20);
 
-5003 
+5020 
 	}
 }
 
-5007 
+5024 
 GSLi°
  *
 	gid_group
@@ -447075,7 +449237,7 @@ GSLi°
 NULL
 ;
 
-5008 
+5025 
 GSLi°
  *
 	gfûe_group
@@ -447083,7 +449245,7 @@ GSLi°
 NULL
 ;
 
-5011 
+5028 
 	$Á˘‹y_sy°emöfo_≠∂y_dülog
 (
 GtkWidgë
@@ -447091,31 +449253,31 @@ GtkWidgë
 widgë
 ,
 
-5012 
+5029 
 göt
  
 ª•⁄£_id
 ,
 
-5013 
+5030 
 gpoöãr
  
 u£r_d©a
 )
 
-5015 i‡–
+5032 i‡–
 ª•⁄£_id
  =
 GTK_RESPONSE_APPLY
 
 
-5016 || 
+5033 || 
 ª•⁄£_id
  =
 GTK_RESPONSE_OK
 )
 
-5019 
+5036 
 GLi°
  *
 ≠∂i°
@@ -447123,13 +449285,13 @@ GLi°
 u£r_d©a
 ;
 
-5020 ; 
+5037 ; 
 ≠∂i°
 ;áµli° =áµli°->
 √xt
 )
 
-5022 
+5039 
 	`Á˘‹y_ªad_¥›s_‰om_widgë
 (
 NULL
@@ -447139,7 +449301,7 @@ NULL
 d©a
 ,NULL);
 
-5025 
+5042 
 	`dügøm_£t_modifõd
 (
 	`ddi•œy_a˘ive_dügøm
@@ -447147,17 +449309,17 @@ d©a
 TRUE
 );
 
-5028 
+5045 
 	`gtk_widgë_hide
 (
 widgë
 );
 
-5029 
+5046 
 	}
 }
 
-5032 
+5049 
 GLi°
 * 
 	$Á˘‹y_gë_dow∆ﬂd_«me_li°
@@ -447167,7 +449329,7 @@ gch¨
 ∑th
 )
 
-5035 
+5052 
 GLi°
  *
 li°
@@ -447175,7 +449337,7 @@ li°
 NULL
 ;
 
-5036 
+5053 
 	`g_ªtu∫_vÆ_if_Áû
 (
 curLayî
@@ -447183,7 +449345,7 @@ curLayî
 NULL
 ,NULL);
 
-5037 
+5054 
 	`g_ªtu∫_vÆ_if_Áû
 (
 curLayî
@@ -447193,7 +449355,7 @@ smd
 NULL
 ,NULL);
 
-5038 
+5055 
 SaveMusicDülog
  *
 smd
@@ -447201,7 +449363,7 @@ smd
 curLayî
 ->smd;
 
-5039 
+5056 
 SaveMusicFûeM™
  *
 smfm
@@ -447209,7 +449371,7 @@ smfm
 smd
 ->smfm;
 
-5040 
+5057 
 	`g_ªtu∫_vÆ_if_Áû
 (
 smfm
@@ -447217,7 +449379,7 @@ smfm
 NULL
 ,NULL);
 
-5041 
+5058 
 GLi°
  *
 éi°
@@ -447227,13 +449389,13 @@ smfm
 fûñi°
 ;
 
-5042 ; 
+5059 ; 
 éi°
 ;Åli° =Åli°->
 √xt
 )
 
-5044 
+5061 
 SaveMusicFûe
  *
 smf
@@ -447243,7 +449405,7 @@ smf
 d©a
 ;
 
-5045 
+5062 
 gch¨
  *
 ≈c
@@ -447259,7 +449421,7 @@ down_«me
 NULL
 );
 
-5046 
+5063 
 GFûe
  *
 §c
@@ -447271,7 +449433,7 @@ smf
 fuŒ_«me
 );
 
-5047 
+5064 
 GFûe
  *
 d°
@@ -447281,7 +449443,7 @@ d°
 ≈c
 );
 
-5048 
+5065 
 	`g_fûe_c›y
 (
 §c
@@ -447293,13 +449455,13 @@ G_FILE_COPY_OVERWRITE
 NULL
 ,NULL,NULL,NULL);
 
-5049 
+5066 
 	`g_‰ì
 (
 ≈c
 );
 
-5050 
+5067 
 li°
  = 
 	`g_li°_≠≥nd
@@ -447309,15 +449471,15 @@ smf
 down_«me
 );
 
-5052  
+5069  
 li°
  ;
 
-5053 
+5070 
 	}
 }
 
-5056 
+5073 
 	$Á˘‹y_sy°emöfo_ˇŒback
 (
 GtkWidgë
@@ -447325,19 +449487,19 @@ GtkWidgë
 ∑ª¡
 )
 
-5058 if(
+5075 if(
 curLayî
  !
 Á˘‹yC⁄èöî
 ->curLayer)
 
-5059 
+5076 
 curLayî
  = 
 Á˘‹yC⁄èöî
 ->curLayer;
 
-5061 
+5078 
 Fa˘‹ySy°emInfo
  *
 fsio
@@ -447347,13 +449509,13 @@ fsio
 sys_öfo
 ;
 
-5083 if(!
+5100 if(!
 fsio
 ->
 sy°em_öfo
 )
 
-5086 
+5103 
 Fa˘‹ySåu˘IãmLi°
  *
 fsû
@@ -447367,7 +449529,7 @@ fsû
 TYPE_SYSDATA
 );
 
-5087 
+5104 
 GLi°
  *
 ôemli°
@@ -447377,13 +449539,13 @@ fsû
 li°
 ;
 
-5088 ; 
+5105 ; 
 ôemli°
  ; iãmli° = iãmli°->
 √xt
 )
 
-5090 
+5107 
 Fa˘‹ySåu˘Iãm
  *
 f°
@@ -447393,7 +449555,7 @@ f°
 d©a
 ;
 
-5091 
+5108 
 SaveSåu˘
  *
 s°
@@ -447403,7 +449565,7 @@ s°
 f°
 );
 
-5092 
+5109 
 fsio
 ->
 sy°em_öfo
@@ -447413,7 +449575,7 @@ sy°em_öfo
 s°
 );
 
-5096 
+5113 
 	`Á˘‹y_sy°em_dülog
 (
 fsio
@@ -447423,11 +449585,11 @@ sy°em_öfo
 ∑ª¡
 );
 
-5098 
+5115 
 	}
 }
 
-5100 
+5117 
 	$Á˘‹y_sy°em_dülog
 (
 GLi°
@@ -447439,7 +449601,7 @@ GtkWidgë
 ∑ª¡
 )
 
-5103 
+5120 
 GLi°
  *
 èrgëli°
@@ -447447,7 +449609,7 @@ GLi°
 li°
 ;
 
-5104 
+5121 
 GtkWidgë
  *
 subdig
@@ -447459,7 +449621,7 @@ subdig
 ∑ª¡
 );
 
-5105 
+5122 
 GtkWidgë
  *
 dülog_vbox
@@ -447471,7 +449633,7 @@ subdig
 vbox
 ;
 
-5107 
+5124 
 	`gtk_wödow_£t_modÆ
 (
 	`GTK_WINDOW
@@ -447481,7 +449643,7 @@ subdig
 TRUE
 );
 
-5109 
+5126 
 num
  = 
 	`g_li°_Àngth
@@ -447489,7 +449651,7 @@ num
 èrgëli°
 );
 
-5111 
+5128 
 GtkWidgë
  *
 èbÀ
@@ -447501,7 +449663,7 @@ num
 FALSE
 );
 
-5113 
+5130 
 	`gtk_c⁄èöî_add
 (
 	`GTK_CONTAINER
@@ -447511,7 +449673,7 @@ dülog_vbox
 èbÀ
 );
 
-5115 
+5132 
 	`Á˘‹y_¸óã_°ru˘_dülog
 (
 èbÀ
@@ -447519,7 +449681,7 @@ dülog_vbox
 èrgëli°
 );
 
-5117 
+5134 
 	`g_sig«l_c⁄√˘
 (
 	`G_OBJECT
@@ -447527,7 +449689,7 @@ dülog_vbox
 subdig
 ), "response",
 
-5118 
+5135 
 	`G_CALLBACK
  (
 Á˘‹y_sy°emöfo_≠∂y_dülog
@@ -447535,17 +449697,17 @@ subdig
 li°
 );
 
-5120 
+5137 
 	`gtk_widgë_show_Æl
 (
 subdig
 );
 
-5121 
+5138 
 	}
 }
 
-5128 
+5145 
 	$Á˘‹y_≠≥nd_ôí_to_cbmodÆ
 (
 GtkLi°St‹e
@@ -447557,13 +449719,13 @@ gch¨
 °r
 )
 
-5130 
+5147 
 GtkTªeIãr
  
 ôî
 ;
 
-5131 
+5148 
 	`gtk_li°_°‹e_≠≥nd
  (
 	`GTK_LIST_STORE
@@ -447573,7 +449735,7 @@ modñ
 ôî
 );
 
-5132 
+5149 
 	`gtk_li°_°‹e_£t
  (
 	`GTK_LIST_STORE
@@ -447585,11 +449747,11 @@ modñ
 °r
 ,-1);
 
-5133 
+5150 
 	}
 }
 
-5135 
+5152 
 GtkWidgë
  *
 	$Á˘‹y_√w_add_buâ⁄
@@ -447603,7 +449765,7 @@ gpoöãr
 li°
 )
 
-5137 
+5154 
 GtkWidgë
  *
 bä
@@ -447613,7 +449775,7 @@ bä
 GTK_STOCK_ADD
 );
 
-5138 
+5155 
 	`gtk_widgë_£t_«me
  (
 bä
@@ -447621,7 +449783,7 @@ bä
 	`Á˘‹y_utf8
 ("ÃÌº”"));
 
-5139 
+5156 
 	`g_sig«l_c⁄√˘
  (
 	`G_OBJECT
@@ -447629,25 +449791,25 @@ bä
 bä
 ), "clicked",
 
-5140 
+5157 
 	`G_CALLBACK
  (
 ˇŒback
 ),
 
-5141 
+5158 
 li°
 );
 
-5142  
+5159  
 bä
 ;
 
-5143 
+5160 
 	}
 }
 
-5146 
+5163 
 GtkWidgë
  *
 	$Á˘‹y_dñëe_œ°_buâ⁄
@@ -447661,7 +449823,7 @@ gpoöãr
 ˛i°
 )
 
-5148 
+5165 
 GtkWidgë
  *
 bä
@@ -447671,7 +449833,7 @@ bä
 GTK_STOCK_DELETE
 );
 
-5149 
+5166 
 	`gtk_widgë_£t_«me
  (
 bä
@@ -447679,7 +449841,7 @@ bä
 	`Á˘‹y_utf8
 ("…æ≥˝"));
 
-5150 
+5167 
 	`g_sig«l_c⁄√˘
  (
 	`G_OBJECT
@@ -447687,25 +449849,25 @@ bä
 bä
 ), "clicked",
 
-5151 
+5168 
 	`G_CALLBACK
  (
 ˇŒback
 ),
 
-5152 
+5169 
 ˛i°
 );
 
-5153  
+5170  
 bä
 ;
 
-5154 
+5171 
 	}
 }
 
-5161 
+5178 
 	$°ru˘˛ass_‰ì_°©e
 (
 STRUCTCœssSèã
@@ -447713,7 +449875,7 @@ STRUCTCœssSèã
 °©e
 )
 
-5165 
+5182 
 	`g_obje˘_uƒef
  (
 °©e
@@ -447721,7 +449883,7 @@ STRUCTCœssSèã
 n‹mÆ_f⁄t
 );
 
-5168 
+5185 
 	`g_obje˘_uƒef
  (
 °©e
@@ -447729,7 +449891,7 @@ n‹mÆ_f⁄t
 ˛as¢ame_f⁄t
 );
 
-5172 
+5189 
 	`g_‰ì
 (
 °©e
@@ -447737,15 +449899,15 @@ n‹mÆ_f⁄t
 «me
 );
 
-5196 
+5213 
 	}
 }
 
-5198 
+5215 
 STRUCTCœssSèã
  *
 
-5199 
+5216 
 	$°ru˘˛ass_gë_°©e
 (
 STRUCTCœss
@@ -447753,7 +449915,7 @@ STRUCTCœss
 °ru˘˛ass
 )
 
-5201 
+5218 
 STRUCTCœssSèã
  *
 °©e
@@ -447761,7 +449923,7 @@ STRUCTCœssSèã
 	`g_√w0
 (STRUCTClassState, 1);
 
-5204 
+5221 
 °©e
 ->
 f⁄t_height
@@ -447769,7 +449931,7 @@ f⁄t_height
 °ru˘˛ass
 ->font_height;
 
-5205 
+5222 
 °©e
 ->
 ab°ø˘_f⁄t_height
@@ -447777,7 +449939,7 @@ ab°ø˘_f⁄t_height
 °ru˘˛ass
 ->abstract_font_height;
 
-5206 
+5223 
 °©e
 ->
 pﬁym‹phic_f⁄t_height
@@ -447785,7 +449947,7 @@ pﬁym‹phic_f⁄t_height
 °ru˘˛ass
 ->polymorphic_font_height;
 
-5207 
+5224 
 °©e
 ->
 ˛as¢ame_f⁄t_height
@@ -447793,7 +449955,7 @@ pﬁym‹phic_f⁄t_height
 °ru˘˛ass
 ->classname_font_height;
 
-5208 
+5225 
 °©e
 ->
 ab°ø˘_˛as¢ame_f⁄t_height
@@ -447801,7 +449963,7 @@ ab°ø˘_˛as¢ame_f⁄t_height
 °ru˘˛ass
 ->abstract_classname_font_height;
 
-5209 
+5226 
 °©e
 ->
 commít_f⁄t_height
@@ -447809,7 +449971,7 @@ commít_f⁄t_height
 °ru˘˛ass
 ->comment_font_height;
 
-5211 
+5228 
 °©e
 ->
 n‹mÆ_f⁄t
@@ -447819,7 +449981,7 @@ n‹mÆ_f⁄t
 °ru˘˛ass
 ->normal_font);
 
-5214 
+5231 
 °©e
 ->
 ˛as¢ame_f⁄t
@@ -447829,7 +449991,7 @@ n‹mÆ_f⁄t
 °ru˘˛ass
 ->classname_font);
 
-5218 
+5235 
 °©e
 ->
 «me
@@ -447839,7 +450001,7 @@ n‹mÆ_f⁄t
 °ru˘˛ass
 ->name);
 
-5234 
+5251 
 °©e
 ->
 löe_cﬁ‹
@@ -447847,7 +450009,7 @@ löe_cﬁ‹
 °ru˘˛ass
 ->line_color;
 
-5235 
+5252 
 °©e
 ->
 fûl_cﬁ‹
@@ -447855,7 +450017,7 @@ fûl_cﬁ‹
 °ru˘˛ass
 ->fill_color;
 
-5236 
+5253 
 °©e
 ->
 ãxt_cﬁ‹
@@ -447863,19 +450025,19 @@ fûl_cﬁ‹
 °ru˘˛ass
 ->text_color;
 
-5282  
+5299  
 °©e
 ;
 
-5283 
+5300 
 	}
 }
 
-5286 
+5303 
 STRUCTCœssSèã
  *
 
-5287 
+5304 
 	$Á˘‹y_gë_°©e
 (
 STRUCTCœss
@@ -447883,7 +450045,7 @@ STRUCTCœss
 °ru˘˛ass
 )
 
-5289 
+5306 
 STRUCTCœssSèã
  *
 °©e
@@ -447891,7 +450053,7 @@ STRUCTCœssSèã
 	`g_√w0
 (STRUCTClassState, 1);
 
-5292 
+5309 
 °©e
 ->
 f⁄t_height
@@ -447899,7 +450061,7 @@ f⁄t_height
 °ru˘˛ass
 ->font_height;
 
-5293 
+5310 
 °©e
 ->
 ab°ø˘_f⁄t_height
@@ -447907,7 +450069,7 @@ ab°ø˘_f⁄t_height
 °ru˘˛ass
 ->abstract_font_height;
 
-5294 
+5311 
 °©e
 ->
 pﬁym‹phic_f⁄t_height
@@ -447915,7 +450077,7 @@ pﬁym‹phic_f⁄t_height
 °ru˘˛ass
 ->polymorphic_font_height;
 
-5295 
+5312 
 °©e
 ->
 ˛as¢ame_f⁄t_height
@@ -447923,7 +450085,7 @@ pﬁym‹phic_f⁄t_height
 °ru˘˛ass
 ->classname_font_height;
 
-5296 
+5313 
 °©e
 ->
 ab°ø˘_˛as¢ame_f⁄t_height
@@ -447931,7 +450093,7 @@ ab°ø˘_˛as¢ame_f⁄t_height
 °ru˘˛ass
 ->abstract_classname_font_height;
 
-5297 
+5314 
 °©e
 ->
 commít_f⁄t_height
@@ -447939,7 +450101,7 @@ commít_f⁄t_height
 °ru˘˛ass
 ->comment_font_height;
 
-5299 
+5316 
 °©e
 ->
 n‹mÆ_f⁄t
@@ -447949,7 +450111,7 @@ n‹mÆ_f⁄t
 °ru˘˛ass
 ->normal_font);
 
-5301 
+5318 
 °©e
 ->
 ˛as¢ame_f⁄t
@@ -447959,7 +450121,7 @@ n‹mÆ_f⁄t
 °ru˘˛ass
 ->classname_font);
 
-5304 
+5321 
 °©e
 ->
 «me
@@ -447969,7 +450131,7 @@ n‹mÆ_f⁄t
 °ru˘˛ass
 ->name);
 
-5306 
+5323 
 °©e
 ->
 löe_cﬁ‹
@@ -447977,7 +450139,7 @@ löe_cﬁ‹
 °ru˘˛ass
 ->line_color;
 
-5307 
+5324 
 °©e
 ->
 fûl_cﬁ‹
@@ -447985,7 +450147,7 @@ fûl_cﬁ‹
 °ru˘˛ass
 ->fill_color;
 
-5308 
+5325 
 °©e
 ->
 ãxt_cﬁ‹
@@ -447993,15 +450155,15 @@ fûl_cﬁ‹
 °ru˘˛ass
 ->text_color;
 
-5311  
+5328  
 °©e
 ;
 
-5312 
+5329 
 	}
 }
 
-5317 
+5334 
 	$°ru˘˛ass_upd©e_c⁄√˘i⁄poöts
 (
 STRUCTCœss
@@ -448009,29 +450171,29 @@ STRUCTCœss
 °ru˘˛ass
 )
 
-5319 
+5336 
 num_©åib
 , 
 num_›s
 ;
 
-5320 
+5337 
 DüObje˘
  *
 obj
 ;
 
-5322 
+5339 
 c⁄√˘i⁄_ödex
 ;
 
-5323 
+5340 
 STRUCTCœssDülog
  *
 ¥›_dülog
 ;
 
-5325 
+5342 
 ¥›_dülog
  = 
 °ru˘˛ass
@@ -448039,15 +450201,15 @@ STRUCTCœssDülog
 ¥›îtõs_dülog
 ;
 
-5332 
+5349 
 num_©åib
  = 0;
 
-5336 
+5353 
 num_›s
  = 0;
 
-5338 
+5355 
 obj
  = &
 °ru˘˛ass
@@ -448057,11 +450219,11 @@ obj
 obje˘
 ;
 
-5339 #ifde‡
+5356 #ifde‡
 STRUCT_MAINPOINT
 
 
-5340 
+5357 
 obj
 ->
 num_c⁄√˘i⁄s
@@ -448073,7 +450235,7 @@ num_©åib
 num_›s
 *2 + 1;
 
-5342 
+5359 
 obj
 ->
 num_c⁄√˘i⁄s
@@ -448085,13 +450247,13 @@ num_©åib
 num_›s
 *2;
 
-5344 
+5361 
 obj
 ->
 c⁄√˘i⁄s
  =
 
-5345 
+5362 
 	`g_ªÆloc
 (
 obj
@@ -448099,7 +450261,7 @@ obj
 c⁄√˘i⁄s
 ,
 
-5346 
+5363 
 obj
 ->
 num_c⁄√˘i⁄s
@@ -448107,17 +450269,17 @@ num_c⁄√˘i⁄s
 C⁄√˘i⁄Poöt
  *));
 
-5348 
+5365 
 c⁄√˘i⁄_ödex
  = 
 STRUCTCLASS_CONNECTIONPOINTS
 ;
 
-5385 #ifde‡
+5402 #ifde‡
 STRUCT_MAINPOINT
 
 
-5386 
+5403 
 obj
 ->
 c⁄√˘i⁄s
@@ -448129,11 +450291,11 @@ c⁄√˘i⁄_ödex
 STRUCTCLASS_CONNECTIONPOINTS
 ];
 
-5389 
+5406 
 	}
 }
 
-5392 
+5409 
 	$°ru˘˛ass_£t_°©e
 (
 STRUCTCœss
@@ -448145,7 +450307,7 @@ STRUCTCœssSèã
 °©e
 )
 
-5394 
+5411 
 °ru˘˛ass
 ->
 f⁄t_height
@@ -448153,7 +450315,7 @@ f⁄t_height
 °©e
 ->font_height;
 
-5395 
+5412 
 °ru˘˛ass
 ->
 ab°ø˘_f⁄t_height
@@ -448161,7 +450323,7 @@ ab°ø˘_f⁄t_height
 °©e
 ->abstract_font_height;
 
-5396 
+5413 
 °ru˘˛ass
 ->
 pﬁym‹phic_f⁄t_height
@@ -448169,7 +450331,7 @@ pﬁym‹phic_f⁄t_height
 °©e
 ->polymorphic_font_height;
 
-5397 
+5414 
 °ru˘˛ass
 ->
 ˛as¢ame_f⁄t_height
@@ -448177,7 +450339,7 @@ pﬁym‹phic_f⁄t_height
 °©e
 ->classname_font_height;
 
-5398 
+5415 
 °ru˘˛ass
 ->
 ab°ø˘_˛as¢ame_f⁄t_height
@@ -448185,7 +450347,7 @@ ab°ø˘_˛as¢ame_f⁄t_height
 °©e
 ->abstract_classname_font_height;
 
-5399 
+5416 
 °ru˘˛ass
 ->
 commít_f⁄t_height
@@ -448193,7 +450355,7 @@ commít_f⁄t_height
 °©e
 ->comment_font_height;
 
-5402 
+5419 
 	`g_obje˘_uƒef
  (
 °ru˘˛ass
@@ -448201,7 +450363,7 @@ commít_f⁄t_height
 n‹mÆ_f⁄t
 );
 
-5403 
+5420 
 °ru˘˛ass
 ->
 n‹mÆ_f⁄t
@@ -448209,7 +450371,7 @@ n‹mÆ_f⁄t
 °©e
 ->normal_font;
 
-5408 
+5425 
 	`g_obje˘_uƒef
  (
 °ru˘˛ass
@@ -448217,7 +450379,7 @@ n‹mÆ_f⁄t
 ˛as¢ame_f⁄t
 );
 
-5409 
+5426 
 °ru˘˛ass
 ->
 ˛as¢ame_f⁄t
@@ -448225,7 +450387,7 @@ n‹mÆ_f⁄t
 °©e
 ->classname_font;
 
-5415 
+5432 
 °ru˘˛ass
 ->
 «me
@@ -448233,7 +450395,7 @@ n‹mÆ_f⁄t
 °©e
 ->name;
 
-5431 
+5448 
 °ru˘˛ass
 ->
 löe_cﬁ‹
@@ -448241,7 +450403,7 @@ löe_cﬁ‹
 °©e
 ->line_color;
 
-5432 
+5449 
 °ru˘˛ass
 ->
 fûl_cﬁ‹
@@ -448249,7 +450411,7 @@ fûl_cﬁ‹
 °©e
 ->fill_color;
 
-5433 
+5450 
 °ru˘˛ass
 ->
 ãxt_cﬁ‹
@@ -448257,35 +450419,35 @@ fûl_cﬁ‹
 °©e
 ->text_color;
 
-5440 
+5457 
 	`g_‰ì
 (
 °©e
 );
 
-5442 
+5459 
 	`°ru˘˛ass_upd©e_c⁄√˘i⁄poöts
 (
 °ru˘˛ass
 );
 
-5444 
+5461 
 	`°ru˘˛ass_ˇlcuœã_d©a
 (
 °ru˘˛ass
 );
 
-5445 
+5462 
 	`°ru˘˛ass_upd©e_d©a
 (
 °ru˘˛ass
 );
 
-5446 
+5463 
 	}
 }
 
-5449 
+5466 
 	$°ru˘˛ass_ch™ge_≠∂y
 (
 STRUCTCœssCh™ge
@@ -448297,13 +450459,13 @@ DüObje˘
 obj
 )
 
-5451 
+5468 
 STRUCTCœssSèã
  *
 ﬁd_°©e
 ;
 
-5454 
+5471 
 ﬁd_°©e
  = 
 	`°ru˘˛ass_gë_°©e
@@ -448313,7 +450475,7 @@ ch™ge
 obj
 );
 
-5456 
+5473 
 	`°ru˘˛ass_£t_°©e
 (
 ch™ge
@@ -448323,7 +450485,7 @@ obj
 ßved_°©e
 );
 
-5467 
+5484 
 ch™ge
 ->
 ßved_°©e
@@ -448331,17 +450493,17 @@ ch™ge
 ﬁd_°©e
 ;
 
-5468 
+5485 
 ch™ge
 ->
 ≠∂õd
  = 1;
 
-5469 
+5486 
 	}
 }
 
-5472 
+5489 
 	$Á˘‹y_ch™ge_≠∂y
 (
 STRUCTCœssCh™ge
@@ -448353,13 +450515,13 @@ DüObje˘
 obj
 )
 
-5474 
+5491 
 STRUCTCœssSèã
  *
 ﬁd_°©e
 ;
 
-5477 
+5494 
 ﬁd_°©e
  = 
 	`°ru˘˛ass_gë_°©e
@@ -448369,7 +450531,7 @@ ch™ge
 obj
 );
 
-5479 
+5496 
 	`°ru˘˛ass_£t_°©e
 (
 ch™ge
@@ -448379,7 +450541,7 @@ obj
 ßved_°©e
 );
 
-5490 
+5507 
 ch™ge
 ->
 ßved_°©e
@@ -448387,17 +450549,17 @@ ch™ge
 ﬁd_°©e
 ;
 
-5491 
+5508 
 ch™ge
 ->
 ≠∂õd
  = 1;
 
-5492 
+5509 
 	}
 }
 
-5496 
+5513 
 	$Á˘‹y_ch™ge_ªvît
 (
 STRUCTCœssCh™ge
@@ -448409,13 +450571,13 @@ DüObje˘
 obj
 )
 
-5498 
+5515 
 STRUCTCœssSèã
  *
 ﬁd_°©e
 ;
 
-5501 
+5518 
 ﬁd_°©e
  = 
 	`°ru˘˛ass_gë_°©e
@@ -448425,7 +450587,7 @@ ch™ge
 obj
 );
 
-5503 
+5520 
 	`°ru˘˛ass_£t_°©e
 (
 ch™ge
@@ -448435,7 +450597,7 @@ obj
 ßved_°©e
 );
 
-5514 
+5531 
 ch™ge
 ->
 ßved_°©e
@@ -448443,17 +450605,17 @@ ch™ge
 ﬁd_°©e
 ;
 
-5515 
+5532 
 ch™ge
 ->
 ≠∂õd
  = 0;
 
-5516 
+5533 
 	}
 }
 
-5519 
+5536 
 	$Á˘‹y_ch™ge_‰ì
 (
 STRUCTCœssCh™ge
@@ -448461,7 +450623,7 @@ STRUCTCœssCh™ge
 ch™ge
 )
 
-5523 
+5540 
 	`°ru˘˛ass_‰ì_°©e
 (
 ch™ge
@@ -448469,7 +450631,7 @@ ch™ge
 ßved_°©e
 );
 
-5524 
+5541 
 	`g_‰ì
 (
 ch™ge
@@ -448477,11 +450639,11 @@ ch™ge
 ßved_°©e
 );
 
-5545 
+5562 
 	}
 }
 
-5546 
+5563 
 Obje˘Ch™ge
  *
 	$Á˘‹y_√w_ch™ge
@@ -448495,13 +450657,13 @@ STRUCTCœssSèã
 ßved_°©e
 )
 
-5548 
+5565 
 STRUCTCœssCh™ge
  *
 ch™ge
 ;
 
-5550 
+5567 
 ch™ge
  = 
 	`g_√w0
@@ -448509,7 +450671,7 @@ ch™ge
 STRUCTCœssCh™ge
 , 1);
 
-5552 
+5569 
 ch™ge
 ->
 obj_ch™ge
@@ -448517,13 +450679,13 @@ obj_ch™ge
 ≠∂y
  =
 
-5553 (
+5570 (
 Obje˘Ch™geAµlyFunc
 Ë
 Á˘‹y_ch™ge_≠∂y
 ;
 
-5554 
+5571 
 ch™ge
 ->
 obj_ch™ge
@@ -448531,13 +450693,13 @@ obj_ch™ge
 ªvît
  =
 
-5555 (
+5572 (
 Obje˘Ch™geRevîtFunc
 Ë
 Á˘‹y_ch™ge_ªvît
 ;
 
-5556 
+5573 
 ch™ge
 ->
 obj_ch™ge
@@ -448545,37 +450707,37 @@ obj_ch™ge
 ‰ì
  =
 
-5557 (
+5574 (
 Obje˘Ch™geFªeFunc
 Ë
 Á˘‹y_ch™ge_‰ì
 ;
 
-5559 
+5576 
 ch™ge
 ->
 obj
  = obj;
 
-5560 
+5577 
 ch™ge
 ->
 ßved_°©e
  = saved_state;
 
-5561 
+5578 
 ch™ge
 ->
 ≠∂õd
  = 1;
 
-5567  (
+5584  (
 Obje˘Ch™ge
  *)
 ch™ge
 ;
 
-5568 
+5585 
 	}
 }
 
@@ -502087,8 +504249,8 @@ ALIGN_LEFT
 1
 .
 0
-338
-10728
+339
+10769
 O:\tool\dvs50\app\app_procs.c
 O:\tool\dvs50\app\app_procs.h
 O:\tool\dvs50\app\authors.h
@@ -502400,6 +504562,7 @@ O:\tool\dvs50\objects\Struct\idlist.c
 O:\tool\dvs50\objects\Struct\idlist.h
 O:\tool\dvs50\objects\Struct\musicfilemanager.c
 O:\tool\dvs50\objects\Struct\musicfilemanager.h
+O:\tool\dvs50\objects\Struct\newidlist.c
 O:\tool\dvs50\objects\Struct\struct.c
 O:\tool\dvs50\objects\Struct\struct_class.c
 O:\tool\dvs50\objects\Struct\struct_class.h

@@ -13,17 +13,7 @@ enum
     NUM_OF_MCOLUMN
 };
 
-typedef void (*MusicFileManagerFunc)(GtkWidget *btn,gpointer user_data);
 
-typedef struct _MusicFileManagerOperation MusicFileManagerOperation;
-
-struct _MusicFileManagerOperation
-{
-    GtkWidget *btn;
-    gchar *name;
-    int stack;
-    MusicFileManagerFunc mfmf;
-};
 
 static void factory_mfile_manager_changed_dname(GtkCellRendererText *cell,
         const gchar         *path_string,

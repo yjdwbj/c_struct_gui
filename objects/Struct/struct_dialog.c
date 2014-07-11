@@ -3754,12 +3754,29 @@ FIRST:
         olist = g_list_insert(olist,g_quark_to_string(empty_quark),0);
         if(!aid)
             factory_critical_error_exit(g_strdup_printf(factory_utf8("下一个行为ID指针为空.\n结构体名:%s .类型名:%s \n"),sss->name,sss->type));
+
+        const gchar *pre_name = g_quark_to_string(aid->pre_quark);
         if((aid->pre_quark != empty_quark) && !aid->conn_ptr)
         {
             /* 有名字没有指针,有可能是刚加载回来的. */
-            const gchar *pre_name = g_quark_to_string(aid->pre_quark);
+
             aid->conn_ptr = g_hash_table_lookup(curLayer->defnames,
                                                 pre_name);
+        }
+
+        /* 如果它指向的改名了,就要用到下面个 */
+        if((aid->pre_quark != empty_quark) && aid->conn_ptr)
+        {
+            gpointer findobj = g_hash_table_lookup(curLayer->defnames,
+                                                pre_name);
+
+            int idx  = g_list_index(curLayer->objects,
+                                               aid->conn_ptr);
+            if(!findobj && idx > 0)
+            {
+                aid->pre_quark =
+                 g_quark_from_string(((STRUCTClass*)aid->conn_ptr)->name);
+            }
         }
 
         GList *tlist = olist;

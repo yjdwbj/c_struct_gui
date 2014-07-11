@@ -3237,7 +3237,8 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
 //            skv->value = g_strdup(fst->Value);
 //            skv->radindex = -1;
             sss->value.vnumber = g_strdup(fst->Value);
-            sss->newdlg_func = factory_new_idlist_dialog;
+//            sss->newdlg_func = factory_new_idlist_dialog;
+            sss->newdlg_func = factory_create_idlist_dialog;
 //            sss->close_func = factory_save_idlist_dialog;
         }
         else
@@ -4487,6 +4488,7 @@ gboolean factory_comobox_compre_foreach(GtkTreeModel *model,
     gchar *curstr;
     gtk_tree_model_get(model,iter,0,&curstr,-1);
     GQuark quark = g_quark_from_string(curstr);
+    g_free(curstr);
     if(cc->qindex == quark)
     {
         gtk_combo_box_set_active_iter(GTK_COMBO_BOX(cc->combox),iter);

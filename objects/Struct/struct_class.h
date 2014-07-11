@@ -216,10 +216,8 @@ struct _SaveIdDialog
 //    GtkWidget *parent_btn;
     GtkWidget *vbox;
     GList *idlists; /* SaveIdList 内容*/
+    GList *sublist; /* 子表为idlist  提供集合 */
     gchar *title;
-//    SaveKV *skv;
-    GList *flist; /* combox list */
-    GtkWidget *idlist_menu; /* 这里显示一个共公的现有的列表 */
     GtkListStore *id_store;
     GtkListStore *id_cbmodel;
     GtkWidget *id_treeview;
@@ -699,7 +697,17 @@ enum
     NUM_OF_COLS
 };
 
+typedef void (*GroupOfOperationFunc)(GtkWidget *btn,gpointer user_data);
 
+typedef struct _GroupOfOperation GroupOfOperation;
+
+struct _GroupOfOperation
+{
+    GtkWidget *btn;
+    gchar *name;
+    int stack;
+    GroupOfOperationFunc mfmf;
+};
 
 /* Template Func*/
 
@@ -715,4 +723,6 @@ gboolean factory_comobox_compre_foreach(GtkTreeModel *model,
 
 
 GtkTreeModel *factory_create_combox_model(GList *itemlist);
+
+void factory_create_idlist_dialog(GtkWidget *button,SaveStruct *sst);
 #endif /* CLASS_H */

@@ -88,7 +88,7 @@ GtkWidget *factory_music_file_manager_operator(SaveMusicDialog *smd)
 {
     /* 要添加操作选项，在这里修改　*/
 
-    MusicFileManagerOperation mfmo[] =
+    GroupOfOperation mfmo[] =
     {
         {NULL,factory_utf8("添加"),NULL,factory_add_file_manager_item},
         {NULL,factory_utf8("删除"),NULL,factory_delete_mfile_item_modal},
@@ -99,7 +99,7 @@ GtkWidget *factory_music_file_manager_operator(SaveMusicDialog *smd)
 
     GtkWidget *operatorhbox = gtk_hbox_new(FALSE,2);
 
-    int num =sizeof(mfmo)/sizeof(MusicFileManagerOperation);
+    int num =sizeof(mfmo)/sizeof(GroupOfOperation);
     int n = 0;
     for(; n < num; n++)
     {
