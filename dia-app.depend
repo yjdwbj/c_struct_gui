@@ -2386,7 +2386,7 @@
 	"connectionpoint.h"
 	"dia_xml.h"
 
-1405075309 o:\tool\dvs50\objects\struct\struct_class.h
+1405329819 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2631,7 +2631,7 @@
 	"app_procs.h"
 	"interface.h"
 
-1405081600 source:o:\tool\dvs50\objects\struct\newidlist.c
+1405330734 source:o:\tool\dvs50\objects\struct\newidlist.c
 	"struct_class.h"
 	"object.h"
 

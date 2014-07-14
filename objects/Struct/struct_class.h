@@ -213,10 +213,9 @@ struct _ListBtn
 
 struct _SaveIdDialog
 {
-//    GtkWidget *parent_btn;
     GtkWidget *vbox;
     GList *idlists; /* SaveIdList 内容*/
-    GList *sublist; /* 子表为idlist  提供集合 */
+//    GList *sublist; /* 子表为idlist  提供集合 */
     gchar *title;
     GtkListStore *id_store;
     GtkListStore *id_cbmodel;
@@ -690,14 +689,21 @@ void factory_save_idlist_to_xml(SaveStruct *sss,ObjectNode obj_node);
 
 void factory_write_mfile_filelist(ObjectNode obj_node);
 enum
-{
+{   /* sublist */
     COLUMN_ITEM_SEQUENCE,
     COLUMN_ITEM_ADDR,
     COLUMN_ITEM_IDNAME,
     NUM_OF_COLS
 };
 
-typedef void (*GroupOfOperationFunc)(GtkWidget *btn,gpointer user_data);
+enum{ /* idlist */
+    COLUMN_IDSEQ,
+    COLUMN_IDNAME,
+    NUM_OF_IDLIST
+};
+
+
+typedef GtkWidget* (*GroupOfOperationFunc)(GtkWidget *btn,gpointer user_data);
 
 typedef struct _GroupOfOperation GroupOfOperation;
 
