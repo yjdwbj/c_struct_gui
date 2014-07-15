@@ -6,7 +6,7 @@
 static GHashTable *idtable = NULL;
 static gchar *subopt[] = {"添加","插入","删除",NULL};
 
-static GQuark idopts[]={0,0,0,0}; /* 这里其实要对应mfmo的数量的 */
+static GQuark idopts[]= {0,0,0,0}; /* 这里其实要对应mfmo的数量的 */
 
 static void factory_idlist_insert_item_to_model(GtkListStore *store,
         gchar *str,
@@ -31,17 +31,7 @@ static GroupOfOperation mfmo[] =
 
 };
 
-typedef struct
-{
-    GtkWidget *left;
-    GtkWidget *right;
-} twoWidget;
 
-typedef struct
-{
-    GQuark nquark;
-    GList *table_list;
-} subTable;
 
 static twoWidget stw= {0,0};
 
@@ -75,6 +65,7 @@ static GtkWidget *factory_create_action_list_widget()
     gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
     gtk_tree_view_append_column (act_treeview, column);
     GList *actlist = factory_get_objects_from_layer(curLayer);
+    factory_append_iten_to_cbmodal(act_model,g_quark_to_string(empty_quark));
     for(; actlist; actlist = actlist->next)
     {
         factory_append_iten_to_cbmodal(act_model,actlist->data);
@@ -103,18 +94,19 @@ static void factory_sublist_append_item_to_model(GtkListStore *store,
 }
 
 
-static void factory_sublist_insert_item_to_model(GtkListStore *store,
+static GtkTreeIter* factory_sublist_insert_item_to_model(GtkListStore *store,
         gchar *str,
         GtkTreeIter *sibling)
 {
     GtkTreeIter iter;
     gint n  = gtk_tree_model_iter_n_children(store,NULL);
-    gtk_list_store_insert_after (store,&iter,sibling);
+    gtk_list_store_insert_before (store,&iter,sibling);
     gtk_list_store_set(store,&iter,
                        COLUMN_ITEM_SEQUENCE,n,
                        COLUMN_ITEM_ADDR,n*2,
                        COLUMN_ITEM_IDNAME,str,
                        -1);
+    return &iter;
 }
 
 static gboolean factory_sublist_revalue_foreach(GtkTreeModel *model,
@@ -180,17 +172,17 @@ static void factory_sublist_insert_callback(GtkWidget *btn,gpointer user_data)
 
         GtkTreeIter iter,liter;
         GList *firstsub = gtk_tree_selection_get_selected_rows(subsel,&sub_model);
+        if(!firstsub) /* 没有选择一个点 */
+            return;
 
         gtk_tree_model_get_iter (sub_model,&liter,firstsub->data);
-
         g_list_foreach(firstsub,(GFunc)gtk_tree_path_free,NULL);
         g_list_free(firstsub);
 
-
-
         gtk_tree_selection_select_iter (subsel,&liter);
+
         GList *snodes = gtk_tree_selection_get_selected_rows (selection,
-                          &act_model);
+                        &act_model);
         GList *treelist = snodes;
         for(; treelist; treelist = treelist->next)
         {
@@ -199,7 +191,10 @@ static void factory_sublist_insert_callback(GtkWidget *btn,gpointer user_data)
             GtkTreeIter siter;
             gtk_tree_model_get(act_model,&iter,0,&txt,-1);
             factory_sublist_insert_item_to_model(sub_model,txt,&liter);
-            gtk_tree_model_iter_next (sub_model,&liter);
+//           gtk_tree_model_iter_next(sub_model,&liter);
+            GtkTreePath *path = gtk_tree_model_get_path(sub_model,&liter);
+            gtk_tree_path_prev(path);
+            gtk_tree_path_free(path);
             g_free(txt);
         }
 
@@ -222,10 +217,9 @@ static void factory_sublist_delete_callback(GtkWidget *btn,gpointer user_data)
     {
         GList *treelist = gtk_tree_selection_get_selected_rows (selection,
                           &sub_model);
-
         GList *reflist = NULL;
         GList *slist = treelist;
-        for(;slist; slist = slist->next)
+        for(; slist; slist = slist->next)
         {
             GtkTreeRowReference  *rowref;
             rowref = gtk_tree_row_reference_new(sub_model, slist->data);
@@ -253,6 +247,15 @@ static void factory_sublist_delete_callback(GtkWidget *btn,gpointer user_data)
         g_list_free(reflist);
         gtk_tree_model_foreach(sub_model,factory_sublist_revalue_foreach,NULL);
     }
+
+    scount = gtk_tree_selection_count_selected_rows (selection);
+    if(scount < 1)
+    {
+        GtkWidget *bparent = gtk_widget_get_parent(btn);
+        gtk_widget_set_sensitive(btn,FALSE);
+        GtkWidget *isert = g_object_get_data(G_OBJECT(bparent),"opt_ist");
+        gtk_widget_set_sensitive(isert,FALSE);
+    }
 }
 
 
@@ -265,30 +268,30 @@ static GtkWidget *factory_sublist_operators(GtkWidget *left,
     stw.right = right;
     GtkWidget *vsplit = gtk_vseparator_new();
 
-     GtkWidget *mainBox = gtk_vbox_new(FALSE,0);
+    GtkWidget *mainBox = gtk_vbox_new(FALSE,0);
     gtk_box_pack_start(GTK_BOX(mainBox),vsplit,TRUE,TRUE,0);
 
     GtkWidget *btn =
         gtk_button_new_with_label(factory_utf8("添加"));
-    g_object_set_data(G_OBJECT(mainBox),"append",btn);
+    g_object_set_data(G_OBJECT(mainBox),"opt_apd",btn);
     gtk_box_pack_start(GTK_BOX(mainBox),btn,FALSE,TRUE,0);
-
 
     g_signal_connect(btn,"clicked",
                      G_CALLBACK(factory_sublist_append_callback),&stw);
 
-
     btn = gtk_button_new_with_label(factory_utf8("插入"));
-    g_object_set_data(G_OBJECT(mainBox),"insert",btn);
+    g_object_set_data(G_OBJECT(mainBox),"opt_ist",btn);
     gtk_box_pack_start(GTK_BOX(mainBox),btn,FALSE,TRUE,15);
     g_signal_connect(btn,"clicked",
                      G_CALLBACK(factory_sublist_insert_callback),&stw);
+    gtk_widget_set_sensitive(btn,FALSE);
 
     btn = gtk_button_new_with_label(factory_utf8("删除"));
-    g_object_set_data(G_OBJECT(mainBox),"delete",btn);
+    g_object_set_data(G_OBJECT(mainBox),"opt_del",btn);
     gtk_box_pack_start(GTK_BOX(mainBox),btn,FALSE,TRUE,0);
     g_signal_connect(btn,"clicked",
                      G_CALLBACK(factory_sublist_delete_callback),left);
+    gtk_widget_set_sensitive(btn,FALSE);
     vsplit = gtk_vseparator_new();
 
     gtk_box_pack_start(GTK_BOX(mainBox),vsplit,TRUE,TRUE,0);
@@ -338,8 +341,6 @@ static void factory_add_sublist_columns (GtkTreeView *treeview,GtkTreeModel *cbm
     gtk_tree_view_append_column (treeview, column);
 
 }
-
-
 
 
 static gboolean factory_sublist_saveitem_foreach(GtkTreeModel *model,
@@ -402,13 +403,12 @@ static void factory_sublist_dialog_response(GtkWidget *widget,
             if(!g_ascii_strcasecmp(opt_lab,factory_utf8("添加")))
             {
                 /* 这里添加一行 */
-
                 factory_idlist_append_item_to_model(idmodel,text);
                 sid->idlists = g_list_append(sid->idlists,stable);
             }
             else if(!g_ascii_strcasecmp(opt_lab,factory_utf8("编辑")))
             {
-                                GtkTreeIter iter;
+                GtkTreeIter iter;
                 GtkTreeSelection *idsel = gtk_tree_view_get_selection(idtreeview);
                 if(gtk_tree_selection_get_selected(idsel,NULL,&iter))
                 {
@@ -467,10 +467,46 @@ static void factory_sublist_setback_values(GtkWidget *subdlg,
     GList *p = stable->table_list;
     for(; p ; p = p->next)
     {
-        factory_sublist_append_item_to_model(submodel,
-                                             g_quark_to_string(p->data));
+        gchar *txt =  g_quark_to_string(p->data);
+        gpointer exist = g_hash_table_lookup(curLayer->defnames,txt);
+        if(!exist)
+        {
+            p->data = empty_quark;
+            factory_sublist_append_item_to_model(submodel,
+                                                 g_quark_to_string(empty_quark));
+
+        }
+        else
+            factory_sublist_append_item_to_model(submodel,txt);
+
     }
 
+}
+
+gboolean
+factory_subtreeview_onButtonPressed(GtkWidget *treeview, GdkEventButton *event,
+                                   gpointer user_data)
+{
+    /* single click with the right mouse button? */
+    if (event->type == GDK_BUTTON_PRESS  &&  event->button == 1)
+    {
+        GtkTreeSelection *selection;
+        selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
+
+        /* Note: gtk_tree_selection_count_selected_rows() does not
+         *   exist in gtk+-2.0, only in gtk+ >= v2.2 ! */
+        int scount = gtk_tree_selection_count_selected_rows(selection);
+        if ( scount > 0)
+        {
+            GtkWidget *mainbox = user_data;
+            GtkWidget *btn = g_object_get_data(G_OBJECT(mainbox),"opt_ist");
+            gtk_widget_set_sensitive(btn,TRUE);
+            btn = g_object_get_data(G_OBJECT(mainbox),"opt_del");
+            gtk_widget_set_sensitive(btn,TRUE);
+        }
+    }
+
+    return FALSE; /* we did not handle this */
 }
 
 
@@ -509,6 +545,7 @@ static GtkWidget* factory_sublist_create_dialog(GtkMenuItem *item,
         GTK_SELECTION_MULTIPLE);
     gtk_container_add (GTK_CONTAINER (wid_idlist),sub_treeview);
 
+
     GtkTreeModel *idmodel = gtk_tree_view_get_model(ptreeview);
     gint idcount  = gtk_tree_model_iter_n_children(idmodel,NULL);
 
@@ -525,14 +562,17 @@ static GtkWidget* factory_sublist_create_dialog(GtkMenuItem *item,
 
     /*第一行的一个水平布局*/
     GtkWidget *act_widget = factory_create_action_list_widget();
+    GtkWidget *opt_box = factory_sublist_operators(wid_idlist,act_widget);
     GtkWidget *midhbox = gtk_hbox_new(FALSE,0);
     gtk_box_pack_start(GTK_BOX(midhbox),wid_idlist,TRUE,TRUE,0);
-    gtk_box_pack_start(GTK_BOX(midhbox),
-                       factory_sublist_operators(wid_idlist,act_widget),
-                       FALSE,FALSE,0);
+    gtk_box_pack_start(GTK_BOX(midhbox),opt_box,FALSE,FALSE,0);
     gtk_box_pack_start(GTK_BOX(midhbox),act_widget ,TRUE,TRUE,0);/* 右边是行为列表 */
 
     gtk_box_pack_start(GTK_BOX(mainBox),midhbox,TRUE,TRUE,0);
+
+     g_signal_connect(sub_treeview,"button_press_event",
+                     G_CALLBACK(factory_subtreeview_onButtonPressed),opt_box);
+
 //    g_object_unref (sub_model);
 
 //    gtk_box_pack_start(GTK_BOX(mainBox),factory_sublist_response_buttons,FALSE,FALSE,0);
@@ -609,6 +649,18 @@ static GtkWidget* factory_sublist_insert_dialog(GtkMenuItem *item,
 /***           下面是idlist的函数                ****/
 
 
+static void factory_idlist_after_delete_update(const gchar *name)
+{
+    SaveIdDialog *sid = curLayer->sid;
+    GList *glist = sid->idlists;
+    for(; glist ; glist = glist->next)
+    {
+        subTable *stable = glist->data;
+        GList *sublist = stable->table_list;
+//        for(;sublist;)
+    }
+}
+
 
 static void factory_set_idlist_columns (GtkTreeView *treeview,GtkTreeModel *cbmodel)
 {
@@ -662,7 +714,8 @@ gboolean factory_idlist_popumenu(GtkTreeView *treeview,
 
     gint sel = GPOINTER_TO_INT(user_data);
     if(sel == 0)
-    {   /* 使 编辑,插入,删除变灰 */
+    {
+        /* 使 编辑,插入,删除变灰 */
         GtkWidget *edit = g_object_get_data(G_OBJECT(menu),"1_item");
         gtk_widget_set_sensitive(edit,FALSE);
         edit = g_object_get_data(G_OBJECT(menu),"2_item");
@@ -692,25 +745,25 @@ factory_idtreeview_onButtonPressed(GtkWidget *treeview, GdkEventButton *event,
         /* Note: gtk_tree_selection_count_selected_rows() does not
          *   exist in gtk+-2.0, only in gtk+ >= v2.2 ! */
         int scount = gtk_tree_selection_count_selected_rows(selection);
-        if ( scount <= 1)
-        {
-            GtkTreePath *path;
-
-            /* Get tree path for row that was clicked */
-            if (gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(treeview),
-                                              (gint) event->x,
-                                              (gint) event->y,
-                                              &path, NULL, NULL, NULL))
-            {
-                gtk_tree_selection_unselect_all(selection);
-                gtk_tree_selection_select_path(selection, path);
-                gtk_tree_path_free(path);
-            }
-        }
+//        if ( scount <= 1)
+//        {
+//            GtkTreePath *path;
+//
+//            /* Get tree path for row that was clicked */
+//            if (gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(treeview),
+//                                              (gint) event->x,
+//                                              (gint) event->y,
+//                                              &path, NULL, NULL, NULL))
+//            {
+//                gtk_tree_selection_unselect_all(selection);
+//                gtk_tree_selection_select_path(selection, path);
+//                gtk_tree_path_free(path);
+//            }
+//        }
 
         factory_idlist_popumenu(treeview, event, (gpointer)scount);
 
-        return TRUE; /* we handled this */
+
     }
 
     return FALSE; /* we did not handle this */
@@ -806,9 +859,157 @@ factory_idtreeview_onButtonPressed(GtkWidget *treeview, GdkEventButton *event,
 //}
 
 
-void factory_idlist_save_to_xml(SaveStruct *sss,ObjectNode obj_node)
+
+
+void factory_idlist_read_xml(ObjectNode obj_node)
 {
-     ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+
+    SaveIdDialog *sid = (SaveIdDialog *)curLayer->sid;
+    ObjectNode idnode =  obj_node->xmlChildrenNode;
+    xmlChar *key;
+    GList *glist = NULL;
+    /* 这里先读取全部列表,后再切分. */
+    ObjectNode lstnode = factory_find_custom_node(obj_node,IDLIST_NODE);
+    if(lstnode)
+    {
+        ObjectNode cnode = lstnode->xmlChildrenNode;
+         while(cnode = data_next(cnode))
+         {
+             key = xmlGetProp(cnode,"idname");
+             if(key)
+                glist = g_list_append(glist,(char*)key);
+         }
+    }
+
+    ObjectNode idxnode = factory_find_custom_node(obj_node,IDINDEX_NODE);
+    if(idxnode)
+    {
+         GList *cglist = glist;
+         ObjectNode cnode = idxnode->xmlChildrenNode;
+         while(cnode = data_next(cnode))
+         {
+             subTable *stable = g_new0(subTable,1);
+             key = xmlGetProp(cnode,"name");
+             if(key)
+             {
+                 stable->nquark = g_quark_from_string((gchar*)key);
+                 xmlFree(key);
+             }
+             key = xmlGetProp(cnode,"rows");
+             if(key)
+             {
+                 gint len = g_strtod(key,NULL);
+                 int n = 0;
+                 for( ;n < len; n++,cglist = cglist->next)
+                 {
+                     stable->table_list =
+                     g_list_append(stable->table_list,
+                                   g_quark_from_string(cglist->data));
+                 }
+                 xmlFree(key);
+             }
+             sid->idlists = g_list_append(sid->idlists ,stable);
+         }
+
+    }
+
+    g_list_foreach(glist,(GFunc)g_free,NULL);
+    g_list_free(glist);
+
+
+
+//    while(attr_node = data_next(attr_node))
+//    {
+//        xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
+//        if(!key) continue;
+//        IDListStore *idsave = g_new0(IDListStore,1);
+//        idsave->sequence = g_strtod((gchar*)key,NULL);
+//        key = xmlGetProp(attr_node,(xmlChar *)"addr");
+//        if(!key)
+//        {
+//            idsave->id_addr = idsave->sequence * 2;
+//        }
+//        else
+//            idsave->id_addr = g_strtod((gchar*)key,NULL);
+//        key = xmlGetProp(attr_node,(xmlChar *)"idname");
+//        if(!key)
+//        {
+//            idsave->id_text = g_strdup("");
+//        }
+//        else
+//            idsave->id_text = g_strdup((gchar*)key);
+//
+//        sid->idlists = g_list_append(sid->idlists,idsave);
+//
+//    }
+}
+
+
+void factory_idlist_save_to_old_xml(ObjectNode ccc,GList *glist)
+{
+    GList *idlist = glist;
+    int pos = 0;
+    for(; idlist; idlist = idlist->next,pos++)
+    {
+        gchar  *txt  = g_quark_to_string(idlist->data);
+        ObjectNode idnode = xmlNewChild(ccc, NULL,
+                                         (const xmlChar *)JL_NODE, NULL);
+        xmlSetProp(idnode, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",pos));
+        xmlSetProp(idnode, (const xmlChar *)"type", (xmlChar *)"u16");
+        gchar *val = g_strdup("-1");
+        DiaObject *diaobj = g_hash_table_lookup(curLayer->defnames,txt);
+        if(!diaobj)
+        {
+
+        }
+        else
+        {
+            val = g_strdup_printf("%d",diaobj->oindex); /* 保存ID号 */
+        }
+
+        xmlSetProp(idnode, (const xmlChar *)"value",(xmlChar*)val);
+        xmlSetProp(idnode, (const xmlChar *)"addr", (xmlChar *)g_strdup_printf("%d",pos*2));
+        xmlSetProp(idnode, (const xmlChar *)"idname", (xmlChar *)txt);
+//            xmlSetProp(ccc, (const xmlChar *)"active", (xmlChar *)g_strdup_printf("%d",sit->active));
+        g_free(val);
+    }
+}
+
+
+
+
+void factory_idlist_save_to_xml(ObjectNode obj_node,GList *savelist)
+{
+    ObjectNode ccc = xmlNewChild(obj_node, NULL,
+                                 (const xmlChar *)IDINDEX_NODE, NULL);
+    xmlSetProp(ccc, (const xmlChar *)"rows",
+               (xmlChar *)g_strdup_printf("%d",g_list_length(savelist)));
+    GList *rootlist = savelist;
+    GList *glist = NULL;
+    for(; rootlist; rootlist = rootlist->next)
+    {
+        subTable *stable = rootlist->data;
+        ObjectNode idnode = xmlNewChild(ccc,NULL,(const xmlChar *)JL_NODE,NULL);
+        xmlSetProp(idnode, (const xmlChar *)"name",
+                   (xmlChar *)g_quark_to_string(stable->nquark));
+        xmlSetProp(idnode, (const xmlChar *)"rows",
+                   (xmlChar *)g_strdup_printf("%d",g_list_length(stable->table_list)));
+
+        glist = g_list_concat(glist,stable->table_list);
+    }
+
+    ccc = xmlNewChild(obj_node, NULL,
+                      (const xmlChar *)IDLIST_NODE, NULL);
+    xmlSetProp(ccc, (const xmlChar *)"rows",
+               (xmlChar *)g_strdup_printf("%d",g_list_length(glist)));
+    factory_idlist_save_to_old_xml(ccc,glist);
+
+}
+
+
+void factory_idlist_item_save_to_xml(SaveStruct *sss,ObjectNode obj_node)
+{
+    ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)JL_NODE, NULL);
     xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
     xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
     xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)sss->type);
@@ -820,10 +1021,10 @@ void factory_idlist_save_to_xml(SaveStruct *sss,ObjectNode obj_node)
     if(sid->idlists)
     {
         int pos  = g_strtod(sss->value.vnumber,NULL);
-        IDListStore *idsave  = g_list_nth_data(sid->idlists,pos);
-        if(idsave)
+        subTable *stable  = g_list_nth_data(sid->idlists,pos);
+        if(stable)
         {
-            idname = g_strdup(idsave->id_text);
+            idname = g_strdup(g_quark_to_string(stable->nquark));
         }
     }
     xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)idname);
@@ -839,7 +1040,7 @@ static void factory_idlist_dialog_response(GtkWidget *widget,int response_id,
     {
         SaveIdDialog *sid = curLayer->sid;
         GtkTreeView *idtreeview = g_object_get_data(G_OBJECT(widget),
-                                                    "idtreeview");
+                                  "idtreeview");
         GtkTreeModel *idmodel = gtk_tree_view_get_model(idtreeview);
         GtkTreeSelection *idsel = gtk_tree_view_get_selection(idtreeview);
         GtkTreeIter iter;
@@ -907,7 +1108,7 @@ void factory_create_idlist_dialog(GtkWidget *button,SaveStruct *sst)
     GtkTreeView *idtreeview  = gtk_tree_view_new_with_model(
                                    GTK_TREE_MODEL(idmodel));
     GList *exists = sid->idlists; /*把原来的值设置回来*/
-    for(;exists;exists = exists->next)
+    for(; exists; exists = exists->next)
     {
         subTable *s1 = exists->data;
         factory_idlist_append_item_to_model(idmodel,

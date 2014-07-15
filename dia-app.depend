@@ -1837,7 +1837,7 @@
 	"intl.h"
 	<math.h>
 
-1404982513 source:o:\tool\dvs50\app\load_save.c
+1405396596 source:o:\tool\dvs50\app\load_save.c
 	<config.h>
 	<sys/stat.h>
 	<unistd.h>
@@ -2372,7 +2372,7 @@
 
 1398410525 source:o:\tool\dvs50\dia.rc
 
-1405069089 source:o:\tool\dvs50\objects\struct\idlist.c
+1405414026 source:o:\tool\dvs50\objects\struct\idlist.c
 	"idlist.h"
 
 1403079467 o:\tool\dvs50\objects\struct\idlist.h
@@ -2386,7 +2386,7 @@
 	"connectionpoint.h"
 	"dia_xml.h"
 
-1405329819 o:\tool\dvs50\objects\struct\struct_class.h
+1405425952 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2395,7 +2395,7 @@
 	"struct.h"
 	"display.h"
 
-1405075084 source:o:\tool\dvs50\objects\struct\musicfilemanager.c
+1405414043 source:o:\tool\dvs50\objects\struct\musicfilemanager.c
 	"musicfilemanager.h"
 
 1405075084 o:\tool\dvs50\objects\struct\musicfilemanager.h
@@ -2412,7 +2412,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1405075282 source:o:\tool\dvs50\objects\struct\struct_class.c
+1405415439 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2608,7 +2608,7 @@
 1394081802 source:o:\tool\dvs50\gtk-demo\ui_manager.c
 	<gtk/gtk.h>
 
-1404982513 source:o:\tool\dvs50\objects\struct\template_proc.c
+1405414132 source:o:\tool\dvs50\objects\struct\template_proc.c
 	"template_proc.h"
 	"sheet.h"
 
@@ -2631,7 +2631,11 @@
 	"app_procs.h"
 	"interface.h"
 
-1405330734 source:o:\tool\dvs50\objects\struct\newidlist.c
+1405421729 source:o:\tool\dvs50\objects\struct\newidlist.c
+	"struct_class.h"
+	"object.h"
+
+1405422431 source:o:\tool\dvs50\objects\struct\newfilelist.c
 	"struct_class.h"
 	"object.h"
 

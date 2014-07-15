@@ -475,7 +475,8 @@ void factory_new_idlist_dialog(GtkWidget *button,SaveStruct *sst)
 
 void factory_save_idlist_to_xml(SaveStruct *sss,ObjectNode obj_node)
 {
-    ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+    ObjectNode ccc = xmlNewChild(obj_node, NULL,
+                                 (const xmlChar *)JL_NODE, NULL);
     xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
     xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
     xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)sss->type);
@@ -536,7 +537,8 @@ void factory_save_idlist_items(ObjectNode obj_node,GList *savelist)
     for(; idlist; idlist = idlist->next)
     {
         IDListStore *idsave =idlist->data;
-        ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+        ObjectNode ccc = xmlNewChild(obj_node, NULL,
+                                     (const xmlChar *)JL_NODE, NULL);
         xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",idsave->sequence));
         xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
         gchar *val = g_strdup("-1");

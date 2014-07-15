@@ -56,6 +56,12 @@
 
 #define STRUCT_NODE "JL_struct"
 #define TEMPLATE_NODE "JL_Template"
+#define JL_NODE "JL_item"
+#define IDLIST_NODE "ID_list"
+#define IDINDEX_NODE "ID_index"
+
+#define FILELIST_NODE "FILE_list"
+#define FILEINDEX_NODE "FILE_index"
 
 
 
@@ -620,7 +626,7 @@ void factory_create_toolbar_button(const gint8 *icon,gchar *tips,GtkToolbar  *to
 
 
 void factory_create_file_manager_dialog(GtkWidget *btn,ListDlgArg *lda);
-void factory_file_manager_dialog(GtkWidget *btn,SaveStruct *sst);
+void factory_mfile_manager_dialog(GtkWidget *btn,SaveStruct *sst);
 void factory_create_list_array_manager_dialog(GtkWidget *btn,SaveStruct *sst);
 void factory_save_list_array_manager_dialog(GtkWidget *widget,gint       response_id,gpointer user_data);
 
@@ -638,7 +644,7 @@ GtkWidget *factory_get_new_iditem(SaveIdItem *swt,GList *flist);
 GtkWidget *factory_get_new_musicitem( SaveMusicItem *swt,GList *fillist);
 
 
-GtkWidget *factory_music_file_manager_with_model(GtkWidget *parent,SaveMusicDialog *smd);
+GtkWidget *factory_mfile_music_list_dialog(GtkWidget *parent,SaveMusicDialog *smd);
 
 GtkWidget *factory_music_file_manager(GtkWidget *parent,SaveMusicDialog *smd);
 GtkWidget *factory_download_file_manager(GtkWidget *parent,SaveMusicDialog *smd);
@@ -686,6 +692,17 @@ void factory_save_idlist_to_xml(SaveStruct *sss,ObjectNode obj_node);
 
 
 
+typedef struct
+{
+    GtkWidget *left;
+    GtkWidget *right;
+} twoWidget;
+
+typedef struct
+{
+    GQuark nquark;
+    GList *table_list;
+} subTable;
 
 void factory_write_mfile_filelist(ObjectNode obj_node);
 enum

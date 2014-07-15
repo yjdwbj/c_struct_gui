@@ -48,7 +48,7 @@ void factory_music_file_manager_select_callback(GtkWidget *clist,
 
 MusicFileManagerOpts  mfmo_opts =
 {
-    (OpenDialog) factory_file_manager_dialog,
+    (OpenDialog) factory_mfile_manager_dialog,
     (ApplyDialog) 0,
     (Item_Added) factory_mfile_manager_update_idmodal,
     (Clear_All) factory_mfile_manager_clean_modal

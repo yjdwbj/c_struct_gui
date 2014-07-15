@@ -1422,7 +1422,7 @@ diagram_data_save(DiagramData *data, const char *user_filename)
 
     ret = diagram_data_raw_save(data, filename);
 
-    ret = factory_project_raw_save(data);
+//    ret = factory_project_raw_save(data);
 
     curlist = g_list_remove(curlist,fileobj);
     curlist = g_list_remove(curlist,idobj);
@@ -1441,15 +1441,15 @@ diagram_data_save(DiagramData *data, const char *user_filename)
     }
     /* save succeeded. We kill the old backup file, move the old file into
        backup, and the temp file into the new saved file. */
-    g_unlink(bakname);
-    g_rename(filename,bakname);
-    ret = g_rename(tmpname,filename);
-    if (ret < 0)
-    {
-        message_error(_("Can't rename %s to final output file %s: %s\n"),
-                      dia_message_filename(filename),
-                      dia_message_filename(filename), strerror(errno));
-    }
+//    g_unlink(bakname);
+//    g_rename(filename,bakname);
+//    ret = g_rename(tmpname,filename);
+//    if (ret < 0)
+//    {
+//        message_error(_("Can't rename %s to final output file %s: %s\n"),
+//                      dia_message_filename(filename),
+//                      dia_message_filename(filename), strerror(errno));
+//    }
 CLEANUP:
     if (filename != user_filename)
         g_free(filename);
@@ -1471,7 +1471,7 @@ CLEANUP:
     gchar *outfile = g_strdup_printf("-o=%s",newfile);
     /* 转换本地码,不然会有乱码的 */
     gchar *argv[] = {fullpath,input,outfile,NULL};
-    GPid pid;
+
     g_spawn_sync(NULL,
                  argv,NULL,
                  G_SPAWN_LEAVE_DESCRIPTORS_OPEN,

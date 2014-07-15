@@ -760,7 +760,8 @@ void factory_template_write_to_xml(GList *templlist,ObjectNode obj_node)
         FactoryItemInOriginalMap *fiiom = pp->data;
 //        if(!fiiom->itemslist) /* 如果没有选择任何一个,就不用保存了*/
 //            continue;
-        ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
+        ObjectNode ccc = xmlNewChild(obj_node, NULL,
+                                      (const xmlChar *)JL_NODE, NULL);
         xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)fiiom->struct_name);
         xmlSetProp(ccc, (const xmlChar *)"vname", (xmlChar *)fiiom->act_name);
 

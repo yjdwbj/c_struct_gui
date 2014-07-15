@@ -1646,6 +1646,10 @@
 		<Unit filename="objects/Struct/musicfilemanager.h">
 			<Option target="Struct" />
 		</Unit>
+		<Unit filename="objects/Struct/newfilelist.c">
+			<Option compilerVar="CC" />
+			<Option target="Struct" />
+		</Unit>
 		<Unit filename="objects/Struct/newidlist.c">
 			<Option compilerVar="CC" />
 			<Option target="Struct" />
