@@ -8,9 +8,6 @@ static gchar *subopt[] = {"添加","插入","删除",NULL};
 
 static GQuark idopts[]= {0,0,0,0}; /* 这里其实要对应mfmo的数量的 */
 
-static void factory_idlist_insert_item_to_model(GtkListStore *store,
-        gchar *str,
-        GtkTreeIter *sibling);
 static GtkWidget* factory_sublist_create_dialog(GtkMenuItem *item,
         GtkTreeView *ptreeview);
 static GtkWidget* factory_sublist_edit_dialog(GtkMenuItem *item,
@@ -80,7 +77,7 @@ static GtkWidget *factory_create_action_list_widget()
 
 /*** 这下面就是sublist 函数 ***/
 
-static void factory_sublist_append_item_to_model(GtkListStore *store,
+void factory_sublist_append_item_to_model(GtkListStore *store,
         gchar *str)
 {
     GtkTreeIter iter;
@@ -94,7 +91,7 @@ static void factory_sublist_append_item_to_model(GtkListStore *store,
 }
 
 
-static GtkTreeIter* factory_sublist_insert_item_to_model(GtkListStore *store,
+GtkTreeIter* factory_sublist_insert_item_to_model(GtkListStore *store,
         gchar *str,
         GtkTreeIter *sibling)
 {
@@ -662,7 +659,7 @@ static void factory_idlist_after_delete_update(const gchar *name)
 }
 
 
-static void factory_set_idlist_columns (GtkTreeView *treeview,GtkTreeModel *cbmodel)
+void factory_set_idlist_columns (GtkTreeView *treeview,GtkTreeModel *cbmodel)
 {
 
     GtkCellRenderer *renderer;
@@ -681,7 +678,7 @@ static void factory_set_idlist_columns (GtkTreeView *treeview,GtkTreeModel *cbmo
     gtk_tree_view_append_column (treeview, column);
 
     renderer = gtk_cell_renderer_text_new ();
-    column = gtk_tree_view_column_new_with_attributes (factory_utf8("行为表名称"),
+    column = gtk_tree_view_column_new_with_attributes (factory_utf8("表名称"),
              renderer,
              "text",
              COLUMN_IDNAME,
@@ -694,7 +691,7 @@ static void factory_set_idlist_columns (GtkTreeView *treeview,GtkTreeModel *cbmo
 
 
 /* 右键菜单操作 */
-gboolean factory_idlist_popumenu(GtkTreeView *treeview,
+static gboolean factory_mfile_idlist_popumenu(GtkTreeView *treeview,
                                  GdkEventButton *event,
                                  gpointer user_data)
 {
@@ -761,7 +758,7 @@ factory_idtreeview_onButtonPressed(GtkWidget *treeview, GdkEventButton *event,
 //            }
 //        }
 
-        factory_idlist_popumenu(treeview, event, (gpointer)scount);
+        factory_mfile_idlist_popumenu(treeview, event, (gpointer)scount);
 
 
     }
@@ -1072,7 +1069,7 @@ void factory_idlist_append_item_to_model(GtkListStore *store,const gchar *str)
 }
 
 
-static void factory_idlist_insert_item_to_model(GtkListStore *store,
+void factory_idlist_insert_item_to_model(GtkListStore *store,
         gchar *str,
         GtkTreeIter *sibling)
 {

@@ -46,13 +46,13 @@ void factory_music_file_manager_select_callback(GtkWidget *clist,
         GdkEventButton *event,
         gint  *ret);
 
-MusicFileManagerOpts  mfmo_opts =
-{
-    (OpenDialog) factory_mfile_manager_dialog,
-    (ApplyDialog) 0,
-    (Item_Added) factory_mfile_manager_update_idmodal,
-    (Clear_All) factory_mfile_manager_clean_modal
-};
+//MusicFileManagerOpts  mfmo_opts =
+//{
+//    (OpenDialog) factory_mfile_manager_dialog,
+//    (ApplyDialog) 0,
+//    (Item_Added) factory_mfile_manager_update_idmodal,
+//    (Clear_All) factory_mfile_manager_clean_modal
+//};
 
 
 

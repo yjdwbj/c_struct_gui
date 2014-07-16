@@ -2706,7 +2706,7 @@ void factory_read_specific_object_from_file(STRUCTClass *fclass,
     if(!g_ascii_strcasecmp(objname,TYPE_FILELST))
     {
 
-        factory_read_mfile_filelist_from_xml(obj_node->xmlChildrenNode);
+//        factory_read_mfile_filelist_from_xml(obj_node->xmlChildrenNode);
     }
     else /*IDLST*/
     {
@@ -3117,8 +3117,9 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
                 curLayer->smd = g_new0(SaveMusicDialog,1);
                 smd =curLayer->smd;
                 smd->smfm = NULL;
-                smd->mfmos = &mfmo_opts;
+//                smd->mfmos = &mfmo_opts;
                 smd->title = factory_utf8("文件管理");
+                smd->lastDir = g_strdup("");
                 smd->smfm = g_new0(SaveMusicFileMan,1);
                 /* 根据文件个数算偏移数 */
                 gchar **split = g_strsplit(factoryContainer->system_files,",",-1);
@@ -3864,7 +3865,7 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
         if(!g_strcasecmp(stype,TYPE_FILELST))
         {
 //            factory_mfile_idlist_save_xml(sss,obj_node);
-            factory_save_mfile_dialog_to_xml(sss,obj_node);
+//            factory_save_mfile_dialog_to_xml(sss,obj_node);
 //            ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
 //            xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
 //            xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
@@ -4045,7 +4046,8 @@ factory_struct_items_load(ObjectNode obj_node,int version,
             SaveMusicDialog *smd = curLayer->smd;
             smd->title = factory_utf8("文件管理");
             smd->smfm = NULL;
-            smd->mfmos = &mfmo_opts;
+             smd->lastDir = g_strdup("");
+//            smd->mfmos = &mfmo_opts;
             smd->smfm = g_new0(SaveMusicFileMan,1);
             /* 根据文件个数算偏移数 */
             gchar **split = g_strsplit(factoryContainer->system_files,",",-1);
@@ -4131,7 +4133,7 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
     if(!g_strcasecmp(fsi->sname,TYPE_FILELST))
     {
         /* 这里写音乐管理界面上的数据 */
-        factory_write_mfile_filelist(item_node);
+//        factory_write_mfile_filelist(item_node);
     }
     else if(!g_strcasecmp(fsi->sname,TYPE_IDLST))
     {

@@ -236,12 +236,10 @@ struct _SaveIdDialog
 typedef struct _SaveMusicFile SaveMusicFile;
 struct _SaveMusicFile
 {
-    int index;
-    int file_addr;       /*加上偏移的地址*/
-    gchar* base_name;
-    gchar* full_name;
+    int offset;
+    GQuark full_quark;
+    GQuark base_quark;
     gchar* down_name;   /*小机识别的名字*/
-
 };
 
 typedef struct _SaveMusicFileMan  SaveMusicFileMan;
@@ -285,12 +283,11 @@ struct _SaveMusicDialog
     gchar **vnumber; /* 这个就是SaveStruct vnumber*/
     GList *itemlist; /* 左边界面的链表　内容是　SaveMusicItem */
     GList *cboxlist; /* 右边下载名的链表　内容是 gchar */
-    GtkListStore *id_store;
-    GtkTreeView  *id_treeview;
-    GtkListStore *id_cbmodal;
     GtkWidget *window; /* 它本身的窗口*/
     SaveMusicFileMan *smfm; /* 右边界面 */
     MusicFileManagerOpts *mfmos;
+    GList *mflist; /* 内容是SaveMusicFile  */
+    gchar *lastDir;
 };
 
 
@@ -690,6 +687,19 @@ void factory_read_idlist_items(ObjectNode obj_node);
 
 void factory_save_idlist_to_xml(SaveStruct *sss,ObjectNode obj_node);
 
+void factory_sublist_append_item_to_model(GtkListStore *store,
+        gchar *str);
+GtkTreeIter* factory_sublist_insert_item_to_model(GtkListStore *store,
+        gchar *str,
+        GtkTreeIter *sibling);
+
+void factory_set_idlist_columns (GtkTreeView *treeview,GtkTreeModel *cbmodel);
+
+
+void factory_idlist_insert_item_to_model(GtkListStore *store,
+        gchar *str,
+        GtkTreeIter *sibling);
+
 
 
 typedef struct
@@ -697,6 +707,12 @@ typedef struct
     GtkWidget *left;
     GtkWidget *right;
 } twoWidget;
+
+
+typedef struct{
+    GQuark full_quark;
+    GQuark base_quark;
+}file_quark;
 
 typedef struct
 {

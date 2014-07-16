@@ -5056,16 +5056,16 @@ GList* factory_get_download_name_list(const gchar *path)
     SaveMusicFileMan *smfm = smd->smfm;
     g_return_val_if_fail(smfm != NULL,NULL);
     GList *tlist = smfm->filelist;
-    for(; tlist; tlist = tlist->next)
-    {
-        SaveMusicFile *smf = tlist->data;
-        gchar *npc = g_strconcat(path,smf->down_name,NULL);
-        GFile *src = g_file_new_for_path(smf->full_name);
-        GFile *dst = g_file_new_for_path(npc);
-        g_file_copy(src,dst,G_FILE_COPY_OVERWRITE,NULL,NULL,NULL,NULL);
-        g_free(npc);
-        list = g_list_append(list,smf->down_name);
-    }
+//    for(; tlist; tlist = tlist->next)
+//    {
+//        SaveMusicFile *smf = tlist->data;
+//        gchar *npc = g_strconcat(path,smf->down_name,NULL);
+//        GFile *src = g_file_new_for_path(smf->full_name);
+//        GFile *dst = g_file_new_for_path(npc);
+//        g_file_copy(src,dst,G_FILE_COPY_OVERWRITE,NULL,NULL,NULL,NULL);
+//        g_free(npc);
+//        list = g_list_append(list,smf->down_name);
+//    }
     return  list ;
 }
 
