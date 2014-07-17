@@ -63,7 +63,7 @@
 #define FILELIST_NODE "FILE_list"
 #define FILEINDEX_NODE "FILE_index"
 
-
+#define OBJECT_MAX 65535
 
 
 
@@ -281,13 +281,16 @@ struct _SaveMusicDialog
     gchar *btnname;
     FMSaveType fmst;
     gchar **vnumber; /* 这个就是SaveStruct vnumber*/
-    GList *itemlist; /* 左边界面的链表　内容是　SaveMusicItem */
-    GList *cboxlist; /* 右边下载名的链表　内容是 gchar */
-    GtkWidget *window; /* 它本身的窗口*/
-    SaveMusicFileMan *smfm; /* 右边界面 */
-    MusicFileManagerOpts *mfmos;
+//    GList *itemlist; /* 左边界面的链表　内容是　SaveMusicItem */
+//    GList *cboxlist; /* 右边下载名的链表　内容是 gchar */
+//    GtkWidget *window; /* 它本身的窗口*/
+//    SaveMusicFileMan *smfm; /* 右边界面 */
+//    MusicFileManagerOpts *mfmos;
     GList *mflist; /* 内容是SaveMusicFile  */
     gchar *lastDir;
+    GHashTable  *mtable; /* 音乐文件哈希表 */
+    GList *midlists;
+    gint offset;
 };
 
 
@@ -700,7 +703,17 @@ void factory_idlist_insert_item_to_model(GtkListStore *store,
         gchar *str,
         GtkTreeIter *sibling);
 
+void factory_message_dialoag(GtkWidget *parent,const gchar *msg);
 
+gboolean factory_sublist_revalue_foreach(GtkTreeModel *model,
+        GtkTreePath *path,
+        GtkTreeIter *iter,
+        gpointer data);
+
+gboolean factory_idlist_delete_item_update_foreach(GtkTreeModel *model,
+        GtkTreePath *path,
+        GtkTreeIter *iter,
+        gpointer data);
 
 typedef struct
 {
@@ -735,6 +748,12 @@ enum{ /* idlist */
     NUM_OF_IDLIST
 };
 
+/* 这个函数指针用来分别取ID还是音乐文件的 */
+typedef gpointer (*Factory_Hash_Table_Lookup)(GHashTable *table,GQuark key);
+
+
+void factory_sublist_setback_values(GtkWidget *subdlg,
+        subTable *stable,Factory_Hash_Table_Lookup func,GHashTable *table);
 
 typedef GtkWidget* (*GroupOfOperationFunc)(GtkWidget *btn,gpointer user_data);
 

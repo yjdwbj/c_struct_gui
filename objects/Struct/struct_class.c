@@ -3116,15 +3116,17 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             {
                 curLayer->smd = g_new0(SaveMusicDialog,1);
                 smd =curLayer->smd;
-                smd->smfm = NULL;
+//                smd->smfm = NULL;
 //                smd->mfmos = &mfmo_opts;
                 smd->title = factory_utf8("文件管理");
                 smd->lastDir = g_strdup("");
-                smd->smfm = g_new0(SaveMusicFileMan,1);
+//                smd->smfm = g_new0(SaveMusicFileMan,1);
                 /* 根据文件个数算偏移数 */
                 gchar **split = g_strsplit(factoryContainer->system_files,",",-1);
-                smd->smfm->offset = g_strv_length(split);
+                smd->offset = g_strv_length(split);
                 g_strfreev(split);
+                /* 这里用数字哈希表来保存,文件名的hash值 */
+                smd->mtable = g_hash_table_new(g_direct_hash,g_direct_equal);
             }
 
             smd = curLayer->smd;
@@ -4045,14 +4047,16 @@ factory_struct_items_load(ObjectNode obj_node,int version,
             curLayer->smd = g_new0(SaveMusicDialog,1);
             SaveMusicDialog *smd = curLayer->smd;
             smd->title = factory_utf8("文件管理");
-            smd->smfm = NULL;
+//            smd->smfm = NULL;
              smd->lastDir = g_strdup("");
 //            smd->mfmos = &mfmo_opts;
-            smd->smfm = g_new0(SaveMusicFileMan,1);
+//            smd->smfm = g_new0(SaveMusicFileMan,1);
             /* 根据文件个数算偏移数 */
             gchar **split = g_strsplit(factoryContainer->system_files,",",-1);
-            smd->smfm->offset = g_strv_length(split);
+            smd->offset = g_strv_length(split);
             g_strfreev(split);
+              /* 这里用数字哈希表来保存,文件名的hash值 */
+            smd->mtable = g_hash_table_new(g_direct_hash,g_direct_equal);
         }
 
         if(!curLayer->sid)

@@ -539,7 +539,7 @@ static gboolean factory_filter_checked_item(GtkTreeModel *model,
     return FALSE;
 }
 
-void factory_template_item_audit_dialoag(GtkWidget *widget,const gchar *msg)
+void factory_message_dialoag(GtkWidget *widget,const gchar *msg)
 {
     GtkWidget * msg_dialog = gtk_message_dialog_new (GTK_WINDOW (widget),
                              GTK_DIALOG_MODAL,
@@ -563,7 +563,7 @@ void factory_template_save_dialog(GtkWidget *widget,
         if(0 == strlen(g_strstrip(static_fsil->vname)))
         {
             gchar *msg = g_strdup(factory_utf8("模版显示名不能为空,或者含有不可见字符!!!\n"));
-            factory_template_item_audit_dialoag(widget,msg);
+            factory_message_dialoag(widget,msg);
             g_free(msg);
             gtk_widget_grab_focus (wid_obj);
             return ;
@@ -576,7 +576,7 @@ void factory_template_save_dialog(GtkWidget *widget,
         if(0 == strlen(g_strstrip(static_fsil->sname)))
         {
             gchar *msg = g_strdup(factory_utf8("模版名称不能为空,或者含有不可见字符!!!\n"));
-            factory_template_item_audit_dialoag(widget,msg);
+            factory_message_dialoag(widget,msg);
             g_free(msg);
             gtk_widget_grab_focus (wid_obj);
             return ;
@@ -588,7 +588,7 @@ void factory_template_save_dialog(GtkWidget *widget,
         if(0 == strlen(g_strstrip(static_fsil->sfile)))
         {
             gchar *msg = g_strdup(factory_utf8("文件名不能为空,或者含有不可见字符!!!\n"));
-            factory_template_item_audit_dialoag(widget,msg);
+            factory_message_dialoag(widget,msg);
             g_free(msg);
             gtk_widget_grab_focus (wid_obj);
             return ;
@@ -604,7 +604,7 @@ void factory_template_save_dialog(GtkWidget *widget,
         {
             gchar *msg = factory_utf8(g_strdup_printf("重名!!!\n该模版名必须在现有结构体名与现有模版名中唯一.\n名称:%s\n",
                                       static_fsil->sname));
-            factory_template_item_audit_dialoag(widget,msg);
+            factory_message_dialoag(widget,msg);
             g_free(msg);
             return ;
         }

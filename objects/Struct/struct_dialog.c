@@ -3812,8 +3812,7 @@ FIRST:
             lda->odw_func = NULL;
             lda->type = factory_get_last_section(sss->name,".");
             lda->user_data = &sss->value.vnumber; /* 这里是二级指针*/
-//            SaveKV *skv = sss->value.vnumber;
-//            gtk_button_set_label(GTK_BUTTON(columTwo), skv->value );
+
             gtk_button_set_label(GTK_BUTTON(columTwo), sss->value.vnumber );
             g_signal_connect (G_OBJECT (columTwo), "clicked",G_CALLBACK (sss->newdlg_func),lda);
         }
@@ -5053,9 +5052,9 @@ GList* factory_get_download_name_list(const gchar *path)
     g_return_val_if_fail(curLayer != NULL,NULL);
     g_return_val_if_fail(curLayer->smd != NULL,NULL);
     SaveMusicDialog *smd = curLayer->smd;
-    SaveMusicFileMan *smfm = smd->smfm;
-    g_return_val_if_fail(smfm != NULL,NULL);
-    GList *tlist = smfm->filelist;
+//    SaveMusicFileMan *smfm = smd->smfm;
+//    g_return_val_if_fail(smfm != NULL,NULL);
+//    GList *tlist = smfm->filelist;
 //    for(; tlist; tlist = tlist->next)
 //    {
 //        SaveMusicFile *smf = tlist->data;
