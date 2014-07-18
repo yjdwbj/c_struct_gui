@@ -2407,7 +2407,8 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
 
     STRUCTClass *fclass = fst->orgclass;
     xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"wtype");
-    if( factory_is_special_object(fst->FType) && g_ascii_strncasecmp((gchar*)key,"LBTN",4) )
+    if( factory_is_special_object(fst->FType) &&
+       g_ascii_strncasecmp((gchar*)key,"LBTN",4) )
     {
         /* 这里是id列表与音乐文件列表的数据读取 */
         sss->celltype = UBTN;
@@ -2424,8 +2425,15 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         }
         else
             sss->value.vnumber = g_strdup((gchar*)key);
-//        skv->value = g_strdup((gchar*)key);
         xmlFree(key);
+        key = xmlGetProp(attr_node,(xmlChar*)"org_val");
+        if(key)
+        {
+            sss->value.vnumber = g_strdup((gchar*)key);
+            xmlFree(key);
+        }
+//        skv->value = g_strdup((gchar*)key);
+
 //        key = xmlGetProp(attr_node,(xmlChar*)"index");
 //        if(!key)
 //        {
@@ -2698,7 +2706,8 @@ GList *factory_get_list_from_hashtable(STRUCTClass *fclass)
 }
 
 void factory_read_specific_object_from_file(STRUCTClass *fclass,
-                                            ObjectNode obj_node)
+                                            ObjectNode obj_node,
+                                            const gchar *filename)
 {
 
     gchar *objname = fclass->element.object.name;
@@ -2706,7 +2715,7 @@ void factory_read_specific_object_from_file(STRUCTClass *fclass,
     if(!g_ascii_strcasecmp(objname,TYPE_FILELST))
     {
 
-//        factory_read_mfile_filelist_from_xml(obj_node->xmlChildrenNode);
+        factory_read_mfile_filelist_from_xml(obj_node,filename);
     }
     else /*IDLST*/
     {
@@ -3127,6 +3136,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
                 g_strfreev(split);
                 /* 这里用数字哈希表来保存,文件名的hash值 */
                 smd->mtable = g_hash_table_new(g_direct_hash,g_direct_equal);
+//                smd->midtable = g_hash_table_new(g_direct_hash,g_direct_equal);
             }
 
             smd = curLayer->smd;
@@ -3867,6 +3877,7 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
         if(!g_strcasecmp(stype,TYPE_FILELST))
         {
 //            factory_mfile_idlist_save_xml(sss,obj_node);
+            factory_mfile_save_item_to_xml(sss,obj_node);
 //            factory_save_mfile_dialog_to_xml(sss,obj_node);
 //            ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
 //            xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
@@ -4057,6 +4068,7 @@ factory_struct_items_load(ObjectNode obj_node,int version,
             g_strfreev(split);
               /* 这里用数字哈希表来保存,文件名的hash值 */
             smd->mtable = g_hash_table_new(g_direct_hash,g_direct_equal);
+//            smd->midtable = g_hash_table_new(g_direct_hash,g_direct_equal);
         }
 
         if(!curLayer->sid)
@@ -4065,7 +4077,8 @@ factory_struct_items_load(ObjectNode obj_node,int version,
         }
 
         factory_read_specific_object_from_file(structclass,
-                                               attr_node);
+                                               attr_node,
+                                               filename);
         structclass_destroy(structclass) ;
         return NULL;
     }
@@ -4137,17 +4150,13 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
     if(!g_strcasecmp(fsi->sname,TYPE_FILELST))
     {
         /* 这里写音乐管理界面上的数据 */
-//        factory_write_mfile_filelist(item_node);
+        factory_mfile_save_to_xml(item_node,filename);
     }
     else if(!g_strcasecmp(fsi->sname,TYPE_IDLST))
     {
         SaveIdDialog *sid = (SaveIdDialog *)curLayer->sid;
         if(!sid || !sid->idlists)
             return;
-//        gchar *rows = g_strdup_printf("%d",g_list_length(sid->idlists));
-//        xmlSetProp(obj_node, (const xmlChar *)"rows", (xmlChar *)rows);
-//        g_free(rows);
-//        factory_save_idlist_items(obj_node,sid->idlists); /* 2014-6-19 更改用这个函数保存*/
         factory_idlist_save_to_xml(item_node,sid->idlists);
          /* 这里添加一个兼容以前的版本 */
     }

@@ -995,15 +995,7 @@ write_objects(GList *objects, xmlNodePtr objects_node,
 
         list = g_list_next(list);
     }
-//    if(!istemplate)
-//    {
-//        objects = g_list_remove(objects,fileobj);
-//        fileobj->ops->destroy(fileobj);
-//        objects = g_list_remove(objects,idobj);
-//        idobj->ops->destroy(idobj);
-//        objects = g_list_remove(objects,sysinfoobj);
-//        sysinfoobj->ops->destroy(sysinfoobj);
-//    }
+
     return TRUE;
 }
 
@@ -1472,11 +1464,11 @@ CLEANUP:
     /* 转换本地码,不然会有乱码的 */
     gchar *argv[] = {fullpath,input,outfile,NULL};
 
-    g_spawn_sync(NULL,
-                 argv,NULL,
-                 G_SPAWN_LEAVE_DESCRIPTORS_OPEN,
-                 NULL,NULL,
-                 NULL,NULL,NULL,NULL);
+//    g_spawn_sync(NULL,
+//                 argv,NULL,
+//                 G_SPAWN_LEAVE_DESCRIPTORS_OPEN,
+//                 NULL,NULL,
+//                 NULL,NULL,NULL,NULL);
 
 //    g_spawn_async_with_pipes(dia_get_lib_directory("bin"),
 //                             argv,NULL,G_SPAWN_SEARCH_PATH,NULL,NULL,&pid,NULL,NULL,NULL,NULL);

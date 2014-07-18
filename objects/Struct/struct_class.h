@@ -63,6 +63,8 @@
 #define FILELIST_NODE "FILE_list"
 #define FILEINDEX_NODE "FILE_index"
 
+#define MUSIC_FILE "Music_File"
+
 #define OBJECT_MAX 65535
 
 
@@ -290,7 +292,9 @@ struct _SaveMusicDialog
     gchar *lastDir;
     GHashTable  *mtable; /* 音乐文件哈希表 */
     GList *midlists;
+    GList *glist; /* 所有的项目 */
     gint offset;
+    GHashTable *midtable;
 };
 
 
@@ -676,7 +680,7 @@ void factory_systeminfo_callback(GtkWidget *parent);
 GList* factory_get_download_name_list(const gchar *path);
 
 //void factoryReadDataFromFile(STRUCTClass *structclass);
-
+void factory_mfile_save_to_xml(ObjectNode obj_node,const gchar *filename);
 void factory_reset_object_color_to_default();
 void factory_set_fill_color();
 SaveStruct *factory_savestruct_copy(const SaveStruct *old);
@@ -715,6 +719,8 @@ gboolean factory_idlist_delete_item_update_foreach(GtkTreeModel *model,
         GtkTreeIter *iter,
         gpointer data);
 
+gchar *factory_get_subtable_name(GList *glist,gint n);
+
 typedef struct
 {
     GtkWidget *left;
@@ -733,7 +739,7 @@ typedef struct
     GList *table_list;
 } subTable;
 
-void factory_write_mfile_filelist(ObjectNode obj_node);
+
 enum
 {   /* sublist */
     COLUMN_ITEM_SEQUENCE,
