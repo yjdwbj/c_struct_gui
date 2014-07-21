@@ -182,7 +182,7 @@ static GtkWidget* factory_mfile_mlist_delete_operator(GtkWidget *btn,
                 GtkTreeIter iter;
                 gtk_tree_model_get_iter (m_model,&iter,path);
                 gchar *bscname ;
-                gtk_tree_model_get(m_model,&iter,COLUMN_DNAME,
+                gtk_tree_model_get(m_model,&iter,COLUMN_FNAME,
                                    &bscname,-1);
                 g_hash_table_remove(smd->mtable,g_quark_from_string(bscname));
                 gtk_list_store_remove (GTK_LIST_STORE(m_model),&iter);
@@ -997,6 +997,7 @@ static gboolean factory_mfile_mlist_insert_item(GtkListStore *store,
 
 
 
+
 static gboolean factory_mfile_mlist_insert_foreach(GtkTreeModel *model,
         GtkTreePath *path,
         GtkTreeIter *iter,
@@ -1018,14 +1019,195 @@ static gboolean factory_mfile_mlist_insert_foreach(GtkTreeModel *model,
     return FALSE;
 }
 
+static gboolean factory_refresh_ui(gpointer data)
+{
+    while (gtk_events_pending())
+        gtk_main_iteration();
+    return FALSE;
+}
 
+static gboolean factory_refresh_ptreeview(GtkWidget *widget)
+{
+    if(widget)
+        gtk_widget_queue_draw(widget);
+    return TRUE;
+}
+
+static gboolean factory_mfile_mlist_idle_append(gpointer data)
+{
+    GtkListStore *model = data;
+    SaveMusicFile *smf = g_object_get_data(G_OBJECT(model),"cur_smf");
+    factory_mfile_mlist_append_item(GTK_LIST_STORE(model),smf);
+    gdk_window_process_all_updates();
+//     gtk_widget_queue_draw(mtreeview);
+    return FALSE;
+}
+
+/* 添加与插入文件上的后台线程函数 */
+static gboolean factory_mfile_mlist_thread_func(gpointer user_data)
+{
+
+    SaveMusicDialog *smd = curLayer->smd;
+    GtkTreeView *mtreeview = user_data;
+//    GMainLoop *mloop = g_object_get_data(G_OBJECT(mtreeview),
+//                                "m_loop");
+
+    const gchar *label = g_object_get_data(G_OBJECT(mtreeview),"opt_label");
+    GQuark tquark  = g_quark_from_string(label);
+    GList *duplist = NULL; /* 重复添的加文件名 */
+    GtkWidget *parent = g_object_get_data(G_OBJECT(mtreeview),"dlg_parent");
+//    GtkWidget *spinbox = g_object_get_data(G_OBJECT(user_data),"wid_offset");
+//    int offset = gtk_spin_button_get_value(GTK_SPIN_BUTTON(spinbox));
+    GtkTreeModel *model = gtk_tree_view_get_model(mtreeview);
+    GSList *getflist;
+    GSList *flists = getflist = g_object_get_data(G_OBJECT(mtreeview),
+                                "chooser_list");
+    GQuark fquark = 0,bquark = 0;
+
+    if(tquark == add_quark)
+    {
+        int idle_id = 0;
+        for(; flists; flists = flists->next)
+        {
+
+            SaveMusicFile *smf = g_new0(SaveMusicFile,1);
+            smf->full_quark = g_quark_from_string((gchar *)flists->data);
+            gchar **split = g_strsplit((gchar *)flists->data,"\\",-1);
+            int len = g_strv_length(split);
+
+            smf->base_quark =  g_quark_from_string(split[len-1]);
+
+            /*不能重复添加*/
+            gpointer hval = g_hash_table_lookup(smd->mtable,
+                                                (gpointer)smf->base_quark);
+            if(!hval)
+            {
+                g_hash_table_insert(smd->mtable,smf->base_quark,smf);
+            }
+            else
+            {
+                duplist = g_list_append(duplist,smf->base_quark);
+                continue;
+            }
+            g_strfreev(split);
+            smf->offset = smd->offset;
+            smf->down_name = g_strdup("");
+            factory_mfile_mlist_append_item(GTK_LIST_STORE(model),smf);
+            smd->mflist  = g_list_append(smd->mflist,smf);
+            gtk_widget_queue_draw(mtreeview);
+
+        }
+    }
+    else /* 插入音乐文件 */
+    {
+        GtkTreeSelection *msel = gtk_tree_view_get_selection(mtreeview);
+        GtkTreeIter sibling;
+        GList *firstsub = gtk_tree_selection_get_selected_rows(msel,&model);
+        gtk_tree_model_get_iter (model,&sibling,firstsub->data);
+        g_list_foreach(firstsub,(GFunc)gtk_tree_path_free,NULL);
+        g_list_free(firstsub);
+
+        gtk_tree_selection_select_iter (msel,&sibling);
+
+        GtkTreePath *path = gtk_tree_model_get_path(model,&sibling);
+        gint pos = gtk_tree_path_get_indices(path)[0];
+        for(; flists; flists = flists->next)
+        {
+
+            SaveMusicFile *smf = g_new0(SaveMusicFile,1);
+            smf->full_quark = g_quark_from_string((gchar *)flists->data);
+            gchar **split = g_strsplit((gchar *)flists->data,"\\",-1);
+            int len = g_strv_length(split);
+            smf->base_quark = g_quark_from_string(split[len-1]);
+            gpointer hval = g_hash_table_lookup(smd->mtable,
+                                                smf->base_quark);
+            if(!hval)
+            {
+                g_hash_table_insert(smd->mtable,smf->base_quark,smf);
+            }
+            else
+            {
+                duplist = g_list_append(duplist,smf->base_quark);
+                continue;
+            }
+
+            g_strfreev(split);
+            smf->offset = smd->offset;
+            smf->down_name = g_strdup("");
+
+            factory_mfile_mlist_insert_item(model,smf,&sibling);
+
+            GtkTreePath *path = gtk_tree_model_get_path(model,&sibling);
+            gtk_tree_path_prev(path);
+            gtk_tree_path_free(path);
+            gtk_widget_queue_draw(mtreeview);
+//            gdk_window_process_all_updates();
+
+        }
+        g_list_free(smd->mflist);
+        smd->mflist = NULL; /* insert操作要把链表清空重排 */
+        gtk_tree_model_foreach(GTK_TREE_MODEL(model),
+                               factory_mfile_mlist_insert_foreach,smd);
+    }
+
+    g_slist_foreach(getflist,(GFunc)g_free,NULL);
+    g_slist_free(getflist);
+
+
+    if(g_list_length(duplist) > 0)
+    {
+        GList *t = duplist;
+        gchar *fmt = factory_utf8("下列文件名已经存在,不需要重复添加!\n");
+        for(; t; t= t->next)
+        {
+            gchar *p = g_strdup(fmt);
+            g_free(fmt);
+            fmt = g_strconcat(p,g_strdup_printf("%s\n",
+                                                g_quark_to_string(t->data),NULL));
+        }
+//                g_list_foreach(duplist,(GFunc)g_free,NULL);
+        g_list_free(duplist);
+        factory_message_dialoag(NULL,fmt);
+        g_free(fmt);
+    }
+//    gint retval;
+//    g_thread_exit(&retval);
+//    gdk_window_process_all_updates();
+//    g_main_loop_quit(mloop);
+    return FALSE;
+}
+
+static void factory_open_file_response(GtkWidget *widget,
+                                       gint respose_id,
+                                       gpointer user_data)
+{
+    if(respose_id == GTK_RESPONSE_OK)
+    {
+        GtkTreeView *mtreeview = user_data;
+        GSList *flists  =
+        gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(widget));
+        gdk_threads_enter();
+        gtk_widget_destroy(widget);
+        gtk_widget_queue_draw(widget);
+        gdk_threads_leave();
+        const gchar *label = g_object_get_data(G_OBJECT(widget),"opt_label");
+
+        g_object_set_data(G_OBJECT(mtreeview),"chooser_list",flists);
+        g_object_set_data(G_OBJECT(mtreeview),"opt_label",label);
+        gdk_threads_add_idle (factory_mfile_mlist_thread_func,mtreeview);
+    }
+    else
+        gtk_widget_destroy(widget);
+
+}
 
 void factory_open_file_dialog(GtkWidget *widget,gpointer user_data)
 {
 
     const gchar *label = gtk_button_get_label(GTK_BUTTON(widget));
     GtkWidget *parent = g_object_get_data(user_data,"dlg_parent");
-    GQuark tquar = g_quark_from_string(label);
+
+//    GQuark tquar = g_quark_from_string(label);
     SaveMusicDialog *smd = curLayer->smd;
 
     static GtkWidget *opendlg = NULL;
@@ -1041,10 +1223,7 @@ void factory_open_file_dialog(GtkWidget *widget,gpointer user_data)
         gtk_dialog_set_default_response(GTK_DIALOG(opendlg), GTK_RESPONSE_ACCEPT);
         gtk_window_set_modal(GTK_WINDOW(opendlg),TRUE);
         gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER (opendlg), TRUE);
-//        if(smd->lastDir )
-//            gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(opendlg),
-//                                                smd->lastDir);
-
+        g_object_set_data(G_OBJECT(opendlg),"opt_label",label);
         if (!gtk_file_chooser_get_extra_widget(GTK_FILE_CHOOSER(opendlg)))
         {
 //            GtkWidget *omenu= gtk_combo_box_new();
@@ -1052,6 +1231,11 @@ void factory_open_file_dialog(GtkWidget *widget,gpointer user_data)
 
             /* set up the gtk file (name) filters */
             /* 0 = by extension */
+            filter = gtk_file_filter_new ();
+            gtk_file_filter_set_name (filter, _("All Files"));
+            gtk_file_filter_add_pattern (filter, "*");
+            gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (opendlg), filter);
+
             filter = gtk_file_filter_new ();
             gtk_file_filter_set_name (filter, _("Music Files"));
             gtk_file_filter_add_pattern (filter, "*.wav");
@@ -1061,134 +1245,21 @@ void factory_open_file_dialog(GtkWidget *widget,gpointer user_data)
             gtk_file_filter_add_pattern (filter, "*.a");
             gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (opendlg), filter);
 
-            filter = gtk_file_filter_new ();
-            gtk_file_filter_set_name (filter, _("All Files"));
-            gtk_file_filter_add_pattern (filter, "*");
-            gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (opendlg), filter);
+
 
 //        gtk_combo_box_set_active (GTK_COMBO_BOX (omenu), persistence_get_integer ("import-filter"));
-            gint ret = gtk_dialog_run(GTK_DIALOG(opendlg));
-            GList *duplist = NULL; /* 重复添的加文件名 */
-            if(ret == GTK_RESPONSE_OK)
-            {
-
-//                factory_choose_musicfile_callback(opendlg,GTK_RESPONSE_OK,user_data);
-                GtkTreeView *mtreeview = user_data;
-
-                GtkWidget *spinbox = g_object_get_data(G_OBJECT(user_data),"wid_offset");
-                int offset = gtk_spin_button_get_value(GTK_SPIN_BUTTON(spinbox));
-                GtkTreeModel *model = gtk_tree_view_get_model(mtreeview);
-                GSList *getflist;
-                GSList *flists = getflist =  gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(opendlg));
-                gtk_widget_hide(opendlg);
-                gtk_main ();
-                GQuark fquark = 0,bquark = 0;
-                if(tquar == add_quark)
-                {
-                    for(; flists; flists = flists->next)
-                    {
-                        SaveMusicFile *smf = g_new0(SaveMusicFile,1);
-                        smf->full_quark = g_quark_from_string((gchar *)flists->data);
-
-                        gchar **split = g_strsplit((gchar *)flists->data,"\\",-1);
-                        int len = g_strv_length(split);
-
-                        smf->base_quark =  g_quark_from_string(split[len-1]);
-
-                        /*不能重复添加*/
-                        gpointer hval = g_hash_table_lookup(smd->mtable,
-                                                            (gpointer)smf->base_quark);
-                        if(!hval)
-                        {
-                            g_hash_table_insert(smd->mtable,smf->base_quark,smf);
-                        }
-                        else
-                        {
-                            duplist = g_list_append(duplist,smf->base_quark);
-                            continue;
-                        }
-
-                        g_strfreev(split);
-                        smf->offset = offset;
-                        smf->down_name = g_strdup("");
-                        factory_mfile_mlist_append_item(GTK_LIST_STORE(model),smf);
-                        smd->mflist  = g_list_append(smd->mflist,smf);
-                    }
-                }
-                else /* 插入音乐文件 */
-                {
-                    GtkTreeSelection *msel = gtk_tree_view_get_selection(mtreeview);
-                    GtkTreeIter sibling;
-                    GList *firstsub = gtk_tree_selection_get_selected_rows(msel,&model);
-                    gtk_tree_model_get_iter (model,&sibling,firstsub->data);
-                    g_list_foreach(firstsub,(GFunc)gtk_tree_path_free,NULL);
-                    g_list_free(firstsub);
-
-                    gtk_tree_selection_select_iter (msel,&sibling);
-
-                    GtkTreePath *path = gtk_tree_model_get_path(model,&sibling);
-                    gint pos = gtk_tree_path_get_indices(path)[0];
-                    for(; flists; flists = flists->next)
-                    {
-                        SaveMusicFile *smf = g_new0(SaveMusicFile,1);
-                        smf->full_quark = g_quark_from_string((gchar *)flists->data);
-                        gchar **split = g_strsplit((gchar *)flists->data,"\\",-1);
-                        int len = g_strv_length(split);
-                        smf->base_quark = g_quark_from_string(split[len-1]);
-                        gpointer hval = g_hash_table_lookup(smd->mtable,
-                                                            smf->base_quark);
-                        if(!hval)
-                        {
-                            g_hash_table_insert(smd->mtable,smf->base_quark,smf);
-                        }
-                        else
-                        {
-                            duplist = g_list_append(duplist,smf->base_quark);
-                            continue;
-                        }
-
-                        g_strfreev(split);
-                        smf->offset = offset;
-                        smf->down_name = g_strdup("");
-                        factory_mfile_mlist_insert_item(model,smf,&sibling);
-                        GtkTreePath *path = gtk_tree_model_get_path(model,&sibling);
-                        gtk_tree_path_prev(path);
-                        gtk_tree_path_free(path);
-                    }
-                    g_list_free(smd->mflist);
-                    smd->mflist = NULL; /* insert操作要把链表清空重排 */
-                    gtk_tree_model_foreach(GTK_TREE_MODEL(model),
-                                           factory_mfile_mlist_insert_foreach,smd);
-                }
-                g_slist_foreach(getflist,(GFunc)g_free,NULL);
-                g_slist_free(getflist);
-            }
-            gtk_widget_destroy(opendlg);
-            if(g_list_length(duplist) > 0)
-            {
-                GList *t = duplist;
-                gchar *fmt = factory_utf8("下列文件名已经存在,不需要重复添加!\n");
-                for(; t; t= t->next)
-                {
-                    gchar *p = g_strdup(fmt);
-                    g_free(fmt);
-                    fmt = g_strconcat(p,g_strdup_printf("%s\n",
-                                                        g_quark_to_string(t->data),NULL));
-                }
-//                g_list_foreach(duplist,(GFunc)g_free,NULL);
-                g_list_free(duplist);
-                factory_message_dialoag(parent,fmt);
-                g_free(fmt);
-            }
 
 
-            opendlg = NULL;
+
 
         }
+        g_signal_connect(GTK_OBJECT(opendlg), "response",
+                         G_CALLBACK(factory_open_file_response), user_data);
+        gtk_widget_show_all(opendlg);
+
     }
-
+    opendlg = NULL;
 }
-
 //static void factory_choose_musicfile_callback(GtkWidget *dlg,
 //        gint       response,
 //        gpointer   user_data)
@@ -1325,7 +1396,7 @@ void factory_open_file_dialog(GtkWidget *widget,gpointer user_data)
 
 
 void factory_read_mfile_filelist_from_xml(ObjectNode obj_node,
-                                          const gchar *filename)
+        const gchar *filename)
 {
     SaveMusicDialog *smd = curLayer->smd;
 
@@ -1357,43 +1428,43 @@ void factory_read_mfile_filelist_from_xml(ObjectNode obj_node,
     if(lstnode)
     {
         ObjectNode cnode = lstnode->xmlChildrenNode;
-         while(cnode = data_next(cnode))
-         {
-             key = xmlGetProp(cnode,"idname");
-             if(key)
+        while(cnode = data_next(cnode))
+        {
+            key = xmlGetProp(cnode,"idname");
+            if(key)
                 glist = g_list_append(glist,(char*)key);
-         }
+        }
     }
 
     ObjectNode idxnode = factory_find_custom_node(obj_node,IDINDEX_NODE);
     if(idxnode)
     {
-         GList *cglist = glist;
-         ObjectNode cnode = idxnode->xmlChildrenNode;
-         while(cnode = data_next(cnode))
-         {
-             subTable *stable = g_new0(subTable,1);
-             key = xmlGetProp(cnode,"name");
-             if(key)
-             {
-                 stable->nquark = g_quark_from_string((gchar*)key);
-                 xmlFree(key);
-             }
-             key = xmlGetProp(cnode,"rows");
-             if(key)
-             {
-                 gint len = g_strtod(key,NULL);
-                 int n = 0;
-                 for( ;n < len; n++,cglist = cglist->next)
-                 {
-                     stable->table_list =
-                     g_list_append(stable->table_list,
-                                   g_quark_from_string(cglist->data));
-                 }
-                 xmlFree(key);
-             }
+        GList *cglist = glist;
+        ObjectNode cnode = idxnode->xmlChildrenNode;
+        while(cnode = data_next(cnode))
+        {
+            subTable *stable = g_new0(subTable,1);
+            key = xmlGetProp(cnode,"name");
+            if(key)
+            {
+                stable->nquark = g_quark_from_string((gchar*)key);
+                xmlFree(key);
+            }
+            key = xmlGetProp(cnode,"rows");
+            if(key)
+            {
+                gint len = g_strtod(key,NULL);
+                int n = 0;
+                for( ; n < len; n++,cglist = cglist->next)
+                {
+                    stable->table_list =
+                        g_list_append(stable->table_list,
+                                      g_quark_from_string(cglist->data));
+                }
+                xmlFree(key);
+            }
             smd->midlists = g_list_append(smd->midlists ,stable);
-         }
+        }
 
     }
 
@@ -1401,29 +1472,29 @@ void factory_read_mfile_filelist_from_xml(ObjectNode obj_node,
     if(mnode)
     {
         GList *cglist = glist;
-         ObjectNode cnode = mnode->xmlChildrenNode;
-         while(cnode = data_next(cnode))
-         {
-             SaveMusicFile *smf = g_new0(SaveMusicFile,1);
-             smf->offset = smf->offset;
-             key = xmlGetProp(cnode,"bname");
-             if(key)
-             {
-                 smf->base_quark = g_quark_from_string((gchar*)key);
-                 gchar *fname = g_strconcat(mpath,key,NULL);
-                 smf->full_quark = g_quark_from_string(fname);
-                 g_free(fname);
-                 xmlFree(key);
-             }
-             key = xmlGetProp(cnode,"dname");
-             if(key)
-             {
+        ObjectNode cnode = mnode->xmlChildrenNode;
+        while(cnode = data_next(cnode))
+        {
+            SaveMusicFile *smf = g_new0(SaveMusicFile,1);
+            smf->offset = smf->offset;
+            key = xmlGetProp(cnode,"bname");
+            if(key)
+            {
+                smf->base_quark = g_quark_from_string((gchar*)key);
+                gchar *fname = g_strconcat(mpath,key,NULL);
+                smf->full_quark = g_quark_from_string(fname);
+                g_free(fname);
+                xmlFree(key);
+            }
+            key = xmlGetProp(cnode,"dname");
+            if(key)
+            {
                 smf->down_name = g_strdup((gchar*)key);
                 xmlFree(key);
-             }
+            }
             smd->mflist = g_list_append(smd->mflist,smf);
             g_hash_table_insert(smd->mtable,smf->base_quark,smf);
-         }
+        }
     }
 
 //    AttributeNode attr_node = obj_node;
@@ -1646,7 +1717,7 @@ void factory_mfile_save_to_xml(ObjectNode obj_node,const gchar*filename)
             val = g_strdup_printf("%d",pos);
         }
         else
-          val = g_strdup("-1");
+            val = g_strdup("-1");
 
         xmlSetProp(fnode, (const xmlChar *)"value",
                    (xmlChar *)val);
@@ -1681,7 +1752,7 @@ void factory_mfile_save_to_xml(ObjectNode obj_node,const gchar*filename)
                                   G_FILE_COPY_OVERWRITE,NULL,NULL,NULL,NULL);
             smf->full_quark = npc_quark;
         }
-         g_free(npc);
+        g_free(npc);
 
         ObjectNode tnode = xmlNewChild(node, NULL, (const xmlChar *)"file", NULL);
         xmlSetProp(tnode, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",n));
@@ -1758,6 +1829,7 @@ GtkWidget *factory_mfile_music_list_dialog(GtkWidget *parent,
     g_object_set_data(G_OBJECT(mlist_treeview),"dlg_parent",parent);
     g_object_set_data(G_OBJECT(mlist_treeview),"wid_offset",spbox);
 
+//    g_idle_add(gdk_window_process_all_updates,NULL);
     GtkWidget *opt_box = factory_music_file_manager_operator(mlist_treeview);
     GtkWidget *btn = g_object_get_data(G_OBJECT(opt_box),"btn_0");
     gtk_widget_set_sensitive(btn,TRUE);
@@ -2310,7 +2382,7 @@ static GtkWidget* factory_mfile_sublist_create_dialog(GtkMenuItem *item,
         }
         gtk_entry_set_text(GTK_ENTRY(entry),g_quark_to_string(stable->nquark));
     }
-     else
+    else
         gtk_entry_set_text(GTK_ENTRY(entry),
                            factory_get_subtable_name(smd->midlists,idcount));
     g_object_set_data(G_OBJECT(subdig),"table_name",entry);

@@ -979,6 +979,7 @@ void  app_init (int argc, char **argv)
 #  endif
         gtk_init(&argc, &argv);
 #endif
+
     }
     else
     {
