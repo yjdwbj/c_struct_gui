@@ -1388,7 +1388,7 @@ diagram_data_save(DiagramData *data, const char *user_filename)
     fclose(file);
 //    if(data->isProject)
 //    {
-    GList *curlist = data->active_layer->objects;
+    GList **curlist = &data->active_layer->objects;
     DiaObject *fileobj,*idobj,*sysinfoobj;
 
     /* 这里要创建一个用来　File.lst 的文件的结构体,保存完了就要删掉的*/
@@ -1408,17 +1408,18 @@ diagram_data_save(DiagramData *data, const char *user_filename)
     idobj->name = g_strdup(fsil2->sname);
     sysinfoobj->name = g_strdup(fsil3->sname);
 
-    curlist = g_list_append(curlist,fileobj);
-    curlist = g_list_append(curlist,idobj);
-    curlist = g_list_append(curlist,sysinfoobj);
+    *curlist  = g_list_append(*curlist ,fileobj);
+    *curlist  = g_list_append(*curlist ,idobj);
+    *curlist  = g_list_append(*curlist ,sysinfoobj);
+
 
     ret = diagram_data_raw_save(data, filename);
 
 //    ret = factory_project_raw_save(data);
 
-    curlist = g_list_remove(curlist,fileobj);
-    curlist = g_list_remove(curlist,idobj);
-    curlist = g_list_remove(curlist,sysinfoobj);
+    *curlist  = g_list_remove(*curlist ,fileobj);
+    *curlist  = g_list_remove(*curlist ,idobj);
+    *curlist  = g_list_remove(*curlist ,sysinfoobj);
 
     /* 上面是删掉一些不需要要界面上以控件形式显示的控件.这就是特殊控件 */
 
@@ -1435,6 +1436,7 @@ diagram_data_save(DiagramData *data, const char *user_filename)
        backup, and the temp file into the new saved file. */
 //    g_unlink(bakname);
 //    g_rename(filename,bakname);
+      ret = g_remove(tmpname);
 //    ret = g_rename(tmpname,filename);
 //    if (ret < 0)
 //    {
@@ -1464,11 +1466,11 @@ CLEANUP:
     /* 转换本地码,不然会有乱码的 */
     gchar *argv[] = {fullpath,input,outfile,NULL};
 
-//    g_spawn_sync(NULL,
-//                 argv,NULL,
-//                 G_SPAWN_LEAVE_DESCRIPTORS_OPEN,
-//                 NULL,NULL,
-//                 NULL,NULL,NULL,NULL);
+    g_spawn_sync(NULL,
+                 argv,NULL,
+                 G_SPAWN_LEAVE_DESCRIPTORS_OPEN,
+                 NULL,NULL,
+                 NULL,NULL,NULL,NULL);
 
 //    g_spawn_async_with_pipes(dia_get_lib_directory("bin"),
 //                             argv,NULL,G_SPAWN_SEARCH_PATH,NULL,NULL,&pid,NULL,NULL,NULL,NULL);
@@ -1478,7 +1480,7 @@ CLEANUP:
     g_free(input);
     g_free(exefile);
 
-    return (ret?FALSE:TRUE);
+    return TRUE;
 }
 
 void factory_call_isd_download()

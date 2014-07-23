@@ -289,7 +289,7 @@ struct _SaveMusicDialog
 //    SaveMusicFileMan *smfm; /* 右边界面 */
 //    MusicFileManagerOpts *mfmos;
     GList *mflist; /* 内容是SaveMusicFile  */
-    gchar *lastDir;
+//    gchar *lastDir;
     GHashTable  *mtable; /* 音乐文件哈希表 */
     GList *midlists;
     GList *glist; /* 所有的项目 */
@@ -356,7 +356,6 @@ typedef struct _SaveUbtn SaveUbtn;
 struct _SaveUbtn
 {
     GList *structlist;
-//    GHashTable *htoflist;
     GList* savelist;
 };
 
@@ -657,8 +656,8 @@ GtkWidget *factory_download_file_manager(GtkWidget *parent,SaveMusicDialog *smd)
 
 void factory_add_item_to_idlist(GtkButton *self,gpointer user_data);
 void factory_delete_last_item(GtkButton *self,gpointer user_data);
-
-
+void factory_add_self_to_btree(STRUCTClass *fclass,GTree *tree);
+void factory_reconnection_new_obj(STRUCTClass *fclass,GTree *tree);
 
 
 void factory_set_original_class(STRUCTClass *fclass);

@@ -1101,7 +1101,7 @@ void  app_init (int argc, char **argv)
         /*autosave_restore_documents();*/
 
     }
-    factory_load_all_templates(); /*加载目录下的所有模版名*/
+//    factory_load_all_templates(); /*加载目录下的所有模版名*/
     dia_log_message ("diagrams");
     made_conversions = handle_all_diagrams(files, export_file_name,
                                            export_file_format, size, show_layers,

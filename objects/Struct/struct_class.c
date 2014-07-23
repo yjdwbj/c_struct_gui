@@ -208,7 +208,9 @@ static ObjectOps structclass_ops =
     (UpdateObjectVName) factory_update_view_names,
     (SearchConnectedLink)  factory_search_connected_link,
     (UpdateObjectsFillColor) factory_set_fill_color,
-    (ResetObjectsToDefaultColor) factory_reset_object_color_to_default
+    (ResetObjectsToDefaultColor) factory_reset_object_color_to_default,
+    (AddObjectToBTree) factory_add_self_to_btree,
+    (ReConnectionNewObj) factory_reconnection_new_obj
 };
 
 
@@ -3128,7 +3130,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
 //                smd->smfm = NULL;
 //                smd->mfmos = &mfmo_opts;
                 smd->title = factory_utf8("文件管理");
-                smd->lastDir = g_strdup("");
+//                smd->lastDir = g_strdup("");
 //                smd->smfm = g_new0(SaveMusicFileMan,1);
                 /* 根据文件个数算偏移数 */
                 gchar **split = g_strsplit(factoryContainer->system_files,",",-1);
@@ -4059,7 +4061,7 @@ factory_struct_items_load(ObjectNode obj_node,int version,
             SaveMusicDialog *smd = curLayer->smd;
             smd->title = factory_utf8("文件管理");
 //            smd->smfm = NULL;
-             smd->lastDir = g_strdup("");
+//             smd->lastDir = g_strdup("");
 //            smd->mfmos = &mfmo_opts;
 //            smd->smfm = g_new0(SaveMusicFileMan,1);
             /* 根据文件个数算偏移数 */

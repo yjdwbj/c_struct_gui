@@ -394,7 +394,7 @@ edit_paste_callback (GtkAction *action)
     undo_set_transactionpoint(ddisp->diagram->undo);
 
     diagram_remove_all_selected(ddisp->diagram, TRUE);
-    diagram_select_list(ddisp->diagram, paste_list);
+//    diagram_select_list(ddisp->diagram, paste_list);
 
     /*这里用做重命名，保证名字唯一*/
     GList *plist = paste_list;

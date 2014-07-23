@@ -3009,8 +3009,8 @@ static void factory_connectionto_object(DDisplay *ddisp,DiaObject *obj,STRUCTCla
 
     ConnectionPoint *connectionpoint = NULL;
     connectionpoint = object_find_connectpoint_display(ddisp,
-                                                       &fclass->connections[8].pos,
-                                                        obj, TRUE);
+                      &fclass->connections[8].pos,
+                      obj, TRUE);
     if(connectionpoint != NULL)
     {
         handle->pos = connectionpoint->pos;
@@ -3043,6 +3043,96 @@ DiaObject *factory_find_same_diaobject_via_glist(GList *flist,GList *comprelist)
         }
     }
     return obj;
+}
+
+void factory_add_self_to_btree(STRUCTClass *fclass,GTree *tree)
+{
+    g_tree_insert(tree,fclass->name,fclass);
+}
+
+static gboolean
+factory_tree_foreach_find (gpointer key,gpointer value,
+                           gpointer data)
+{
+    ActionID *aid =(ActionID *)data;
+    if(aid->conn_ptr == value)
+    {
+        aid->pre_quark = g_quark_from_string((gchar*)key);
+        return TRUE;
+    }
+    else
+        return FALSE;
+}
+
+static void factory_handle_single_ocombo(ActionID *aid ,GTree *tree)
+{
+
+
+    if(aid->pre_quark == empty_quark &&
+            aid->conn_ptr)
+    {
+        g_tree_foreach(tree,factory_tree_foreach_find,aid);
+        return ;
+    }
+    STRUCTClass *exist = g_tree_lookup(tree,
+                                       g_quark_to_string(aid->pre_quark));
+    if(exist)
+    {
+        aid->conn_ptr = exist;
+        aid->pre_quark = aid->pre_quark = empty_quark;
+    }
+}
+
+
+static void factory_find_item_in_tree(SaveStruct *sst,
+                                      GTree *tree)
+{
+    switch(sst->celltype)
+    {
+    case OCOMBO:
+    {
+        ActionID *aid = &sst->value.actid;
+        factory_handle_single_ocombo(aid,tree);
+    }
+    break;
+    case OBTN:
+    {
+        ActIDArr *aidarr = &sst->value.nextid;
+        GList *olist = aidarr->actlist;
+        for(; olist; olist = olist->next)
+        {
+            ActionID *aid = olist->data;
+            factory_handle_single_ocombo(aid,tree);
+        }
+    }
+    break;
+    case UBTN:
+    {
+
+        SaveUbtn *sbtn = &sst->value.ssubtn;
+        GList *olist  = sbtn->savelist;
+        for(; olist; olist = olist->next)
+        {
+            factory_find_item_in_tree(olist->data,tree);
+        }
+    }
+    break;
+    default:
+        break;
+    }
+
+}
+
+
+void factory_reconnection_new_obj(STRUCTClass *fclass,
+                                  GTree *tree)
+{
+    GList *savelist = fclass->widgetSave;
+    for(; savelist; savelist = savelist->next)
+    {
+        SaveStruct *sst = savelist->data;
+        factory_find_item_in_tree(sst,tree);
+    }
 }
 
 
@@ -3242,13 +3332,13 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
     }
     break;
     case OBTN: /* 这里要加一个处理,这是一组联线的控件 */
-        {
-            ActIDArr *nid = &sss->value.nextid;
-            g_return_if_fail(nid);
-            factory_recheck_objectbutton_connection(sss->sclass,
-                                                    nid->actlist);
-        }
-        break;
+    {
+        ActIDArr *nid = &sss->value.nextid;
+        g_return_if_fail(nid);
+        factory_recheck_objectbutton_connection(sss->sclass,
+                                                nid->actlist);
+    }
+    break;
     default:
         break;
     }
@@ -3259,8 +3349,8 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
 
 
 static void factory_get_value_from_comobox(SaveStruct *sst,
-                                           GtkWidget *comobox,
-                                           ActionID *aid)
+        GtkWidget *comobox,
+        ActionID *aid)
 {
     STRUCTClass *startclass = sst->sclass;
     g_return_if_fail(aid);
@@ -3284,7 +3374,7 @@ static void factory_get_value_from_comobox(SaveStruct *sst,
     else
     {
         if( (aid->conn_ptr  == lastobj) &&
-           (aid->pre_quark == pquark))
+                (aid->pre_quark == pquark))
         {
             factory_connection_two_object(startclass,aid->conn_ptr);
             return; /* 没有更改过 ,但是这联线动作是检查一下,
@@ -3348,7 +3438,7 @@ void factory_delete_line_between_two_objects(STRUCTClass *startc,STRUCTClass *ob
     ConnectionPoint *cpstart = &startc->connections[8];
     ConnectionPoint *cpend = &objclass->connections[8];
     DiaObject *line =  factory_find_same_diaobject_via_glist(cpend->connected,
-                                                             cpstart->connected);
+                       cpstart->connected);
     if(line && factory_is_connected(cpend,cpstart))
     {
         /* 上次的连线,到此要删掉它,重新连线 */
@@ -3651,7 +3741,7 @@ static GtkWidget *factory_create_variant_object(SaveStruct *sss)
         if(sey->isString)
         {
             columTwo =  sey->data ? factory_create_text_widget(sey->data,
-                                                               sey->arr_base.reallen):
+                        sey->arr_base.reallen):
                         factory_create_text_widget(item->Value,
                                                    sey->arr_base.reallen);
         }
@@ -3768,14 +3858,14 @@ FIRST:
         if((aid->pre_quark != empty_quark) && aid->conn_ptr)
         {
             gpointer findobj = g_hash_table_lookup(curLayer->defnames,
-                                                pre_name);
+                                                   pre_name);
 
             int idx  = g_list_index(curLayer->objects,
-                                               aid->conn_ptr);
+                                    aid->conn_ptr);
             if(!findobj && idx > 0)
             {
                 aid->pre_quark =
-                 g_quark_from_string(((STRUCTClass*)aid->conn_ptr)->name);
+                    g_quark_from_string(((STRUCTClass*)aid->conn_ptr)->name);
             }
         }
 
@@ -3784,7 +3874,8 @@ FIRST:
         gtk_combo_box_set_model(GTK_COMBO_BOX(columTwo),emodel );
 //        ptrquark = aid->pre_quark;
         ComboxCmp cc = {.combox = columTwo,
-                        .qindex = aid->pre_quark};
+                        .qindex = aid->pre_quark
+                       };
         gtk_tree_model_foreach(emodel,factory_comobox_compre_foreach,
                                &cc);
 //        columTwo = factory_create_combo_widget(olist,aid->index);
@@ -3956,7 +4047,7 @@ void factory_save_enumbutton_dialog(GtkWidget *widget,gint response_id,gpointer 
 
 
 void factory_recheck_objectbutton_connection(STRUCTClass *fclass,
-                                             GList *clist)
+        GList *clist)
 {
     GList *wlist = clist;
     for(; wlist; wlist = wlist->next)
@@ -4112,12 +4203,6 @@ factory_save_basebutton_dialog(GtkWidget *widget,
 
     }
     gtk_widget_destroy(widget);
-//    gtk_widget_hide(widget);
-//    tmp = sey->wlist;
-//    for(; tmp; tmp = tmp->next)
-//        gtk_container_remove(GTK_CONTAINER(widget),tmp->data);
-
-//    return response_id;
 }
 
 
@@ -4400,7 +4485,7 @@ void factory_create_io_port_dialog(GtkWidget *button,SaveStruct *sst)
             }
 
             GtkWidget *comobox = factory_create_combo_widget(sea->senum->enumList,
-                                                             sea->senum->index);
+                                 sea->senum->index);
             gtk_widget_set_sensitive(comobox,sensitive);
             if((sea->senum->index  == io_max) && onetime )
             {
@@ -4460,7 +4545,7 @@ void factory_create_enumbutton_dialog(GtkWidget *button,SaveStruct *sst)
             GtkWidget *hbox = abp->row > 8 ? gtk_vbox_new(FALSE,0): gtk_hbox_new(FALSE,0) ;
             SaveEnumArr *sea = g_list_nth_data(sebtn->ebtnwlist,pos);
             GtkWidget *comobox = factory_create_combo_widget(sea->senum->enumList,
-                                                             sea->senum->index);
+                                 sea->senum->index);
             GtkWidget *wid = gtk_label_new(g_strdup_printf(fmt,pos));
             sea->widget1 = wid;
             sea->widget2 = comobox;
@@ -4486,7 +4571,7 @@ void factory_create_objectbutton_dialog(GtkWidget *button,SaveStruct *sst)
     GtkWidget *sdialog = gtk_hbox_new(FALSE,0);
     GQuark tqaruk = g_quark_from_string(sst->name);
     GtkWidget *subdig = factory_create_new_dialog_with_buttons(g_quark_to_string(tqaruk),
-                                                               gtk_widget_get_toplevel(button));
+                        gtk_widget_get_toplevel(button));
     GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
     gtk_container_add(GTK_CONTAINER(dialog_vbox),sdialog);
     gtk_window_set_modal(GTK_WINDOW(subdig),TRUE);
@@ -4518,7 +4603,8 @@ void factory_create_objectbutton_dialog(GtkWidget *button,SaveStruct *sst)
             GtkWidget *comobox = gtk_combo_box_new_text();
             gtk_combo_box_set_model(GTK_COMBO_BOX(comobox),model);
             ComboxCmp cc = {.combox = comobox,
-                        .qindex = aid->pre_quark};
+                            .qindex = aid->pre_quark
+                           };
             gtk_tree_model_foreach(model,factory_comobox_compre_foreach,&cc);
 //            factory_update_ActionId_object(comobox,aid,
 //                                            nextid->itemlist);
@@ -4960,7 +5046,7 @@ void factory_update_ActionId_object(GtkWidget *comobox,
         {
 //            g_free(aid->pre_name);
 //            aid->pre_name = g_strdup(pclass->name);
-              aid->pre_quark = tq;
+            aid->pre_quark = tq;
         }
     }
     else
@@ -4984,11 +5070,12 @@ void factory_update_ActionId_object(GtkWidget *comobox,
 //    aid->index =factory_get_ocombox_index(clist,aid->pre_name);
 //    gtk_combo_box_set_active(GTK_COMBO_BOX(comobox),aid->index);
 //    ptrquark = aid->pre_quark;
-      ComboxCmp cc = {.combox = comobox,
-                      .qindex = aid->pre_quark};
+    ComboxCmp cc = {.combox = comobox,
+                    .qindex = aid->pre_quark
+                   };
     GtkTreeModel *emodel = gtk_combo_box_get_model(GTK_COMBO_BOX(comobox));
     gtk_tree_model_foreach(emodel,factory_comobox_compre_foreach,
-                               &cc);
+                           &cc);
 //        columTwo = factory_create_combo_widget(olist,aid->index);
 
 }

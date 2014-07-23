@@ -411,6 +411,7 @@ new_diagram(const char *filename)  /* Note: filename is copied */
     Diagram *dia = g_object_new(DIA_TYPE_DIAGRAM, NULL);
     dia->isTemplate = g_str_has_suffix(filename,LCY);
     dia->loadOnly = FALSE;
+    dia->selectLine = FALSE;
     if(dia->isTemplate)
     {
         dia->templ_item = g_new0(FactoryTemplateItem,1);
@@ -912,13 +913,14 @@ diagram_select(Diagram *diagram, DiaObject *obj)
 
 //    gchar name[] =  "Standard - Line";
 
-    if(object_get_type(CLASS_LINE) == obj->type) /* 不让线条被选中*/
+    if( object_get_type(CLASS_LINE) == obj->type) /* 不让线条被选中*/
         return;
 
     if (dia_object_is_selectable(obj))
     {
         data_select(diagram->data, obj);
-        obj->ops->selectf(obj, NULL, NULL);
+        if(obj->ops->selectf)
+            obj->ops->selectf(obj, NULL, NULL);
         object_add_updates(obj, diagram);
         g_signal_emit (diagram, diagram_signals[SELECTION_CHANGED], 0,
                        g_list_length (diagram->data->selected));

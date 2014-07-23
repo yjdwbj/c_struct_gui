@@ -70,6 +70,7 @@ struct _Diagram {
   UndoStack *undo;
   gboolean isTemplate; /* 模版编辑标识 */
   gboolean loadOnly; /* 读取数据不做编辑 */
+  gboolean selectLine; /* 是否可以经选择线段 */
   FactoryTemplateItem *templ_item; /* 这个仅仅用来存储模版的*/
 };
 

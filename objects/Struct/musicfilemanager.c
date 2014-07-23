@@ -6,16 +6,17 @@
 const gchar *chvaild = "0123456789abcdefghijklmnopqrstuvwxyz_.";
 typedef struct
 {
-    gint idle_id;
     GQuark opt_quark;
     GSList *file_list;
     GtkTreeView *treeview;
     SaveMusicDialog *smd;
     GQuark add_quark;
-    GtkWidget *parent;
+    gchar *old_title;
+    gint idle_id;
 
 } BackThread;
 
+static guint mfile_filled_signals = 0;
 
 extern FactoryStructItemAll *factoryContainer;
 
@@ -170,7 +171,7 @@ static GtkWidget* factory_mfile_mlist_delete_operator(GtkWidget *btn,
     if (scount >= 1 )
     {
         GList *treelist = gtk_tree_selection_get_selected_rows (msel,
-                          NULL);
+                          &m_model);
         GList *reflist = NULL;
         GList *slist = treelist;
         for(; slist; slist = slist->next)
@@ -206,8 +207,7 @@ static GtkWidget* factory_mfile_mlist_delete_operator(GtkWidget *btn,
         g_list_free(reflist);
 
         /*删除之后要重新建立链顺序*/
-        g_list_foreach(smd->mflist,(GFunc)g_free,NULL);
-        g_list_free(smd->mflist);
+        g_list_free1(smd->mflist);
         smd->mflist = NULL;
         gtk_tree_model_foreach(m_model,
                                factory_mfile_mlist_insert_foreach,NULL);
@@ -288,10 +288,10 @@ static void factory_mfile_manager_add_columns (GtkTreeView *treeview)
              renderer,
              "text",
              COLUMN_FNAME,
-             "fixed-width",
-             15,
+              "fixed-width",
+             16,
              NULL);
-    gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+//    gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
     gtk_tree_view_append_column (treeview, column);
 
 
@@ -300,6 +300,8 @@ static void factory_mfile_manager_add_columns (GtkTreeView *treeview)
              renderer,
              "text",
              COLUMN_DNAME,
+            "fixed-width",
+             16,
              NULL);
     g_object_set (renderer,
                   "editable", TRUE,
@@ -309,7 +311,7 @@ static void factory_mfile_manager_add_columns (GtkTreeView *treeview)
     g_object_set_data (G_OBJECT (renderer), "column",
                        GINT_TO_POINTER (COLUMN_DNAME));
 
-    gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+//    gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
     gtk_tree_view_append_column (treeview, column);
 }
 
@@ -333,7 +335,8 @@ GtkWidget *factory_music_file_manager_operator(GtkTreeView *mtreeview)
         else
             wid = gtk_button_new_from_stock(mflistopt[n].stack);
         g_object_set_data(G_OBJECT(wid),"dlg_parent",dlg_parent);
-        g_signal_connect(wid,"clicked",G_CALLBACK(mflistopt[n].mfmf),mtreeview);
+        g_signal_connect(wid,"clicked",G_CALLBACK(mflistopt[n].mfmf),
+                         mtreeview);
         mflistopt[n].btn = wid;
         g_object_set_data(G_OBJECT(operatorhbox),
                           g_strdup_printf("btn_%d",n),wid);
@@ -949,6 +952,14 @@ void factory_mfile_manager_dialog(GtkWidget *btn,SaveStruct *sst)
         gtk_button_set_label(GTK_BUTTON(btn), *smd->vnumber );/* 更改按钮标签*/
     }
 
+//     mfile_filled_signals=
+//      g_signal_new ("mfile_filled",
+//                      G_TYPE_FROM_CLASS (klass),
+//                      G_SIGNAL_RUN_FIRST,
+//                      G_STRUCT_OFFSET (DiagramClass, removed),
+//                      NULL, NULL,
+//                      dia_marshal_VOID__VOID,
+//                      G_TYPE_NONE, 0);
     gtk_widget_destroy(window);
 }
 
@@ -1072,13 +1083,14 @@ static gboolean factory_mfile_mlist_thread_func(gpointer user_data)
 {
 
     BackThread *btd = user_data;
-
-    SaveMusicDialog *smd = btd->smd;
     if(btd->idle_id)
     {
         g_source_remove(btd->idle_id);
         btd->idle_id = 0;
     }
+    GtkWidget *parent = g_object_get_data(G_OBJECT(btd->treeview),
+                                          "dlg_parent");
+    SaveMusicDialog *smd = curLayer->smd;
     GtkTreeView *mtreeview = btd->treeview;
 
     GList *duplist = NULL; /* 重复添的加文件名 */
@@ -1087,15 +1099,12 @@ static gboolean factory_mfile_mlist_thread_func(gpointer user_data)
 
     GSList *flists = btd->file_list;
     GQuark fquark = 0,bquark = 0;
-
     if(btd->opt_quark == btd->add_quark)
     {
-
-         g_object_ref(model);
-        gtk_tree_view_set_model(mtreeview,NULL);
         for(; flists; flists = flists->next)
         {
-
+            g_usleep(2);
+            GDK_THREADS_ENTER();
             SaveMusicFile *smf = g_new0(SaveMusicFile,1);
             smf->full_quark = g_quark_from_string((gchar *)flists->data);
             gchar **split = g_strsplit((gchar *)flists->data,"\\",-1);
@@ -1118,14 +1127,13 @@ static gboolean factory_mfile_mlist_thread_func(gpointer user_data)
             g_strfreev(split);
             smf->offset = smd->offset;
             smf->down_name = g_strdup("");
-            GDK_THREADS_ENTER();
             factory_mfile_mlist_append_item(GTK_LIST_STORE(model),smf);
+            gtk_widget_queue_draw(parent);
             gdk_window_process_all_updates();
-            GDK_THREADS_LEAVE();
+             GDK_THREADS_LEAVE();
             smd->mflist  = g_list_append(smd->mflist,smf);
         }
-        gtk_tree_view_set_model(mtreeview,model);
-        g_object_unref(model);
+
     }
     else /* 插入音乐文件 */
     {
@@ -1143,7 +1151,6 @@ static gboolean factory_mfile_mlist_thread_func(gpointer user_data)
         gtk_tree_path_free(path);
         for(; flists; flists = flists->next)
         {
-
             SaveMusicFile *smf = g_new0(SaveMusicFile,1);
             smf->full_quark = g_quark_from_string((gchar *)flists->data);
             gchar **split = g_strsplit((gchar *)flists->data,"\\",-1);
@@ -1166,7 +1173,8 @@ static gboolean factory_mfile_mlist_thread_func(gpointer user_data)
             smf->down_name = g_strdup("");
 
             factory_mfile_mlist_insert_item(model,smf,&sibling);
-
+            gtk_widget_queue_draw(parent);
+            gdk_window_process_all_updates();
             GtkTreePath *path = gtk_tree_model_get_path(model,&sibling);
             gtk_tree_path_prev(path);
             gtk_tree_path_free(path);
@@ -1176,10 +1184,9 @@ static gboolean factory_mfile_mlist_thread_func(gpointer user_data)
         gtk_tree_model_foreach(GTK_TREE_MODEL(model),
                                factory_mfile_mlist_insert_foreach,smd);
     }
-
     g_slist_foreach( btd->file_list,(GFunc)g_free,NULL);
     g_slist_free( btd->file_list);
-
+     btd->file_list = 0;
 
     if(g_list_length(duplist) > 0)
     {
@@ -1197,62 +1204,77 @@ static gboolean factory_mfile_mlist_thread_func(gpointer user_data)
         factory_message_dialoag(NULL,fmt);
         g_free(fmt);
     }
+    GtkWidget *dla_vbox = g_object_get_data(G_OBJECT(mtreeview),
+                                                    "dla_vbox");
+    gtk_widget_set_sensitive(dla_vbox,TRUE);
+    gtk_window_set_title(GTK_WINDOW(parent),
+                                 btd->old_title);
+    gtk_widget_queue_draw(parent);
+    gdk_window_process_all_updates();
 
     return FALSE;
 }
 
-//static void factory_open_file_response(GtkWidget *widget,
-//                                       gint respose_id,
-//                                       gpointer user_data)
+//static gboolean factory_mfile_mlist_timeout(BackThread *btd)
 //{
-//    GtkWidget *opt_btn = g_object_get_data(G_OBJECT(widget),"opt_btn");
-//    GtkWidget *parent = g_object_get_data(user_data,"dlg_parent");
-//    gtk_widget_set_sensitive(opt_btn,TRUE);
-//    if(respose_id == GTK_RESPONSE_OK)
+//    gdk_window_process_all_updates();
+//    if(timeout_id)
 //    {
-//        GtkTreeView *mtreeview = user_data;
-//        GSList *slist = gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(widget));
-//        gdk_threads_enter();
-//        gtk_widget_destroy(widget);
-//        gtk_widget_set_sensitive(parent,FALSE);
-//        gtk_widget_queue_draw(parent);
-//        gdk_window_process_all_updates();
-//        gdk_threads_leave();
 //
-//
-//
-//        const gchar *label = gtk_button_get_label(GTK_BUTTON(opt_btn));
-//        BackThread *btd = g_new0(BackThread,1);
-//
-//        btd->file_list =slist;
-//        btd->opt_quark = g_quark_from_string(label);
-//        btd->treeview = mtreeview;
-//        btd->smd = curLayer->smd;
-//        btd->add_quark = add_quark;
-//        btd->parent = parent;
-//        btd->idle_id = 0;
-////        gdk_threads_add_idle((GSourceFunc)factory_mfile_mlist_thread_func,btd);
-////        g_idle_add ((GSourceFunc)factory_mfile_mlist_thread_func,
-////                                             btd);
-//
-//        GThread *fthread = g_thread_create(factory_mfile_mlist_thread_func,
-//                                           btd,FALSE,NULL);
-////        g_thread_join(fthread);
-//        return;
+//        g_source_remove(timeout_id);
+//        timeout_id = 0;
+//        btd->idle_id =  g_idle_add(factory_mfile_mlist_thread_func,btd);
+//        return FALSE;
 //    }
 //    else
-//        gtk_widget_destroy(widget);
+//        return TRUE;
+//
+//
 //
 //}
 
-static gboolean factory_mfile_mlist_update_view(GtkWidget *parent)
+void factory_mfile_open_file_response(GtkWidget *widget,
+                                      gint response_id,
+                                      gpointer user_data)
 {
-    GDK_THREADS_ENTER();
-    gtk_widget_queue_draw(parent);
-    gdk_window_process_all_updates();
-    GDK_THREADS_LEAVE();
-    return TRUE;
+        GtkWidget *opt_btn = g_object_get_data(G_OBJECT(user_data),
+                                                   "opt_btn");
+        gtk_widget_set_sensitive(opt_btn,TRUE);
+        if(response_id == GTK_RESPONSE_OK)
+        {
+            GSList *slist = gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(widget));
+
+            gtk_widget_destroy(widget);
+            gtk_widget_queue_draw(widget);
+
+
+            GtkWidget *parent = g_object_get_data(user_data,"dlg_parent");
+            GtkWidget *dla_vbox = g_object_get_data(G_OBJECT(user_data),
+                                                    "dla_vbox");
+            gtk_widget_set_sensitive(dla_vbox,FALSE);
+            gtk_widget_queue_draw(parent);
+            gdk_window_process_all_updates();
+
+            gchar *oldtitle = g_strdup(gtk_window_get_title(GTK_WINDOW(parent)));
+            const gchar *ntitle = factory_utf8("请耐心等待,文件处理中...");
+            gtk_window_set_title(GTK_WINDOW(parent),ntitle);
+
+            const gchar *label = gtk_button_get_label(GTK_BUTTON(opt_btn));
+            BackThread *btd = g_new0(BackThread,1);
+
+            btd->file_list =slist;
+            btd->opt_quark = g_quark_from_string(label);
+            btd->treeview = user_data;
+            btd->smd = curLayer->smd;
+            btd->add_quark = add_quark;
+            btd->old_title =oldtitle;
+            btd->idle_id =g_idle_add(factory_mfile_mlist_thread_func,btd);
+//            timeout_id = g_timeout_add(60,factory_mfile_mlist_timeout,btd);
+        }
+        else
+         gtk_widget_destroy(widget);
 }
+
 
 void factory_open_file_dialog(GtkWidget *widget,gpointer user_data)
 {
@@ -1260,12 +1282,9 @@ void factory_open_file_dialog(GtkWidget *widget,gpointer user_data)
 
     gtk_widget_set_sensitive(widget,FALSE);
     GtkWidget *parent = g_object_get_data(user_data,"dlg_parent");
-    GtkWidget *mvbox = g_object_get_data(user_data,"dlg_vbox");
-
-//    GQuark tquar = g_quark_from_string(label);
     SaveMusicDialog *smd = curLayer->smd;
-
-    static GtkWidget *opendlg = NULL;
+     g_object_set_data(G_OBJECT(user_data),"opt_btn",widget);
+    GtkWidget *opendlg = NULL;
     if(!opendlg)
     {
         opendlg = gtk_file_chooser_dialog_new(_("打开音乐文件"),
@@ -1278,7 +1297,7 @@ void factory_open_file_dialog(GtkWidget *widget,gpointer user_data)
         gtk_dialog_set_default_response(GTK_DIALOG(opendlg), GTK_RESPONSE_ACCEPT);
         gtk_window_set_modal(GTK_WINDOW(opendlg),TRUE);
         gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER (opendlg), TRUE);
-//        g_object_set_data(G_OBJECT(opendlg),"opt_btn",widget);
+
         if (!gtk_file_chooser_get_extra_widget(GTK_FILE_CHOOSER(opendlg)))
         {
 //            GtkWidget *omenu= gtk_combo_box_new();
@@ -1299,200 +1318,20 @@ void factory_open_file_dialog(GtkWidget *widget,gpointer user_data)
             gtk_file_filter_add_pattern (filter, "*.f1a");
             gtk_file_filter_add_pattern (filter, "*.a");
             gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (opendlg), filter);
-
-//        gtk_combo_box_set_active (GTK_COMBO_BOX (omenu), persistence_get_integer ("import-filter"));
-
-
         }
-//        GtkWidget *opt_btn = g_object_get_data(G_OBJECT(widget),"opt_btn");
-//        GtkWidget *parent = g_object_get_data(user_data,"dlg_parent");
-//        g_signal_connect(GTK_OBJECT(opendlg), "response",
-//                         G_CALLBACK(factory_open_file_response), user_data);
-//        gtk_widget_show_all(opendlg);
-        gint respose_id = gtk_dialog_run(opendlg);
-
-        GSList *slist = gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(opendlg));
-        gtk_widget_destroy(opendlg);
-        opendlg = NULL;
-
-        gdk_threads_enter();
-//        gtk_widget_set_sensitive(parent,FALSE);
-        gtk_widget_queue_draw(parent);
-
-        gtk_widget_set_sensitive(widget,TRUE);
-        gdk_threads_leave();
-        gdk_window_process_all_updates();
-
-        if(respose_id == GTK_RESPONSE_OK)
-        {
-            gchar *oldtitle = g_strdup(gtk_window_get_title(GTK_WINDOW(parent)));
-            const gchar *ntitle = factory_utf8("请耐心等待,文件处理中...");
-            gtk_window_set_title(GTK_WINDOW(parent),ntitle);
-            gtk_widget_queue_draw(parent);
-            gdk_window_process_all_updates();
-
-
-            GtkTreeView *mtreeview = user_data;
-
-            const gchar *label = gtk_button_get_label(GTK_BUTTON(widget));
-            BackThread *btd = g_new0(BackThread,1);
-
-            btd->file_list =slist;
-            btd->opt_quark = g_quark_from_string(label);
-            btd->treeview = mtreeview;
-            btd->smd = curLayer->smd;
-            btd->add_quark = add_quark;
-            btd->parent = parent;
-            btd->idle_id = 0;
-
-//           gdk_threads_add_idle((GSourceFunc)factory_mfile_mlist_thread_func,btd);
-//        g_idle_add ((GSourceFunc)factory_mfile_mlist_thread_func,
-//                                             btd);
-//            timeout_id =  g_timeout_add(50,factory_mfile_mlist_update_view,parent);
-//            GThread *fthread = g_thread_create(factory_mfile_mlist_thread_func,
-//                                               btd,FALSE,NULL);
-
-            factory_mfile_mlist_thread_func(btd);
-//        g_thread_join(fthread);
-            gtk_window_set_title(GTK_WINDOW(parent),
-                                 oldtitle);
+    }
+    else
+    {
+        gtk_widget_set_sensitive(opendlg, TRUE);
+        if (GTK_WIDGET_VISIBLE(opendlg))
             return;
-        }
 
     }
-    opendlg = NULL;
+    g_signal_connect(G_OBJECT(opendlg),"response",
+                    G_CALLBACK(factory_mfile_open_file_response),user_data);
+    gtk_widget_show_all(opendlg);
 }
-//static void factory_choose_musicfile_callback(GtkWidget *dlg,
-//        gint       response,
-//        gpointer   user_data)
-//{
-//
-//    GtkTreeView *mtreeview = user_data;
-//    if (response == GTK_RESPONSE_OK)
-//    {
-//        GtkWidget *spinbox = g_object_get_data(G_OBJECT(user_data),"wid_offset");
-//        int offset = gtk_spin_button_get_value(GTK_SPIN_BUTTON(spinbox));
-//        GtkTreeModel *model = gtk_tree_view_get_model(mtreeview);
-//
-//
-//        GList *strlist = NULL;
-//        GList *filelist = NULL;
-//
-//        GSList *flists =  gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(dlg));
-//        smfm->lastDir = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(dlg));
-//        for(; flists; flists = flists->next,num++)
-//        {
-//            SaveMusicFile *smf = g_new0(SaveMusicFile,1);
-//            smf->index = num;
-//            smf->file_addr = num + offset;
-//            smf->full_name = g_strdup((gchar *)flists->data);
-//            gchar **split = g_strsplit(smf->full_name,"\\",-1);
-//            int len = g_strv_length(split);
-//            smf->base_name = g_strdup(split[len-1]);
-//            g_strfreev(split);
-//            smf->down_name = g_strdup_printf("file_%d",smf->index);
-//            filelist = g_list_append(filelist,smf);
-//            strlist = g_list_append(strlist,smf->base_name);
-////            factory_file_manager_append(smfm->wid_clist,smf);
-//        }
-//
-//        if(num == 0)
-//        {
-//            smfm->filelist = g_list_copy(filelist);
-//            smd->cboxlist = g_list_copy(strlist);
-//        }
-//        else if(smfm->man_opt == OPT_APPEND)
-//        {
-//            GList *p = filelist;
-//            for(; p ; p = p->next)
-//                smfm->filelist = g_list_append(smfm->filelist,p->data);
-//            p = strlist;
-//            for(; p; p = p->next)
-//                smd->cboxlist = g_list_append(smd->cboxlist,p->data);
-//        }
-//        else
-//        {
-//            /*　新插入的文件　*/
-//            GtkTreeSelection *selection = gtk_tree_view_get_selection (smfm->wid_treeview);
-//            GtkTreeIter iter;
-//            int pos = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(model), NULL);;
-//            if (gtk_tree_selection_get_selected (selection, NULL, &iter))
-//            {
-//                gtk_list_store_remove(selection,&iter);
-//                gtk_tree_model_get(model,&iter,0,&pos,-1);
-//            }
-//
-////            int pos = smfm->selected;
-//            GList *p = filelist;
-//            for(; p; p = p->next)
-//                smfm->filelist = g_list_insert(smfm->filelist,p->data,pos);
-//            g_list_free1(smd->cboxlist);
-//            smd->cboxlist = NULL;
-//            p = smfm->filelist;
-//            for(; p ; p = p->next)
-//            {
-//                SaveMusicFile *smf = p->data;
-//                smd->cboxlist = g_list_append(smd->cboxlist,smf->base_name);
-//            }
-//
-//        }
-//        if(smfm->man_opt == OPT_INSERT)
-//        {
-//            factory_file_manager_refresh_all_iter(smd);
-////            factory_file_manager_refresh_all(smd);
-//        }
-//        else
-//        {
-//            GList *p = filelist;
-//            for(; p; p = p->next)
-//                factory_mfile_manager_append_iter(model,p->data);
-////                factory_file_manager_append(smfm->wid_clist,p->data);
-//        }
-////        smfm->number = g_list_length(smfm->filelist);
-//        smd->mfmos->m_itemadded(smd); /* 更新左边的界面 */
-//
-//    }
-////    gtk_widget_destroy(dlg);
-//}
 
-
-
-//void factory_mfile_manager_clean_modal(SaveMusicDialog *smd)
-//{
-//    SaveMusicFileMan *smfm = smd->smfm;
-//    g_list_free1(smfm->filelist);
-//    smfm->filelist = NULL;
-//    g_list_free1(smd->cboxlist);
-//    smd->cboxlist = NULL;
-//
-//    gtk_list_store_clear( GTK_TREE_STORE( smd->id_cbmodal ) ); /* 清空原来的 */
-//
-//}
-//
-//void factory_mfile_manager_update_idmodal(SaveMusicDialog *smd)
-//{
-//    /* 更新左边最后一个下拉框的数据 */
-//    gtk_list_store_clear(smd->id_cbmodal);
-//    GList *tlist = smd->cboxlist;
-//    factory_append_iten_to_cbmodal(smd->id_cbmodal,"");
-//    for(; tlist; tlist= tlist->next)
-//    {
-//        factory_append_iten_to_cbmodal(smd->id_cbmodal,tlist->data);
-//    }
-//
-//}
-
-//void factory_mfile_manager_append_iter(GtkListStore *model,SaveMusicFile *smf)
-//{
-//    GtkTreeIter iter; /* 设备每一行文件列表 */
-//    gtk_list_store_append (GTK_LIST_STORE (model), &iter);
-//    gtk_list_store_set (GTK_LIST_STORE (model), &iter,
-//                        COLUMN_SEQUENCE,smf->index,
-//                        COLUMN_PHY,smf->file_addr,
-//                        COLUMN_FNAME,smf->base_name,
-//                        COLUMN_DNAME,smf->down_name,
-//                        -1);
-//}
 
 
 
@@ -1933,8 +1772,8 @@ GtkWidget *factory_mfile_music_list_dialog(GtkWidget *parent,
     g_object_set_data(G_OBJECT(mlist_treeview),"dla_vbox",sdialog);
     g_object_set_data(G_OBJECT(mlist_treeview),"wid_offset",spbox);
     g_object_set_data(G_OBJECT(mlist_treeview),"pscroll_win",wid_scroll);
-    g_object_set(G_OBJECT(mlist_treeview),"spacing",15,
-                                            NULL);
+//    g_object_set(G_OBJECT(mlist_treeview),"spacing",15,
+//                                            NULL);
 
 //    g_idle_add(gdk_window_process_all_updates,NULL);
     GtkWidget *opt_box = factory_music_file_manager_operator(mlist_treeview);
@@ -1943,7 +1782,7 @@ GtkWidget *factory_mfile_music_list_dialog(GtkWidget *parent,
     g_signal_connect(mlist_treeview,"button_release_event",
                      G_CALLBACK(factory_mfile_mlist_treeview_onButtonPressed),
                      opt_box);
-    gtk_tree_view_set_fixed_height_mode(mlist_treeview,TRUE);
+//    gtk_tree_view_set_fixed_height_mode(mlist_treeview,TRUE);
 
     if(smd->mflist)
     {

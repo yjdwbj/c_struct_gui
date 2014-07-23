@@ -373,6 +373,8 @@ typedef void (*UpdateObjectVName)(DiaObject *obj);
 typedef void (*SearchConnectedLink)(DiaObject *obj,gint depth);
 typedef void (*UpdateObjectsFillColor)(DiaObject *obj);
 typedef void (*ResetObjectsToDefaultColor)(DiaObject *obj);
+typedef void (*AddObjectToBTree)(DiaObject *obj,GTree *tree);
+typedef void (*ReConnectionNewObj)(DiaObject *obj,GTree *tree);
 
 
 /*************************************
@@ -489,6 +491,8 @@ struct _ObjectOps {
   SearchConnectedLink SearchConnLink;
   UpdateObjectsFillColor set_fillcolor;
   ResetObjectsToDefaultColor reset_objectsfillcolor;
+  AddObjectToBTree  addobject_to_btree;
+  ReConnectionNewObj reconnection_new_obj;
 //  TemplateEdit templateedit;
   void      (*(unused[4]))(DiaObject *obj,...);
 };
