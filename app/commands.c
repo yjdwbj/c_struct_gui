@@ -347,6 +347,38 @@ edit_cut_callback (GtkAction *action)
   }
 }
 
+/* 用树保存原来的连接信息 */
+static GTree* factory_handle_paste_objects(GList *objects)
+{
+    GTree *btree = g_tree_new(factory_str_compare);
+    GList *plist = objects;
+    for(; plist; plist = plist->next)
+    {
+        DiaObject *obj = plist->data;
+        obj->ops->addobject_to_btree(obj,btree);
+    }
+
+    plist = objects;
+    for(; plist; plist = plist->next)
+    {
+        DiaObject *obj = plist->data;
+        obj->ops->rename_new_obj(obj,btree,0);
+    }
+    return btree;
+}
+
+
+gboolean  /* 更改名称之后就更新树里的信息 */
+factory_tree_foreach (gpointer key,gpointer value,
+                                   gpointer data)
+{
+        GTree *tree = data;
+        g_tree_remove(tree,key);
+        DiaObject* obj = value;
+        obj->ops->addobject_to_btree(obj,tree);
+        return FALSE;
+}
+
 void
 edit_paste_callback (GtkAction *action)
 {
@@ -386,6 +418,8 @@ edit_paste_callback (GtkAction *action)
 
     if (generation)
       object_list_move_delta(paste_list, &delta);
+    int n = g_list_length(paste_list);
+     factory_debug_to_log(g_strdup_printf("paste_list insert count:%d",n));
 
     change = undo_insert_objects(ddisp->diagram, paste_list, 0);
     (change->apply)(change, ddisp->diagram);
@@ -394,19 +428,47 @@ edit_paste_callback (GtkAction *action)
     undo_set_transactionpoint(ddisp->diagram->undo);
 
     diagram_remove_all_selected(ddisp->diagram, TRUE);
-//    diagram_select_list(ddisp->diagram, paste_list);
 
-    /*这里用做重命名，保证名字唯一*/
-    GList *plist = paste_list;
+
+   /*在选择的链表内通过名字找连接关系 */
+    GTree *btree = factory_handle_paste_objects(paste_list);
+   GList *plist = paste_list;
+     /*这里用做重命名，保证名字唯一*/
     for(;plist;plist=plist->next)
     {
         DiaObject *obj = plist->data;
         if(!obj->ops->obj_rename) continue;
         obj->ops->obj_rename(obj);
     }
+    /*更名之后遍历树,更新树的节点*/
+    GTree *newtree = g_tree_new(strcasecmp);
 
+    g_tree_foreach(btree,factory_tree_foreach,newtree);
+
+    plist =  g_list_copy(paste_list);
+    int nums = 0;
+    for(; plist; plist = plist->next)
+    {
+        DiaObject *obj = plist->data;
+        obj->ops->rename_new_obj(obj,newtree,1);
+    }
+    plist = g_list_copy(paste_list);
+   int cc = 0;
+   for(;plist;plist = plist->next,cc++)
+    {
+        DiaObject *obj = plist->data;
+        obj->ops->reconnection_new_obj(obj); /* 要仔细调试 */
+
+    }
+
+    n = g_list_length(paste_list);
     diagram_update_extents(ddisp->diagram);
     diagram_flush(ddisp->diagram);
+    n = g_list_length(paste_list);
+    factory_debug_to_log(g_strdup_printf("paste select_list  count:%d",n));
+    diagram_select_list(ddisp->diagram, paste_list);
+    g_tree_destroy(btree);
+    g_tree_destroy(newtree);
   }
 }
 

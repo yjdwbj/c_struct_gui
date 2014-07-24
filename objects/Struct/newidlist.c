@@ -810,30 +810,11 @@ factory_idtreeview_onButtonPressed(GtkWidget *treeview, GdkEventButton *event,
     /* single click with the right mouse button? */
     if (event->type == GDK_BUTTON_RELEASE  &&  event->button == 3)
     {
-
         GtkTreeSelection *selection;
-
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
-
         /* Note: gtk_tree_selection_count_selected_rows() does not
          *   exist in gtk+-2.0, only in gtk+ >= v2.2 ! */
         int scount = gtk_tree_selection_count_selected_rows(selection);
-//        if ( scount <= 1)
-//        {
-//            GtkTreePath *path;
-//
-//            /* Get tree path for row that was clicked */
-//            if (gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(treeview),
-//                                              (gint) event->x,
-//                                              (gint) event->y,
-//                                              &path, NULL, NULL, NULL))
-//            {
-//                gtk_tree_selection_unselect_all(selection);
-//                gtk_tree_selection_select_path(selection, path);
-//                gtk_tree_path_free(path);
-//            }
-//        }
-
         factory_mfile_idlist_popumenu(treeview, event, (gpointer)scount);
 
 
@@ -877,61 +858,6 @@ factory_idtreeview_onButtonPressed(GtkWidget *treeview, GdkEventButton *event,
 //
 //    return operatorhbox;
 //}
-
-
-//static GtkWidget *factory_idlist_operators(GtkTreeView *treeview)
-//{
-//    GtkWidget *mainBox = gtk_vbox_new(FALSE,0);
-//    GtkWidget *btn =
-//        gtk_button_new_with_label(factory_utf8("添加"));
-//    g_object_set_data(G_OBJECT(mainBox),"append",btn);
-//    gtk_box_pack_start(GTK_BOX(mainBox),btn,TRUE,TRUE,0);
-//
-//    g_signal_connect(btn,"clicked",
-//                     G_CALLBACK(factory_sublist_append_callback),&tw);
-//
-//    btn = gtk_button_new_with_label(factory_utf8("编辑"));
-//    g_object_set_data(G_OBJECT(mainBox),"insert",btn);
-//    gtk_box_pack_start(GTK_BOX(mainBox),btn,TRUE,TRUE,0);
-//    g_signal_connect(btn,"clicked",
-//                     G_CALLBACK(factory_sublist_insert_callback),&tw);
-//
-//    btn = gtk_button_new_with_label(factory_utf8("插入"));
-//    g_object_set_data(G_OBJECT(mainBox),"insert",btn);
-//    gtk_box_pack_start(GTK_BOX(mainBox),btn,TRUE,TRUE,0);
-//    g_signal_connect(btn,"clicked",
-//                     G_CALLBACK(factory_sublist_insert_callback),&tw);
-//
-//    btn = gtk_button_new_with_label(factory_utf8("删除"));
-//    g_object_set_data(G_OBJECT(mainBox),"delete",btn);
-//    gtk_box_pack_start(GTK_BOX(mainBox),btn,TRUE,TRUE,0);
-//    g_signal_connect(btn,"clicked",
-//                     G_CALLBACK(factory_sublist_delete_callback),left);
-//
-//       btn = gtk_button_new_with_label(factory_utf8("确定"));
-//    g_object_set_data(G_OBJECT(mainBox),"delete",btn);
-//    gtk_box_pack_start(GTK_BOX(mainBox),btn,TRUE,TRUE,0);
-//    g_signal_connect(btn,"clicked",
-//                     G_CALLBACK(factory_sublist_delete_callback),left);
-//
-//       btn = gtk_button_new_with_label(factory_utf8("取消"));
-//    g_object_set_data(G_OBJECT(mainBox),"delete",btn);
-//    gtk_box_pack_start(GTK_BOX(mainBox),btn,TRUE,TRUE,0);
-//    g_signal_connect(btn,"clicked",
-//                     G_CALLBACK(factory_sublist_delete_callback),left);
-//
-//    return mainBox;
-//}
-
-//gboolean
-//facotory_idtreeview_popup_callback (GtkWidget *treeview, gpointer userdata)
-//{
-//    factory_idlist_popumenu(treeview, NULL, userdata);
-//
-//    return TRUE; /* we handled this */
-//}
-
-
 
 
 void factory_idlist_read_xml(ObjectNode obj_node)
@@ -989,32 +915,6 @@ void factory_idlist_read_xml(ObjectNode obj_node)
     g_list_foreach(glist,(GFunc)g_free,NULL);
     g_list_free(glist);
 
-
-
-//    while(attr_node = data_next(attr_node))
-//    {
-//        xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"name");
-//        if(!key) continue;
-//        IDListStore *idsave = g_new0(IDListStore,1);
-//        idsave->sequence = g_strtod((gchar*)key,NULL);
-//        key = xmlGetProp(attr_node,(xmlChar *)"addr");
-//        if(!key)
-//        {
-//            idsave->id_addr = idsave->sequence * 2;
-//        }
-//        else
-//            idsave->id_addr = g_strtod((gchar*)key,NULL);
-//        key = xmlGetProp(attr_node,(xmlChar *)"idname");
-//        if(!key)
-//        {
-//            idsave->id_text = g_strdup("");
-//        }
-//        else
-//            idsave->id_text = g_strdup((gchar*)key);
-//
-//        sid->idlists = g_list_append(sid->idlists,idsave);
-//
-//    }
 }
 
 

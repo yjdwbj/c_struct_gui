@@ -363,13 +363,14 @@ struct _SaveUbtn
 typedef struct _SaveUnion SaveUnion;
 struct _SaveUnion
 {
-    int index;
-    gchar *curtext;
+    int uindex;
+//    gchar *curtext;
     gchar *curkey;
     GtkWidget *vbox;
     GtkWidget *comobox;
     GList *structlist;
-    GHashTable* saveVal; //保存值的哈希表
+    GTree *ubtreeVal;
+//    GHashTable* saveVal; //保存值的哈希表
 };
 
 typedef struct _SaveEntry SaveEntry;
@@ -657,8 +658,8 @@ GtkWidget *factory_download_file_manager(GtkWidget *parent,SaveMusicDialog *smd)
 void factory_add_item_to_idlist(GtkButton *self,gpointer user_data);
 void factory_delete_last_item(GtkButton *self,gpointer user_data);
 void factory_add_self_to_btree(STRUCTClass *fclass,GTree *tree);
-void factory_reconnection_new_obj(STRUCTClass *fclass,GTree *tree);
-
+void factory_rename_new_obj(STRUCTClass *fclass,GTree *tree,gint meth);
+void factory_reconnection_new_obj(STRUCTClass *fclass);
 
 void factory_set_original_class(STRUCTClass *fclass);
 

@@ -772,37 +772,8 @@ undo_delete_objects(Diagram *dia, GList *obj_list)
     return (Change *)change;
 }
 
-static GTree* factory_handle_paste_objects(GList *objects)
-{
-    GTree *btree = g_tree_new(factory_str_compare);
-    GList *plist = objects;
-    for(; plist; plist = plist->next)
-    {
-        DiaObject *obj = plist->data;
-        obj->ops->addobject_to_btree(obj,btree);
-    }
-
-    plist = objects;
-    for(; plist; plist = plist->next)
-    {
-        DiaObject *obj = plist->data;
-        obj->ops->reconnection_new_obj(obj,btree);
-    }
 
 
-    return btree;
-}
-
-gboolean    factory_tree_foreach (gpointer key,gpointer value,
-                                   gpointer data)
-{
-
-        GTree *tree = data;
-        g_tree_remove(tree,key);
-        DiaObject* obj = value;
-        obj->ops->addobject_to_btree(obj,tree);
-        return FALSE;
-}
 
 /******** Insert object list: */
 
@@ -821,20 +792,11 @@ insert_objects_apply(struct InsertObjectsChange *change, Diagram *dia)
     DEBUG_PRINTF(("insert_objects_apply()\n"));
 //  factory_debug_to_log(factory_utf8("插入链表里的对像!"));
     change->applied = 1;
-
-    /* 先处理已选择的链表之间关系 */
-    GList *nclist = g_list_copy(change->obj_list);
-    GTree *btree = factory_handle_paste_objects(nclist);
-    layer_add_objects(change->layer,nclist );
+    layer_add_objects(change->layer,g_list_copy(change->obj_list) );
     object_add_updates_list(change->obj_list, dia);
     diagram_tree_add_objects(diagram_tree(), dia, change->obj_list);
     update_objects_index(change->layer->objects,dia);
-    g_tree_foreach(btree,factory_tree_foreach,btree);
-    for(; nclist; nclist = nclist->next)
-    {
-        DiaObject *obj = nclist->data;
-        obj->ops->reconnection_new_obj(obj,btree);
-    }
+
 }
 
 static void

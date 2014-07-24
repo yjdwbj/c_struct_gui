@@ -59,6 +59,7 @@
 				<Compiler>
 					<Add option="-std=gnu89" />
 					<Add option="-DHAVE_CONFIG_H" />
+					<Add option="-DDEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-ldia" />

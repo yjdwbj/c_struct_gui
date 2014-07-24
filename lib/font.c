@@ -316,7 +316,6 @@ dia_pfd_set_slant(PangoFontDescription* pfd, DiaFontSlant fo)
 {
   switch (fo) {
   case DIA_FONT_NORMAL :
-    factory_debug_to_log(factory_utf8("dia_pfd_set_slant,DIA_FONT_NORMAL\n"));
     pango_font_description_set_style(pfd,PANGO_STYLE_NORMAL);
     break;
   case DIA_FONT_OBLIQUE :

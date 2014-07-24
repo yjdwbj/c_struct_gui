@@ -374,8 +374,8 @@ typedef void (*SearchConnectedLink)(DiaObject *obj,gint depth);
 typedef void (*UpdateObjectsFillColor)(DiaObject *obj);
 typedef void (*ResetObjectsToDefaultColor)(DiaObject *obj);
 typedef void (*AddObjectToBTree)(DiaObject *obj,GTree *tree);
-typedef void (*ReConnectionNewObj)(DiaObject *obj,GTree *tree);
-
+typedef void (*ReNameNewObj)(DiaObject *obj,GTree *tree,gint meth);
+typedef void (*ReConnectionNewObj)(DiaObject *obj);
 
 /*************************************
  **  The functions provided in object.c
@@ -492,6 +492,7 @@ struct _ObjectOps {
   UpdateObjectsFillColor set_fillcolor;
   ResetObjectsToDefaultColor reset_objectsfillcolor;
   AddObjectToBTree  addobject_to_btree;
+  ReNameNewObj rename_new_obj;
   ReConnectionNewObj reconnection_new_obj;
 //  TemplateEdit templateedit;
   void      (*(unused[4]))(DiaObject *obj,...);

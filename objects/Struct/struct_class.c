@@ -210,6 +210,7 @@ static ObjectOps structclass_ops =
     (UpdateObjectsFillColor) factory_set_fill_color,
     (ResetObjectsToDefaultColor) factory_reset_object_color_to_default,
     (AddObjectToBTree) factory_add_self_to_btree,
+    (ReNameNewObj) factory_rename_new_obj,
     (ReConnectionNewObj) factory_reconnection_new_obj
 };
 
@@ -2574,7 +2575,7 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         key = xmlGetProp(attr_node,(xmlChar *)"index");
         if(key)
         {
-            suptr->index  = atoi((gchar*)key);
+            suptr->uindex  = atoi((gchar*)key);
             xmlFree(key);
         }
         GList *slist;
@@ -2583,15 +2584,15 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         sss->type = g_strdup((gchar*)fst->SType);
         slist =  g_hash_table_lookup(fclass->EnumsAndStructs->unionTable,(gchar*)sss->type);
         /* 下面下拉框当面名字　*/
-        FactoryStructItem *nextobj =  g_list_nth_data(slist,suptr->index);
+        FactoryStructItem *nextobj =  g_list_nth_data(slist,suptr->uindex);
 //        suptr->structlist = slist;
         g_return_if_fail(nextobj); /* 没有找到控件原型,可能出错了. */
 
         if(suptr->curkey) g_free(suptr->curkey);
-        suptr->curkey =g_strdup( g_strjoin("##",nextobj->FType,nextobj->Name,NULL));
+        suptr->curkey =g_strdup(nextobj->Name);
 
-        if(suptr->curtext) g_free(suptr->curtext);
-        suptr->curtext = g_strdup(nextobj->Name);
+//        if(suptr->curtext) g_free(suptr->curtext);
+//        suptr->curtext = g_strdup(nextobj->Name);
         SaveStruct *nsitm = factory_get_savestruct(nextobj);/* 紧跟它下面的控件名 */
         g_return_if_fail(nsitm);
 
@@ -2604,9 +2605,10 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         sbtn->savelist = NULL;
         /* 读它下面的子节点 */
         factory_read_union_button_from_file(sss->sclass, attr_node->xmlChildrenNode,sbtn);
-        g_hash_table_insert(suptr->saveVal,suptr->curkey,nsitm);
+        g_tree_insert(suptr->ubtreeVal,suptr->curkey,nsitm);
+//        g_hash_table_insert(suptr->saveVal,suptr->curkey,nsitm);
         /* 这里不知道为什么，插入一个节点后，这个suptr->curkey 就被free, 　下面又重新设置它的值*/
-        suptr->curkey =g_strdup( g_strjoin("##",nextobj->FType,nextobj->Name,NULL));
+        suptr->curkey =g_strdup( nextobj->Name);
     }
     else if(!g_ascii_strncasecmp((gchar*)key,"BBTN",4))
     {
@@ -3209,7 +3211,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
         SaveUnion *suptr = &sss->value.sunion;
         sss->celltype = UCOMBO;
         suptr->vbox = NULL;
-        suptr->saveVal = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
+        suptr->ubtreeVal = g_tree_new(factory_str_compare);
         suptr->curkey = g_strdup("");
         suptr->comobox = NULL;
         suptr->structlist = fst->datalist;
@@ -3217,17 +3219,18 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
         FactoryStructItem *nextobj = factory_get_factorystructitem(suptr->structlist,fst->Value);
         if(!nextobj)
             break;
-        suptr->index = g_list_index(suptr->structlist,nextobj);
+        suptr->uindex = g_list_index(suptr->structlist,nextobj);
         GList *p = suptr->structlist;
-        suptr->curtext = g_strdup(nextobj->Name);
-        suptr->curkey = g_strjoin("##",nextobj->FType,nextobj->Name,NULL);
+//        suptr->curtext = g_strdup(nextobj->Name);
+        suptr->curkey = g_strdup(nextobj->Name);
         SaveStruct *tsst = factory_get_savestruct(nextobj);
         if(!tsst)
             break;
         tsst->sclass = sss->sclass;
         factory_strjoin(&tsst->name,sss->name,".");
         /* 把当前选择的成员初始化保存到哈希表 */
-        g_hash_table_insert(suptr->saveVal,suptr->curkey,tsst);
+        g_tree_insert(suptr->ubtreeVal,suptr->curkey,tsst);
+//        g_hash_table_insert(suptr->saveVal,suptr->curkey,tsst);
         if(tsst->isPointer )
         {
             SaveUbtn *sbtn = &tsst->value.ssubtn;
@@ -3826,20 +3829,6 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
         {
             ActionID *aid = tlist->data;
             ObjectNode ccc = xmlNewChild(obtn, NULL, (const xmlChar *)JL_NODE, NULL);
-//            xmlSetProp(obtn, (const xmlChar *)"name", (xmlChar *)sss->name);
-//            xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
-//            xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
-//            if(!aid->pre_name)
-//                aid->pre_name = g_strdup("");
-//            if(!strlen(aid->pre_name))
-//                aid->value ="-1";
-//            else
-//            {
-////                STRUCTClass *fclass = factory_find_diaobject_by_name(curLayer,aid->pre_name);
-//                DiaObject *obj = g_hash_table_lookup(curLayer->defnames,aid->pre_name);
-//                aid->value = g_strdup_printf("%d",obj->oindex);
-//            }
-
             factory_write_object_comobox(tlist->data,ccc,sss->type);
         }
     }
@@ -3848,17 +3837,19 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
     {
         SaveUnion *suptr = &sss->value.sunion;
         g_return_if_fail(suptr);
-        SaveStruct *tsst  =  g_hash_table_lookup(suptr->saveVal,suptr->curkey);
+//        SaveStruct *tsst  =  g_hash_table_lookup(suptr->saveVal,suptr->curkey);
+        SaveStruct *tsst = g_tree_lookup(suptr->ubtreeVal,
+                                         suptr->curkey);
         if(tsst)
         {
             ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_union", NULL);
             xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
             xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
-            xmlSetProp(ccc,(const xmlChar *)"idname",(xmlChar*)suptr->curtext);
+            xmlSetProp(ccc,(const xmlChar *)"idname",(xmlChar*)suptr->curkey);
             if(tsst->isPointer)
             {
                 xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"UBTN");
-                xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf("%d",suptr->index));
+                xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf("%d",suptr->uindex));
                 factory_base_struct_save_to_file(tsst,ccc); /* 递归调用本函数 */
             }
             else
@@ -3880,16 +3871,6 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
         {
 //            factory_mfile_idlist_save_xml(sss,obj_node);
             factory_mfile_save_item_to_xml(sss,obj_node);
-//            factory_save_mfile_dialog_to_xml(sss,obj_node);
-//            ObjectNode ccc = xmlNewChild(obj_node, NULL, (const xmlChar *)"JL_item", NULL);
-//            xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
-//            xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
-//            xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)sss->type);
-//
-//            SaveKV *skv = sss->value.vnumber;
-//            xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)skv->value);
-//            xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf("%d",skv->radindex));
-//            xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)skv->vname);
         }
         else if(!g_strcasecmp(stype,TYPE_IDLST))
         {
@@ -4296,6 +4277,16 @@ void factory_actionid_copy(const ActionID *onid,
     nnid->conn_ptr = onid->conn_ptr;
 }
 
+static gboolean
+factory_tree_foreach_copy (gpointer key,gpointer value,
+                           gpointer data)
+{
+        GTree *tree = data;
+        g_tree_insert(tree,key,value);
+        return FALSE;
+}
+
+
 /* 这里就是一个很复杂的完全copy */
 SaveStruct *factory_savestruct_copy(const SaveStruct *old)
 {
@@ -4328,16 +4319,20 @@ SaveStruct *factory_savestruct_copy(const SaveStruct *old)
     {
         SaveUnion *osuptr = &old->value.sunion;
         SaveUnion *nsuptr = &newsst->value.sunion;
-        nsuptr->saveVal = g_hash_table_new_full(g_str_hash,
-                                                g_str_equal,
-                                                g_free,
-                                                g_free);
+//        nsuptr->saveVal = g_hash_table_new_full(g_str_hash,
+//                                                g_str_equal,
+//                                                g_free,
+//                                                g_free);
+        nsuptr->ubtreeVal = g_tree_new(factory_str_compare);
+        g_tree_foreach(osuptr->ubtreeVal,factory_tree_foreach_copy,
+                       nsuptr->ubtreeVal);
+
         nsuptr->comobox = NULL;
         nsuptr->vbox = NULL;
         nsuptr->curkey = g_strdup(osuptr->curkey);
-        nsuptr->curtext = g_strdup(osuptr->curtext);
+//        nsuptr->curtext = g_strdup(osuptr->curtext);
         nsuptr->structlist = g_list_copy(osuptr->structlist);
-        nsuptr->index = osuptr->index;
+        nsuptr->uindex = osuptr->uindex;
 
     }
     break; /* union comobox */

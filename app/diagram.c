@@ -143,10 +143,10 @@ _diagram_removed (Diagram* dia)
 static void
 _diagram_selection_changed (Diagram* dia, int n)
 {
-    if(!dia->loadOnly)
-    {
-        factory_sheet_toggled(TEMPL_SWIN,!dia->isTemplate);
-    }
+//    if(!dia->loadOnly)
+//    {
+//        factory_sheet_toggled(TEMPL_SWIN,!dia->isTemplate);
+//    }
 }
 
 static void
@@ -912,7 +912,7 @@ diagram_select(Diagram *diagram, DiaObject *obj)
 {
 
 //    gchar name[] =  "Standard - Line";
-
+    g_return_if_fail(obj);
     if( object_get_type(CLASS_LINE) == obj->type) /* 不让线条被选中*/
         return;
 
@@ -933,10 +933,12 @@ diagram_select_list(Diagram *dia, GList *list)
     g_return_if_fail (dia && list);
     /* otherwise we would signal objects step by step */
     g_signal_handlers_block_by_func (dia, _diagram_selection_changed, NULL);
+    int nums = 0;
     while (list != NULL)
     {
         DiaObject *obj = (DiaObject *)list->data;
-
+        factory_debug_to_log(g_strdup_printf("pos:%d, obj_ptr:0x%x,obj_name:%s\n",
+                                             nums++,obj,obj->name));
         diagram_select(dia, obj);
 
         list = g_list_next(list);

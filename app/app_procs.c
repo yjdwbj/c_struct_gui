@@ -925,6 +925,8 @@ void  app_init (int argc, char **argv)
 
     gchar *lfile = g_strdup_printf(LOGNAME,factory_get_format_date_and_time());
     gchar *logfpath = g_build_filename(dia_get_lib_directory("log"), lfile, NULL);
+    logfd = NULL;
+#ifdef DEBUG
 
     logfd = fopen(logfpath,"w"); /*打开日志句柄*/
 
@@ -936,6 +938,7 @@ void  app_init (int argc, char **argv)
                       dia_message_filename(logfpath), strerror(errno));
         return;
     }
+#endif
     /* 检查一下依赖程序是否存在 */
     gchar *isdownload_gui = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "isdownload_gui.exe",NULL);
     gchar *isdownload = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "isd_download.exe",NULL);
@@ -1156,11 +1159,12 @@ app_exit(void)
     factory_debug_to_log(factory_utf8("程序退出.\n"));
     GList *list;
     GSList *slist;
+#ifdef DEBUG
     if(logfd)
     {
         fclose(logfd);/* 关闭日志　*/
     }
-
+#endif
     /*
      * The following "solves" a crash related to a second call of app_exit,
      * after gtk_main_quit was called. It may be a win32 gtk-1.3.x bug only

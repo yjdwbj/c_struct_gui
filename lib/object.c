@@ -742,6 +742,8 @@ dia_object_is_selectable(DiaObject *obj)
     {
         return FALSE;
     }
+//    factory_debug_to_log(g_strdup_printf("object_is_selectable:0x%x, parent_layer:0x%x ,name:%s\n",
+//                         obj,obj->parent_layer,obj->name));
     return obj->parent_layer == obj->parent_layer->parent_diagram->active_layer
            && obj == dia_object_get_parent_with_flags(obj, DIA_OBJECT_GRABS_CHILD_INPUT);
 }
@@ -1214,6 +1216,7 @@ factory_critical_error_response(GtkWidget *widget,
 
     if(logfd)
     {
+        fflush(logfd);
         fclose(logfd);/* πÿ±’»’÷æ°°*/
     }
     // gtk_widget_destroy(widget);
@@ -1239,19 +1242,26 @@ gchar *factory_get_current_timestamp()
 
 void factory_debug_to_log(const gchar *msg_dbg)
 {
-#ifdef DEBUG
+
         gchar *fmsg = g_strconcat(factory_get_current_timestamp(),msg_dbg,NULL);
         if(logfd)
-            fwrite(fmsg,1,strlen(fmsg),logfd);
+        {
+             fwrite(fmsg,1,strlen(fmsg),logfd);
+             fflush(logfd);
+        }
         g_free(fmsg);
-#endif
+
 }
 
 void factory_waring_to_log(const gchar *msg_war)
 {
         gchar *fmsg = g_strconcat(factory_get_current_timestamp(),msg_war,NULL);
         if(logfd)
+        {
             fwrite(fmsg,1,strlen(fmsg),logfd);
+            fflush(logfd);
+        }
+
         g_free(fmsg);
 }
 
