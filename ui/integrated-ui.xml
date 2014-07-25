@@ -5,9 +5,8 @@
 			<menuitem name="FileNew" action="FileNew" />
 			<menuitem name="FileOpen" action="FileOpen" />
 		  <separator name="FileSep1" />
-			<menuitem name="TemplateNew" action="TemplateNew" />
-			<!--<menuitem name="TemplateOpen" action="TemplateOpen" />-->
-			 <separator name="FileSep2" />
+<!--			<menuitem name="TemplateNew" action="TemplateNew" />
+			 <separator name="FileSep2" />-->
 			<menuitem name="FileSave" action="FileSave" />
 			<menuitem name="FileSaveas" action="FileSaveas" />
 			 <separator name="FileSep3" />
@@ -33,7 +32,7 @@
 
 <!--			<menuitem name="FilePrefs" action="FilePrefs" />
 -->
-			<menuitem name="TemplateManager" action="TemplateManager" />
+	<!--		<menuitem name="TemplateManager" action="TemplateManager" />-->
 
 			<separator name="FileRecentStart"/>
 

@@ -2411,7 +2411,7 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
     STRUCTClass *fclass = fst->orgclass;
     xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"wtype");
     if( factory_is_special_object(fst->FType) &&
-       g_ascii_strncasecmp((gchar*)key,"LBTN",4) )
+            g_ascii_strncasecmp((gchar*)key,"LBTN",4) )
     {
         /* 这里是id列表与音乐文件列表的数据读取 */
         sss->celltype = UBTN;
@@ -2423,7 +2423,6 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
 //        SaveKV *skv = g_new0(SaveKV,1);
         if(!key)
         {
-//            skv->value = g_strdup("-1");
             sss->value.vnumber = g_strdup("-1");
         }
         else
@@ -2710,8 +2709,8 @@ GList *factory_get_list_from_hashtable(STRUCTClass *fclass)
 }
 
 void factory_read_specific_object_from_file(STRUCTClass *fclass,
-                                            ObjectNode obj_node,
-                                            const gchar *filename)
+        ObjectNode obj_node,
+        const gchar *filename)
 {
 
     gchar *objname = fclass->element.object.name;
@@ -2723,7 +2722,7 @@ void factory_read_specific_object_from_file(STRUCTClass *fclass,
     }
     else /*IDLST*/
     {
-          factory_idlist_read_xml(obj_node);
+        factory_idlist_read_xml(obj_node);
 //        factory_read_idlist_items(obj_node); /* 2014-6-19 改用这个函数读取*/
     }
 
@@ -3002,8 +3001,6 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
     {
         return factory_get_action_savestruct(sss,fst);
     }
-
-
 
     /* 2014-3-26 lcy 通过名字去哈希表里找链表*/
 
@@ -3640,12 +3637,12 @@ structclass_copy(STRUCTClass *structclass)
 
 
     GList *plist = structclass->widgetSave;
-    for(;plist;plist = plist->next)
+    for(; plist; plist = plist->next)
     {
         SaveStruct *sst = factory_savestruct_copy(plist->data);
         sst->sclass = newstructclass;
         newstructclass->widgetSave =
-        g_list_append(newstructclass->widgetSave,sst);
+            g_list_append(newstructclass->widgetSave,sst);
     }
 //    g_hash_table_foreach(structclass->widgetmap,factory_hashtable_copy,newstructclass->widgetmap);
     newstructclass->properties_dialog = NULL;
@@ -3804,7 +3801,7 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
 //    case SBTN:
     {
         ObjectNode ccc = xmlNewChild(obj_node, NULL,
-                                      (const xmlChar *)JL_NODE, NULL);
+                                     (const xmlChar *)JL_NODE, NULL);
         factory_base_item_save(sss,ccc);
     }
     break;
@@ -3864,18 +3861,17 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
     break;
     case UBTN:
     {
-        gchar **split = g_strsplit(sss->type,".",-1);
-        gchar *stype = split[g_strv_length(split)-1];
+        gchar *laststr = factory_get_last_section(sss->type,".");
 //        if(factory_is_special_object(stype)) /* 特殊控件 */
-        if(!g_strcasecmp(stype,TYPE_FILELST))
+        if(!g_strcasecmp(laststr,TYPE_FILELST))
         {
 //            factory_mfile_idlist_save_xml(sss,obj_node);
             factory_mfile_save_item_to_xml(sss,obj_node);
         }
-        else if(!g_strcasecmp(stype,TYPE_IDLST))
+        else if(!g_strcasecmp(laststr,TYPE_IDLST))
         {
 //            factory_save_idlist_to_xml(sss,obj_node);
-              factory_idlist_item_save_to_xml(sss,obj_node);
+            factory_idlist_item_save_to_xml(sss,obj_node);
         }
         else
         {
@@ -3891,9 +3887,11 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
             }
 
         }
-        g_strfreev(split);
+        g_free(laststr);
     }
     break;
+    default:
+        break;
     }
 }
 
@@ -4049,7 +4047,7 @@ factory_struct_items_load(ObjectNode obj_node,int version,
             gchar **split = g_strsplit(factoryContainer->system_files,",",-1);
             smd->offset = g_strv_length(split);
             g_strfreev(split);
-              /* 这里用数字哈希表来保存,文件名的hash值 */
+            /* 这里用数字哈希表来保存,文件名的hash值 */
             smd->mtable = g_hash_table_new(g_direct_hash,g_direct_equal);
 //            smd->midtable = g_hash_table_new(g_direct_hash,g_direct_equal);
         }
@@ -4117,7 +4115,7 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
                                  objname);
     if(structclass->pps)
         xmlSetProp(item_node, (const xmlChar *)"flag",
-                    structclass->pps->hasfinished ? (xmlChar *)"1" : (xmlChar *)"0");
+                   structclass->pps->hasfinished ? (xmlChar *)"1" : (xmlChar *)"0");
     else
         xmlSetProp(item_node, (const xmlChar *)"flag", (xmlChar *)"0");
 
@@ -4141,7 +4139,7 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
         if(!sid || !sid->idlists)
             return;
         factory_idlist_save_to_xml(item_node,sid->idlists);
-         /* 这里添加一个兼容以前的版本 */
+        /* 这里添加一个兼容以前的版本 */
     }
     else if(structclass->element.object.isTemplate &&
             ddisplay_active_diagram()->isTemplate)
@@ -4281,9 +4279,9 @@ static gboolean
 factory_tree_foreach_copy (gpointer key,gpointer value,
                            gpointer data)
 {
-        GTree *tree = data;
-        g_tree_insert(tree,key,value);
-        return FALSE;
+    GTree *tree = data;
+    g_tree_insert(tree,key,value);
+    return FALSE;
 }
 
 
@@ -4379,7 +4377,6 @@ SaveStruct *factory_savestruct_copy(const SaveStruct *old)
     break; /* 文本 */
     case SPINBOX:
     {
-
         newsst->value.vnumber = g_strdup(old->value.vnumber);
     }
     break;
@@ -4394,8 +4391,22 @@ SaveStruct *factory_savestruct_copy(const SaveStruct *old)
     }
     break;
     case UBTN:
+    {
+        /* 这个类型有可能是文件列表,或者ID列表 */
+        if(factory_is_special_object(old->type))
+        {
+            newsst->value.vnumber = g_strdup(old->value.vnumber);
+            break;
+        }
 
-        break;/* 这里是按键按钮 */
+        SaveUbtn *sbtn = &old->value.ssubtn;
+        GList *sslist = sbtn->savelist;
+        for(; sslist; sslist = sslist->next)
+        {
+            factory_savestruct_copy(sslist->data);
+        }
+    }
+    break;/* 这里是按键按钮 */
     case EBTN:
     {
         SaveEbtn *osebtn = &old->value.ssebtn;

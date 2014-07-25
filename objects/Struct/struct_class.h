@@ -241,7 +241,9 @@ struct _SaveMusicFile
     int offset;
     GQuark full_quark;
     GQuark base_quark;
+    gboolean isexists; /*是否存在*/
     gchar* down_name;   /*小机识别的名字*/
+
 };
 
 typedef struct _SaveMusicFileMan  SaveMusicFileMan;
@@ -736,7 +738,7 @@ typedef struct{
 typedef struct
 {
     GQuark nquark;
-    GList *table_list;
+    GList *sub_list;
 } subTable;
 
 

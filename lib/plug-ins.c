@@ -296,10 +296,7 @@ this_is_a_plugin(const gchar *name)
 gboolean
 this_is_a_struct(const gchar *name)
 {
-  gchar *suffix_offset = g_utf8_strrchr(name, -1, (gunichar)'.');
-  gboolean ret = !g_ascii_strncasecmp(suffix_offset,".struct",strlen(suffix_offset));
-  //g_free(suffix_offset);
-  return ret;
+  return g_str_has_suffix(name, ".struct");
 }
 
 

@@ -1413,7 +1413,7 @@ diagram_data_save(DiagramData *data, const char *user_filename)
     *curlist  = g_list_append(*curlist ,sysinfoobj);
 
 
-    ret = diagram_data_raw_save(data, filename);
+    ret = diagram_data_raw_save(data, tmpname);
 
 //    ret = factory_project_raw_save(data);
 
@@ -1434,16 +1434,15 @@ diagram_data_save(DiagramData *data, const char *user_filename)
     }
     /* save succeeded. We kill the old backup file, move the old file into
        backup, and the temp file into the new saved file. */
-//    g_unlink(bakname);
-//    g_rename(filename,bakname);
-      ret = g_remove(tmpname);
-//    ret = g_rename(tmpname,filename);
-//    if (ret < 0)
-//    {
-//        message_error(_("Can't rename %s to final output file %s: %s\n"),
-//                      dia_message_filename(filename),
-//                      dia_message_filename(filename), strerror(errno));
-//    }
+    g_unlink(bakname);
+    g_rename(filename,bakname);
+    ret = g_rename(tmpname,filename);
+    if (ret < 0)
+    {
+        message_error(_("Can't rename %s to final output file %s: %s\n"),
+                      dia_message_filename(filename),
+                      dia_message_filename(filename), strerror(errno));
+    }
 CLEANUP:
     if (filename != user_filename)
         g_free(filename);
@@ -1480,7 +1479,7 @@ CLEANUP:
     g_free(input);
     g_free(exefile);
 
-    return TRUE;
+    return (ret?FALSE:TRUE);
 }
 
 void factory_call_isd_download()

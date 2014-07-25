@@ -124,7 +124,7 @@ static const GtkActionEntry common_entries[] =
     { "File", NULL, N_("_File"), NULL, NULL, NULL },
     { "FileNew", GTK_STOCK_NEW, NULL, "<control>N", NULL, G_CALLBACK (file_new_callback) },
     { "FileOpen", GTK_STOCK_OPEN, NULL,"<control>O", NULL, G_CALLBACK (file_open_callback) },
-    { "TemplateNew", NULL, "Template New", "<control><shift>T", NULL, G_CALLBACK (factory_template_new_callback) },
+//    { "TemplateNew", NULL, "Template New", "<control><shift>T", NULL, G_CALLBACK (factory_template_new_callback) },
 //    { "TemplateOpen", NULL,"Template Open", NULL, NULL, G_CALLBACK (factory_template_open_callback) },
     { "FileQuit", GTK_STOCK_QUIT, NULL, "<control>Q", NULL, G_CALLBACK (file_quit_callback) },
     { "Help", NULL, N_("_Help"), NULL, NULL,NULL },
@@ -140,7 +140,7 @@ static const GtkActionEntry toolbox_entries[] =
 //    { "FileSheets", NULL, N_("Sheets and Objects..."), "F9", NULL, NULL },
 //    { "FilePrefs", GTK_STOCK_PREFERENCES, NULL, NULL, NULL, G_CALLBACK (file_preferences_callback) },
 //    { "FilePlugins", NULL, N_("Plugins..."),NULL, NULL, G_CALLBACK (file_plugins_callback) }
-    {"TemplateManager",NULL,N_("Template Manager"),NULL,NULL,G_CALLBACK(factory_template_manager_callback)}
+//    {"TemplateManager",NULL,N_("Template Manager"),NULL,NULL,G_CALLBACK(factory_template_manager_callback)}
 };
 
 
@@ -984,23 +984,23 @@ create_integrated_ui_toolbar (void)
 
     gtk_widget_show (GTK_WIDGET (sep));
 
-    sep = gtk_separator_tool_item_new ();
-    gtk_toolbar_insert (toolbar, sep, -1);
+//    sep = gtk_separator_tool_item_new ();
+//    gtk_toolbar_insert (toolbar, sep, -1);
 
-    dbtn = gtk_button_new_with_label(factory_utf8("Ä£°æ±à¼­"));
-    integrated_ui_toolbar_add_custom_item(toolbar,dbtn);
-    g_signal_connect(dbtn,"clicked",G_CALLBACK(factory_callback_template_edit),NULL);
-
-    gtk_widget_show (GTK_WIDGET (sep));
-
-       sep = gtk_separator_tool_item_new ();
-    gtk_toolbar_insert (toolbar, sep, -1);
-
-    dbtn = gtk_button_new_with_label(factory_utf8("Ä£°æ¼ÓÔØ"));
-    integrated_ui_toolbar_add_custom_item(toolbar,dbtn);
-    g_signal_connect(dbtn,"clicked",G_CALLBACK(factory_callback_template_load),NULL);
-
-    gtk_widget_show (GTK_WIDGET (sep));
+//    dbtn = gtk_button_new_with_label(factory_utf8("Ä£°æ±à¼­"));
+//    integrated_ui_toolbar_add_custom_item(toolbar,dbtn);
+//    g_signal_connect(dbtn,"clicked",G_CALLBACK(factory_callback_template_edit),NULL);
+//
+//    gtk_widget_show (GTK_WIDGET (sep));
+//
+//       sep = gtk_separator_tool_item_new ();
+//    gtk_toolbar_insert (toolbar, sep, -1);
+//
+//    dbtn = gtk_button_new_with_label(factory_utf8("Ä£°æ¼ÓÔØ"));
+//    integrated_ui_toolbar_add_custom_item(toolbar,dbtn);
+//    g_signal_connect(dbtn,"clicked",G_CALLBACK(factory_callback_template_load),NULL);
+//
+//    gtk_widget_show (GTK_WIDGET (sep));
 
     return GTK_WIDGET (toolbar);
 }

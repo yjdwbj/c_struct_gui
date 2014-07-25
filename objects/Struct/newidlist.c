@@ -348,7 +348,7 @@ static gboolean factory_sublist_saveitem_foreach(GtkTreeModel *model,
     subTable *stable = (subTable*)data;
     gchar *txt;
     gtk_tree_model_get(model,iter,COLUMN_ITEM_IDNAME,&txt,-1);
-    stable->table_list = g_list_append(stable->table_list,
+    stable->sub_list = g_list_append(stable->sub_list,
                                        (gpointer)g_quark_from_string(txt));
     g_free(txt);
     return FALSE;
@@ -430,9 +430,9 @@ static void factory_sublist_dialog_response(GtkWidget *widget,
                     }
 
                     /* 改链表的数据 */
-                    g_list_free(curtable->table_list);
-                    curtable->table_list = g_list_copy(stable->table_list);
-                    g_list_free(stable->table_list);
+                    g_list_free(curtable->sub_list);
+                    curtable->sub_list = g_list_copy(stable->sub_list);
+                    g_list_free(stable->sub_list);
                     g_free(stable);
                 }
             }
@@ -475,7 +475,7 @@ void factory_sublist_setback_values(GtkWidget *subdlg,
     GtkTreeModel *submodel = gtk_tree_view_get_model(subtreeview);
 
 
-    GList *p = stable->table_list;
+    GList *p = stable->sub_list;
     for(; p ; p = p->next)
     {
         gchar *txt =  g_quark_to_string(p->data);
@@ -593,7 +593,7 @@ static GtkWidget* factory_sublist_create_dialog(GtkMenuItem *item,
     subTable *stable = g_object_get_data(G_OBJECT(item),"defstable");
     if(stable)
     {
-        GList *p = stable->table_list;
+        GList *p = stable->sub_list;
         for(; p; p=p->next)
         {
             gchar *txt =  g_quark_to_string(p->data);
@@ -659,7 +659,7 @@ static GtkWidget* factory_sublist_edit_dialog(GtkMenuItem *item,
         int pos = gtk_tree_path_get_indices(path)[0]; /* 用下标法找到这一项编辑 */
         subTable *stable = g_list_nth_data(sid->idlists,pos);
         gtk_tree_path_free (path);
-        g_object_set_data(G_OBJECT(item),"defstable",stable->table_list);
+        g_object_set_data(G_OBJECT(item),"defstable",stable->sub_list);
         factory_sublist_create_dialog(item,ptreeview);
 //        factory_sublist_setback_values(subdlg,stable,
 //                                       factory_sublist_hash_lookup,
@@ -694,7 +694,7 @@ static GtkWidget* factory_sublist_delete_dialog(GtkMenuItem *item,
         int pos = gtk_tree_path_get_indices(path)[0]; /* 用下标法找到这一项编辑 */
         subTable *stable = g_list_nth_data(sid->idlists,pos);
         sid->idlists = g_list_remove(sid->idlists,stable);
-        g_list_free1(stable->table_list);
+        g_list_free1(stable->sub_list);
         g_free(stable);
         gtk_tree_path_free (path);
         gtk_list_store_remove(idmodel,&iter);
@@ -901,8 +901,8 @@ void factory_idlist_read_xml(ObjectNode obj_node)
                  int n = 0;
                  for( ;n < len; n++,cglist = cglist->next)
                  {
-                     stable->table_list =
-                     g_list_append(stable->table_list,
+                     stable->sub_list =
+                     g_list_append(stable->sub_list,
                                    g_quark_from_string(cglist->data));
                  }
                  xmlFree(key);
@@ -966,9 +966,9 @@ void factory_idlist_save_to_xml(ObjectNode obj_node,GList *savelist)
         xmlSetProp(idnode, (const xmlChar *)"name",
                    (xmlChar *)g_quark_to_string(stable->nquark));
         xmlSetProp(idnode, (const xmlChar *)"rows",
-                   (xmlChar *)g_strdup_printf("%d",g_list_length(stable->table_list)));
+                   (xmlChar *)g_strdup_printf("%d",g_list_length(stable->sub_list)));
 
-        glist = g_list_concat(glist,stable->table_list);
+        glist = g_list_concat(glist,stable->sub_list);
     }
 
     ccc = xmlNewChild(obj_node, NULL,
@@ -997,7 +997,7 @@ void factory_idlist_item_save_to_xml(SaveStruct *sss,ObjectNode obj_node)
             for(; looplist ; looplist = looplist->next)
             {
                 subTable *stable = looplist->data;
-                int len = g_list_length(stable->table_list);
+                int len = g_list_length(stable->sub_list);
                 g_array_append_val(garray,sum);
                 sum += len;
             }

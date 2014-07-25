@@ -716,21 +716,47 @@ _setup_textdomains (void)
     textdomain(GETTEXT_PACKAGE);
 }
 
+static gboolean
+this_is_a_log_file(const gchar *name)
+{
+     return g_str_has_suffix(name, ".log");
+}
 
-
+static void factory_delete_two_days_ago_log(gchar *filename)
+{
+    gint years,months,days,hours,minutes,seconds;
+    gchar *fname = g_strdup(filename);
+    gchar *sep = strrchr(fname,G_DIR_SEPARATOR);
+    if(sep[0]== G_DIR_SEPARATOR)
+        sep++;
+    if(strlen(sep) < 23 ) /* 2014-01-01-08-00-00.log  */
+        return;
+    gchar *tsep = strrchr(sep,'.');
+    if(tsep)
+        tsep[0] ='\0';
+    sscanf(sep,"%4d-%2d-%2d-%2d-%2d-%2d"
+           ,&years,&months,&days,&hours,&minutes,&seconds);
+     gchar *iso8601fmt = g_strdup_printf("%04d-%02d-%02dT%02d:%02d:%02d",
+                                  years,months,days,hours,minutes,seconds);
+    /* 这里参考iso 8601 文档 */
+    GTimeVal oldtv,curtv ;
+    g_get_current_time(&curtv);
+    g_time_val_from_iso8601(iso8601fmt,&oldtv);
+    glong subret = curtv.tv_sec - oldtv.tv_sec;
+    if(subret >= 86400)
+    {
+            g_remove(filename);
+    }
+}
 
 static gchar* factory_get_format_date_and_time()
 {
-    GDate *cdate =  g_date_new();
-    g_date_set_time(cdate,time(NULL));
-    GDateTime *gdt =  g_date_time_new_now_utc();
-    gchar *datatime = NULL;
-    datatime = g_strconcat(g_strdup_printf("%d-",cdate->year),g_strdup_printf("%d-",cdate->month),
-                                           g_strdup_printf("%d-",cdate->day),
-                                           g_strdup_printf("%d-",g_date_time_get_hour(gdt)+8), /* 加8是中国GMT+8区*/
-                                           g_strdup_printf("%d-",g_date_time_get_minute(gdt)),
-                                           g_strdup_printf("%d",g_date_time_get_second(gdt)),NULL );
-    return datatime;
+    GTimeZone *chtzone = g_time_zone_new("+08:00"); /* 中国在GMT+08:00 */
+    GDateTime *curdtime = g_date_time_new_now(chtzone);
+    gchar *outformat = g_date_time_format(curdtime,"%F-%H-%M-%S");
+    g_time_zone_unref(chtzone);
+    g_date_time_unref(curdtime);
+    return outformat;
 }
 void  app_init (int argc, char **argv)
 {
@@ -926,10 +952,9 @@ void  app_init (int argc, char **argv)
     gchar *lfile = g_strdup_printf(LOGNAME,factory_get_format_date_and_time());
     gchar *logfpath = g_build_filename(dia_get_lib_directory("log"), lfile, NULL);
     logfd = NULL;
-#ifdef DEBUG
-
+    for_each_in_dir(dia_get_lib_directory("log"),
+                    factory_delete_two_days_ago_log,this_is_a_log_file);
     logfd = fopen(logfpath,"w"); /*打开日志句柄*/
-
     /* Now write the data in the temporary file name. */
 
     if (logfd==NULL)
@@ -938,7 +963,7 @@ void  app_init (int argc, char **argv)
                       dia_message_filename(logfpath), strerror(errno));
         return;
     }
-#endif
+
     /* 检查一下依赖程序是否存在 */
     gchar *isdownload_gui = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "isdownload_gui.exe",NULL);
     gchar *isdownload = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "isd_download.exe",NULL);

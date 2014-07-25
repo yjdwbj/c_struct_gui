@@ -3076,6 +3076,8 @@ static void factory_connection_by_value(ActionID *aid,SaveStruct *sst)
 
 static void factory_find_ocombo_in_lists(SaveStruct *sst)
 {
+       if(factory_is_special_object(sst->type))
+        return;
       if(!sst->org->isSensitive)
            return;
     switch(sst->celltype)
@@ -3159,7 +3161,10 @@ static void factory_handle_single_ocombo(ActionID *aid ,GTree *tree)
     else if(method == 1)
     {
         /*名字为空,指针为真,表明这个对像更名,遍历树更新名字*/
-        g_tree_foreach(tree,factory_tree_foreach_find,aid);
+//        g_tree_foreach(tree,factory_tree_foreach_find,aid);
+        STRUCTClass *pclass =  aid->conn_ptr;
+        if(pclass)
+        aid->pre_quark = g_quark_from_string(pclass->name);
     }
 
 }
@@ -3168,6 +3173,8 @@ static void factory_handle_single_ocombo(ActionID *aid ,GTree *tree)
 static void factory_find_item_in_tree(SaveStruct *sst,
                                       GTree *tree)
 {
+    if(factory_is_special_object(sst->type))
+        return;
      if(!sst->org->isSensitive)
             return;
     switch(sst->celltype)
@@ -3232,12 +3239,12 @@ void factory_rename_new_obj(STRUCTClass *fclass,
         SaveStruct *sst = savelist->data;
 
         factory_find_item_in_tree(sst,tree);
-        last_sst = sst;
+
     }
-    gchar *msg = g_strdup_printf(factory_utf8("obj_name:%s\n,savestruct: %s"),
-                                              fclass->name,last_sst->name);
-     factory_debug_to_log(msg);
-     g_free(msg);
+//    gchar *msg = g_strdup_printf(factory_utf8("obj_name:%s\n,savestruct: %s"),
+//                                              fclass->name,last_sst->name);
+//     factory_debug_to_log(msg);
+//     g_free(msg);
 }
 
 
@@ -3248,8 +3255,9 @@ void factory_reconnection_new_obj(STRUCTClass *fclass)
     for(; savelist; savelist = savelist->next)
     {
         SaveStruct *sst = savelist->data;
-
         factory_find_ocombo_in_lists(sst);
+//        factory_debug_to_log(g_strdup_printf("SaveStruct name:%s\n",
+//                                             sst->name));
     }
 }
 
@@ -3804,10 +3812,11 @@ GtkWidget *factory_create_combo_widget(GList *datalist,gint activeid)
     {
         gtk_combo_box_append_text(GTK_COMBO_BOX(widget),pp->data);
     }
-//    gtk_combo_box_set_wrap_width(GTK_COMBO_BOX(widget),1);
-//    gtk_combo_box_popdown (GTK_COMBO_BOX(widget));
+    gtk_combo_box_set_wrap_width(GTK_COMBO_BOX(widget),1);
+    gtk_combo_box_popdown (GTK_COMBO_BOX(widget));
     gtk_combo_box_set_active(GTK_COMBO_BOX(widget),activeid);
-
+    g_object_set(G_OBJECT(widget),"has-frame",TRUE,
+                                  "row-span-column",TRUE,NULL);
 //    gtk_container_add(GTK_CONTAINER(wid_idlist),widget);
     return  widget;
 }
@@ -5262,6 +5271,41 @@ void factory_systeminfo_apply_dialog(GtkWidget *widget,
     gtk_widget_hide(widget);
 }
 
+GtkWidget* factory_copy_dialog()
+{
+     GtkWidget *cpdialog = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+//    gtk_window_set_role (GTK_WINDOW (cpdialog), "edit_layer_attrributes");
+    gtk_window_set_title (GTK_WINDOW (cpdialog),
+                          factory_utf8("文件复制中......."));
+    gtk_widget_ref (cpdialog);
+    gtk_window_set_default_size(GTK_WINDOW(cpdialog), 400, 500);
+    gtk_window_set_position (GTK_WINDOW (cpdialog), GTK_WIN_POS_CENTER);
+    gtk_window_set_modal(GTK_WINDOW(cpdialog),TRUE);
+    /*  handle the wm close signal */
+    g_signal_connect (GTK_OBJECT (cpdialog), "delete_event",
+                      G_CALLBACK (gtk_widget_hide),NULL);
+    g_signal_connect (GTK_OBJECT (cpdialog), "destroy",
+                      G_CALLBACK (gtk_widget_destroy),
+                      &cpdialog);
+
+    /*  the main vbox  */
+    GtkWidget *vbox = gtk_vbox_new (FALSE, 1);
+    gtk_container_set_border_width (GTK_CONTAINER (vbox), 2);
+    gtk_box_pack_start (GTK_BOX (GTK_DIALOG (vbox)->vbox),
+                        vbox, TRUE, TRUE, 0);
+    GtkWidget *countlab = gtk_label_new("");
+    GtkWidget *srclab = gtk_label_new("");
+    GtkWidget *dstlab = gtk_label_new("");
+    gtk_box_pack_start(GTK_BOX(vbox),countlab,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(vbox),srclab,TRUE,TRUE,0);
+    gtk_box_pack_start(GTK_BOX(vbox),dstlab,TRUE,TRUE,0);
+    g_object_set_data(G_OBJECT(cpdialog),"countlab",countlab);
+    g_object_set_data(G_OBJECT(cpdialog),"srclab",srclab);
+    g_object_set_data(G_OBJECT(cpdialog),"dstlab",dstlab);
+
+    gtk_widget_show_all(cpdialog);
+    return cpdialog;
+}
 
 GList* factory_get_download_name_list(const gchar *path)
 {
@@ -5270,19 +5314,36 @@ GList* factory_get_download_name_list(const gchar *path)
     g_return_val_if_fail(curLayer != NULL,NULL);
     g_return_val_if_fail(curLayer->smd != NULL,NULL);
     SaveMusicDialog *smd = curLayer->smd;
-//    SaveMusicFileMan *smfm = smd->smfm;
-//    g_return_val_if_fail(smfm != NULL,NULL);
-//    GList *tlist = smfm->filelist;
-//    for(; tlist; tlist = tlist->next)
-//    {
-//        SaveMusicFile *smf = tlist->data;
-//        gchar *npc = g_strconcat(path,smf->down_name,NULL);
-//        GFile *src = g_file_new_for_path(smf->full_name);
-//        GFile *dst = g_file_new_for_path(npc);
-//        g_file_copy(src,dst,G_FILE_COPY_OVERWRITE,NULL,NULL,NULL,NULL);
-//        g_free(npc);
-//        list = g_list_append(list,smf->down_name);
-//    }
+    GList *smflist = smd->mflist;
+//    GtkWidget *cpdialog = factory_copy_dialog();
+//     GtkWidget *countlab = g_object_get_data(G_OBJECT(cpdialog),"countlab");
+//    GtkWidget *srclab = g_object_get_data(G_OBJECT(cpdialog),"srclab");
+//    GtkWidget *dstlab =g_object_get_data(G_OBJECT(cpdialog),"dstlab");
+    int ct = g_list_length(smflist);
+    for(;smflist;smflist = smflist->next)
+    {
+        SaveMusicFile *smf  = smflist->data;
+        gchar *srcstr = g_quark_to_string(smf->full_quark);
+        gchar *npc = g_strconcat(path,smf->down_name,NULL);
+//        gtk_label_set_text(countlab,
+//                           g_strdup_printf("%d - %d",g_list_index(smd->mflist,smf),ct));
+//        gtk_label_set_text(srclab,
+//                           g_strdup_printf("src: %s",srcstr));
+//         gtk_label_set_text(dstlab,
+//                           g_strdup_printf("dst: %s",npc));
+//        GDK_THREADS_ENTER();
+//        gtk_widget_queue_draw(cpdialog);
+//        gdk_window_process_all_updates();
+//        GDK_THREADS_LEAVE();
+        GFile *src = g_file_new_for_path(srcstr);
+        GFile *dst = g_file_new_for_path(npc);
+        g_file_copy(src,dst,G_FILE_COPY_OVERWRITE,NULL,NULL,NULL,NULL);
+        g_free(npc);
+        list = g_list_append(list,smf->down_name);
+    }
+//    gtk_widget_destroy(cpdialog);
+//    gtk_widget_queue_draw(cpdialog);
+//    gdk_window_process_all_updates();
     return  list ;
 }
 

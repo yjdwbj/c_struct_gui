@@ -452,21 +452,20 @@ edit_paste_callback (GtkAction *action)
         DiaObject *obj = plist->data;
         obj->ops->rename_new_obj(obj,newtree,1);
     }
-    plist = g_list_copy(paste_list);
+    GList *selist = NULL; /* 这个paste_list 内存经过reconnection_new_obj,就被写坏了,复制一份它 */
+    plist = selist = g_list_copy(paste_list);
    int cc = 0;
    for(;plist;plist = plist->next,cc++)
     {
         DiaObject *obj = plist->data;
-        obj->ops->reconnection_new_obj(obj); /* 要仔细调试 */
-
+        obj->ops->reconnection_new_obj(obj);
+        /* 要仔细调试,这里发现创建一条线时把,paste_list 内存破坏了. */
     }
 
-    n = g_list_length(paste_list);
     diagram_update_extents(ddisp->diagram);
     diagram_flush(ddisp->diagram);
-    n = g_list_length(paste_list);
-    factory_debug_to_log(g_strdup_printf("paste select_list  count:%d",n));
-    diagram_select_list(ddisp->diagram, paste_list);
+//    factory_debug_to_log(g_strdup_printf("paste select_list  count:%d",n));
+    diagram_select_list(ddisp->diagram, selist);
     g_tree_destroy(btree);
     g_tree_destroy(newtree);
   }

@@ -97,7 +97,8 @@ typedef void (*ForEachInDirDoFunc)(const gchar *name);
 typedef gboolean (*ForEachInDirFilterFunc)(const gchar *name);
 
 gboolean this_is_a_struct(const gchar *name);
-void for_each_in_dir(const gchar *directory, ForEachInDirDoFunc dofunc,
+
+DIAVAR void for_each_in_dir(const gchar *directory, ForEachInDirDoFunc dofunc,
                 ForEachInDirFilterFunc filter);
 
 

@@ -14,7 +14,7 @@
 	"widgets.h"
 	"intl.h"
 
-1406009678 o:\tool\dvs50\config.h
+1406268992 o:\tool\dvs50\config.h
 
 1394617928 o:\tool\dvs50\lib\message.h
 	<stdarg.h>
@@ -868,7 +868,7 @@
 	<gtk/gtk.h>
 	<libxml/tree.h>
 
-1402386593 source:o:\tool\dvs50\lib\plug-ins.c
+1406254972 source:o:\tool\dvs50\lib\plug-ins.c
 	<config.h>
 	<stdlib.h>
 	<string.h>
@@ -889,7 +889,7 @@
 	"object.h"
 	<pango/pangowin32.h>
 
-1404293647 o:\tool\dvs50\lib\plug-ins.h
+1406255000 o:\tool\dvs50\lib\plug-ins.h
 	<glib.h>
 	<gmodule.h>
 	"diatypes.h"
@@ -1139,7 +1139,7 @@
 	<time.h>
 	<gdk/gdkkeysyms.h>
 
-1406184115 source:o:\tool\dvs50\app\app_procs.c
+1406270939 source:o:\tool\dvs50\app\app_procs.c
 	<config.h>
 	<stdio.h>
 	<stdlib.h>
@@ -1324,7 +1324,7 @@
 	"attributes.h"
 	"persistence.h"
 
-1406199703 source:o:\tool\dvs50\app\commands.c
+1406251199 source:o:\tool\dvs50\app\commands.c
 	<config.h>
 	<unistd.h>
 	<stdlib.h>
@@ -1770,7 +1770,7 @@
 	"object_ops.h"
 	"group.h"
 
-1404894141 source:o:\tool\dvs50\app\interface.c
+1406271392 source:o:\tool\dvs50\app\interface.c
 	<config.h>
 	<gnome.h>
 	<gtk/gtk.h>
@@ -1837,7 +1837,7 @@
 	"intl.h"
 	<math.h>
 
-1406100120 source:o:\tool\dvs50\app\load_save.c
+1406288499 source:o:\tool\dvs50\app\load_save.c
 	<config.h>
 	<sys/stat.h>
 	<unistd.h>
@@ -1873,7 +1873,7 @@
 	"magnify.h"
 	"cursor.h"
 
-1404472744 source:o:\tool\dvs50\app\menus.c
+1406271545 source:o:\tool\dvs50\app\menus.c
 	<config.h>
 	<gtk/gtk.h>
 	<gdk/gdkkeysyms.h>
@@ -2386,7 +2386,7 @@
 	"connectionpoint.h"
 	"dia_xml.h"
 
-1406198349 o:\tool\dvs50\objects\struct\struct_class.h
+1406280155 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2395,7 +2395,7 @@
 	"struct.h"
 	"display.h"
 
-1406103685 source:o:\tool\dvs50\objects\struct\musicfilemanager.c
+1406287589 source:o:\tool\dvs50\objects\struct\musicfilemanager.c
 	"musicfilemanager.h"
 
 1405503365 o:\tool\dvs50\objects\struct\musicfilemanager.h
@@ -2412,7 +2412,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1406191603 source:o:\tool\dvs50\objects\struct\struct_class.c
+1406278370 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2431,7 +2431,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1406199747 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1406292372 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2631,7 +2631,7 @@
 	"app_procs.h"
 	"interface.h"
 
-1406166007 source:o:\tool\dvs50\objects\struct\newidlist.c
+1406280381 source:o:\tool\dvs50\objects\struct\newidlist.c
 	"struct_class.h"
 	"object.h"
 

@@ -149,7 +149,7 @@
 /* Version number of package */
 #define VERSION "0.98.13"
 
-#define LOGNAME "log-%s.log"
+#define LOGNAME "%s.log"
 
 //#define libintl_printf printf
 /* Define to empty if `const' does not conform to ANSI C. */

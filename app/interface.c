@@ -1940,7 +1940,7 @@ create_integrated_ui (void)
 
     create_tools (wrapbox);
     create_sheets (wrapbox);
-    create_template_sheets(wrapbox);
+//    create_template_sheets(wrapbox);
 //  create_color_area (wrapbox);
 //  create_lineprops_area (wrapbox);
 
