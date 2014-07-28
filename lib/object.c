@@ -1242,7 +1242,7 @@ gchar *factory_get_current_timestamp()
 
 void factory_debug_to_log(const gchar *msg_dbg)
 {
-
+#ifdef DEBUG
         gchar *fmsg = g_strconcat(factory_get_current_timestamp(),msg_dbg,NULL);
         if(logfd)
         {
@@ -1250,7 +1250,7 @@ void factory_debug_to_log(const gchar *msg_dbg)
              fflush(logfd);
         }
         g_free(fmsg);
-
+#endif
 }
 
 void factory_waring_to_log(const gchar *msg_war)
@@ -1280,21 +1280,6 @@ factory_critical_error_exit(const gchar *msg_err)
 
     gtk_widget_destroy (msg_dialog);
     factory_critical_error_response(NULL,0,NULL);
-
-
-//    gtk_dialog_set_default_response (GTK_DIALOG(dialog), GTK_RESPONSE_CLOSE);
-//     gtk_window_set_modal(dialog,TRUE);
-//     gtk_widget_set_size_request (dialog,300,500);
-
-//     fwrite(msg_err,strlen(msg_err),1,logfd);
-//     GtkWidget *label = gtk_label_new(msg_err);
-//     GtkWidget *vbox = gtk_vbox_new(FALSE,0);
-//     GtkWidget *dialog_vbox = GTK_DIALOG(dialog)->vbox;
-//     gtk_container_add(GTK_CONTAINER(dialog_vbox),vbox);
-//
-//     gtk_box_pack_start(GTK_BOX(vbox),label,FALSE,FALSE,0);
-//     g_signal_connect(G_OBJECT(dialog), "response",G_CALLBACK(factory_critical_error_response),NULL);
-//     gtk_widget_show(dialog);
 
 }
 
@@ -1423,25 +1408,12 @@ GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent
     gtk_window_set_resizable (GTK_WINDOW(subdig),FALSE);
     gtk_window_set_position (GTK_WINDOW(subdig),GTK_WIN_POS_CENTER_ALWAYS);
 
-//    factory_give_focus(subdig,NULL);
-
-
-//    gtk_window_set_transient_for(GTK_WINDOW(subdig),
-//                                 GTK_WINDOW (parent));
     gtk_window_present(GTK_WINDOW(subdig));
-
-//    gtk_widget_set_parent (GTK_WINDOW(subdig),GTK_WINDOW(parent));
-//    gdk_window_set_accept_focus (GTK_WINDOW(parent),FALSE);
-
-//    gtk_widget_add_events(GTK_WINDOW(subdig), GDK_BUTTON_PRESS_MASK|GDK_FOCUS_CHANGE_MASK);
     GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
 
      g_signal_connect(G_OBJECT(subdig), "delete_event",
                      G_CALLBACK(gtk_widget_hide), NULL);
 
-//    g_signal_connect(GTK_OBJECT(subdig), "delete_event",
-//                     G_CALLBACK(gtk_true), NULL);
-//    g_signal_connect (G_OBJECT (subdig), "delete_event", G_CALLBACK (gtk_window_iconify), NULL);
     g_signal_connect(G_OBJECT (subdig), "destroy",
                      G_CALLBACK(gtk_widget_destroyed), &subdig);
     g_signal_connect(G_OBJECT (subdig), "destroy",

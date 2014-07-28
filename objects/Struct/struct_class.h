@@ -737,10 +737,14 @@ typedef struct{
 
 typedef struct
 {
-    GQuark nquark;
+    GQuark nquark; /* ×Ó±íÃû*/
     GList *sub_list;
 } subTable;
 
+enum{
+    IS_STRING,
+    IS_QUARK
+};
 
 enum
 {   /* sublist */
@@ -790,5 +794,8 @@ gboolean factory_comobox_compre_foreach(GtkTreeModel *model,
 
 GtkTreeModel *factory_create_combox_model(GList *itemlist);
 
-void factory_create_idlist_dialog(GtkWidget *button,SaveStruct *sst);
+void factory_idlist_create_dialog(GtkWidget *button,SaveStruct *sst);
+void factory_accelerator_to_response(gpointer user_data,gpointer otherdata);
+
+gchar* factory_concat_list_to_string(GList *duplist,gint storetype);
 #endif /* CLASS_H */

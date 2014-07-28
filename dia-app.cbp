@@ -1631,10 +1631,6 @@
 			<Option compilerVar="CC" />
 			<Option target="listview" />
 		</Unit>
-		<Unit filename="objects/Struct/idlist.c">
-			<Option compilerVar="CC" />
-			<Option target="Struct" />
-		</Unit>
 		<Unit filename="objects/Struct/idlist.h">
 			<Option target="Struct" />
 		</Unit>

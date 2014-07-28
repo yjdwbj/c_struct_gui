@@ -14,7 +14,7 @@
 	"widgets.h"
 	"intl.h"
 
-1406268992 o:\tool\dvs50\config.h
+1406528171 o:\tool\dvs50\config.h
 
 1394617928 o:\tool\dvs50\lib\message.h
 	<stdarg.h>
@@ -768,7 +768,7 @@
 	<config.h>
 	"object.h"
 
-1406185781 source:o:\tool\dvs50\lib\object.c
+1406528261 source:o:\tool\dvs50\lib\object.c
 	<config.h>
 	<stdio.h>
 	<string.h>
@@ -2365,7 +2365,7 @@
 	"autoroute.h"
 	"tool-icons.h"
 
-1405936364 source:o:\tool\dvs50\app\main.c
+1406519342 source:o:\tool\dvs50\app\main.c
 	<config.h>
 	"app_procs.h"
 	"interface.h"
@@ -2375,7 +2375,7 @@
 1405414026 source:o:\tool\dvs50\objects\struct\idlist.c
 	"idlist.h"
 
-1403079467 o:\tool\dvs50\objects\struct\idlist.h
+1406536331 o:\tool\dvs50\objects\struct\idlist.h
 	"struct.h"
 	"object.h"
 	"struct_class.h"
@@ -2386,7 +2386,7 @@
 	"connectionpoint.h"
 	"dia_xml.h"
 
-1406280155 o:\tool\dvs50\objects\struct\struct_class.h
+1406538440 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"element.h"
 	"connectionpoint.h"
@@ -2395,7 +2395,7 @@
 	"struct.h"
 	"display.h"
 
-1406287589 source:o:\tool\dvs50\objects\struct\musicfilemanager.c
+1406550760 source:o:\tool\dvs50\objects\struct\musicfilemanager.c
 	"musicfilemanager.h"
 
 1405503365 o:\tool\dvs50\objects\struct\musicfilemanager.h
@@ -2412,7 +2412,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1406278370 source:o:\tool\dvs50\objects\struct\struct_class.c
+1406540828 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2431,7 +2431,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1406292372 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1406529910 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2631,7 +2631,7 @@
 	"app_procs.h"
 	"interface.h"
 
-1406280381 source:o:\tool\dvs50\objects\struct\newidlist.c
+1406539929 source:o:\tool\dvs50\objects\struct\newidlist.c
 	"struct_class.h"
 	"object.h"
 

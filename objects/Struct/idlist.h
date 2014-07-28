@@ -6,13 +6,13 @@
 
 
 
-typedef struct _IDListStore IDListStore;
-struct _IDListStore
-{
-    gint sequence;
-    gint id_addr;
-    gchar *id_text;
-};
+//typedef struct _IDListStore IDListStore;
+//struct _IDListStore
+//{
+//    gint sequence;
+//    gint id_addr;
+//    gchar *id_text;
+//};
 
 
 

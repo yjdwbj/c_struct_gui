@@ -32,9 +32,8 @@ int main(int argc, char *argv[])
   toolbox_show();
 
   app_splash_done();
-  gdk_threads_enter();
   gtk_main ();
-  gdk_threads_leave();
+
   return 0;
 }
 

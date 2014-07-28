@@ -3183,13 +3183,9 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
 
             sid =(SaveIdDialog*)(curLayer->sid);
 
-//            SaveKV *skv = g_new0(SaveKV,1); /* 这里用radio 就要用这个结构,现在改成MVC就不需要了*/
-//            sid->skv = skv;
-//            skv->value = g_strdup(fst->Value);
-//            skv->radindex = -1;
             sss->value.vnumber = g_strdup(fst->Value);
 //            sss->newdlg_func = factory_new_idlist_dialog;
-            sss->newdlg_func = factory_create_idlist_dialog;
+            sss->newdlg_func = factory_idlist_create_dialog;
 //            sss->close_func = factory_save_idlist_dialog;
         }
         else
@@ -4464,4 +4460,9 @@ gboolean factory_comobox_compre_foreach(GtkTreeModel *model,
     }
 
     return FALSE;
+}
+
+void factory_accelerator_to_response(gpointer user_data,gpointer otherdata)
+{
+    gtk_dialog_response(GTK_DIALOG(user_data),GTK_RESPONSE_OK);
 }

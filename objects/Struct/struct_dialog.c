@@ -3058,35 +3058,40 @@ static void factory_connection_by_value(ActionID *aid,SaveStruct *sst)
     STRUCTClass *startclass = sst->sclass;
 //    ActionID *aid = &sst->value.actid;
     STRUCTClass *opsclass = aid->conn_ptr;
-//    if(!opsclass)
-//    {
-//        opsclass = g_hash_table_lookup(curLayer->defnames,
-//                                       g_quark_to_string(aid->pre_quark));
-//    }
-//
-//    if(opsclass)
-//    {
-//        aid->pre_quark = g_quark_from_string(opsclass->name);
-//        aid->conn_ptr = opsclass;
-//    }
-
+    if(!aid->conn_ptr && aid->pre_quark != empty_quark)
+    {
+        gpointer exist = g_hash_table_lookup(curLayer->defnames,
+                                             g_quark_to_string(aid->pre_quark));
+        if(exist)
+        {
+            aid->conn_ptr = exist;
+        }
+    }
     factory_connection_two_object(startclass,aid->conn_ptr);
 }
 
 
 static void factory_find_ocombo_in_lists(SaveStruct *sst)
 {
-       if(factory_is_special_object(sst->type))
+    if(factory_is_special_object(sst->type))
         return;
-      if(!sst->org->isSensitive)
-           return;
+    if(!sst->org->isSensitive)
+        return;
     switch(sst->celltype)
     {
     case OCOMBO:
     {
         ActionID *aid = &sst->value.actid;
-        if(aid->conn_ptr || aid->pre_quark != empty_quark)
-            factory_connection_by_value(aid,sst);
+        if(!aid)
+        {
+            STRUCTClass *aclass = sst->sclass;
+            gchar *msg = g_strdup_printf(factory_utf8("下一个行为指针为空!对像名:%s,\t成员名称:%s\n"),
+                                         aclass->name, sst->name);
+            factory_waring_to_log(msg);
+            g_free(msg);
+            return;
+        }
+        factory_connection_by_value(aid,sst);
     }
     break;
     case OBTN:
@@ -3150,6 +3155,7 @@ static void factory_handle_single_ocombo(ActionID *aid ,GTree *tree)
 
     if(method == 0)
     {
+        /* 通过名字找指针 */
         STRUCTClass *exist = g_tree_lookup(tree,
                                            g_quark_to_string(aid->pre_quark));
         if(exist)
@@ -3164,7 +3170,7 @@ static void factory_handle_single_ocombo(ActionID *aid ,GTree *tree)
 //        g_tree_foreach(tree,factory_tree_foreach_find,aid);
         STRUCTClass *pclass =  aid->conn_ptr;
         if(pclass)
-        aid->pre_quark = g_quark_from_string(pclass->name);
+            aid->pre_quark = g_quark_from_string(pclass->name);
     }
 
 }
@@ -3175,8 +3181,8 @@ static void factory_find_item_in_tree(SaveStruct *sst,
 {
     if(factory_is_special_object(sst->type))
         return;
-     if(!sst->org->isSensitive)
-            return;
+    if(!sst->org->isSensitive)
+        return;
     switch(sst->celltype)
     {
     case OCOMBO:
@@ -3237,14 +3243,8 @@ void factory_rename_new_obj(STRUCTClass *fclass,
     for(; savelist; savelist = savelist->next)
     {
         SaveStruct *sst = savelist->data;
-
         factory_find_item_in_tree(sst,tree);
-
     }
-//    gchar *msg = g_strdup_printf(factory_utf8("obj_name:%s\n,savestruct: %s"),
-//                                              fclass->name,last_sst->name);
-//     factory_debug_to_log(msg);
-//     g_free(msg);
 }
 
 
@@ -3816,7 +3816,7 @@ GtkWidget *factory_create_combo_widget(GList *datalist,gint activeid)
     gtk_combo_box_popdown (GTK_COMBO_BOX(widget));
     gtk_combo_box_set_active(GTK_COMBO_BOX(widget),activeid);
     g_object_set(G_OBJECT(widget),"has-frame",TRUE,
-                                  "row-span-column",TRUE,NULL);
+                 "row-span-column",TRUE,NULL);
 //    gtk_container_add(GTK_CONTAINER(wid_idlist),widget);
     return  widget;
 }
@@ -5273,7 +5273,7 @@ void factory_systeminfo_apply_dialog(GtkWidget *widget,
 
 GtkWidget* factory_copy_dialog()
 {
-     GtkWidget *cpdialog = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+    GtkWidget *cpdialog = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 //    gtk_window_set_role (GTK_WINDOW (cpdialog), "edit_layer_attrributes");
     gtk_window_set_title (GTK_WINDOW (cpdialog),
                           factory_utf8("文件复制中......."));
@@ -5320,7 +5320,7 @@ GList* factory_get_download_name_list(const gchar *path)
 //    GtkWidget *srclab = g_object_get_data(G_OBJECT(cpdialog),"srclab");
 //    GtkWidget *dstlab =g_object_get_data(G_OBJECT(cpdialog),"dstlab");
     int ct = g_list_length(smflist);
-    for(;smflist;smflist = smflist->next)
+    for(; smflist; smflist = smflist->next)
     {
         SaveMusicFile *smf  = smflist->data;
         gchar *srcstr = g_quark_to_string(smf->full_quark);

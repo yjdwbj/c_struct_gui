@@ -79,8 +79,8 @@ static void factory_add_idlist_columns (GtkTreeView *treeview,GtkTreeModel *cbmo
 }
 
 
-
-static void factory_append_item_to_idlist_model(GtkListStore *store,IDListStore *idsave)
+static void factory_append_item_to_idlist_model(GtkListStore *store,
+                                                IDListStore *idsave)
 {
 
     GtkTreeIter iter;
@@ -126,10 +126,10 @@ static void factory_add_item_to_idlist_model(GtkWidget *btn, gpointer user_data)
 {
     SaveIdDialog *sid = (SaveIdDialog *)user_data;
     gint len = GTK_LIST_STORE(sid->id_store)->length ;
-    IDListStore *idsave = g_new0(IDListStore,1);
-    idsave->sequence = len;
-    idsave->id_addr = len*2;
-    idsave->id_text = g_strdup("");
+//    IDListStore *idsave = g_new0(IDListStore,1);
+//    idsave->sequence = len;
+//    idsave->id_addr = len*2;
+//    idsave->id_text = g_strdup("");
 
     factory_append_item_to_idlist_model(sid->id_store,idsave);
     sid->idlists = g_list_append(sid->idlists,idsave);

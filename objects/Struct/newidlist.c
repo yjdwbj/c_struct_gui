@@ -309,9 +309,10 @@ static void factory_add_sublist_columns (GtkTreeView *treeview,GtkTreeModel *cbm
              renderer,
              "text",
              COLUMN_ITEM_SEQUENCE,
+            "fixed-width",
+             5,
              NULL);
-//    gtk_tree_view_column_set_sort_column_id (column, COLUMN_ITEM_SEQUENCE);
-    gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+
     gtk_tree_view_append_column (treeview, column);
 
     /* column for severities */
@@ -320,9 +321,10 @@ static void factory_add_sublist_columns (GtkTreeView *treeview,GtkTreeModel *cbm
              renderer,
              "text",
              COLUMN_ITEM_ADDR,
+            "fixed-width",
+             5,
              NULL);
-//    gtk_tree_view_column_set_sort_column_id (column, COLUMN_ITEM_ADDR);
-    gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+
     gtk_tree_view_append_column (treeview, column);
 
     /* Combo */
@@ -370,7 +372,7 @@ static void factory_sublist_dialog_response(GtkWidget *widget,
             return;
         }
 
-        GtkTreeView *idtreeview = (GtkTreeView*)user_data;
+        GtkTreeView *idtreeview = g_object_get_data(G_OBJECT(widget),"idtreeview");
         GtkWidget *entry = g_object_get_data(widget,"table_name");
 
         if(entry)
@@ -546,12 +548,15 @@ gchar *factory_get_subtable_name(GList *glist,gint n)
     return txt;
 }
 
+
+
 static GtkWidget* factory_sublist_create_dialog(GtkMenuItem *item,
-        GtkTreeView *ptreeview)
+        GtkTreeView *idtreeview)
 {
     GtkWidget *mainBox = gtk_vbox_new(FALSE,0);
     SaveIdDialog *sid = (SaveIdDialog *)curLayer->sid;
-    GtkWidget *parent = g_object_get_data(ptreeview,"ptreeview");
+//    GtkTreeView *idtreeview = g_object_get_data(G_OBJECT(item),"idtreeview");
+    GtkWidget *parent = g_object_get_data(G_OBJECT(idtreeview),"parent_dlg");
     GtkWidget *subdig = factory_create_new_dialog_with_buttons(factory_utf8("ID列表"),
                         parent);
     GtkWidget *dialog_vbox = GTK_DIALOG(subdig)->vbox;
@@ -569,6 +574,7 @@ static GtkWidget* factory_sublist_create_dialog(GtkMenuItem *item,
 
     GtkTreeView *sub_treeview  = gtk_tree_view_new_with_model (sub_model);
     g_object_set_data(G_OBJECT(subdig),"sub_treeview",sub_treeview);
+    g_object_set_data(G_OBJECT(subdig),"idtreeview",idtreeview);
     g_object_set_data(G_OBJECT(wid_idlist),"sub_treeview",sub_treeview);
     /* id_opt 是用来判断添加和插入的 */
     g_object_set_data(G_OBJECT(subdig),"id_opt",item);
@@ -583,7 +589,7 @@ static GtkWidget* factory_sublist_create_dialog(GtkMenuItem *item,
     gtk_container_add (GTK_CONTAINER (wid_idlist),sub_treeview);
 
 
-    GtkTreeModel *idmodel = gtk_tree_view_get_model(ptreeview);
+    GtkTreeModel *idmodel = gtk_tree_view_get_model(idtreeview);
     gint idcount  = gtk_tree_model_iter_n_children(idmodel,NULL);
 
     GtkWidget *namehbox = gtk_hbox_new(FALSE,0);
@@ -594,13 +600,18 @@ static GtkWidget* factory_sublist_create_dialog(GtkMenuItem *item,
     if(stable)
     {
         GList *p = stable->sub_list;
+        GList *emptlist = NULL;
         for(; p; p=p->next)
         {
             gchar *txt =  g_quark_to_string(p->data);
             gpointer exist = g_hash_table_lookup(curLayer->defnames,txt);
             if(!exist)
             {
-                p->data = empty_quark;
+                if(p->data != empty_quark)
+                {
+                    emptlist = g_list_append(emptlist,txt);
+                    p->data = empty_quark;
+                }
                 factory_sublist_append_item_to_model(sub_model,
                                                      g_quark_to_string(empty_quark));
             }
@@ -608,10 +619,25 @@ static GtkWidget* factory_sublist_create_dialog(GtkMenuItem *item,
                 factory_sublist_append_item_to_model(sub_model,txt);
 
         }
+
+
+        if(emptlist)
+        {
+            gchar *msg = g_strdup_printf(factory_utf8("下列对像已经删除,现在清空相应的表项!\n%s"),
+                                      factory_concat_list_to_string(emptlist,IS_STRING));
+            factory_message_dialoag(subdig,msg);
+            g_free(msg);
+            g_list_free(emptlist);
+            emptlist = NULL;
+        }
+
         gtk_entry_set_text(GTK_ENTRY(entry),g_quark_to_string(stable->nquark));
     }
     else
         gtk_entry_set_text(GTK_ENTRY(entry),factory_get_subtable_name(sid->idlists,idcount));
+
+
+
     g_object_set_data(subdig,"table_name",entry);
     gtk_box_pack_start(GTK_BOX(namehbox),label,FALSE,TRUE,0);
     gtk_box_pack_start(GTK_BOX(namehbox),entry,FALSE,TRUE,0);
@@ -631,9 +657,20 @@ static GtkWidget* factory_sublist_create_dialog(GtkMenuItem *item,
      g_signal_connect(sub_treeview,"button_release_event",
                      G_CALLBACK(factory_subtreeview_onButtonPressed),opt_box);
 
+    /* 绑定一个组快捷键,保存当前的子表 */
+    GtkAccelGroup *accgroup = gtk_accel_group_new();
+    gint keyval;
+    GdkModifierType mods;
+    gtk_accelerator_parse("<Control>S",&keyval,&mods);
+    GClosure *gcl = g_cclosure_new_swap(factory_accelerator_to_response,
+                                        subdig,NULL);
+    gtk_accel_group_connect(accgroup,keyval,mods,GTK_ACCEL_VISIBLE,gcl);
+
+    gtk_window_add_accel_group(GTK_WINDOW(subdig),accgroup);
+    g_object_unref(accgroup);
     g_signal_connect(G_OBJECT(subdig),"response",
                      G_CALLBACK(factory_sublist_dialog_response),
-                     (gpointer)ptreeview);
+                     NULL);
     gtk_widget_show_all(subdig);
     return subdig;
 }
@@ -645,10 +682,10 @@ static gpointer factory_sublist_hash_lookup(GHashTable *table,
 }
 
 static GtkWidget* factory_sublist_edit_dialog(GtkMenuItem *item,
-        GtkTreeView *ptreeview)
+        GtkTreeView *id_treeview)
 {
-    GtkTreeModel *idmodel = gtk_tree_view_get_model(ptreeview);
-    GtkTreeSelection *idsel = gtk_tree_view_get_selection(ptreeview);
+    GtkTreeModel *idmodel = gtk_tree_view_get_model(id_treeview);
+    GtkTreeSelection *idsel = gtk_tree_view_get_selection(id_treeview);
     GtkTreeIter iter;
     SaveIdDialog *sid = curLayer->sid;
 
@@ -656,14 +693,12 @@ static GtkWidget* factory_sublist_edit_dialog(GtkMenuItem *item,
     {
         GtkTreePath *path;
         path = gtk_tree_model_get_path(idmodel,&iter);
+//        gtk_tree_model_get(idmodel,&iter,COLUMN_IDNAME,&txt,-1);
         int pos = gtk_tree_path_get_indices(path)[0]; /* 用下标法找到这一项编辑 */
         subTable *stable = g_list_nth_data(sid->idlists,pos);
         gtk_tree_path_free (path);
-        g_object_set_data(G_OBJECT(item),"defstable",stable->sub_list);
-        factory_sublist_create_dialog(item,ptreeview);
-//        factory_sublist_setback_values(subdlg,stable,
-//                                       factory_sublist_hash_lookup,
-//                                       curLayer->defnames);
+        g_object_set_data(G_OBJECT(item),"defstable",stable);
+        factory_sublist_create_dialog(item,id_treeview);
     }
     return NULL;
 }
@@ -748,9 +783,10 @@ void factory_set_idlist_columns (GtkTreeView *treeview,GtkTreeModel *cbmodel)
              renderer,
              "text",
              COLUMN_IDSEQ,
+            "fixed-width",
+             5,
              NULL);
-//    gtk_tree_view_column_set_sort_column_id (column, COLUMN_ITEM_SEQUENCE);
-    gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+
     gtk_tree_view_append_column (treeview, column);
 
     renderer = gtk_cell_renderer_text_new ();
@@ -759,8 +795,6 @@ void factory_set_idlist_columns (GtkTreeView *treeview,GtkTreeModel *cbmodel)
              "text",
              COLUMN_IDNAME,
              NULL);
-//    gtk_tree_view_column_set_sort_column_id (column, COLUMN_ITEM_ADDR);
-    gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
     gtk_tree_view_append_column (treeview, column);
 
 }
@@ -782,6 +816,7 @@ static gboolean factory_mfile_idlist_popumenu(GtkTreeView *treeview,
                          G_CALLBACK(mfmo[n].mfmf),(gpointer)treeview);
         mfmo[n].btn = menuitem;
         g_object_set_data(menu,g_strdup_printf("%d_item",n),menuitem);
+        g_object_set_data(G_OBJECT(menuitem),"idtreeview",treeview);
         gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
     }
 
@@ -968,7 +1003,7 @@ void factory_idlist_save_to_xml(ObjectNode obj_node,GList *savelist)
         xmlSetProp(idnode, (const xmlChar *)"rows",
                    (xmlChar *)g_strdup_printf("%d",g_list_length(stable->sub_list)));
 
-        glist = g_list_concat(glist,stable->sub_list);
+        glist = g_list_concat(glist,g_list_copy(stable->sub_list));
     }
 
     ccc = xmlNewChild(obj_node, NULL,
@@ -976,7 +1011,7 @@ void factory_idlist_save_to_xml(ObjectNode obj_node,GList *savelist)
     xmlSetProp(ccc, (const xmlChar *)"rows",
                (xmlChar *)g_strdup_printf("%d",g_list_length(glist)));
     factory_idlist_save_to_old_xml(ccc,glist);
-
+    g_list_free(glist);
 }
 
 
@@ -1072,8 +1107,7 @@ void factory_idlist_insert_item_to_model(GtkListStore *store,
                        -1);
 }
 
-
-void factory_create_idlist_dialog(GtkWidget *button,SaveStruct *sst)
+void factory_idlist_create_dialog(GtkWidget *button,SaveStruct *sst)
 {
     GtkWidget *mainBox = gtk_vbox_new(FALSE,0);
     SaveIdDialog *sid = (SaveIdDialog *)curLayer->sid;
@@ -1110,7 +1144,7 @@ void factory_create_idlist_dialog(GtkWidget *button,SaveStruct *sst)
     g_object_set_data(G_OBJECT(wid_idlist),"idtreeview",idtreeview);
 
     /* 这个数据是用来指定上级窗口 */
-    g_object_set_data(G_OBJECT(idtreeview),"ptreeview",subdig);
+    g_object_set_data(G_OBJECT(idtreeview),"parent_dlg",subdig);
     g_signal_connect(idtreeview,"button_release_event",
                      G_CALLBACK(factory_idtreeview_onButtonPressed),NULL);
     gtk_tree_view_set_grid_lines (idtreeview,GTK_TREE_VIEW_GRID_LINES_BOTH);
@@ -1125,7 +1159,9 @@ void factory_create_idlist_dialog(GtkWidget *button,SaveStruct *sst)
 
     gtk_box_pack_start(GTK_BOX(mainBox),wid_idlist,TRUE,TRUE,0);
 
+
     gtk_widget_show_all(subdig);
     g_signal_connect(G_OBJECT(subdig),"response",
                      G_CALLBACK(factory_idlist_dialog_response),sst);
+
 }
