@@ -78,11 +78,6 @@ static GList* factory_template_get_editable_item(GList *oldlist)
                         ActionID *aid = nid->actlist->data;
                         if(aid->pre_quark != empty_quark)
                             continue;
-//                    if(aid->index > 0)
-//                    {
-//                        continue;
-//                    }
-
                     }
                 }
                 else
@@ -91,7 +86,6 @@ static GList* factory_template_get_editable_item(GList *oldlist)
                      if(aid->pre_quark != empty_quark)
                             continue;
                 }
-
             }
 //            newlist = g_list_append(newlist,sst->org);
             NewItem *nitem = g_new0(NewItem,1);
@@ -236,10 +230,6 @@ void factory_template_select_all_callback(GtkWidget *btn,gpointer user_data)
 {
     gtk_tree_model_foreach(model,factory_select_all_foreach,NULL);
 }
-
-
-
-
 
 /*界面控件布局*/
 static void factory_template_layout(GtkWidget *dialog,GtkWidget *parent)
@@ -738,19 +728,6 @@ static gboolean factory_template_has_sheet()
     return flag;
 }
 
-void factory_template_manager()
-{
-    Sheet *sheet = NULL;
-    if(factory_template_has_sheet)
-    {
-
-    }
-    else
-    {
-        sheet = new_sheet(TYPE_TEMPLATE, "", "", SHEET_SCOPE_SYSTEM, NULL);
-    }
-}
-
 void factory_template_write_to_xml(GList *templlist,ObjectNode obj_node)
 {
     xmlSetProp(obj_node, (const xmlChar *)"entry", (xmlChar *)static_temp->entrypoint);
@@ -1005,34 +982,6 @@ void factory_template_read_from_xml(STRUCTClass *fclass,
     }
 }
 
-
-//void factory_template_actionid_verifyed(Diagram *diagram)
-//{
-//    return ;
-//    GList *p = g_hash_table_get_values(curLayer->defnames);
-//    for(; p; p=p->next)
-//    {
-//        STRUCTClass *sclass = p->data;
-//        GList *slist = sclass->widgetSave;
-//        for(; slist; slist = slist->next)
-//        {
-//            SaveStruct *sst = slist->data;
-//            if(!g_ascii_strncasecmp(sst->name,ACTION_ID,6))
-//            {
-//                if(g_str_has_suffix(sst->name,"]"))
-//                {
-//
-//                }
-//                else
-//                {
-//                    ActionID *aid = &sst->value.actid;
-//                    factory_template_update_actionid_state(diagram,sst,aid->index);
-//                }
-//            }
-//        }
-//    }
-//}
-
 gint factory_newitem_sorted(NewItem *n1,NewItem *n2)
 {
     return factory_gint_compare((gpointer)n1->pos,(gpointer)n2->pos);
@@ -1105,8 +1054,6 @@ void factory_template_update_actionid_state(Diagram *diagram,
             break;
         }
     }
-
-
 }
 
 

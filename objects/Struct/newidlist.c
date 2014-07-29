@@ -368,8 +368,7 @@ static void factory_sublist_dialog_response(GtkWidget *widget,
         gint n  = gtk_tree_model_iter_n_children(sub_model,NULL);
         if(0 == n)
         {
-            gtk_widget_destroy(widget);
-            return;
+            goto HIDE;
         }
 
         GtkTreeView *idtreeview = g_object_get_data(G_OBJECT(widget),"idtreeview");
@@ -458,8 +457,8 @@ static void factory_sublist_dialog_response(GtkWidget *widget,
             g_free(text);
         }
     }
-
-    gtk_widget_destroy(widget);
+HIDE:
+    gtk_widget_hide(widget);
 }
 
 
@@ -1158,7 +1157,6 @@ void factory_idlist_create_dialog(GtkWidget *button,SaveStruct *sst)
     g_object_unref (idmodel);
 
     gtk_box_pack_start(GTK_BOX(mainBox),wid_idlist,TRUE,TRUE,0);
-
 
     gtk_widget_show_all(subdig);
     g_signal_connect(G_OBJECT(subdig),"response",

@@ -347,6 +347,17 @@ edit_cut_callback (GtkAction *action)
   }
 }
 
+
+gboolean factory_tree_rename_new_obj_foreach(gpointer key,gpointer value,
+                                            gpointer data)
+{
+    DiaObject *obj = value;
+    if(!obj->ops->obj_rename) return FALSE;
+            obj->ops->obj_rename(obj);
+    return FALSE;
+}
+
+
 /* 用树保存原来的连接信息 */
 static GTree* factory_handle_paste_objects(GList *objects)
 {
@@ -373,19 +384,18 @@ factory_tree_foreach (gpointer key,gpointer value,
                                    gpointer data)
 {
         GTree *tree = data;
-        g_tree_remove(tree,key);
+//        g_tree_remove(tree,key);
         DiaObject* obj = value;
         obj->ops->addobject_to_btree(obj,tree);
         return FALSE;
 }
 
+
 void
 edit_paste_callback (GtkAction *action)
 {
-  GList *paste_list;
-  DDisplay *ddisp;
-  Point paste_corner;
-  Point delta;
+  GList *paste_list;DDisplay *ddisp;
+  Point paste_corner;Point delta;
   Change *change;
   int generation = 0;
 
@@ -434,12 +444,13 @@ edit_paste_callback (GtkAction *action)
     GTree *btree = factory_handle_paste_objects(paste_list);
    GList *plist = paste_list;
      /*这里用做重命名，保证名字唯一*/
-    for(;plist;plist=plist->next)
-    {
-        DiaObject *obj = plist->data;
-        if(!obj->ops->obj_rename) continue;
-        obj->ops->obj_rename(obj);
-    }
+    g_tree_foreach(btree,factory_tree_rename_new_obj_foreach,NULL);
+//    for(;plist;plist=plist->next)
+//    {
+//        DiaObject *obj = plist->data;
+//        if(!obj->ops->obj_rename) continue;
+//        obj->ops->obj_rename(obj);
+//    }
     /*更名之后遍历树,更新树的节点*/
     GTree *newtree = g_tree_new(strcasecmp);
 

@@ -220,12 +220,12 @@
 				</Linker>
 			</Target>
 			<Target title="listview">
-				<Option output="dia-app" prefix_auto="1" extension_auto="1" />
+				<Option output="../gtk_test" prefix_auto="1" extension_auto="1" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 			</Target>
 			<Target title="demo">
-				<Option output="gtk_demo" prefix_auto="1" extension_auto="1" />
+				<Option output="../gtk_demo" prefix_auto="1" extension_auto="1" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 			</Target>
@@ -794,168 +794,6 @@
 			<Option compilerVar="WINDRES" />
 			<Option target="dia" />
 			<Option target="debug_dia" />
-		</Unit>
-		<Unit filename="gtk-demo/appwindow.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/assistant.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/builder.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/button_box.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/changedisplay.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/clipboard.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/colorsel.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/combobox.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/demo-common.h">
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/demos.h">
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/dialog.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/drawingarea.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/editable_cells.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/entry_buffer.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/entry_completion.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/expander.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/hypertext.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/iconview.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/iconview_edit.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/images.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/infobar.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/links.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/list_store.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/main.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/menus.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/offscreen_window.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/offscreen_window2.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/panes.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/pickers.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/pixbufs.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/printing.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/rotated_text.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/search_entry.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/sizegroup.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/spinner.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/stock_browser.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/textscroll.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/textview.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/toolpalette.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/tree_store.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
-		</Unit>
-		<Unit filename="gtk-demo/ui_manager.c">
-			<Option compilerVar="CC" />
-			<Option target="demo" />
 		</Unit>
 		<Unit filename="lib/arrows.c">
 			<Option compilerVar="CC" />
@@ -1627,10 +1465,6 @@
 			<Option target="lib" />
 			<Option target="debub_lib" />
 		</Unit>
-		<Unit filename="listview.c">
-			<Option compilerVar="CC" />
-			<Option target="listview" />
-		</Unit>
 		<Unit filename="objects/Struct/idlist.h">
 			<Option target="Struct" />
 		</Unit>
@@ -1639,10 +1473,6 @@
 			<Option target="Struct" />
 		</Unit>
 		<Unit filename="objects/Struct/musicfilemanager.h">
-			<Option target="Struct" />
-		</Unit>
-		<Unit filename="objects/Struct/newfilelist.c">
-			<Option compilerVar="CC" />
 			<Option target="Struct" />
 		</Unit>
 		<Unit filename="objects/Struct/newidlist.c">

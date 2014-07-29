@@ -3250,33 +3250,6 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
     return sss;
 }
 
-//void factory_initial_origin_struct(GHashTable *savetable,GList *srclist,const gchar *key)
-//{
-//     /* srclist is FactoryStructItem GList */
-//    GHashTable *structtable = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
-//    if(srclist)
-//    for(;srclist != NULL ; srclist = srclist->next)
-//    {
-//        FactoryStructItem *fst = srclist->data;
-//        SaveStruct *sst= factory_get_savestruct(fst);
-//        g_hash_table_insert(structtable,g_strjoin("##",fst->FType,fst->Name,NULL),sst);
-//    }
-//    g_hash_table_insert(savetable,key,structtable);
-//}
-
-
-//void factory_set_all_factoryclass(STRUCTClass *fclass,gchar *name)
-//{
-////    gchar **tmp =  g_strsplit(fclass->name,"(",-1);
-//    GList *tlist = factory_get_list_from_hashtable(fclass);
-//
-////    g_strfreev(tmp);
-//    for(; tlist; tlist = tlist->next)
-//    {
-//        FactoryStructItem *fst = tlist->data;
-//        fst->orgclass = fclass;
-//    }
-//}
 void factory_set_original_class(STRUCTClass *fclass)
 {
     GList *tlist = factory_get_list_from_hashtable(fclass);
@@ -3447,7 +3420,9 @@ structclass_destroy(STRUCTClass *structclass)
     {
         structclass_dialog_free (structclass->properties_dialog);
     }
-    g_list_free1(structclass->widgetSave);
+//    g_list_foreach(structclass->widgetSave,(GFunc)g_free,NULL);
+    g_list_free(structclass->widgetSave);
+    g_free(structclass);
 }
 
 static void factory_hashtable_copy(gpointer key,gpointer value,gpointer user_data)
@@ -3648,7 +3623,6 @@ structclass_copy(STRUCTClass *structclass)
 }
 
 
-
 static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
 {
     g_return_if_fail(sss);
@@ -3656,7 +3630,6 @@ static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc)
     xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)sss->type);
 
     /* 这里会递归调用 */
-
     switch(sss->celltype)
     {
     case ECOMBO:
@@ -3758,15 +3731,6 @@ static void factory_write_object_comobox(ActionID *aid,ObjectNode ccc ,const gch
 {
     xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)aid->title_name);
 
-//    gpointer exist = g_hash_table_lookup(curLayer->defnames,aid->pre_name);
-//    if(!exist)
-//    {
-//        g_free(aid->pre_name);
-//        aid->pre_name = g_strdup("");
-//        g_free(aid->value);
-//        aid->value=g_strdup("-1");
-//
-//    }
     if(!aid->conn_ptr && (aid->pre_quark == empty_quark))
     {
         g_free(aid->value);
@@ -4157,8 +4121,6 @@ factory_struct_items_save(STRUCTClass *structclass, ObjectNode obj_node,
 }
 
 
-
-
 /** Returns the number of connection points used by the attributes and
  * connections in the current state of the object.
  */
@@ -4263,9 +4225,7 @@ structclass_sanity_check(STRUCTClass *c, gchar *msg)
 void factory_actionid_copy(const ActionID *onid,
                            ActionID *nnid)
 {
-//    nnid->index = onid->index;
     nnid->value = g_strdup(onid->value);
-//    nnid->pre_name = g_strdup(onid->pre_name);
     nnid->title_name = g_strdup(onid->title_name);
     nnid->pre_quark = onid->pre_quark;
     nnid->conn_ptr = onid->conn_ptr;
@@ -4284,6 +4244,7 @@ factory_tree_foreach_copy (gpointer key,gpointer value,
 /* 这里就是一个很复杂的完全copy */
 SaveStruct *factory_savestruct_copy(const SaveStruct *old)
 {
+    g_return_if_fail(old);
     SaveStruct *newsst = g_new0(SaveStruct,1);
     newsst->name = g_strdup(old->name);
     newsst->widget1 = NULL;
@@ -4313,23 +4274,43 @@ SaveStruct *factory_savestruct_copy(const SaveStruct *old)
     {
         SaveUnion *osuptr = &old->value.sunion;
         SaveUnion *nsuptr = &newsst->value.sunion;
-//        nsuptr->saveVal = g_hash_table_new_full(g_str_hash,
-//                                                g_str_equal,
-//                                                g_free,
-//                                                g_free);
         nsuptr->ubtreeVal = g_tree_new(factory_str_compare);
-        g_tree_foreach(osuptr->ubtreeVal,factory_tree_foreach_copy,
-                       nsuptr->ubtreeVal);
+//        g_tree_foreach(osuptr->ubtreeVal,factory_tree_foreach_copy,
+//                       nsuptr->ubtreeVal);
 
         nsuptr->comobox = NULL;
         nsuptr->vbox = NULL;
         nsuptr->curkey = g_strdup(osuptr->curkey);
-//        nsuptr->curtext = g_strdup(osuptr->curtext);
+
         nsuptr->structlist = g_list_copy(osuptr->structlist);
         nsuptr->uindex = osuptr->uindex;
-
+        SaveStruct *usst = g_tree_lookup(osuptr->ubtreeVal,
+                                         osuptr->curkey);
+        /*这里只复制当前一个值*/
+        g_tree_insert(nsuptr->ubtreeVal,nsuptr->curkey,
+                        factory_savestruct_copy(usst));
     }
     break; /* union comobox */
+    case UBTN:
+    {
+        /* 这个类型有可能是文件列表,或者ID列表 */
+        if(factory_is_special_object(old->type))
+        {
+            newsst->value.vnumber = g_strdup(old->value.vnumber);
+            break;
+        }
+
+        SaveUbtn *sbtn = &old->value.ssubtn;
+        GList *sslist = sbtn->savelist;
+        GList *nslist = NULL;
+        for(; sslist; sslist = sslist->next)
+        {
+           nslist = g_list_append(nslist,factory_savestruct_copy(sslist->data));
+        }
+        SaveUbtn *nsbtn = &newsst->value.ssubtn;
+        nsbtn->savelist = nslist;
+    }
+    break;/* 这里是按键按钮 */
     case OBTN:
     {
         ActIDArr *nnid = &newsst->value.nextid;
@@ -4355,6 +4336,7 @@ SaveStruct *factory_savestruct_copy(const SaveStruct *old)
         factory_actionid_copy(onid,nnid);
     }
     break;/* object combox*/
+
     case ENTRY:
     {
         SaveEntry *osey = &old->value.sentry;
@@ -4386,23 +4368,6 @@ SaveStruct *factory_savestruct_copy(const SaveStruct *old)
         nsey->wlist = g_list_copy(osey->wlist);
     }
     break;
-    case UBTN:
-    {
-        /* 这个类型有可能是文件列表,或者ID列表 */
-        if(factory_is_special_object(old->type))
-        {
-            newsst->value.vnumber = g_strdup(old->value.vnumber);
-            break;
-        }
-
-        SaveUbtn *sbtn = &old->value.ssubtn;
-        GList *sslist = sbtn->savelist;
-        for(; sslist; sslist = sslist->next)
-        {
-            factory_savestruct_copy(sslist->data);
-        }
-    }
-    break;/* 这里是按键按钮 */
     case EBTN:
     {
         SaveEbtn *osebtn = &old->value.ssebtn;

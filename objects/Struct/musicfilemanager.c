@@ -284,30 +284,6 @@ static GtkWidget* factory_mfile_mlist_delete_operator(GtkWidget *btn,
     gtk_widget_set_sensitive(isert,scount < 1 ? FALSE : TRUE);
 }
 
-
-//static void factory_add_file_manager_item(GtkWidget *widget,
-//        gpointer user_data)
-//{
-//    SaveMusicDialog *smd = user_data;
-//    smd->smfm->man_opt = OPT_APPEND;
-//    factory_open_file_dialog(widget,user_data);
-//}
-//
-//void factory_insert_file_manager_item(GtkWidget *widget,gpointer user_data)
-//{
-//    SaveMusicDialog *smd = user_data;
-//    smd->smfm->man_opt = OPT_INSERT;
-//    factory_open_file_dialog(NULL,user_data);
-//}
-//
-//
-//static void factory_unselect_mfile_modal(GtkWidget *widget,gpointer user_data)
-//{
-//    SaveMusicDialog *smd = ( SaveMusicDialog *)user_data;
-//    GtkTreeSelection *selection = gtk_tree_view_get_selection (smd->smfm->wid_treeview);
-//    gtk_tree_selection_unselect_all (selection);
-//}
-
 static void factory_mfile_manager_add_columns (GtkTreeView *treeview)
 {
 
@@ -342,8 +318,7 @@ static void factory_mfile_manager_add_columns (GtkTreeView *treeview)
              "alignment",
              PANGO_ALIGN_CENTER,
              NULL);
-//    gtk_tree_view_column_set_sort_column_id (column, COLUMN_ITEM_ADDR);
-//    gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
+
     gtk_tree_view_append_column (treeview, column);
 
     /* Combo */
@@ -574,8 +549,7 @@ static void factory_mfile_add_idlist_columns (GtkTreeView *treeview,GtkTreeModel
              "text",
              COLUMN_ITEM_ADDR,
              NULL);
-//    gtk_tree_view_column_set_sort_column_id (column, COLUMN_ITEM_ADDR);
-//    gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+
     gtk_tree_view_append_column (treeview, column);
 
     /* Combo */
@@ -743,9 +717,6 @@ void factory_create_file_manager_dialog(GtkWidget *btn,ListDlgArg *lda)
     }
 }
 
-
-
-/* 文件列表管理界面 */
 /* 文件列表管理界面 */
 void factory_mfile_manager_dialog(GtkWidget *btn,SaveStruct *sst)
 {
@@ -848,8 +819,6 @@ static gboolean factory_mfile_mlist_append_item(GtkListStore *store,
                         COLUMN_FNAME,g_quark_to_string(smf->base_quark),
                         COLUMN_DNAME,smf->down_name,
                         -1);
-
-
     return TRUE;
 }
 
@@ -932,9 +901,7 @@ static gboolean factory_mfile_mlist_thread_func(gpointer user_data)
             smf->full_quark = g_quark_from_string((gchar *)flists->data);
             gchar **split = g_strsplit((gchar *)flists->data,"\\",-1);
             int len = g_strv_length(split);
-
             smf->base_quark =  g_quark_from_string(split[len-1]);
-
             /*不能重复添加*/
             gpointer hval = g_hash_table_lookup(smd->mtable,
                                                 (gpointer)smf->base_quark);
@@ -1018,14 +985,6 @@ static gboolean factory_mfile_mlist_thread_func(gpointer user_data)
         GList *t = duplist;
         gchar *fmt = g_strdup_printf(factory_utf8("下列文件名已经存在,不需要重复添加!\n%s"),
                                      factory_concat_list_to_string(duplist,IS_QUARK));
-
-//        for(; t; t= t->next)
-//        {
-//            gchar *p = g_strdup(fmt);
-//            g_free(fmt);
-//            fmt = g_strconcat(p,g_strdup_printf("%s\n",
-//                                                g_quark_to_string(t->data),NULL));
-//        }
         g_list_free(duplist);
         factory_message_dialoag(NULL,fmt);
         g_free(fmt);
@@ -1037,7 +996,6 @@ static gboolean factory_mfile_mlist_thread_func(gpointer user_data)
                          btd->old_title);
     gtk_widget_queue_draw(parent);
     gdk_window_process_all_updates();
-
     return FALSE;
 }
 
@@ -1910,10 +1868,8 @@ static void factory_mfile_sublist_dialog_response(GtkWidget *widget,
         if(0 == n)
         {
             /* 空子表,不保存了 */
-
             goto HIDE;
         }
-
 
         GtkWidget *entry = g_object_get_data(G_OBJECT(widget),"table_name");
 
@@ -2172,7 +2128,6 @@ static GtkWidget* factory_mfile_sublist_create_dialog(GtkMenuItem *item,
 }
 
 
-
 /** 这里文件列表的函数 **/
 /* 右键菜单操作 */
 gboolean factory_mfile_idlist_popumenu(GtkTreeView *treeview,
@@ -2211,8 +2166,6 @@ gboolean factory_mfile_idlist_popumenu(GtkTreeView *treeview,
                    gdk_event_get_time((GdkEvent*)event));
     return TRUE;
 }
-
-
 
 
 gboolean
@@ -2265,9 +2218,6 @@ static void factory_mfile_idlist_dialog_response(GtkWidget *widget,
 }
 
 
-
-
-
 void factory_mfile_create_idlist_dialog(GtkWidget *button,
                                         ListDlgArg *lda)
 {
@@ -2300,7 +2250,6 @@ void factory_mfile_create_idlist_dialog(GtkWidget *button,
                                             g_quark_to_string(stable->nquark));
     }
 
-
     /* 先中上一次的结果  */
     GtkTreePath *path = gtk_tree_path_new_from_string(*(gchar**)lda->user_data);
     gtk_tree_selection_select_path(gtk_tree_view_get_selection(idtreeview),path);
@@ -2321,9 +2270,6 @@ void factory_mfile_create_idlist_dialog(GtkWidget *button,
     gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (idtreeview)),
                                  GTK_SELECTION_SINGLE);
     gtk_container_add (GTK_CONTAINER (wid_idlist),GTK_WIDGET(idtreeview));
-
-
-
 
 
     g_object_unref (idmodel);

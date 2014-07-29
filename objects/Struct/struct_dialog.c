@@ -3067,6 +3067,13 @@ static void factory_connection_by_value(ActionID *aid,SaveStruct *sst)
             aid->conn_ptr = exist;
         }
     }
+//    int sindex = g_list_index(curLayer->objects,startclass);
+    int dindex = g_list_index(curLayer->objects,aid->conn_ptr);
+    if(dindex < 0)
+    {
+        aid->conn_ptr =NULL;
+        aid->pre_quark = empty_quark;
+    }
     factory_connection_two_object(startclass,aid->conn_ptr);
 }
 
@@ -3168,7 +3175,14 @@ static void factory_handle_single_ocombo(ActionID *aid ,GTree *tree)
     {
         /*名字为空,指针为真,表明这个对像更名,遍历树更新名字*/
 //        g_tree_foreach(tree,factory_tree_foreach_find,aid);
-        STRUCTClass *pclass =  aid->conn_ptr;
+
+        int idx = g_list_index(curLayer->objects,aid->conn_ptr);
+        if(idx < 0) /* 它连接的对像已经不存在了. */
+        {
+            aid->conn_ptr = NULL;
+            aid->pre_quark = empty_quark;
+        }
+         STRUCTClass *pclass = aid->conn_ptr ;
         if(pclass)
             aid->pre_quark = g_quark_from_string(pclass->name);
     }
@@ -3208,6 +3222,7 @@ static void factory_find_item_in_tree(SaveStruct *sst,
         SaveStruct *tsst = g_tree_lookup(suptr->ubtreeVal,suptr->curkey);
         if(tsst)
         {
+            tsst->sclass = sst->sclass;
             factory_find_item_in_tree(tsst,tree);
         }
     }
@@ -3222,6 +3237,7 @@ static void factory_find_item_in_tree(SaveStruct *sst,
         for(; sslist; sslist = sslist->next)
         {
             SaveStruct *subsst = sslist->data;
+            subsst->sclass = sst->sclass;
             factory_find_item_in_tree(sslist->data,tree);
         }
     }
@@ -3489,13 +3505,21 @@ static void factory_get_value_from_comobox(SaveStruct *sst,
 //    gtk_combo_box_get_active_iter(GTK_COMBO_BOX(comobox),&iter);
     int  curindex = gtk_combo_box_get_active(GTK_COMBO_BOX(comobox));
     gchar *pname = gtk_combo_box_get_active_text(GTK_COMBO_BOX(comobox));
-    GQuark pquark = g_quark_from_string(pname);
+    GQuark pquark = empty_quark;
 //    if(!g_ascii_strcasecmp(pname,aid->pre_name))
 //        return;
 //    if(!pquark && !pname)
 //        return;
+    if(!pname)
+    {
+        aid->conn_ptr = NULL;
+    }
+    else
+    {
+        pquark = g_quark_from_string(pname);
+        aid->conn_ptr = g_hash_table_lookup(curLayer->defnames,pname);
+    }
 
-    aid->conn_ptr = g_hash_table_lookup(curLayer->defnames,pname);
     const gchar *pre_name = g_quark_to_string(aid->pre_quark);
     gpointer  lastobj = g_hash_table_lookup(curLayer->defnames,
                                             pre_name);/*上次的选项*/
@@ -3953,7 +3977,7 @@ FIRST:
                 for(; slist; slist = slist->next)
                 {
                     FactoryStructItem *o = slist->data;
-                    SaveStruct *s  = factory_get_savestruct(o);
+                    SaveStruct *s  =  factory_get_savestruct(o);
                     s->sclass = sss->sclass;
                     factory_strjoin(&s->name,sss->name,".");
                     sbtn->savelist = g_list_append(sbtn->savelist,s);
