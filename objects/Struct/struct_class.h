@@ -366,7 +366,7 @@ typedef struct _SaveUnion SaveUnion;
 struct _SaveUnion
 {
     int uindex;
-//    gchar *curtext;
+    gint  pre_quark; /* 上次的值 */
     gchar *curkey;
     GtkWidget *vbox;
     GtkWidget *comobox;

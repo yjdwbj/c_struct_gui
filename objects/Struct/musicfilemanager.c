@@ -1,9 +1,6 @@
 #include "musicfilemanager.h"
-
-
 #define WIDTH 300
 #define HEIGHT 500
-
 
 static gint sublist_update = 0;
 const gchar *chvaild = "0123456789abcdefghijklmnopqrstuvwxyz_.";
@@ -18,7 +15,6 @@ typedef struct
     GQuark add_quark;
     gchar *old_title;
     gint idle_id;
-
 } BackThread;
 
 static guint mfile_filled_signals = 0;
@@ -129,26 +125,15 @@ static GtkWidget* factory_mfile_sublist_edit_dialog(GtkMenuItem *item,
         gtk_tree_path_free (path);
         g_object_set_data(G_OBJECT(item),"defstable",stable);
         factory_mfile_sublist_create_dialog(item,ptreeview);
-
     }
     return NULL;
-
-
 }
 
 static GtkWidget* factory_mfile_sublist_insert_dialog(GtkMenuItem *item,
         GtkTreeView *ptreeview)
 {
-
-//    GtkTreeModel *idmodel = gtk_tree_view_get_model(ptreeview);
-//    GtkTreeSelection *idsel = gtk_tree_view_get_selection(ptreeview);
-//    GtkTreeIter iter;
-
     GtkWidget *subdlg = factory_mfile_sublist_create_dialog(item,ptreeview);
-
-
     return NULL;
-
 }
 
 static GtkWidget* factory_mfile_sublist_delete_dialog(GtkMenuItem *item,
@@ -199,7 +184,6 @@ static GtkWidget* factory_mfile_mlist_delete_operator(GtkWidget *btn,
     GtkTreeView *mtreeview = user_data;
     GtkTreeModel *m_model = gtk_tree_view_get_model(mtreeview);
     GtkTreeSelection *msel = gtk_tree_view_get_selection(mtreeview);
-
 
     int scount = gtk_tree_selection_count_selected_rows (msel);
     if (scount >= 1 )
@@ -303,8 +287,7 @@ static void factory_mfile_manager_add_columns (GtkTreeView *treeview)
              "alignment",
              PANGO_ALIGN_CENTER,
              NULL);
-//    gtk_tree_view_column_set_sort_column_id (column, COLUMN_ITEM_SEQUENCE);
-//    gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
+
     gtk_tree_view_append_column (treeview, column);
 
     /* column for severities */
@@ -331,7 +314,6 @@ static void factory_mfile_manager_add_columns (GtkTreeView *treeview)
              "fixed-width",
              16,
              NULL);
-//    gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
     gtk_tree_view_append_column (treeview, column);
 
 
@@ -421,7 +403,6 @@ static gboolean factory_is_have_chinese_code(gchar *str)
         {
             return TRUE;
         }
-
     }
     return FALSE;
 }
@@ -538,8 +519,7 @@ static void factory_mfile_add_idlist_columns (GtkTreeView *treeview,GtkTreeModel
              "text",
              COLUMN_ITEM_SEQUENCE,
              NULL);
-//    gtk_tree_view_column_set_sort_column_id (column, COLUMN_ITEM_SEQUENCE);
-//    gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+
     gtk_tree_view_append_column (treeview, column);
 
     /* column for severities */

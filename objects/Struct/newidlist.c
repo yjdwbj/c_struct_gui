@@ -983,8 +983,6 @@ void factory_idlist_save_to_old_xml(ObjectNode ccc,GList *glist)
 }
 
 
-
-
 void factory_idlist_save_to_xml(ObjectNode obj_node,GList *savelist)
 {
     ObjectNode ccc = xmlNewChild(obj_node, NULL,

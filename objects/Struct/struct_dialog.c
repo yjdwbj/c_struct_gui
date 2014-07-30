@@ -3182,7 +3182,7 @@ static void factory_handle_single_ocombo(ActionID *aid ,GTree *tree)
             aid->conn_ptr = NULL;
             aid->pre_quark = empty_quark;
         }
-         STRUCTClass *pclass = aid->conn_ptr ;
+        STRUCTClass *pclass = aid->conn_ptr ;
         if(pclass)
             aid->pre_quark = g_quark_from_string(pclass->name);
     }
@@ -3401,6 +3401,65 @@ static void factory_connection_two_object(STRUCTClass *fclass, /* start pointer*
     diagram_remove_all_selected(ddisp->diagram,TRUE);
     diagram_select(ddisp->diagram,(DiaObject*)fclass);
     diagram_flush(ddisp->diagram);
+}
+
+
+static void factory_union_delete_link_lines(SaveStruct *sst)
+{
+    g_return_if_fail(sst);
+    if(factory_is_special_object(sst->type)) return;
+    switch(sst->celltype)
+    {
+    case UBTN:
+    {
+        SaveUbtn *sbtn = &sst->value.ssubtn;
+        GList *sslist = sbtn->savelist;
+        GList *nslist = NULL;
+        for(; sslist; sslist = sslist->next)
+        {
+            factory_union_delete_link_lines(sslist->data);
+        }
+    }
+    break;
+    case UCOMBO:
+    {
+        SaveUnion *suptr = &sst->value.sunion;
+        if(!sst->isPointer)
+        {
+            SaveStruct *tsst = g_tree_lookup(suptr->ubtreeVal,
+                                             suptr->curkey);
+            if(tsst)
+            {
+                factory_union_delete_link_lines(tsst);
+            }
+        }
+    }
+    break;
+    case OBTN:
+    {
+        ActIDArr *aidarr = &sst->value.nextid;
+        g_return_if_fail(aidarr);
+        GList *olist = aidarr->actlist;
+        for(; olist; olist = olist->next)
+        {
+            ActionID *aid = olist->data;
+            factory_delete_line_between_two_objects(sst->sclass,
+                                                    aid->conn_ptr);
+        }
+
+    }
+    break;
+    case OCOMBO:
+        {
+            ActionID *aid = &sst->value.actid;
+            g_return_if_fail(aid);
+            factory_delete_line_between_two_objects(sst->sclass,
+                                                    aid->conn_ptr);
+        }
+        break;
+    default:
+        break;
+    }
 
 }
 
@@ -3441,7 +3500,6 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
         int v = gtk_spin_button_get_value(GTK_SPIN_BUTTON(sss->widget2));
         sss->value.vnumber = g_strdup_printf("%d",v);
     }
-
     break;
     case OCOMBO:
     {
@@ -3454,21 +3512,27 @@ static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer
     case UCOMBO:
     {
         SaveUnion *suptr = &sss->value.sunion;
-
-        GList *wlist = gtk_container_children(GTK_CONTAINER(sss->widget2));
-        if(wlist)
+        g_return_if_fail(suptr);
+        gint cpid = gtk_combo_box_get_active(GTK_COMBO_BOX(suptr->comobox));
+        if(cpid == suptr->uindex) break;
+        /* 清理上一个选项中,含有连接的成员 */
+        suptr->uindex =  cpid;
+        if( suptr->pre_quark != empty_quark)
         {
-            g_free(suptr->curkey);
-            suptr->curkey = g_strdup(gtk_combo_box_get_active_text(wlist->data));
-            suptr->uindex = gtk_combo_box_get_active(GTK_COMBO_BOX(wlist->data));
+            SaveStruct *pre_sst = g_tree_lookup(suptr->ubtreeVal,
+                                            g_quark_to_string(suptr->pre_quark));
+            if(pre_sst)
+                factory_union_delete_link_lines(pre_sst); /*删除上一次的连线*/
         }
 
-        g_return_if_fail(suptr);
+        g_free(suptr->curkey);
+        suptr->curkey =  g_strdup(gtk_combo_box_get_active_text(suptr->comobox));
+
+        suptr->pre_quark = g_quark_from_string(suptr->curkey);
         if(!sss->isPointer)
         {
             SaveStruct *tsst = g_tree_lookup(suptr->ubtreeVal,
                                              suptr->curkey);
-//            SaveStruct *tsst  =  g_hash_table_lookup(suptr->saveVal,suptr->curkey);
             if(tsst)
             {
                 factory_save_value_from_widget(tsst);
@@ -3923,7 +3987,7 @@ static GtkWidget *factory_create_variant_object(SaveStruct *sss)
         columTwo = gtk_vbox_new(FALSE,1) ; /*  这里插入一个VBOX*/
         suptr->comobox = gtk_combo_box_new_text(); /* 显示联合体成员的控件 */
         suptr->vbox = columTwo;
-
+        g_object_set_data(G_OBJECT(columTwo),"fixed_cbox",suptr->comobox);
         gtk_combo_box_popdown(GTK_COMBO_BOX(suptr->comobox));
         GList *p = suptr->structlist;
         /* nextobj 就是当前下拉框所显示的 */
@@ -3934,14 +3998,15 @@ static GtkWidget *factory_create_variant_object(SaveStruct *sss)
         for(; p != NULL ; p= p->next)
         {
             FactoryStructItem *data = p->data; /* 添加联合体里的成员到下拉列表 */
-            gtk_combo_box_append_text(GTK_COMBO_BOX(suptr->comobox),data->Name);
+            gtk_combo_box_append_text(GTK_COMBO_BOX(suptr->comobox),
+                                      data->Name);
         }
         gtk_combo_box_set_active(GTK_COMBO_BOX(suptr->comobox),suptr->uindex);
-        gtk_box_pack_start_defaults(GTK_BOX(columTwo),suptr->comobox);
+//        gtk_box_pack_start_defaults(GTK_BOX(columTwo),suptr->comobox);
+        gtk_container_add(GTK_CONTAINER(columTwo),suptr->comobox);
         SaveStruct *tsst = NULL;
         suptr->curkey = g_strdup(nextobj->Name);
-//        suptr->curtext = g_strdup(nextobj->Name);
-//        if(!g_hash_table_size(suptr->saveVal))
+
         if(!g_tree_nnodes(suptr->ubtreeVal))
         {
             /*第一次运行*/
@@ -3984,10 +4049,12 @@ FIRST:
                 }
             }
         }
-//                           suptr->widgetlist = g_slist_append(suptr->widgetlist,widget);
-        gtk_box_pack_start_defaults(GTK_BOX(columTwo),widget);
+        gtk_container_add(GTK_CONTAINER(columTwo),widget);
+        g_object_set_data(G_OBJECT(suptr->comobox),"link_wid",widget);
+//        gtk_box_pack_start_defaults(GTK_BOX(columTwo),widget);
         gtk_widget_show_all(columTwo);
-        g_signal_connect (G_OBJECT (suptr->comobox), "changed",G_CALLBACK (factoy_changed_item), sss);
+        g_signal_connect (G_OBJECT (suptr->comobox), "changed",
+                          G_CALLBACK (factoy_changed_item), sss);
     }
     break;
     case ECOMBO:
@@ -4117,8 +4184,6 @@ gboolean factory_music_fm_get_type(const gchar* name)
 }
 
 
-
-
 void factory_set_savestruct_widgets(SaveStruct *sss)
 {
     GtkWidget *Name ;
@@ -4137,14 +4202,7 @@ void factory_set_savestruct_widgets(SaveStruct *sss)
             DiaObject *obj = (DiaObject *)sss->sclass;
             sss->value.vnumber = g_strdup_printf("%d",obj->oindex);
         }
-//        if(!g_ascii_strncasecmp(sss->name,WACDID,6)) /*这里一个关键字判断是否是ＩＤ*/
-//        {
-//            DiaObject *obj = (DiaObject *)sss->sclass;
-////            g_hash_table_get_values(curLayer->defnames);
-////            sclass->element.object.oindex = g_list_index(curLayer->objects,sclass);
-//            sss->value.vnumber = g_strdup_printf("%d",obj->oindex);
-//            sss->isSensitive = FALSE;
-//        }
+
         columTwo = factory_create_variant_object(sss);
         gtk_widget_set_sensitive(columTwo,sss->org->isSensitive);
         gtk_tooltips_set_tip(tool_tips,columTwo,g_strdup(sss->org->Comment),NULL);
@@ -4393,19 +4451,6 @@ factory_subdig_checkbtns_respond(GtkWidget *widget,gint       response_id,gpoint
 }
 
 
-
-//void factory_ucombox_item_chanaged(gpointer widget,gpointer user_data)
-//{
-//    SaveStruct *sss  = user_data;
-//    SaveUnion *suptr = &sss->value.sunion;
-//    gchar *text = gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget));
-//}
-
-
-
-
-
-
 void factoy_changed_item(gpointer widget,gpointer user_data) /* 0.98.10 之前的版本 */
 {
     /* 这里是一个VBOX */
@@ -4414,41 +4459,30 @@ void factoy_changed_item(gpointer widget,gpointer user_data) /* 0.98.10 之前的版
     SaveUnion *suptr = &sss->value.sunion;
 
     GtkWidget *activeWidget = NULL;
-
     /* 删除原来的控件,根据类型重新生成控件*/
-    GList *wlist = gtk_container_children(GTK_CONTAINER(suptr->vbox));
-    for(; wlist; wlist = wlist->next)
-    {
-        GtkWidget *rwidget = wlist->data;
-        if(rwidget != suptr->comobox)
-        {
-            gtk_container_remove(GTK_CONTAINER(suptr->vbox),rwidget);
-            gtk_widget_destroy (rwidget);
-        }
-    }
+//    GList *wlist = gtk_container_children(GTK_CONTAINER(suptr->vbox));
+
+    GtkWidget *link_widget = g_object_get_data(G_OBJECT(widget),"link_wid");
+    gchar *pre_text = g_strdup(gtk_entry_get_text(GTK_ENTRY(link_widget)));
+    gtk_container_remove(GTK_CONTAINER(suptr->vbox),link_widget);
+    gtk_widget_destroy (link_widget);
 
     gchar *text = gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget));
-//    suptr->curtext = g_strdup(text);
-//    g_free(text);
-//    suptr->index = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
-
 
 //    FactoryStructItem *sfst= factory_find_a_struct_item(suptr->structlist,suptr->curtext);
     FactoryStructItem *sfst= factory_find_a_struct_item(suptr->structlist,text);
     if(sfst)
     {
         SaveStruct *existS = NULL;
-        suptr->curkey = g_strdup(sfst->Name);
+//        suptr->curkey = g_strdup(sfst->Name);
         if(g_tree_nnodes(suptr->ubtreeVal))
-//        if(g_hash_table_size(suptr->saveVal))
         {
-            existS = g_tree_lookup(suptr->ubtreeVal,suptr->curkey);
+            existS = g_tree_lookup(suptr->ubtreeVal,sfst->Name);
 //            existS = g_hash_table_lookup(suptr->saveVal,suptr->curkey);
             if(!existS)
             {
                 goto CFIRST;
             }
-
         }
         else
         {
@@ -4457,7 +4491,7 @@ CFIRST:
             existS = factory_get_savestruct(sfst);
             existS->sclass = sss->sclass;
             factory_strjoin(&existS->name,sss->name,".");
-            g_tree_insert(suptr->ubtreeVal,suptr->curkey,existS);
+            g_tree_insert(suptr->ubtreeVal,sfst->Name,existS);
 //            g_hash_table_insert(suptr->saveVal,suptr->curkey,existS);
 
         }
@@ -4481,13 +4515,12 @@ CFIRST:
                 }
             }
         }
-//            suptr->widgetlist = g_list_append(suptr->widgetlist,activeWidget);
+        g_object_set_data(G_OBJECT(widget),"link_wid",activeWidget);
         gtk_box_pack_start_defaults(GTK_BOX(suptr->vbox),activeWidget);
         gtk_container_resize_children (GTK_CONTAINER(suptr->vbox));
     }
 
     gtk_widget_show_all(suptr->vbox);
-
 }
 
 void factory_strjoin(gchar **dst,const gchar *prefix,const gchar *sep)

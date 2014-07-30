@@ -3204,6 +3204,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
         SaveUnion *suptr = &sss->value.sunion;
         sss->celltype = UCOMBO;
         suptr->vbox = NULL;
+        suptr->pre_quark = empty_quark;
         suptr->ubtreeVal = g_tree_new(factory_str_compare);
         suptr->curkey = g_strdup("");
         suptr->comobox = NULL;
@@ -4274,6 +4275,7 @@ SaveStruct *factory_savestruct_copy(const SaveStruct *old)
     {
         SaveUnion *osuptr = &old->value.sunion;
         SaveUnion *nsuptr = &newsst->value.sunion;
+        nsuptr->pre_quark = empty_quark;
         nsuptr->ubtreeVal = g_tree_new(factory_str_compare);
 //        g_tree_foreach(osuptr->ubtreeVal,factory_tree_foreach_copy,
 //                       nsuptr->ubtreeVal);
