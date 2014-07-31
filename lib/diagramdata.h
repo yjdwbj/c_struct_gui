@@ -121,6 +121,7 @@ struct _Layer {
 				  to the diagram, and accessed via
 				  layer_get_parent_diagram() */
   GHashTable *defnames; /* 所有控件显示的名字的链表.*/
+//  GTree *obj_btree; /* 所有控件显示的名字的平衡二叉树 */
   gpointer smd; /* SaveMusicDialog 这用存放音乐文件管理的数据，这个在当前层是公有的*/
   gpointer sid;  /* SaveIdDialog 这用存放行为ID管理的数据，这个在当前层是公有的*/
   GList *highlight_list; /* 显示高亮三层的对像 */

@@ -351,11 +351,12 @@ destroy_object_list(GList *list_to_be_destroyed)
         obj = (DiaObject *)list->data;
 
         obj->ops->destroy(obj);
-        g_free(obj);
+
 
         list = g_list_next(list);
     }
 
+    g_list_foreach(list_to_be_destroyed,(GFunc)g_free,NULL);
     g_list_free(list_to_be_destroyed);
 }
 

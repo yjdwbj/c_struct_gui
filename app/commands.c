@@ -373,7 +373,7 @@ static GTree* factory_handle_paste_objects(GList *objects)
     for(; plist; plist = plist->next)
     {
         DiaObject *obj = plist->data;
-        obj->ops->rename_new_obj(obj,btree,0);
+        obj->ops->rec_find_ocbox(obj,btree,FIND_PTR_TREE);
     }
     return btree;
 }
@@ -461,7 +461,7 @@ edit_paste_callback (GtkAction *action)
     for(; plist; plist = plist->next)
     {
         DiaObject *obj = plist->data;
-        obj->ops->rename_new_obj(obj,newtree,1);
+        obj->ops->rec_find_ocbox(obj,newtree,FIND_NAME);
     }
     GList *selist = NULL; /* 这个paste_list 内存经过reconnection_new_obj,就被写坏了,复制一份它 */
     plist = selist = g_list_copy(paste_list);
@@ -469,7 +469,7 @@ edit_paste_callback (GtkAction *action)
    for(;plist;plist = plist->next,cc++)
     {
         DiaObject *obj = plist->data;
-        obj->ops->reconnection_new_obj(obj);
+        obj->ops->rec_find_ocbox(obj,NULL,CONNECT_OBJ);
         /* 要仔细调试,这里发现创建一条线时把,paste_list 内存破坏了. */
     }
 

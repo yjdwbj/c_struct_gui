@@ -216,6 +216,7 @@ new_layer(gchar *name, DiagramData *parent)
 
   layer->objects = NULL;
   layer->defnames = g_hash_table_new(g_str_hash,g_str_equal);
+//  layer->obj_btree = g_tree_new(g_ascii_strcasecmp);
   layer->extents.left = 0.0;
   layer->extents.right = 10.0;
   layer->extents.top = 0.0;

@@ -283,12 +283,17 @@ file_open_response_callback(GtkWidget *fs,
         GList *list = g_hash_table_get_values(diagram->data->active_layer->defnames);
         if(list)
         {
-
             DiaObject *obj = list->data;
             obj->ops->reset_objectsfillcolor(obj);
             diagram_redraw_all();
         }
-
+        /* 把连线的信息读取回来 */
+        GList *tlist = list;
+        for(;tlist ; tlist = tlist->next)
+        {
+            DiaObject *obj = tlist->data;
+            obj->ops->rec_find_ocbox(obj,NULL,FIND_PTR_HASH);
+        }
     }
 
     gtk_widget_destroy(opendlg);

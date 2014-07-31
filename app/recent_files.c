@@ -184,4 +184,12 @@ open_recent_file_callback(GtkWidget *widget, gpointer data)
         diagram_redraw_all();
     }
 
+      /* 把连线的信息读取回来 */
+        GList *tlist = list;
+        for(;tlist ; tlist = tlist->next)
+        {
+            DiaObject *obj = tlist->data;
+            obj->ops->rec_find_ocbox(obj,NULL,FIND_PTR_HASH);
+        }
+
 }

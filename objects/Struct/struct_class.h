@@ -25,6 +25,7 @@
 #define CLASS_H
 
 #include "object.h"
+#include "object_ops.h"
 #include "element.h"
 #include "connectionpoint.h"
 #include "connection.h"
@@ -541,6 +542,12 @@ struct _STRUCTClass
     PublicSection *pps;
 };
 
+void factory_class_ocombox_foreach(STRUCTClass *fclass,
+                           gpointer user_data,OCOMBO_OPT oopt);
+
+typedef void (*FactoryUnionItemUpdate)(STRUCTClass *sclass,gpointer dclass);
+
+void factory_delete_line_between_two_objects(STRUCTClass *startc,STRUCTClass *endc);
 void structclass_dialog_free (STRUCTClassDialog *dialog);
 extern GtkWidget *structclass_get_properties(STRUCTClass *structclass, gboolean is_default);
 extern ObjectChange *structclass_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
@@ -593,9 +600,9 @@ void factory_inital_ebtn(SaveStruct *sss,const FactoryStructItem *fst);
 GList* factory_get_objects_from_layer(Layer *layer);
 //STRUCTClass* factory_get_object_from_layer(Layer *layer,const gchar *name);
 static void factory_get_value_from_comobox(SaveStruct *sst,GtkWidget *comobox,ActionID *aid);
-
+static void factory_get_value_from_combox1(SaveStruct *sst, GtkWidget *comobox,ActionID *aid);
 void factory_strjoin(gchar **dst,const gchar *prefix,const gchar *sep);
-void factoy_changed_item(gpointer item,gpointer user_data);
+void factory_changed_item(gpointer item,gpointer user_data);
 STRUCTClass *factory_find_diaobject_by_name(Layer *curlayer,const gchar *name);
 DiaObject *factory_find_same_diaobject_via_glist(GList *flist,GList *comprelist);
 

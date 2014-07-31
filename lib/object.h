@@ -86,6 +86,15 @@ typedef enum {
 
 
 
+typedef enum{
+    CONNECT_OBJ, /* 连线对像 */
+    FIND_PTR_HASH,
+    FIND_PTR_TREE, /* 通过名字找去树里找指针, */
+    FIND_NAME /* 通过指针找名字 */
+}OCOMBO_OPT;
+
+
+
 /************************************
  ** Some general function prototypes
  **
@@ -376,6 +385,8 @@ typedef void (*ResetObjectsToDefaultColor)(DiaObject *obj);
 typedef void (*AddObjectToBTree)(DiaObject *obj,GTree *tree);
 typedef void (*ReNameNewObj)(DiaObject *obj,GTree *tree,gint meth);
 typedef void (*ReConnectionNewObj)(DiaObject *obj);
+typedef void (*RecursionFindOcombox)(DiaObject *obj,gpointer user_data,
+                                     gint oopt);
 
 /*************************************
  **  The functions provided in object.c
@@ -492,8 +503,9 @@ struct _ObjectOps {
   UpdateObjectsFillColor set_fillcolor;
   ResetObjectsToDefaultColor reset_objectsfillcolor;
   AddObjectToBTree  addobject_to_btree;
-  ReNameNewObj rename_new_obj;
-  ReConnectionNewObj reconnection_new_obj;
+  RecursionFindOcombox rec_find_ocbox;
+//  ReNameNewObj rename_new_obj;
+//  ReConnectionNewObj reconnection_new_obj;
 //  TemplateEdit templateedit;
   void      (*(unused[4]))(DiaObject *obj,...);
 };

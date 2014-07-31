@@ -60,6 +60,7 @@ extern MusicFileManagerOpts  mfmo_opts;
 
 
 
+
 static real structclass_distance_from(STRUCTClass *structclass, Point *point);
 static void structclass_select(STRUCTClass *structclass, Point *clicked_point,
                                DiaRenderer *interactive_renderer);
@@ -114,7 +115,7 @@ static void factory_update_index(STRUCTClass *fclass);
 
 static void fill_in_fontdata(STRUCTClass *structclass);
 static int structclass_num_dynamic_connectionpoints(STRUCTClass *class);
-//void factory_delete_line_between_two_objects(STRUCTClass *startc,const gchar *endc);
+static void factory_read_props_from_widget(gpointer key,gpointer value ,gpointer user_data);
 
 void factory_rename_structclass(STRUCTClass *fclass);
 void factory_update_view_names(STRUCTClass *fclass);
@@ -122,7 +123,7 @@ void factory_update_view_names(STRUCTClass *fclass);
 
 //static ObjectChange *_structclass_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
 ObjectChange *factory_apply_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
-void factory_delete_line_between_two_objects(STRUCTClass *startc,STRUCTClass *endc);
+
 
 void factory_change_view_name(STRUCTClass *startc);
 
@@ -210,8 +211,9 @@ static ObjectOps structclass_ops =
     (UpdateObjectsFillColor) factory_set_fill_color,
     (ResetObjectsToDefaultColor) factory_reset_object_color_to_default,
     (AddObjectToBTree) factory_add_self_to_btree,
-    (ReNameNewObj) factory_rename_new_obj,
-    (ReConnectionNewObj) factory_reconnection_new_obj
+    (RecursionFindOcombox) factory_class_ocombox_foreach
+//    (ReNameNewObj) factory_rename_new_obj,
+//    (ReConnectionNewObj) factory_reconnection_new_obj
 };
 
 
@@ -2215,7 +2217,10 @@ void factory_rename_structclass(STRUCTClass *structclass)
     }
     if(n >= 2048)
     {
-        message_error(_("单个控件编号超出2048个限制了"));
+        gchar *msg = factory_utf8("单个控件编号超出2048个限制了");
+        factory_message_dialoag(ddisplay_active()->shell,msg);
+        factory_waring_to_log(msg);
+        g_free(msg);
     }
 
     g_free(structclass->name);
@@ -2377,7 +2382,9 @@ FactoryStructItem *factory_get_factorystructitem(GList *inlist,const gchar *name
     return fst;
 }
 
-void factory_read_union_button_from_file(STRUCTClass *fclass,ObjectNode obtn_node,SaveUbtn *sbtn)
+void factory_read_union_button_from_file(STRUCTClass *fclass,
+                                         ObjectNode obtn_node,
+                                         SaveUbtn *sbtn)
 {
     xmlChar *key = NULL;
     while(obtn_node = data_next(obtn_node))
@@ -2590,8 +2597,6 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         if(suptr->curkey) g_free(suptr->curkey);
         suptr->curkey =g_strdup(nextobj->Name);
 
-//        if(suptr->curtext) g_free(suptr->curtext);
-//        suptr->curtext = g_strdup(nextobj->Name);
         SaveStruct *nsitm = factory_get_savestruct(nextobj);/* 紧跟它下面的控件名 */
         g_return_if_fail(nsitm);
 
@@ -2600,14 +2605,17 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         SaveUbtn *sbtn = &nsitm->value.ssubtn;
         factory_strjoin(&nsitm->name,g_strdup(sss->name),".");
         /* 把当前选择的成员初始化保存到哈希表 */
-        sbtn->structlist = nextobj->datalist;
+        sbtn->structlist = g_list_copy(nextobj->datalist);
         sbtn->savelist = NULL;
         /* 读它下面的子节点 */
-        factory_read_union_button_from_file(sss->sclass, attr_node->xmlChildrenNode,sbtn);
+        factory_read_union_button_from_file(sss->sclass,
+                                             attr_node->xmlChildrenNode,
+                                             sbtn);
         g_tree_insert(suptr->ubtreeVal,suptr->curkey,nsitm);
 //        g_hash_table_insert(suptr->saveVal,suptr->curkey,nsitm);
         /* 这里不知道为什么，插入一个节点后，这个suptr->curkey 就被free, 　下面又重新设置它的值*/
-        suptr->curkey =g_strdup( nextobj->Name);
+//       g_free(suptr->curkey);
+//       suptr->curkey =g_strdup( nextobj->Name);
     }
     else if(!g_ascii_strncasecmp((gchar*)key,"BBTN",4))
     {
@@ -2796,24 +2804,16 @@ void factory_read_value_from_xml(STRUCTClass *fclass,
 void factory_read_object_comobox_value_from_file(AttributeNode attr_node,
         ActionID *aid)
 {
-//    ActionID *aid = g_new0(ActionID,1);
-//    aid->index = 0;
-//    aid->pre_name = g_strdup("");
     aid->pre_quark = empty_quark;
     aid->value = g_strdup("-1");
-//    xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"index");
-//    if(key)
-//    {
-////        aid->index = atoi((gchar*)key);
-//        xmlFree(key);
-//    }
+
     xmlChar *key  =  xmlGetProp(attr_node,(xmlChar *)"idname");
     if(key)
     {
 //        aid->pre_name = g_strdup((gchar*)key);
         aid->pre_quark = g_quark_from_string((gchar*)key);
-        aid->conn_ptr =  g_hash_table_lookup(curLayer->defnames,
-                                             (gchar*)key);
+//        aid->conn_ptr =  g_hash_table_lookup(curLayer->defnames,
+//                                             (gchar*)key);
         xmlFree(key);
     }
 
@@ -2829,7 +2829,7 @@ void factory_read_object_comobox_value_from_file(AttributeNode attr_node,
         aid->value = g_strdup((gchar*)key);
         xmlFree(key);
     }
-//    return aid;
+
 }
 
 

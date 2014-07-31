@@ -129,7 +129,7 @@
 	"orth_conn.h"
 	"autoroute.h"
 
-1406198430 o:\tool\dvs50\lib\object.h
+1406803761 o:\tool\dvs50\lib\object.h
 	"diatypes.h"
 	<gtk/gtk.h>
 	"geometry.h"
@@ -294,7 +294,7 @@
 	<glib.h>
 	<diagramdata.h>
 
-1404374858 o:\tool\dvs50\lib\diagramdata.h
+1406796759 o:\tool\dvs50\lib\diagramdata.h
 	<glib.h>
 	<string.h>
 	"diatypes.h"
@@ -529,7 +529,7 @@
 	"properties.h"
 	"diavar.h"
 
-1404374860 source:o:\tool\dvs50\lib\diagramdata.c
+1406796767 source:o:\tool\dvs50\lib\diagramdata.c
 	<config.h>
 	"intl.h"
 	"diagramdata.h"
@@ -768,7 +768,7 @@
 	<config.h>
 	"object.h"
 
-1406528261 source:o:\tool\dvs50\lib\object.c
+1406790638 source:o:\tool\dvs50\lib\object.c
 	<config.h>
 	<stdio.h>
 	<string.h>
@@ -1324,7 +1324,7 @@
 	"attributes.h"
 	"persistence.h"
 
-1406602273 source:o:\tool\dvs50\app\commands.c
+1406800476 source:o:\tool\dvs50\app\commands.c
 	<config.h>
 	<unistd.h>
 	<stdlib.h>
@@ -1379,7 +1379,7 @@
 	<gtk/gtk.h>
 	"diagram.h"
 
-1399348184 o:\tool\dvs50\app\object_ops.h
+1406803633 o:\tool\dvs50\app\object_ops.h
 	"object.h"
 	"display.h"
 	"diagram.h"
@@ -1683,7 +1683,7 @@
 	<gtk/gtk.h>
 	<glib.h>
 
-1404723107 source:o:\tool\dvs50\app\filedlg.c
+1406803591 source:o:\tool\dvs50\app\filedlg.c
 	<config.h>
 	<sys/types.h>
 	<sys/stat.h>
@@ -1978,7 +1978,7 @@
 	"persistence.h"
 	<io.h>
 
-1406103981 source:o:\tool\dvs50\app\properties-dialog.c
+1406776848 source:o:\tool\dvs50\app\properties-dialog.c
 	<config.h>
 	<gtk/gtk.h>
 	<gdk/gdkkeysyms.h>
@@ -1990,7 +1990,7 @@
 	"message.h"
 	<string.h>
 
-1404445652 source:o:\tool\dvs50\app\recent_files.c
+1406804477 source:o:\tool\dvs50\app\recent_files.c
 	<config.h>
 	<gnome.h>
 	<gdk/gdkkeysyms.h>
@@ -2386,8 +2386,9 @@
 	"connectionpoint.h"
 	"dia_xml.h"
 
-1406723660 o:\tool\dvs50\objects\struct\struct_class.h
+1406800801 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
+	"object_ops.h"
 	"element.h"
 	"connectionpoint.h"
 	"connection.h"
@@ -2412,7 +2413,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1406723735 source:o:\tool\dvs50\objects\struct\struct_class.c
+1406804000 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2431,7 +2432,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1406724237 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1406804322 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
