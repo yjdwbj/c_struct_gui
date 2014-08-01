@@ -3029,7 +3029,8 @@ static void factory_connectionto_object(DDisplay *ddisp,DiaObject *obj,STRUCTCla
 //    fclass->connections[8].connected =g_list_append(fclass->connections[8].connected,obj);
 }
 
-DiaObject *factory_find_same_diaobject_via_glist(GList *flist,GList *comprelist)
+DiaObject *factory_find_same_diaobject_via_glist(GList *flist,
+        GList *comprelist)
 {
     GList *samelist = NULL; // 找出相同的一个连接线对像
     DiaObject *obj = NULL;
@@ -3078,70 +3079,6 @@ static void factory_connection_by_value(ActionID *aid,SaveStruct *sst)
 }
 
 
-//static void factory_find_ocombo_in_lists(SaveStruct *sst)
-//{
-//    if(factory_is_special_object(sst->type))
-//        return;
-//    if(!sst->org->isSensitive)
-//        return;
-//    switch(sst->celltype)
-//    {
-//    case OCOMBO:
-//    {
-//        ActionID *aid = &sst->value.actid;
-//        if(!aid)
-//        {
-//            STRUCTClass *aclass = sst->sclass;
-//            gchar *msg = g_strdup_printf(factory_utf8("下一个行为指针为空!对像名:%s,\t成员名称:%s\n"),
-//                                         aclass->name, sst->name);
-//            factory_waring_to_log(msg);
-//            g_free(msg);
-//            return;
-//        }
-//        factory_connection_by_value(aid,sst);
-//    }
-//    break;
-//    case OBTN:
-//    {
-//        ActIDArr *aidarr = &sst->value.nextid;
-//        GList *olist = aidarr->actlist;
-//        for(; olist; olist = olist->next)
-//        {
-//            ActionID *aid = olist->data;
-//            if(aid->conn_ptr || aid->pre_quark != empty_quark)
-//                factory_connection_by_value(aid,sst);
-//        }
-//    }
-//    break;
-//    case UCOMBO:
-//    {
-//
-//        SaveUnion *suptr = &sst->value.sunion;
-//
-//        SaveStruct *tsst = g_tree_lookup(suptr->ubtreeVal,
-//                                         suptr->curkey);
-//        if(tsst)
-//        {
-//            factory_find_ocombo_in_lists(tsst);
-//        }
-//    }
-//    break;
-//    case UBTN:
-//    {
-//        if(factory_is_special_object(sst->type))
-//            return;
-//        SaveUbtn *sbtn = &sst->value.ssubtn;
-//        GList *sslist = sbtn->savelist;
-//        for(; sslist; sslist = sslist->next)
-//        {
-//            factory_find_ocombo_in_lists(sslist->data);
-//        }
-//    }
-//    break;
-//    default:
-//        break;
-//    }
-//}
 
 static gboolean
 factory_tree_foreach_find (gpointer key,gpointer value,
@@ -3159,15 +3096,17 @@ factory_tree_foreach_find (gpointer key,gpointer value,
 typedef gpointer (*factory_lookup)(gpointer container,gpointer key);
 
 static void factory_ocombox_name_to_poniter(ActionID *aid,
-                                            factory_lookup func,
-                                            gpointer container)
+        factory_lookup func,
+        gpointer container,
+        gint type)
 {
     STRUCTClass *exist = func(container,
-                                       g_quark_to_string(aid->pre_quark));
+                              g_quark_to_string(aid->pre_quark));
     if(exist)
     {
         aid->conn_ptr = exist;
-        aid->pre_quark  = empty_quark;
+        if(type != FIND_PTR_LOAD)
+            aid->pre_quark  = empty_quark;
     }
 }
 
@@ -3184,87 +3123,56 @@ static void factory_ocombox_name_to_poniter(ActionID *aid,
 
 static void factory_ocombox_pointer_to_name(ActionID *aid)
 {
-        int idx = g_list_index(curLayer->objects,aid->conn_ptr);
-        if(idx < 0) /* 它连接的对像已经不存在了. */
-        {
-            aid->conn_ptr = NULL;
-            aid->pre_quark = empty_quark;
-        }
-        STRUCTClass *pclass = aid->conn_ptr ;
-        if(pclass)
-            aid->pre_quark = g_quark_from_string(pclass->name);
+    int idx = g_list_index(curLayer->objects,aid->conn_ptr);
+    if(idx < 0) /* 它连接的对像已经不存在了. */
+    {
+        aid->conn_ptr = NULL;
+        aid->pre_quark = empty_quark;
+    }
+    STRUCTClass *pclass = aid->conn_ptr ;
+    if(pclass)
+        aid->pre_quark = g_quark_from_string(pclass->name);
 }
 
-
-//static void factory_handle_single_ocombo(ActionID *aid ,GTree *tree)
-//{
-//    if(method == 0)
-//    {
-//        /* 通过名字找指针 */
-//        STRUCTClass *exist = g_tree_lookup(tree,
-//                                           g_quark_to_string(aid->pre_quark));
-//        if(exist)
-//        {
-//            aid->conn_ptr = exist;
-//            aid->pre_quark  = empty_quark;
-//        }
-//    }
-//    else if(method == 1)
-//    {
-//        /*名字为空,指针为真,表明这个对像更名,遍历树更新名字*/
-////        g_tree_foreach(tree,factory_tree_foreach_find,aid);
-//
-//        int idx = g_list_index(curLayer->objects,aid->conn_ptr);
-//        if(idx < 0) /* 它连接的对像已经不存在了. */
-//        {
-//            aid->conn_ptr = NULL;
-//            aid->pre_quark = empty_quark;
-//        }
-//        STRUCTClass *pclass = aid->conn_ptr ;
-//        if(pclass)
-//            aid->pre_quark = g_quark_from_string(pclass->name);
-//    }
-//
-//}
-
-
-
 static void factory_switch_operator(SaveStruct *sst,ActionID *aid ,
-                                      gpointer user_data,
-                                      OCOMBO_OPT oopt)
+                                    gpointer user_data,
+                                    OCOMBO_OPT oopt)
 {
-       switch(oopt)
-        {
-        case CONNECT_OBJ:
-            {
+    switch(oopt)
+    {
+    case CONNECT_OBJ:
+    {
 
-                factory_connection_by_value(aid,sst);
-            }
-            break;
-        case FIND_PTR_TREE:
-            {
-               factory_ocombox_name_to_poniter(aid,g_tree_lookup,user_data);
-            }
-            break;
-        case FIND_PTR_HASH:
-            {
-                factory_ocombox_name_to_poniter(aid,g_hash_table_lookup,
-                                                curLayer->defnames);
-            }
-            break;
-        case FIND_NAME:
-            {
-               factory_ocombox_pointer_to_name(aid);
-            }
-            break;
-        default:
-            break;
-        }
+        factory_connection_by_value(aid,sst);
+    }
+    break;
+    case FIND_PTR_TREE:
+    {
+        factory_ocombox_name_to_poniter(aid,g_tree_lookup,
+                                        user_data,oopt);
+    }
+    break;
+    case FIND_PTR_LOAD:
+    case FIND_PTR_HASH:
+    {
+        factory_ocombox_name_to_poniter(aid,g_hash_table_lookup,
+                                        curLayer->defnames,
+                                        oopt);
+    }
+    break;
+    case FIND_NAME:
+    {
+        factory_ocombox_pointer_to_name(aid);
+    }
+    break;
+    default:
+        break;
+    }
 }
 
 static void factory_find_ocombox_in_savestruct(SaveStruct *sst,
-                                      gpointer user_data,
-                                      OCOMBO_OPT type)
+        gpointer user_data,
+        OCOMBO_OPT type)
 {
     if(factory_is_special_object(sst->type))
         return;
@@ -3325,82 +3233,8 @@ static void factory_find_ocombox_in_savestruct(SaveStruct *sst,
     }
 }
 
-
-//static void factory_find_item_in_tree(SaveStruct *sst,
-//                                      GTree *tree)
-//{
-//    if(factory_is_special_object(sst->type))
-//        return;
-//    if(!sst->org->isSensitive)
-//        return;
-//    switch(sst->celltype)
-//    {
-//    case OCOMBO:
-//    {
-//        ActionID *aid = &sst->value.actid;
-//        factory_handle_single_ocombo(aid,tree);
-//    }
-//    break;
-//    case OBTN:
-//    {
-//        ActIDArr *aidarr = &sst->value.nextid;
-//        GList *olist = aidarr->actlist;
-//        for(; olist; olist = olist->next)
-//        {
-//            ActionID *aid = olist->data;
-//            factory_handle_single_ocombo(aid,tree);
-//        }
-//    }
-//    break;
-//    case UCOMBO:
-//    {
-//        SaveUnion *suptr = &sst->value.sunion;
-//        SaveStruct *tsst = g_tree_lookup(suptr->ubtreeVal,suptr->curkey);
-//        if(tsst)
-//        {
-//            tsst->sclass = sst->sclass;
-//            factory_find_item_in_tree(tsst,tree);
-//        }
-//    }
-//    break;
-//    case UBTN:
-//    {
-//
-//        if(factory_is_special_object(sst->type))
-//            return;
-//        SaveUbtn *sbtn = &sst->value.ssubtn;
-//        GList *sslist = sbtn->savelist;
-//        for(; sslist; sslist = sslist->next)
-//        {
-//            SaveStruct *subsst = sslist->data;
-//            subsst->sclass = sst->sclass;
-//            factory_find_item_in_tree(sslist->data,tree);
-//        }
-//    }
-//    break;
-//    default:
-//        break;
-//    }
-//}
-/* meth == 0 通过名字找指针, meth == 1 通过指针找名字 */
-
-///*递归查找每一个ocombo型的值,更新它的名称*/
-//void factory_rename_new_obj(STRUCTClass *fclass,
-//                            GTree *tree,gint meth)
-//{
-//    method = meth;
-////    factory_debug_to_log(g_strdup_printf(factory_utf8("处理对像:%s\n"),fclass->name));
-//    GList *savelist = fclass->widgetSave;
-//    SaveStruct *last_sst = NULL;
-//    for(; savelist; savelist = savelist->next)
-//    {
-//        SaveStruct *sst = savelist->data;
-//        factory_find_item_in_tree(sst,tree);
-//    }
-//}
-
 void factory_class_ocombox_foreach(STRUCTClass *fclass,
-                           gpointer user_data,OCOMBO_OPT oopt)
+                                   gpointer user_data,OCOMBO_OPT oopt)
 {
     GList *savelist = fclass->widgetSave;
     SaveStruct *last_sst = NULL;
@@ -3410,19 +3244,6 @@ void factory_class_ocombox_foreach(STRUCTClass *fclass,
         factory_find_ocombox_in_savestruct(sst,user_data,oopt);
     }
 }
-
-/*递归查找每一个ocombo型的值,连接它们的值*/
-//void factory_reconnection_new_obj(STRUCTClass *fclass)
-//{
-//    GList *savelist = fclass->widgetSave;
-//    for(; savelist; savelist = savelist->next)
-//    {
-//        SaveStruct *sst = savelist->data;
-//        factory_find_ocombo_in_lists(sst);
-////        factory_debug_to_log(g_strdup_printf("SaveStruct name:%s\n",
-////                                             sst->name));
-//    }
-//}
 
 
 void factory_reset_object_color_to_default()
@@ -3558,7 +3379,13 @@ static void factory_actionid_line_update(STRUCTClass *sclass,
         gchar *pre_name = g_quark_to_string(aid->pre_quark);
         STRUCTClass *lastclass = g_hash_table_lookup(curLayer->defnames,
                                  pre_name);
-        if(lastclass == sclass) return; /* 没有更改 */
+        if(lastclass == aid->conn_ptr)
+        {
+            if(factory_is_connected(&lastclass->connections[8],
+                                    &((STRUCTClass*)aid->conn_ptr)->connections[8]))
+
+                return;
+        } /* 没有更改 */
         factory_delete_line_between_two_objects(sclass,lastclass);
     }
 
@@ -3643,20 +3470,18 @@ static void factory_read_props_from_widget(gpointer key,
     switch(sss->celltype)
     {
     case ECOMBO:
-        if(gtk_container_child_type(GTK_CONTAINER(sss->widget2)) != GTK_TYPE_NONE)
+    {
+        SaveEnum *senum = &sss->value.senum;
+        senum->index = gtk_combo_box_get_active(GTK_COMBO_BOX(sss->widget2));
+        FactoryStructEnum *kmap =  g_list_nth_data(senum->enumList,
+                                   senum->index);
+        if(kmap)
         {
-            GList *p = gtk_container_children(GTK_CONTAINER(sss->widget2));
-            if(p)
-            {
-                sss->value.senum.index = gtk_combo_box_get_active(GTK_COMBO_BOX(p->data));
-            }
-
+            g_free(senum->evalue);
+            senum->evalue = g_strdup(kmap->value);
         }
-        else
-            sss->value.senum.index = gtk_combo_box_get_active(GTK_COMBO_BOX(sss->widget2));
-        FactoryStructEnum *kmap =  g_list_nth_data(sss->value.senum.enumList,sss->value.senum.index);
-        sss->value.senum.evalue = kmap->value;
-        break;
+    }
+    break;
     case ENTRY:
     {
         SaveEntry *sey = &sss->value.sentry;
@@ -3725,14 +3550,14 @@ static void factory_read_props_from_widget(gpointer key,
             }
         }
     }
-    break;
-    case OBTN: /* 这里要加一个处理,这是一组联线的控件 */
-    {
-        ActIDArr *nid = &sss->value.nextid;
-        g_return_if_fail(nid);
-        factory_recheck_objectbutton_connection(sss->sclass,
-                                                nid->actlist);
-    }
+//    break;
+//    case OBTN: /* 这里要加一个处理,这是一组联线的控件 */
+//    {
+//        ActIDArr *nid = &sss->value.nextid;
+//        g_return_if_fail(nid);
+//        factory_recheck_objectbutton_connection(sss->sclass,
+//                                                nid->actlist);
+//    }
     break;
     default:
         break;
@@ -3770,88 +3595,8 @@ static void factory_get_value_from_combox1(SaveStruct *sst, GtkWidget *comobox,
     g_free(cur_name);
 }
 
-static void factory_get_value_from_comobox(SaveStruct *sst,
-        GtkWidget *comobox,
-        ActionID *aid)
-{
-    STRUCTClass *startclass = sst->sclass;
-    g_return_if_fail(aid);
-    DDisplay *ddisp =  ddisplay_active();
-    int  curindex = gtk_combo_box_get_active(GTK_COMBO_BOX(comobox));
-    gchar *pname = gtk_combo_box_get_active_text(GTK_COMBO_BOX(comobox));
-    GQuark pquark = empty_quark;
-
-    if(!pname)
-    {
-        aid->conn_ptr = NULL;
-    }
-    else
-    {
-        pquark = g_quark_from_string(pname);
-        aid->conn_ptr = g_hash_table_lookup(curLayer->defnames,pname);
-    }
-
-    const gchar *pre_name = g_quark_to_string(aid->pre_quark);
-    gpointer  lastobj = g_hash_table_lookup(curLayer->defnames,
-                                            pre_name);/*上次的选项*/
-    if(pquark == empty_quark) /*下标零，删除上一次的画线*/
-        goto DELL;
-    else
-    {
-        if( (aid->conn_ptr  == lastobj) &&
-                (aid->pre_quark == pquark))
-        {
-            factory_connection_two_object(startclass,aid->conn_ptr);
-            return; /* 没有更改过 ,但是这联线动作是检查一下,
-            它们的联线是否存*/
-        }
-
-        factory_delete_line_between_two_objects(startclass,lastobj); /*如果上次有连线现在要删除 */
-
-        if(aid->conn_ptr != lastobj) /* 是自己就不连线 */
-        {
-            factory_connection_two_object(startclass,aid->conn_ptr);
-            goto SETV; /* 已经有连线了 */
-        }
-        else
-        {
-            STRUCTClass *objclass =  g_hash_table_lookup(curLayer->defnames,pname);
-            if(!factory_is_connected(&objclass->connections[8],
-                                     &startclass->connections[8])) /* 检查一下连线 */
-            {
-                factory_connection_two_object(startclass,aid->conn_ptr);
-            }
-
-        }
-
-    }
-
-DELL:
-    if(aid->conn_ptr != startclass) /* 上次非零,名字又不是自己,要删除线*/
-    {
-        factory_delete_line_between_two_objects(startclass,lastobj);
-        g_free(aid->value);
-        aid->value = g_strdup("-1");
-        aid->conn_ptr = NULL;
-    }
-
-SETV:
-    aid->pre_quark = pquark;
-    if(aid->conn_ptr)
-        aid->value  = g_strdup_printf("%d",
-                                      ((DiaObject*)aid->conn_ptr)->oindex);
-//    aid->conn_ptr = g_hash_table_lookup(curLayer->defnames,pname);
-    if(ddisplay_active_diagram()->isTemplate)
-    {
-        factory_template_update_actionid_state(ddisplay_active_diagram()
-                                               ,sst,pquark);
-    }
-    diagram_flush(ddisp->diagram);
-    g_free(pname);
-}
-
-
-void factory_delete_line_between_two_objects(STRUCTClass *startc,STRUCTClass *objclass)
+void factory_delete_line_between_two_objects(STRUCTClass *startc,
+        STRUCTClass *objclass)
 {
     DDisplay *ddisp =  ddisplay_active();
 //    Layer *curlayer = startc->element.object.parent_layer;
@@ -3860,8 +3605,21 @@ void factory_delete_line_between_two_objects(STRUCTClass *startc,STRUCTClass *ob
 
     ConnectionPoint *cpstart = &startc->connections[8];
     ConnectionPoint *cpend = &objclass->connections[8];
-    DiaObject *line =  factory_find_same_diaobject_via_glist(cpend->connected,
-                       cpstart->connected);
+    DiaObject *line = NULL;
+    if(startc == objclass)
+    {
+        GList *sclist = cpstart->connected;
+        for(; sclist ; sclist = sclist->next)
+        {
+            line = sclist->data;
+            if(line->num_connections == 1 &&
+                    !line->connections[0]->connected)
+                break;
+        }
+    }
+    else
+        line = factory_find_same_diaobject_via_glist(cpend->connected,
+                cpstart->connected);
     if(line && factory_is_connected(cpend,cpstart))
     {
         /* 上次的连线,到此要删掉它,重新连线 */
@@ -4148,6 +3906,21 @@ GtkWidget *factory_create_enum_widget(GList *list,int index)
     return columTwo;
 }
 
+static void factory_actionid_update_pre_quark(ActionID *aid)
+{
+    g_return_if_fail(aid);
+    if(aid->conn_ptr)
+    {
+        int idx  = g_list_index(curLayer->objects,
+                                aid->conn_ptr);
+        if(-1 != idx )
+        {
+            aid->pre_quark =
+                g_quark_from_string(((STRUCTClass*)aid->conn_ptr)->name);
+        }
+    }
+}
+
 static GtkWidget *factory_create_variant_object(SaveStruct *sss)
 {
     /* 这个函数可能会被递归调用 */
@@ -4281,21 +4054,32 @@ FIRST:
 //            aid->conn_ptr = g_hash_table_lookup(curLayer->defnames,
 //                                                pre_name);
 //        }
+        factory_actionid_update_pre_quark(aid);
+//        if(aid->conn_ptr)
+//        {
+//           int idx  = g_list_index(curLayer->objects,
+//                                    aid->conn_ptr);
+//            if(idx > 0)
+//            {
+//                aid->pre_quark =
+//                    g_quark_from_string(((STRUCTClass*)aid->conn_ptr)->name);
+//            }
+//        }
 
         /* 如果它指向的改名了,就要用到下面个 */
-        if((aid->pre_quark != empty_quark) && aid->conn_ptr)
-        {
-            const gchar *pre_name = g_quark_to_string(aid->pre_quark);
-            gpointer findobj = g_hash_table_lookup(curLayer->defnames,
-                                                   pre_name);
-            int idx  = g_list_index(curLayer->objects,
-                                    aid->conn_ptr);
-            if(!findobj && idx > 0)
-            {
-                aid->pre_quark =
-                    g_quark_from_string(((STRUCTClass*)aid->conn_ptr)->name);
-            }
-        }
+//        if((aid->pre_quark != empty_quark) && aid->conn_ptr)
+//        {
+//            const gchar *pre_name = g_quark_to_string(aid->pre_quark);
+//            gpointer findobj = g_hash_table_lookup(curLayer->defnames,
+//                                                   pre_name);
+//            int idx  = g_list_index(curLayer->objects,
+//                                    aid->conn_ptr);
+//            if(!findobj && idx > 0)
+//            {
+//                aid->pre_quark =
+//                    g_quark_from_string(((STRUCTClass*)aid->conn_ptr)->name);
+//            }
+//        }
 
         GList *tlist = olist;
         GtkTreeModel *emodel = factory_create_combox_model(olist);
@@ -4482,11 +4266,10 @@ void factory_save_objectbutton_dialog(GtkWidget *widget,
     if (   response_id == GTK_RESPONSE_APPLY
             || response_id == GTK_RESPONSE_OK)
     {
-        int n = 0;
-        for(; wlist; wlist = wlist->next,n++)
+        for(; wlist; wlist = wlist->next)
         {
             GtkWidget *wid = wlist->data;
-            ActionID *aid = g_list_nth_data(nid->actlist,n);
+            ActionID *aid = g_object_get_data(G_OBJECT(wid),"aid_data");
             factory_get_value_from_combox1(sst,wid,aid);
         }
         diagram_set_modified(ddisplay_active_diagram(),TRUE);
@@ -4536,7 +4319,11 @@ void factory_save_value_from_widget(SaveStruct *sss)
         sss->value.senum.index = gtk_combo_box_get_active(GTK_COMBO_BOX(sss->widget2));
         FactoryStructEnum *kmap =  g_list_nth_data(sss->value.senum.enumList,sss->value.senum.index);
         if(kmap)
-            sss->value.senum.evalue = kmap->value;
+        {
+            g_free(sss->value.senum.evalue);
+            sss->value.senum.evalue = g_strdup(kmap->value);
+        }
+
     }
     break;
     case ENTRY:
@@ -4973,14 +4760,15 @@ void factory_create_objectbutton_dialog(GtkWidget *button,SaveStruct *sst)
 
     ActIDArr *nextid = &sst->value.nextid;
     STRUCTClass *orgclass = sst->sclass;
-    nextid->itemlist = factory_get_objects_from_layer(curLayer);
-    nextid->itemlist = g_list_insert(nextid->itemlist,
-                                     g_quark_to_string(empty_quark),0);
+
+    GList *filllist = factory_get_objects_from_layer(curLayer);
+    filllist = g_list_insert(filllist,
+                             g_quark_to_string(empty_quark),0);
 
     int r = 0;
     int pos = 0;
     int tnum = 0;
-    GtkTreeModel *model = factory_create_combox_model(nextid->itemlist);
+    GtkTreeModel *model = factory_create_combox_model(filllist);
     ArrayBaseProp *abp = &nextid->arr_base;
     for(; r < abp->row ; r++)
     {
@@ -4994,15 +4782,19 @@ void factory_create_objectbutton_dialog(GtkWidget *button,SaveStruct *sst)
                 break;
             GtkWidget *hbox = gtk_hbox_new(FALSE,0);
             ActionID *aid = g_list_nth_data(nextid->actlist,pos);
-//            GtkWidget *comobox = factory_create_combo_widget(nextid->itemlist,aid->index);
+            factory_actionid_update_pre_quark(aid);
             GtkWidget *comobox = gtk_combo_box_new_text();
+            g_object_set_data(G_OBJECT(comobox),"aid_data",aid);
             gtk_combo_box_set_model(GTK_COMBO_BOX(comobox),model);
-            ComboxCmp cc = {.combox = comobox,
-                            .qindex = aid->pre_quark
-                           };
-            gtk_tree_model_foreach(model,factory_comobox_compre_foreach,&cc);
-//            factory_update_ActionId_object(comobox,aid,
-//                                            nextid->itemlist);
+            ComboxCmp  *cc = g_new0(ComboxCmp,1);
+            cc->combox = comobox;
+            cc->qindex = aid->pre_quark;
+
+            gtk_tree_model_foreach(model,
+                                   factory_comobox_compre_foreach,
+                                   cc);
+            g_free(cc);
+
             GtkWidget *wid = gtk_label_new(aid->title_name);
             nextid->wlist = g_list_append(nextid->wlist,comobox);
             gtk_box_pack_start(GTK_BOX(hbox),wid,FALSE,FALSE,0);
@@ -5014,12 +4806,7 @@ void factory_create_objectbutton_dialog(GtkWidget *button,SaveStruct *sst)
     }
     g_signal_connect(G_OBJECT (subdig), "response",
                      G_CALLBACK (sst->close_func), sst); /* 保存关闭 */
-
     gtk_widget_show_all(subdig);
-
-    gtk_dialog_run(subdig);
-
-    gtk_widget_destroy(subdig);
 
 }
 
@@ -5381,31 +5168,6 @@ void factory_append_public_info(GtkWidget *dialog,STRUCTClass *fclass)
 
 
 }
-
-//void factory_update_ActionId_for_structclass(STRUCTClass *fclass)
-//{
-//    GList *tlist = fclass->widgetSave;
-//    for(; tlist; tlist = tlist->next)
-//    {
-//        SaveStruct *sst = tlist;
-//        g_return_if_fail(sst);
-//        if(sst->celltype == OCOMBO)
-//        {
-//            NextID *nid = &sst->value.nextid;
-//            ActionID *aid = nid->actlist->data;
-//            g_return_if_fail(sst);
-//            gpointer exists = g_hash_table_lookup(curLayer->defnames,aid->pre_name);
-//            if(!exists)
-//            {
-//                g_free(aid->pre_name);
-//                aid->pre_name = g_strdup("");
-//                aid->index = 0;
-//                break;
-//            }
-//        }
-//
-//    }
-//}
 
 
 gint factory_get_ocombox_index(GList *clist,const gchar *name)

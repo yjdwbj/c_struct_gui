@@ -189,7 +189,7 @@ open_recent_file_callback(GtkWidget *widget, gpointer data)
         for(;tlist ; tlist = tlist->next)
         {
             DiaObject *obj = tlist->data;
-            obj->ops->rec_find_ocbox(obj,NULL,FIND_PTR_HASH);
+            obj->ops->rec_find_ocbox(obj,NULL,FIND_PTR_LOAD);
         }
 
 }

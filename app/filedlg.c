@@ -292,7 +292,7 @@ file_open_response_callback(GtkWidget *fs,
         for(;tlist ; tlist = tlist->next)
         {
             DiaObject *obj = tlist->data;
-            obj->ops->rec_find_ocbox(obj,NULL,FIND_PTR_HASH);
+            obj->ops->rec_find_ocbox(obj,NULL,FIND_PTR_LOAD);
         }
     }
 

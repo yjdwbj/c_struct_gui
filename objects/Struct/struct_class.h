@@ -169,8 +169,8 @@ struct _ArrayBaseProp
 typedef struct _NextId ActIDArr;
 struct _NextId
 {
-    GList *itemlist; /* 保存 ActionID 的结构体*/
-    GList *actlist;
+//    GList *itemlist;
+    GList *actlist; /* 保存 ActionID 的结构体*/
     GList *wlist; /* widget list */
     ArrayBaseProp arr_base;
 };

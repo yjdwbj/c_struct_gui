@@ -2383,8 +2383,8 @@ FactoryStructItem *factory_get_factorystructitem(GList *inlist,const gchar *name
 }
 
 void factory_read_union_button_from_file(STRUCTClass *fclass,
-                                         ObjectNode obtn_node,
-                                         SaveUbtn *sbtn)
+        ObjectNode obtn_node,
+        SaveUbtn *sbtn)
 {
     xmlChar *key = NULL;
     while(obtn_node = data_next(obtn_node))
@@ -2609,8 +2609,8 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         sbtn->savelist = NULL;
         /* 读它下面的子节点 */
         factory_read_union_button_from_file(sss->sclass,
-                                             attr_node->xmlChildrenNode,
-                                             sbtn);
+                                            attr_node->xmlChildrenNode,
+                                            sbtn);
         g_tree_insert(suptr->ubtreeVal,suptr->curkey,nsitm);
 //        g_hash_table_insert(suptr->saveVal,suptr->curkey,nsitm);
         /* 这里不知道为什么，插入一个节点后，这个suptr->curkey 就被free, 　下面又重新设置它的值*/
@@ -2938,7 +2938,7 @@ SaveStruct *factory_get_action_savestruct(SaveStruct *sss,FactoryStructItem *fst
     if(g_str_has_suffix(sss->name,"]"))
     {
         ActIDArr *nid = &sss->value.nextid;
-        nid->itemlist = NULL;
+//        nid->itemlist = NULL;
         nid->actlist = NULL;
         nid->wlist = NULL;
         sss->celltype = OBTN; /* 这里是数组了,需要按键创建新窗口来设置 */
@@ -3361,11 +3361,9 @@ factory_handle_entry_item(SaveEntry* sey,FactoryStructItem *fst)
     }
 }
 
-
 static void
 structclass_destroy(STRUCTClass *structclass)
 {
-
     structclass->destroyed = TRUE;
 
     dia_font_unref(structclass->normal_font);
@@ -3483,8 +3481,6 @@ structclass_copy(STRUCTClass *structclass)
     newstructclass->name = g_strdup(structclass->name);
     newstructclass->isInitial = TRUE;
     newstructclass->hasIdnumber = FALSE;
-
-
 
     //  factory_rename_structclass(newstructclass);
 //    newstructclass->name = g_strdup(structclass->name);
@@ -3743,8 +3739,12 @@ static void factory_write_object_comobox(ActionID *aid,ObjectNode ccc ,const gch
 
     xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)aid->value );
 //    xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf(_("%d"),aid->index));
-    gchar *pre_name = g_quark_to_string(aid->pre_quark);
-    xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)pre_name );
+//    gchar *pre_name = g_quark_to_string(aid->pre_quark);
+
+    gchar *pre_name = aid->conn_ptr ? ((STRUCTClass*)aid->conn_ptr)->name
+                      : g_quark_to_string(empty_quark);
+    xmlSetProp(ccc, (const xmlChar *)"idname",(xmlChar *)pre_name );
+
 }
 
 static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node)
@@ -4226,10 +4226,21 @@ structclass_sanity_check(STRUCTClass *c, gchar *msg)
 void factory_actionid_copy(const ActionID *onid,
                            ActionID *nnid)
 {
-    nnid->value = g_strdup(onid->value);
-    nnid->title_name = g_strdup(onid->title_name);
-    nnid->pre_quark = onid->pre_quark;
-    nnid->conn_ptr = onid->conn_ptr;
+    if(onid)
+    {
+        nnid->value = g_strdup(onid->value);
+        nnid->title_name = g_strdup(onid->title_name);
+        nnid->pre_quark = onid->pre_quark;
+        nnid->conn_ptr = onid->conn_ptr;
+    }
+    else
+    {
+        nnid->value = g_strdup("-1");
+        nnid->pre_quark = empty_quark;
+        nnid->title_name = g_strdup("");
+        nnid->conn_ptr = NULL;
+    }
+
 }
 
 static gboolean
@@ -4255,18 +4266,18 @@ SaveStruct *factory_savestruct_copy(const SaveStruct *old)
     newsst->isPointer = old->isPointer;
     newsst->templ_pos = old->templ_pos;
     newsst->templ_quark = old->templ_quark;
-    int t = offsetof(SaveStruct,value);
-    memcpy(((char*)newsst)+t,((char*)old)+t,
-           sizeof(_value));
+//    int t = offsetof(SaveStruct,value);
+//    memcpy(((char*)newsst)+t,((char*)old)+t,
+//           sizeof(_value));
 
     switch(old->celltype)
     {
     case ECOMBO:
     {
         SaveEnum *osen = &old->value.senum;
-        SaveEnum *nsen = &old->value.senum;
+        SaveEnum *nsen = &newsst->value.senum;
         nsen->evalue = g_strdup(osen->evalue);
-        nsen->enumList = osen->enumList;
+        nsen->enumList = g_list_copy(osen->enumList);
         nsen->width = g_strdup(osen->width);
         nsen->index = osen->index;
     }
@@ -4290,7 +4301,7 @@ SaveStruct *factory_savestruct_copy(const SaveStruct *old)
                                          osuptr->curkey);
         /*这里只复制当前一个值*/
         g_tree_insert(nsuptr->ubtreeVal,nsuptr->curkey,
-                        factory_savestruct_copy(usst));
+                      factory_savestruct_copy(usst));
     }
     break; /* union comobox */
     case UBTN:
@@ -4307,7 +4318,7 @@ SaveStruct *factory_savestruct_copy(const SaveStruct *old)
         GList *nslist = NULL;
         for(; sslist; sslist = sslist->next)
         {
-           nslist = g_list_append(nslist,factory_savestruct_copy(sslist->data));
+            nslist = g_list_append(nslist,factory_savestruct_copy(sslist->data));
         }
         SaveUbtn *nsbtn = &newsst->value.ssubtn;
         nsbtn->savelist = nslist;
@@ -4318,16 +4329,16 @@ SaveStruct *factory_savestruct_copy(const SaveStruct *old)
         ActIDArr *nnid = &newsst->value.nextid;
         ActIDArr *onid = &old->value.nextid;
         nnid->arr_base = onid->arr_base;
-        nnid->actlist = g_list_copy(onid->actlist);
+//        nnid->actlist = g_list_copy(onid->actlist);
         nnid->wlist = NULL;
-        GList *olist = onid->itemlist;
-        g_list_free1(nnid->itemlist);
-        nnid->itemlist = NULL;
+        GList *olist = onid->actlist;
+        g_list_free1(nnid->actlist);
+        nnid->actlist = NULL;
         for(; olist; olist = olist->next)
         {
             ActionID *aid = g_new0(ActionID,1);
             factory_actionid_copy(olist->data,aid);
-            nnid->itemlist = g_list_append(nnid->itemlist,aid);
+            nnid->actlist = g_list_append(nnid->actlist,aid);
         }
     }
     break;
@@ -4338,12 +4349,13 @@ SaveStruct *factory_savestruct_copy(const SaveStruct *old)
         factory_actionid_copy(onid,nnid);
     }
     break;/* object combox*/
-
+    case BBTN:
     case ENTRY:
     {
         SaveEntry *osey = &old->value.sentry;
         SaveEntry *nsey = &newsst->value.sentry;
         nsey->arr_base = osey->arr_base;
+        nsey->isString = osey->isString;
         if(osey->isString)
         {
             nsey->data = g_strdup(osey->data);
@@ -4360,16 +4372,17 @@ SaveStruct *factory_savestruct_copy(const SaveStruct *old)
         newsst->value.vnumber = g_strdup(old->value.vnumber);
     }
     break;
-    case BBTN:
-    {
-        SaveEntry *osey = &old->value.sentry;
-        SaveEntry *nsey = &newsst->value.sentry;
-        nsey->arr_base = osey->arr_base;
-        nsey->data = g_list_copy(osey->data);
-
-        nsey->wlist = g_list_copy(osey->wlist);
-    }
-    break;
+//    case BBTN:
+//    {
+//        SaveEntry *osey = &old->value.sentry;
+//        SaveEntry *nsey = &newsst->value.sentry;
+//        nsey->arr_base = osey->arr_base;
+//        nsey->isString = osey->isString
+//        nsey->data = g_list_copy(osey->data);
+//
+//        nsey->wlist = g_list_copy(osey->wlist);
+//    }
+//    break;
     case EBTN:
     {
         SaveEbtn *osebtn = &old->value.ssebtn;

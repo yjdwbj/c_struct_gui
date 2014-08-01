@@ -90,6 +90,7 @@ typedef enum{
     CONNECT_OBJ, /* 连线对像 */
     FIND_PTR_HASH,
     FIND_PTR_TREE, /* 通过名字找去树里找指针, */
+    FIND_PTR_LOAD, /* 加载后,通过名字找去树里找指针*/
     FIND_NAME /* 通过指针找名字 */
 }OCOMBO_OPT;
 
