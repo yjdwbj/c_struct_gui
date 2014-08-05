@@ -3136,7 +3136,8 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
                 smd->offset = g_strv_length(split);
                 g_strfreev(split);
                 /* 这里用数字哈希表来保存,文件名的hash值 */
-                smd->mtable = g_hash_table_new(g_direct_hash,g_direct_equal);
+//                smd->mtable = g_hash_table_new(g_direct_hash,g_direct_equal);
+                smd->mbtree = g_tree_new(g_ascii_strcasecmp);
 //                smd->midtable = g_hash_table_new(g_direct_hash,g_direct_equal);
             }
 
@@ -4009,7 +4010,8 @@ factory_struct_items_load(ObjectNode obj_node,int version,
             smd->offset = g_strv_length(split);
             g_strfreev(split);
             /* 这里用数字哈希表来保存,文件名的hash值 */
-            smd->mtable = g_hash_table_new(g_direct_hash,g_direct_equal);
+            smd->mbtree = g_tree_new(g_ascii_strcasecmp);
+//            smd->mtable = g_hash_table_new(g_direct_hash,g_direct_equal);
 //            smd->midtable = g_hash_table_new(g_direct_hash,g_direct_equal);
         }
 

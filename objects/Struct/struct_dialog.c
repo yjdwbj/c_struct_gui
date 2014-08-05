@@ -4107,7 +4107,7 @@ FIRST:
     {
         columTwo =gtk_button_new_with_label(item->Name);
         FactoryStructItem *fsi = sss->org;
-
+        SaveMusicDialog *smd = curLayer->smd;
         if(!g_ascii_strcasecmp(item->SType,TYPE_FILELST))
         {
             ListDlgArg *lda = g_new0(ListDlgArg,1);
@@ -4115,12 +4115,23 @@ FIRST:
             lda->odw_func = NULL;
             lda->type = factory_get_last_section(sss->name,".");
             lda->user_data = &sss->value.vnumber; /* 这里是二级指针*/
-
-            gtk_button_set_label(GTK_BUTTON(columTwo), sss->value.vnumber );
+            if(factory_music_fm_item_is_index(item->Name))
+            {
+                subTable *stable = g_list_nth_data(smd->midlists,
+                                                   g_strtod(sss->value.vnumber,NULL));
+                if(stable)
+                    gtk_button_set_label(GTK_BUTTON(columTwo),
+                                         g_quark_to_string(stable->nquark));
+                else
+                   gtk_button_set_label(GTK_BUTTON(columTwo), sss->value.vnumber );
+            }
+            else
+                gtk_button_set_label(GTK_BUTTON(columTwo), sss->value.vnumber );
             g_signal_connect (G_OBJECT (columTwo), "clicked",G_CALLBACK (sss->newdlg_func),lda);
         }
         else if(!g_ascii_strcasecmp(item->SType,TYPE_IDLST))
         {
+
             gtk_button_set_label(GTK_BUTTON(columTwo), sss->value.vnumber );
 
             g_signal_connect (G_OBJECT (columTwo), "clicked",G_CALLBACK (sss->newdlg_func),sss);
@@ -4138,6 +4149,34 @@ FIRST:
     return columTwo;
 }
 
+gint factory_music_fm_get_position_type(const gchar* name)
+{
+    gchar *skey = factory_get_last_section(name,".");
+    if(!g_ascii_strcasecmp(skey,"aIndex_Number_Min"))
+        return OFFSET_FST;
+    else if(!g_ascii_strcasecmp(skey,"aIndex_Number_Max"))
+        return OFFSET_END;
+    else if(!g_ascii_strcasecmp(skey,"aIndex_Number_Sel"))
+        return OFFSET_SEL;
+    else
+        return -1;
+}
+
+gboolean factory_music_fm_item_is_index(const gchar* name)
+{
+    SaveMusicDialog *smd = curLayer->smd;
+    gchar *skey = factory_get_last_section(name,".");
+    gboolean flag = FALSE;
+    if(!smd)
+        return flag;
+    if(!g_ascii_strncasecmp(skey,"aIndex_Number",13))
+    {
+        smd->fmst = INDEX;
+        flag = TRUE;
+    }
+    g_free(skey);
+    return flag;
+}
 
 gboolean factory_music_fm_get_type(const gchar* name)
 {

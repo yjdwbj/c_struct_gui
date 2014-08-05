@@ -239,9 +239,9 @@ struct _SaveIdDialog
 typedef struct _SaveMusicFile SaveMusicFile;
 struct _SaveMusicFile
 {
-    int offset;
+//    int offset;
     GQuark full_quark;
-    GQuark base_quark;
+    gchar* base_name;
     gboolean isexists; /*是否存在*/
     gchar* down_name;   /*小机识别的名字*/
 
@@ -293,7 +293,8 @@ struct _SaveMusicDialog
 //    MusicFileManagerOpts *mfmos;
     GList *mflist; /* 内容是SaveMusicFile  */
 //    gchar *lastDir;
-    GHashTable  *mtable; /* 音乐文件哈希表 */
+//    GHashTable  *mtable; /* 音乐文件哈希表 */
+    GTree *mbtree;
     GList *midlists;
     GList *glist; /* 所有的项目 */
     gint offset;
@@ -746,6 +747,7 @@ typedef struct
 {
     GQuark nquark; /* 子表名*/
     GList *sub_list;
+    gint  cursel; /* 表内偏移 */
 } subTable;
 
 enum{
@@ -766,6 +768,12 @@ enum{ /* idlist */
     COLUMN_IDNAME,
     NUM_OF_IDLIST
 };
+
+enum{
+    OFFSET_FST,
+    OFFSET_SEL,
+    OFFSET_END
+}IDPOS;
 
 /* 这个函数指针用来分别取ID还是音乐文件的 */
 typedef gpointer (*Factory_Hash_Table_Lookup)(GHashTable *table,GQuark key);
