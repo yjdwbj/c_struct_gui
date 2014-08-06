@@ -3991,15 +3991,12 @@ FIRST:
             tsst->sclass = sss->sclass;
             factory_strjoin(&tsst->name,sss->name,".");
             /* °Ñµ±Ç°Ñ¡ÔñµÄ³ÉÔ±³õÊ¼»¯±£´æµ½¹şÏ£±í */
-            g_tree_insert(suptr->ubtreeVal,suptr->curkey,tsst);
-//            g_hash_table_insert(suptr->saveVal,suptr->curkey,tsst);
-
+            g_tree_insert(suptr->ubtreeVal,g_strdup(suptr->curkey),tsst);
         }
         else
         {
             tsst = g_tree_lookup(suptr->ubtreeVal,
                                  suptr->curkey);
-//            tsst = g_hash_table_lookup(suptr->saveVal,suptr->curkey);
             if(!tsst)
             {
                 goto FIRST;
@@ -4027,7 +4024,6 @@ FIRST:
         }
         gtk_container_add(GTK_CONTAINER(columTwo),widget);
         g_object_set_data(G_OBJECT(suptr->comobox),"link_wid",widget);
-//        gtk_box_pack_start_defaults(GTK_BOX(columTwo),widget);
         gtk_widget_show_all(columTwo);
         g_signal_connect (G_OBJECT (suptr->comobox), "changed",
                           G_CALLBACK (factory_changed_item), sss);
@@ -4047,39 +4043,7 @@ FIRST:
         if(!aid)
             factory_critical_error_exit(g_strdup_printf(factory_utf8("ÏÂÒ»¸öĞĞÎªIDÖ¸ÕëÎª¿Õ.\n½á¹¹ÌåÃû:%s .ÀàĞÍÃû:%s \n"),sss->name,sss->type));
 
-//        const gchar *pre_name = g_quark_to_string(aid->pre_quark);
-//        if((aid->pre_quark != empty_quark) && !aid->conn_ptr)
-//        {
-//            /* ÓĞÃû×ÖÃ»ÓĞÖ¸Õë,ÓĞ¿ÉÄÜÊÇ¸Õ¼ÓÔØ»ØÀ´µÄ. */
-//            aid->conn_ptr = g_hash_table_lookup(curLayer->defnames,
-//                                                pre_name);
-//        }
         factory_actionid_update_pre_quark(aid);
-//        if(aid->conn_ptr)
-//        {
-//           int idx  = g_list_index(curLayer->objects,
-//                                    aid->conn_ptr);
-//            if(idx > 0)
-//            {
-//                aid->pre_quark =
-//                    g_quark_from_string(((STRUCTClass*)aid->conn_ptr)->name);
-//            }
-//        }
-
-        /* Èç¹ûËüÖ¸ÏòµÄ¸ÄÃûÁË,¾ÍÒªÓÃµ½ÏÂÃæ¸ö */
-//        if((aid->pre_quark != empty_quark) && aid->conn_ptr)
-//        {
-//            const gchar *pre_name = g_quark_to_string(aid->pre_quark);
-//            gpointer findobj = g_hash_table_lookup(curLayer->defnames,
-//                                                   pre_name);
-//            int idx  = g_list_index(curLayer->objects,
-//                                    aid->conn_ptr);
-//            if(!findobj && idx > 0)
-//            {
-//                aid->pre_quark =
-//                    g_quark_from_string(((STRUCTClass*)aid->conn_ptr)->name);
-//            }
-//        }
 
         GList *tlist = olist;
         GtkTreeModel *emodel = factory_create_combox_model(olist);
@@ -4090,8 +4054,6 @@ FIRST:
                        };
         gtk_tree_model_foreach(emodel,factory_comobox_compre_foreach,
                                &cc);
-//        columTwo = factory_create_combo_widget(olist,aid->index);
-//        factory_update_ActionId_object(columTwo,aid,tlist);
     }
     break;
     case LBTN:
@@ -4131,9 +4093,7 @@ FIRST:
         }
         else if(!g_ascii_strcasecmp(item->SType,TYPE_IDLST))
         {
-
             gtk_button_set_label(GTK_BUTTON(columTwo), sss->value.vnumber );
-
             g_signal_connect (G_OBJECT (columTwo), "clicked",G_CALLBACK (sss->newdlg_func),sss);
         }
         else
@@ -4482,8 +4442,6 @@ void factory_changed_item(gpointer widget,gpointer user_data) /* 0.98.10 Ö®Ç°µÄ°
 
     GtkWidget *activeWidget = NULL;
     /* É¾³ıÔ­À´µÄ¿Ø¼ş,¸ù¾İÀàĞÍÖØĞÂÉú³É¿Ø¼ş*/
-//    GList *wlist = gtk_container_children(GTK_CONTAINER(suptr->vbox));
-
     GtkWidget *link_widget = g_object_get_data(G_OBJECT(widget),"link_wid");
     gchar *pre_text = g_strdup(gtk_entry_get_text(GTK_ENTRY(link_widget)));
 
@@ -4492,8 +4450,8 @@ void factory_changed_item(gpointer widget,gpointer user_data) /* 0.98.10 Ö®Ç°µÄ°
 
     gchar *text = gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget));
 
-//    FactoryStructItem *sfst= factory_find_a_struct_item(suptr->structlist,suptr->curtext);
-    FactoryStructItem *sfst= factory_find_a_struct_item(suptr->structlist,text);
+    FactoryStructItem *sfst=
+    factory_find_a_struct_item(suptr->structlist,text);
     if(sfst)
     {
         SaveStruct *existS = NULL;
@@ -4515,30 +4473,9 @@ CFIRST:
             existS->sclass = sss->sclass;
             factory_strjoin(&existS->name,sss->name,".");
             g_tree_insert(suptr->ubtreeVal,sfst->Name,existS);
-//            g_hash_table_insert(suptr->saveVal,suptr->curkey,existS);
-
         }
         /* ÉÏ´Î»º´æµÄÖµ,Èí¼şÍË³öºó¾Í»áÏûÊ§µÄ*/
         activeWidget = factory_create_variant_object(existS);
-//        if(existS->isPointer )
-//        {
-//            /* ³õÊ¼»¯Òª±£´æµÄÖµ */
-//            SaveUbtn *sbtn = &existS->value.ssubtn;
-//            g_list_free1(sbtn->savelist);
-//            sbtn->savelist = NULL;
-//            if(sbtn->structlist)
-//            {
-//                GList *slist = sbtn->structlist;
-//                for(; slist; slist = slist->next)
-//                {
-//                    FactoryStructItem *o = slist->data;
-//                    SaveStruct *s  = factory_get_savestruct(o);
-//                    s->sclass = sss->sclass;
-//                    factory_strjoin(&s->name,sss->name,".");
-//                    sbtn->savelist = g_list_append(sbtn->savelist,s);
-//                }
-//            }
-//        }
         g_object_set_data(G_OBJECT(widget),"link_wid",activeWidget);
         gtk_box_pack_start_defaults(GTK_BOX(suptr->vbox),activeWidget);
         gtk_container_resize_children (GTK_CONTAINER(suptr->vbox));
@@ -4966,7 +4903,7 @@ void factory_create_unionbutton_dialog(GtkWidget *button,SaveStruct *sst)
     int num = g_list_length(sbtn->structlist);
     GtkTable *table = gtk_table_new(num,4,FALSE);  // 2014-3-19 lcy ¸ù¾İÒªÁ´±íµÄÊıÁ¿,´´½¨¶àÉÙĞĞÁĞ±í.
 
-
+        gtk_table_set_homogeneous(GTK_TABLE(table),FALSE);
     gtk_container_add(GTK_CONTAINER(dialog_vbox),table);
 
     GList *subitem = sbtn->savelist;
@@ -5158,6 +5095,7 @@ void factory_create_struct_dialog(GtkWidget *dialog,GList *datalist)
 
     GList *item = datalist;
     int row = 0;
+
     for(; item  ; item = item->next)
     {
         SaveStruct *sst  = item->data;
@@ -5291,6 +5229,7 @@ void factory_create_and_fill_dialog(STRUCTClass *fclass, gboolean is_default)
     }
     int num = g_list_length(targetlist);
     prop_dialog->mainTable = gtk_table_new(num,4,FALSE);  // 2014-3-19 lcy ¸ù¾İÒªÁ´±íµÄÊıÁ¿,´´½¨¶àÉÙĞĞÁĞ±í.
+    gtk_table_set_homogeneous(GTK_TABLE(prop_dialog->mainTable),FALSE);
     factory_create_struct_dialog(prop_dialog->mainTable,targetlist);
     gtk_container_add(GTK_CONTAINER(prop_dialog->dialog),prop_dialog->mainTable);
 //    if(!factory_is_system_data(fclass->element.object.name))
@@ -5460,7 +5399,7 @@ void factory_system_dialog(GList *list,GtkWidget *parent)
     int num = g_list_length(targetlist);
 
     GtkWidget *table = gtk_table_new(num,4,FALSE);  // 2014-3-19 lcy ¸ù¾İÒªÁ´±íµÄÊıÁ¿,´´½¨¶àÉÙĞĞÁĞ±í.
-
+    gtk_table_set_homogeneous(GTK_TABLE(table),FALSE);
     gtk_container_add(GTK_CONTAINER(dialog_vbox),table);
 
     factory_create_struct_dialog(table,targetlist); /* ÕâÀïµ÷ÓÃ¸úÀàÆäËü¿Ø¼şÒ»ÑùµÄ²Ù×÷ */

@@ -2611,7 +2611,7 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         factory_read_union_button_from_file(sss->sclass,
                                             attr_node->xmlChildrenNode,
                                             sbtn);
-        g_tree_insert(suptr->ubtreeVal,suptr->curkey,nsitm);
+        g_tree_insert(suptr->ubtreeVal,g_strdup(suptr->curkey),nsitm);
 //        g_hash_table_insert(suptr->saveVal,suptr->curkey,nsitm);
         /* 这里不知道为什么，插入一个节点后，这个suptr->curkey 就被free, 　下面又重新设置它的值*/
 //       g_free(suptr->curkey);
@@ -3224,7 +3224,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
         tsst->sclass = sss->sclass;
         factory_strjoin(&tsst->name,sss->name,".");
         /* 把当前选择的成员初始化保存到哈希表 */
-        g_tree_insert(suptr->ubtreeVal,suptr->curkey,tsst);
+        g_tree_insert(suptr->ubtreeVal,g_strdup(suptr->curkey),tsst);
 //        g_hash_table_insert(suptr->saveVal,suptr->curkey,tsst);
         if(tsst->isPointer )
         {
@@ -4250,7 +4250,7 @@ factory_tree_foreach_copy (gpointer key,gpointer value,
                            gpointer data)
 {
     GTree *tree = data;
-    g_tree_insert(tree,key,value);
+    g_tree_insert(tree,g_strdup(key),value);
     return FALSE;
 }
 
@@ -4302,7 +4302,7 @@ SaveStruct *factory_savestruct_copy(const SaveStruct *old)
         SaveStruct *usst = g_tree_lookup(osuptr->ubtreeVal,
                                          osuptr->curkey);
         /*这里只复制当前一个值*/
-        g_tree_insert(nsuptr->ubtreeVal,nsuptr->curkey,
+        g_tree_insert(nsuptr->ubtreeVal,g_strdup(nsuptr->curkey),
                       factory_savestruct_copy(usst));
     }
     break; /* union comobox */

@@ -244,6 +244,7 @@ struct _SaveMusicFile
     gchar* base_name;
     gboolean isexists; /*是否存在*/
     gchar* down_name;   /*小机识别的名字*/
+    gchar* file_ext;
 
 };
 

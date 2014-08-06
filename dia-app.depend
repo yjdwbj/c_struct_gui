@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1406270939 source:o:\tool\dvs50\app\app_procs.c
+1407310002 source:o:\tool\dvs50\app\app_procs.c
 	<config.h>
 	<stdio.h>
 	<stdlib.h>
@@ -44,7 +44,7 @@
 	"dialib.h"
 	"diaerror.h"
 
-1406859786 o:\tool\dvs50\config.h
+1407314163 o:\tool\dvs50\config.h
 
 1394617927 o:\tool\dvs50\lib\intl.h
 	<glib.h>
@@ -670,7 +670,7 @@
 	"object.h"
 	"struct_class.h"
 
-1407242318 o:\tool\dvs50\objects\struct\struct_class.h
+1407308195 o:\tool\dvs50\objects\struct\struct_class.h
 	"object.h"
 	"object_ops.h"
 	"element.h"
@@ -1620,7 +1620,7 @@
 
 1398410525 source:o:\tool\dvs50\dia.rc
 
-1407242703 source:o:\tool\dvs50\objects\struct\musicfilemanager.c
+1407325083 source:o:\tool\dvs50\objects\struct\musicfilemanager.c
 	"musicfilemanager.h"
 
 1405503365 o:\tool\dvs50\objects\struct\musicfilemanager.h
@@ -1641,7 +1641,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1407234888 source:o:\tool\dvs50\objects\struct\struct_class.c
+1407313949 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -1667,7 +1667,7 @@
 	<stdarg.h>
 	"diavar.h"
 
-1407241324 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1407315102 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
