@@ -3029,6 +3029,21 @@ static void factory_connectionto_object(DDisplay *ddisp,DiaObject *obj,STRUCTCla
 //    fclass->connections[8].connected =g_list_append(fclass->connections[8].connected,obj);
 }
 
+DiaObject *factory_find_same_diaobject_via_glist1(STRUCTClass *start,
+        STRUCTClass *endc)
+{
+    DiaObject *obj =
+    factory_find_same_diaobject_via_glist(&start->connections[8].connected,
+                                          &endc->connections[8].connected);
+    if(obj)
+    {
+        if((obj->handles[0]->connected_to == start) &&
+                (obj->handles[1]->connected_to == endc))
+            return obj;
+    }
+    return NULL;
+}
+
 DiaObject *factory_find_same_diaobject_via_glist(GList *flist,
         GList *comprelist)
 {
@@ -3338,36 +3353,35 @@ gboolean factory_search_connected_link(STRUCTClass *fclass,gint depth)
     return TRUE;
 }
 
-static void factory_connection_two_object(STRUCTClass *fclass, /* start pointer*/
-        STRUCTClass *objclass /* end pointer */)
+static void factory_connection_two_object(STRUCTClass *startc, /* start pointer*/
+        STRUCTClass *endc /* end pointer */)
 {
 
 //    Layer *curlayer = fclass->element.object.parent_layer;
 //    STRUCTClass *objclass = g_hash_table_lookup(curLayer->defnames,objname);
-    g_return_if_fail(objclass);
+    g_return_if_fail(endc);
 
-    if(factory_is_connected(&objclass->connections[8],
-                            &fclass->connections[8])) /* 已经有连线了 */
+    if(factory_is_connected(&startc->connections[8],
+                            &endc->connections[8])) /* 已经有连线了 */
         return;
 
     DDisplay *ddisp = ddisplay_active();
     /* ddisp->diagram->data->active_layer 与  fclass->element.object.parent_layer 是同一指针*/
     int x =0,y=0;
-    x = fclass->connections[8].pos.x;
-    y = fclass->connections[8].pos.y;
+    x = startc->connections[8].pos.x;
+    y = startc->connections[8].pos.y;
     DiaObject *obj = NULL;
     obj = ddisplay_drop_object(ddisp,x,y,object_get_type(CLASS_LINE),6);
     /* 把线条移动到对像中心点且启始端固定在这一个对像上.*/
     //obj->ops->move(obj,&fclass->connections[8].pos);
 
-    factory_connectionto_object(ddisp,obj,fclass,0);
-    if(objclass)
-    {
-        factory_connectionto_object(ddisp,obj,objclass,1);
-    }
+    factory_connectionto_object(ddisp,obj,startc,0);
+
+    factory_connectionto_object(ddisp,obj,endc,1);
+
 //    diagram_unselect_objects(ddisp->diagram,ddisp->diagram->data->selected);
     diagram_remove_all_selected(ddisp->diagram,TRUE);
-    diagram_select(ddisp->diagram,(DiaObject*)fclass);
+    diagram_select(ddisp->diagram,(DiaObject*)startc);
     diagram_flush(ddisp->diagram);
 }
 
@@ -3573,6 +3587,12 @@ static void factory_get_value_from_combox1(SaveStruct *sst, GtkWidget *comobox,
     int  curindex = gtk_combo_box_get_active(GTK_COMBO_BOX(comobox));
     gchar *cur_name = gtk_combo_box_get_active_text(GTK_COMBO_BOX(comobox));
     GQuark cur_quark = empty_quark;
+//   if(aid->conn_ptr)
+//   {
+//       factory_delete_line_between_two_objects(sst->sclass,
+//                                               aid->conn_ptr);
+//   }
+
     if(!cur_name)
     {
         aid->conn_ptr = NULL;
@@ -3583,6 +3603,7 @@ static void factory_get_value_from_combox1(SaveStruct *sst, GtkWidget *comobox,
         aid->conn_ptr = g_hash_table_lookup(curLayer->defnames,
                                             cur_name);
     }
+
 
     if(cur_quark == empty_quark)
         aid->conn_ptr = NULL;
@@ -3612,16 +3633,20 @@ void factory_delete_line_between_two_objects(STRUCTClass *startc,
         for(; sclist ; sclist = sclist->next)
         {
             line = sclist->data;
-            if(line->num_connections == 1 &&
-                    !line->connections[0]->connected)
-                break;
+            if(line->handles[0]->connected_to ==
+               line->handles[1]->connected_to)
+               {
+                  goto DELINE;
+               }
         }
     }
-    else
-        line = factory_find_same_diaobject_via_glist(cpend->connected,
-                cpstart->connected);
-    if(line && factory_is_connected(cpend,cpstart))
+//    else
+//        line = factory_find_same_diaobject_via_glist(cpstart->connected,
+//                                                     cpend->connected);
+    line = factory_is_start_conn_end(cpstart,cpend);
+    if(line)
     {
+DELINE:
         /* 上次的连线,到此要删掉它,重新连线 */
         cpstart->connected  = g_list_remove(cpstart->connected,line); /* 删掉对方链表里的对像.*/
         cpend->connected = g_list_remove(cpend->connected,line);
@@ -4849,10 +4874,28 @@ STRUCTClass *factory_find_diaobject_by_name(Layer *curlayer,const gchar *name)
     return objclass;
 }
 
-gboolean factory_is_connected(ConnectionPoint *cpend,ConnectionPoint *cpstart)
+DiaObject* factory_is_start_conn_end(ConnectionPoint *cpstart,
+                               ConnectionPoint *cpend)
+{
+    GList *conn_list = cpstart->connected;
+    for(;conn_list ; conn_list = conn_list->next)
+    {
+        DiaObject *obj = conn_list->data;
+          if((obj->handles[0]->connected_to == cpstart) &&
+                (obj->handles[1]->connected_to == cpend))
+            return obj;
+    }
+
+    return NULL;
+}
+
+
+
+gboolean factory_is_connected(ConnectionPoint *cpstart,ConnectionPoint *cpend)
 {
     gboolean isconnected = FALSE;
-    DiaObject *obj = factory_find_same_diaobject_via_glist(cpend->connected,cpstart->connected);
+    DiaObject *obj = factory_find_same_diaobject_via_glist(cpstart->connected,
+                                                           cpend->connected);
     if(obj)
     {
         if((obj->handles[0]->connected_to == cpstart) &&

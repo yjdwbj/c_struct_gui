@@ -941,13 +941,10 @@ static GtkWidget *factory_mfile_mlist_test_append_empty(GtkWidget *btn,
     GtkTreeModel *model = gtk_tree_view_get_model(treeview);
     g_object_ref(G_OBJECT(model));
     gtk_tree_view_set_model(treeview,NULL);
-
     const char *dentry;
     GDir *dp;
     GError *error = NULL;
     gchar *directory = "E:\\50music-dvsh50";
-
-
     dp = g_dir_open(directory, 0, &error);
 
     GList *tlist = NULL;
@@ -966,19 +963,6 @@ static GtkWidget *factory_mfile_mlist_test_append_empty(GtkWidget *btn,
     }
     g_dir_close(dp);
 
-//    int i = 0;
-//    gchar *fname = factory_utf8("E:\\50music-dvsh50\\ÃÌº”∂‡––≤‚ ‘");
-//    GList *tlist;
-//    for(; i<10000; i++)
-//    {
-//        SaveMusicFile *smf = g_new0(SaveMusicFile,1);
-//        smf->full_quark = g_quark_from_string(fname);
-//        smf->base_name = g_path_get_basename(fname);
-//        smf->down_name = g_strdup("");
-//
-//        factory_mfile_mlist_append_item(model,&smf);
-//        tlist = g_list_append(tlist,smf);
-//    }
     gtk_tree_view_set_model(treeview,model);
     g_object_unref(model);
     gtk_widget_queue_draw(parent);

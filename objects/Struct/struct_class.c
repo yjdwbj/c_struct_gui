@@ -3737,8 +3737,11 @@ static void factory_write_object_comobox(ActionID *aid,ObjectNode ccc ,const gch
 
     xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)type);
     xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
-
+    if(aid->conn_ptr)
+    aid->value =
+    g_strdup_printf("%d",((DiaObject*)aid->conn_ptr)->oindex);
     xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)aid->value );
+
 //    xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf(_("%d"),aid->index));
 //    gchar *pre_name = g_quark_to_string(aid->pre_quark);
 
@@ -3773,7 +3776,6 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
                                      (const xmlChar *)JL_NODE, NULL);
         ActionID *aid = &sss->value.actid;
         factory_write_object_comobox(aid,ccc,sss->type);
-        /*每一项用JL_item 做节点名，存放多个属性*/
     }
     break;
     case OBTN:
@@ -4299,11 +4301,16 @@ SaveStruct *factory_savestruct_copy(const SaveStruct *old)
 
         nsuptr->structlist = g_list_copy(osuptr->structlist);
         nsuptr->uindex = osuptr->uindex;
-        SaveStruct *usst = g_tree_lookup(osuptr->ubtreeVal,
-                                         osuptr->curkey);
-        /*这里只复制当前一个值*/
-        g_tree_insert(nsuptr->ubtreeVal,g_strdup(nsuptr->curkey),
-                      factory_savestruct_copy(usst));
+        if(g_tree_nnodes(osuptr->ubtreeVal))
+        {
+            SaveStruct *usst = g_tree_lookup(osuptr->ubtreeVal,
+                                             osuptr->curkey);
+            /*这里只复制当前一个值*/
+            if(!usst) break;
+            g_tree_insert(nsuptr->ubtreeVal,g_strdup(nsuptr->curkey),
+                          factory_savestruct_copy(usst));
+        }
+
     }
     break; /* union comobox */
     case UBTN:
@@ -4320,7 +4327,10 @@ SaveStruct *factory_savestruct_copy(const SaveStruct *old)
         GList *nslist = NULL;
         for(; sslist; sslist = sslist->next)
         {
-            nslist = g_list_append(nslist,factory_savestruct_copy(sslist->data));
+            SaveStruct *osst = sslist->data;
+            if(!osst) continue;
+            nslist = g_list_append(nslist,
+                                   factory_savestruct_copy(osst));
         }
         SaveUbtn *nsbtn = &newsst->value.ssubtn;
         nsbtn->savelist = nslist;

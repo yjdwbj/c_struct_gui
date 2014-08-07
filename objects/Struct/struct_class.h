@@ -613,7 +613,7 @@ void factory_append_public_info(GtkWidget *dialog,STRUCTClass *structclass);
 void factory_create_struct_dialog(GtkWidget *dialog,GList *datalist);
 
 gboolean factory_is_connected(ConnectionPoint *cpend,ConnectionPoint *cpstart);
-
+DiaObject* factory_is_start_conn_end(ConnectionPoint *cpstart,ConnectionPoint *cpend);
 void factory_set_savestruct_widgets(SaveStruct *sss);
 SaveStruct * factory_get_savestruct(FactoryStructItem *fst);
 
