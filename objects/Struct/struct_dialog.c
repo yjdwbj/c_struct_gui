@@ -3033,8 +3033,8 @@ DiaObject *factory_find_same_diaobject_via_glist1(STRUCTClass *start,
         STRUCTClass *endc)
 {
     DiaObject *obj =
-    factory_find_same_diaobject_via_glist(&start->connections[8].connected,
-                                          &endc->connections[8].connected);
+        factory_find_same_diaobject_via_glist(&start->connections[8].connected,
+                &endc->connections[8].connected);
     if(obj)
     {
         if((obj->handles[0]->connected_to == start) &&
@@ -3090,7 +3090,7 @@ static void factory_connection_by_value(ActionID *aid,SaveStruct *sst)
         aid->conn_ptr =NULL;
         aid->pre_quark = empty_quark;
     }
-    factory_connection_two_object(startclass,aid->conn_ptr);
+    aid->line = factory_connection_two_object(startclass,aid->conn_ptr);
 }
 
 
@@ -3157,7 +3157,6 @@ static void factory_switch_operator(SaveStruct *sst,ActionID *aid ,
     {
     case CONNECT_OBJ:
     {
-
         factory_connection_by_value(aid,sst);
     }
     break;
@@ -3335,7 +3334,6 @@ gboolean factory_search_connected_link(STRUCTClass *fclass,gint depth)
                 if(factory_search_connected_link(tclass,cdepth))
                     ((DiaObject *)(connection))->ops->set_fillcolor(connection); /*ÏßÌõÑÕÉ« */
             }
-
         }
         if(end_cp)
         {
@@ -3353,7 +3351,41 @@ gboolean factory_search_connected_link(STRUCTClass *fclass,gint depth)
     return TRUE;
 }
 
-static void factory_connection_two_object(STRUCTClass *startc, /* start pointer*/
+static DiaObject* factory_connection_two_object1(STRUCTClass *startc,
+        ActionID *aid)
+{
+    if(!aid) return NULL;
+    STRUCTClass *endc = aid->conn_ptr;
+    if(!endc) return NULL;
+    DDisplay *ddisp = ddisplay_active();
+    ConnectionPoint *cpstart = &startc->connections[8];
+    ConnectionPoint *cpend = &endc->connections[8];
+    int f1 = g_list_find(cpstart->connected,aid->line);
+    int f2 = g_list_find(cpend->connected,aid->line);
+    if(f1 < 0 && f2 < 0)
+        return aid->line;
+
+    int x =0,y=0;
+    x = startc->connections[8].pos.x;
+    y = startc->connections[8].pos.y;
+    DiaObject *obj = NULL;
+    obj = ddisplay_drop_object(ddisp,x,y,object_get_type(CLASS_LINE),6);
+    /* °ÑÏßÌõÒÆ¶¯µ½¶ÔÏñÖĞĞÄµãÇÒÆôÊ¼¶Ë¹Ì¶¨ÔÚÕâÒ»¸ö¶ÔÏñÉÏ.*/
+    //obj->ops->move(obj,&fclass->connections[8].pos);
+
+    factory_connectionto_object(ddisp,obj,startc,0);
+
+    factory_connectionto_object(ddisp,obj,endc,1);
+
+//    diagram_unselect_objects(ddisp->diagram,ddisp->diagram->data->selected);
+    diagram_remove_all_selected(ddisp->diagram,TRUE);
+    diagram_select(ddisp->diagram,(DiaObject*)startc);
+    diagram_flush(ddisp->diagram);
+    return obj;
+
+}
+
+static DiaObject* factory_connection_two_object(STRUCTClass *startc, /* start pointer*/
         STRUCTClass *endc /* end pointer */)
 {
 
@@ -3383,11 +3415,86 @@ static void factory_connection_two_object(STRUCTClass *startc, /* start pointer*
     diagram_remove_all_selected(ddisp->diagram,TRUE);
     diagram_select(ddisp->diagram,(DiaObject*)startc);
     diagram_flush(ddisp->diagram);
+    return obj;
 }
+
+static void factory_actionid_line_update1(STRUCTClass *sclass,
+        ActionID *aid)
+{
+    if(aid->pre_quark == empty_quark )
+    {
+        if(aid->conn_ptr)
+        {
+            aid->line = factory_connection_two_object1(sclass,
+                        aid);
+        }
+
+    }
+    else
+    {
+        if(aid->conn_ptr)
+        {
+            if(aid->line)
+            {
+                gpointer conn_ptr =
+                    g_hash_table_lookup(curLayer->defnames,
+                                        g_quark_to_string(aid->pre_quark));
+                STRUCTClass *endc = aid->conn_ptr;
+                ConnectionPoint *cpstart = &sclass->connections[8];
+                ConnectionPoint *cpend = &endc->connections[8];
+                int f1 = g_list_find(cpstart->connected,aid->line);
+                int f2 = g_list_find(cpend->connected,aid->line);
+                int f3 = g_list_find(curLayer->objects,aid->line);
+                if(f1 > -1 && f2 > -1 && f3 > -1 && conn_ptr == aid->conn_ptr)
+                {
+                    goto DO_PRE;
+                }
+                else
+                {
+                    DDisplay *ddisp = ddisplay_active();
+                    factory_connectionto_object(ddisp,aid->line,
+                                                aid->conn_ptr,1);
+
+                    diagram_remove_all_selected(ddisp->diagram,TRUE);
+                    diagram_select(ddisp->diagram,(DiaObject*)sclass);
+                    diagram_redraw_all();
+//                    factory_delete_line_between_two_objects1(sclass,aid);
+//                    aid->line = factory_connection_two_object1(sclass,
+//                                aid);
+                }
+            }
+            else
+            {
+                aid->line = factory_connection_two_object1(sclass,
+                            aid);
+            }
+
+        }
+        else
+        {
+            if(aid->line)
+            {
+                factory_delete_line_between_two_objects1(sclass,aid);
+                aid->line = NULL;
+            }
+        }
+    }
+
+
+DO_PRE:
+    if(aid->conn_ptr)
+        aid->pre_quark =
+            g_quark_from_string(((STRUCTClass*)aid->conn_ptr)->name);
+    else
+        aid->pre_quark = empty_quark;
+}
+
 
 static void factory_actionid_line_update(STRUCTClass *sclass,
         ActionID *aid)
 {
+
+
     if(aid->pre_quark != empty_quark) /* ÉÏ´Î²»Îª¿Õ */
     {
         gchar *pre_name = g_quark_to_string(aid->pre_quark);
@@ -3403,7 +3510,7 @@ static void factory_actionid_line_update(STRUCTClass *sclass,
         factory_delete_line_between_two_objects(sclass,lastclass);
     }
 
-    factory_connection_two_object(sclass,aid->conn_ptr);
+    aid->line = factory_connection_two_object(sclass,aid->conn_ptr);
     if(aid->conn_ptr)
         aid->pre_quark = g_quark_from_string(((STRUCTClass*)aid->conn_ptr)->name);
     else
@@ -3413,8 +3520,7 @@ static void factory_actionid_line_update(STRUCTClass *sclass,
 static void factory_union_del_link_line(STRUCTClass *sclass,
                                         ActionID *aid)
 {
-    factory_delete_line_between_two_objects(sclass,
-                                            aid->conn_ptr);
+    factory_delete_line_between_two_objects1(sclass,aid);
 }
 
 static void factory_union_update_link_line(SaveStruct *sst,
@@ -3466,8 +3572,6 @@ static void factory_union_update_link_line(SaveStruct *sst,
         ActionID *aid = &sst->value.actid;
         g_return_if_fail(aid);
         fuiu(sst->sclass,aid);
-//            factory_delete_line_between_two_objects(sst->sclass,
-//                                                    aid->conn_ptr);
     }
     break;
     default:
@@ -3540,29 +3644,29 @@ static void factory_read_props_from_widget(gpointer key,
 
 
         SaveStruct *pre_sst = g_tree_lookup(suptr->ubtreeVal,pre_text);
-        if(pre_sst)
-            factory_union_update_link_line(pre_sst,
-                                           factory_union_del_link_line); /*É¾³ıÉÏÒ»´ÎµÄÁ¬Ïß*/
+//        if(pre_sst)
+//            factory_union_update_link_line(pre_sst,
+//                                           factory_union_del_link_line); /*É¾³ıÉÏÒ»´ÎµÄÁ¬Ïß*/
         g_free(pre_text);
         suptr->uindex =  cpid;
         g_free(suptr->curkey);
         suptr->curkey =  g_strdup(gtk_combo_box_get_active_text(suptr->comobox));
 
         suptr->pre_quark = g_quark_from_string(suptr->curkey);
-        if(!sss->isPointer)
-        {
-            SaveStruct *tsst = g_tree_lookup(suptr->ubtreeVal,
-                                             suptr->curkey);
-            if(tsst)
-            {
-                factory_save_value_from_widget(tsst);
-                factory_union_update_link_line(tsst,
-                                               factory_actionid_line_update);
-//                /*ÔÙ¼ì²âÒ»´ÎÁ¬ÏßÊÇ·ñÕıÈ·*/
+//        if(!sss->isPointer)
+//        {
+//            SaveStruct *tsst = g_tree_lookup(suptr->ubtreeVal,
+//                                             suptr->curkey);
+//            if(tsst)
+//            {
+//                factory_save_value_from_widget(tsst);
 //                factory_union_update_link_line(tsst,
-//                                               (FactoryUnionItemUpdate)factory_connection_two_object);
-            }
-        }
+//                                               factory_actionid_line_update1);
+////                /*ÔÙ¼ì²âÒ»´ÎÁ¬ÏßÊÇ·ñÕıÈ·*/
+////                factory_union_update_link_line(tsst,
+////                                               (FactoryUnionItemUpdate)factory_connection_two_object);
+//            }
+//        }
     }
 //    break;
 //    case OBTN: /* ÕâÀïÒª¼ÓÒ»¸ö´¦Àí,ÕâÊÇÒ»×éÁªÏßµÄ¿Ø¼ş */
@@ -3587,11 +3691,6 @@ static void factory_get_value_from_combox1(SaveStruct *sst, GtkWidget *comobox,
     int  curindex = gtk_combo_box_get_active(GTK_COMBO_BOX(comobox));
     gchar *cur_name = gtk_combo_box_get_active_text(GTK_COMBO_BOX(comobox));
     GQuark cur_quark = empty_quark;
-//   if(aid->conn_ptr)
-//   {
-//       factory_delete_line_between_two_objects(sst->sclass,
-//                                               aid->conn_ptr);
-//   }
 
     if(!cur_name)
     {
@@ -3615,6 +3714,26 @@ static void factory_get_value_from_combox1(SaveStruct *sst, GtkWidget *comobox,
     }
     g_free(cur_name);
 }
+void factory_delete_line_between_two_objects1(STRUCTClass *startc,
+        ActionID *aid)
+{
+    g_return_if_fail(aid->line);
+    DiaObject *line = aid->line;
+    DDisplay *ddisp =  ddisplay_active();
+    ConnectionPoint *cpstart = &startc->connections[8];
+    cpstart->connected = g_list_remove(cpstart->connected,
+                                       line);
+    STRUCTClass *endc = line->handles[1]->connected_to->object;
+    ConnectionPoint *cpend = &endc->connections[8];
+
+    cpend->connected = g_list_remove(cpend->connected,line);
+    line->connections[0]->connected = NULL;
+    line->connections[0]->object = NULL;
+    layer_remove_object(curLayer,line); // ÔÚµ±Ç°µÄ»­²¼ÀïÃæÉ¾³ıÁ¬Ïß¶ÔÏñ.
+    diagram_flush(ddisp->diagram);
+    diagram_unselect_object(ddisp->diagram,(DiaObject*)endc);
+    diagram_select(ddisp->diagram,startc);
+}
 
 void factory_delete_line_between_two_objects(STRUCTClass *startc,
         STRUCTClass *objclass)
@@ -3634,10 +3753,10 @@ void factory_delete_line_between_two_objects(STRUCTClass *startc,
         {
             line = sclist->data;
             if(line->handles[0]->connected_to ==
-               line->handles[1]->connected_to)
-               {
-                  goto DELINE;
-               }
+                    line->handles[1]->connected_to)
+            {
+                goto DELINE;
+            }
         }
     }
 //    else
@@ -3723,7 +3842,8 @@ void factory_change_view_name(STRUCTClass *fclass)
 
 /* 2014-3-25 lcy ÕâÀïÊÇ¸üĞÂ½çÃæÉÏµÄÖµ*/
 ObjectChange *
-factory_apply_props_from_dialog(STRUCTClass *fclass, GtkWidget *widget)
+factory_apply_props_from_dialog(STRUCTClass *fclass,
+                                GtkWidget *widget)
 {
 //    g_hash_table_foreach(fclass->widgetmap,factory_read_props_from_widget,(gpointer)fclass);
     GList *applist = NULL;
@@ -3733,7 +3853,7 @@ factory_apply_props_from_dialog(STRUCTClass *fclass, GtkWidget *widget)
     {
         SaveStruct *sst = (SaveStruct*)applist->data;
         factory_read_props_from_widget(NULL,sst,NULL);
-        factory_union_update_link_line(sst,factory_actionid_line_update);
+        factory_union_update_link_line(sst,factory_actionid_line_update1);
     }
     diagram_set_modified(ddisplay_active_diagram(),TRUE);
     factory_change_view_name(fclass);
@@ -4110,7 +4230,7 @@ FIRST:
                     gtk_button_set_label(GTK_BUTTON(columTwo),
                                          g_quark_to_string(stable->nquark));
                 else
-                   gtk_button_set_label(GTK_BUTTON(columTwo), sss->value.vnumber );
+                    gtk_button_set_label(GTK_BUTTON(columTwo), sss->value.vnumber );
             }
             else
                 gtk_button_set_label(GTK_BUTTON(columTwo), sss->value.vnumber );
@@ -4276,7 +4396,7 @@ void factory_recheck_objectbutton_connection(STRUCTClass *fclass,
     for(; wlist; wlist = wlist->next)
     {
         ActionID *aid = wlist->data;
-        factory_connection_two_object(fclass,aid->conn_ptr);
+        aid->line = factory_connection_two_object(fclass,aid->conn_ptr);
     }
 }
 
@@ -4476,7 +4596,7 @@ void factory_changed_item(gpointer widget,gpointer user_data) /* 0.98.10 Ö®Ç°µÄ°
     gchar *text = gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget));
 
     FactoryStructItem *sfst=
-    factory_find_a_struct_item(suptr->structlist,text);
+        factory_find_a_struct_item(suptr->structlist,text);
     if(sfst)
     {
         SaveStruct *existS = NULL;
@@ -4875,13 +4995,13 @@ STRUCTClass *factory_find_diaobject_by_name(Layer *curlayer,const gchar *name)
 }
 
 DiaObject* factory_is_start_conn_end(ConnectionPoint *cpstart,
-                               ConnectionPoint *cpend)
+                                     ConnectionPoint *cpend)
 {
     GList *conn_list = cpstart->connected;
-    for(;conn_list ; conn_list = conn_list->next)
+    for(; conn_list ; conn_list = conn_list->next)
     {
         DiaObject *obj = conn_list->data;
-          if((obj->handles[0]->connected_to == cpstart) &&
+        if((obj->handles[0]->connected_to == cpstart) &&
                 (obj->handles[1]->connected_to == cpend))
             return obj;
     }
@@ -4895,7 +5015,7 @@ gboolean factory_is_connected(ConnectionPoint *cpstart,ConnectionPoint *cpend)
 {
     gboolean isconnected = FALSE;
     DiaObject *obj = factory_find_same_diaobject_via_glist(cpstart->connected,
-                                                           cpend->connected);
+                     cpend->connected);
     if(obj)
     {
         if((obj->handles[0]->connected_to == cpstart) &&
@@ -4921,10 +5041,6 @@ GList * factory_get_objects_from_layer(Layer *layer)
     return list;
 }
 
-
-
-
-
 void factory_create_unionbutton_dialog(GtkWidget *button,SaveStruct *sst)
 {
 
@@ -4946,7 +5062,7 @@ void factory_create_unionbutton_dialog(GtkWidget *button,SaveStruct *sst)
     int num = g_list_length(sbtn->structlist);
     GtkTable *table = gtk_table_new(num,4,FALSE);  // 2014-3-19 lcy ¸ù¾İÒªÁ´±íµÄÊıÁ¿,´´½¨¶àÉÙĞĞÁĞ±í.
 
-        gtk_table_set_homogeneous(GTK_TABLE(table),FALSE);
+    gtk_table_set_homogeneous(GTK_TABLE(table),FALSE);
     gtk_container_add(GTK_CONTAINER(dialog_vbox),table);
 
     GList *subitem = sbtn->savelist;

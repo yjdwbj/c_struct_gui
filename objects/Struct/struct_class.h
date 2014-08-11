@@ -147,6 +147,7 @@ struct _ActionId
     GQuark pre_quark; /* 就是当前选择的文字GQuark 值,原来这里是字符串 */
     gchar *title_name;
     gpointer conn_ptr; /* 就指向对像指针，名字与ID都不能对应更改名字操作 */
+    DiaObject *line; /* 连接的线条 */
 };
 
 
@@ -549,6 +550,9 @@ void factory_class_ocombox_foreach(STRUCTClass *fclass,
 
 typedef void (*FactoryUnionItemUpdate)(STRUCTClass *sclass,gpointer dclass);
 
+void factory_delete_line_between_two_objects1(STRUCTClass *startc,
+        ActionID *aid);
+
 void factory_delete_line_between_two_objects(STRUCTClass *startc,STRUCTClass *endc);
 void structclass_dialog_free (STRUCTClassDialog *dialog);
 extern GtkWidget *structclass_get_properties(STRUCTClass *structclass, gboolean is_default);
@@ -565,9 +569,10 @@ static void factory_base_item_save(SaveStruct *sss,ObjectNode ccc);
 static void
 attributes_list_selection_changed_callback(GtkWidget *gtklist,
         STRUCTClass *structclass);
-static void factory_connection_two_object(STRUCTClass *fclass, /* start pointer*/
+static DiaObject* factory_connection_two_object(STRUCTClass *fclass, /* start pointer*/
         STRUCTClass *objclass /* end pointer */);
-
+static DiaObject* factory_connection_two_object1(STRUCTClass *startc,
+        ActionID *aid);
 
 
 extern void structclass_sanity_check(STRUCTClass *c, gchar *msg);

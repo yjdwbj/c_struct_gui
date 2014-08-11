@@ -89,8 +89,6 @@ static gboolean factory_mfile_sublist_updateitem_foreach(GtkTreeModel *model,
     SaveMusicDialog *smd = curLayer->smd;
     gchar *txt;
     gtk_tree_model_get(model,iter,COLUMN_ITEM_IDNAME,&txt,-1);
-//    gpointer exists = g_hash_table_lookup(smd->mtable,
-//                                          g_quark_from_string(txt));
     gpointer exists = g_tree_lookup(smd->mbtree,txt);
     if(!exists)
     {
@@ -280,6 +278,30 @@ static GtkWidget* factory_mfile_mlist_delete_operator(GtkWidget *btn,
     gtk_widget_set_sensitive(isert,scount < 1 ? FALSE : TRUE);
 }
 
+static void factory_mfile_manager_rename_done(GtkCellRenderer *renderer,
+                                              gpointer user_data)
+{
+        GtkDialog *dlg = g_object_get_data(G_OBJECT(user_data),"dlg_parent");
+        gtk_dialog_set_response_sensitive(dlg,GTK_RESPONSE_OK,TRUE);
+        gtk_dialog_set_response_sensitive(dlg,GTK_RESPONSE_CLOSE,TRUE);
+}
+
+
+static void factory_mfile_manager_rename_started(GtkCellRenderer *renderer,
+                                                 GtkCellEditable *editable,
+                                                 gchar *path,
+                                                 gpointer data)
+{
+        GtkDialog *dlg = g_object_get_data(G_OBJECT(data),"dlg_parent");
+        gtk_dialog_set_response_sensitive(dlg,GTK_RESPONSE_OK,FALSE);
+        gtk_dialog_set_response_sensitive(dlg,GTK_RESPONSE_CLOSE,FALSE);
+        g_signal_connect(editable,"editing-done",
+                     G_CALLBACK(factory_mfile_manager_rename_done),data);
+        g_signal_connect(editable,"editing-canceled",
+                     G_CALLBACK(factory_mfile_manager_rename_done),data);
+}
+
+
 static void factory_mfile_manager_add_columns (GtkTreeView *treeview)
 {
 
@@ -318,7 +340,7 @@ static void factory_mfile_manager_add_columns (GtkTreeView *treeview)
 
     /* Combo */
 
-    renderer = renderer = gtk_cell_renderer_text_new ();
+    renderer = gtk_cell_renderer_text_new ();
     column = gtk_tree_view_column_new_with_attributes (factory_utf8("源文件名"),
              renderer,
              "text",
@@ -327,10 +349,10 @@ static void factory_mfile_manager_add_columns (GtkTreeView *treeview)
 //             16,
              NULL);
     gtk_tree_view_append_column (treeview, column);
-    gtk_tree_view_column_set_sizing(column,GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+//    gtk_tree_view_column_set_sizing(column,GTK_TREE_VIEW_COLUMN_GROW_ONLY);
 
 
-    renderer = renderer = gtk_cell_renderer_text_new ();
+    renderer  = gtk_cell_renderer_text_new ();
     column = gtk_tree_view_column_new_with_attributes (factory_utf8("下载文件名(双击重命名)"),
              renderer,
              "text",
@@ -343,6 +365,10 @@ static void factory_mfile_manager_add_columns (GtkTreeView *treeview)
                   NULL);
     g_signal_connect (renderer, "edited",
                       G_CALLBACK (factory_mfile_manager_changed_dname), model);
+
+    g_signal_connect(renderer,"editing-started",
+                     G_CALLBACK(factory_mfile_manager_rename_started),treeview);
+
     g_object_set_data (G_OBJECT (renderer), "column",
                        GINT_TO_POINTER (COLUMN_DNAME));
 
@@ -1181,7 +1207,6 @@ void factory_open_file_dialog(GtkWidget *widget,gpointer user_data)
     GtkWidget *opendlg = NULL;
     if(!opendlg)
     {
-
         opendlg = gtk_file_chooser_dialog_new(_("打开音乐文件"),
                                               GTK_WINDOW(parent),
                                               GTK_FILE_CHOOSER_ACTION_OPEN,
@@ -1197,7 +1222,6 @@ void factory_open_file_dialog(GtkWidget *widget,gpointer user_data)
         {
 //            GtkWidget *omenu= gtk_combo_box_new();
             GtkFileFilter* filter;
-
             /* set up the gtk file (name) filters */
             /* 0 = by extension */
             filter = gtk_file_filter_new ();
@@ -1453,12 +1477,11 @@ void factory_read_mfile_filelist_from_xml(ObjectNode obj_node,
                 gchar *fname = g_strconcat(mpath,key,NULL);
                 if(!g_file_test(fname,G_FILE_TEST_EXISTS))
                 {
-                    nexists = g_list_append(nexists,filename);
+                    nexists = g_list_append(nexists,fname);
                     smf->isexists = FALSE;
                 }
 
                 smf->full_quark = g_quark_from_string(fname);
-                g_free(fname);
                 xmlFree(key);
             }
             key = xmlGetProp(cnode,"dname");
@@ -1474,12 +1497,14 @@ void factory_read_mfile_filelist_from_xml(ObjectNode obj_node,
 
     if(nexists)
     {
+        gchar *flist = factory_concat_list_to_string(nexists,IS_STRING);
         gchar *msg  =
-            factory_utf8(g_strdup_printf("下列文件不存在,"
-                                         "请手动复制它们到工程目录下的music目录!\n文件列表:%s",
-                                         factory_concat_list_to_string(nexists,IS_STRING)));
+            g_strdup_printf(factory_utf8("下列文件不存在,"
+                                         "请手动复制它们到工程目录下的music目录!\n文件列表:%s"),
+                                         flist);
         factory_message_dialoag(NULL,msg);
         g_free(msg);
+        g_free(flist);
         g_list_foreach(nexists,(GFunc)g_free,NULL);
         g_list_free(nexists);
     }
@@ -1521,6 +1546,7 @@ void factory_mfile_save_item_to_xml(SaveStruct *sss,ObjectNode obj_node)
             int newpos = 0;
             if(stable)
             {
+                newpos = g_array_index(garray,gint,vnumber); /*默认值*/
                 switch(factory_music_fm_get_position_type(sss->name))
                 {
                 case OFFSET_FST:
@@ -1542,7 +1568,7 @@ void factory_mfile_save_item_to_xml(SaveStruct *sss,ObjectNode obj_node)
                 case OFFSET_END:
                 {
                     newpos =  g_array_index(garray,gint,vnumber);
-                    newpos += g_list_length(stable->sub_list);
+                    newpos += g_list_length(stable->sub_list)-1;
                 }
                 break;
                 default:
@@ -2501,7 +2527,7 @@ static void factory_mfile_idlist_dialog_response(GtkWidget *widget,
         GtkTreeSelection *idsel = gtk_tree_view_get_selection(idtreeview);
         GtkTreeIter iter;
         g_free(*smd->vnumber);
-        gchar *tabname;
+        gchar *tabname = g_strdup("-1");
         if(gtk_tree_selection_get_selected(idsel,NULL,&iter))
         {
             GtkTreePath *path;
@@ -2514,6 +2540,7 @@ static void factory_mfile_idlist_dialog_response(GtkWidget *widget,
         {
             *smd->vnumber = g_strdup("-1");
         }
+
         gtk_button_set_label(GTK_BUTTON(btn),tabname);
 //        gtk_button_set_label(GTK_BUTTON(btn),*smd->vnumber);
     }

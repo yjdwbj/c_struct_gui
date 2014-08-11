@@ -151,7 +151,7 @@ gchar *diagram_get_name(Diagram *dia);
 
 int diagram_modified_exists(void);
 
-void diagram_redraw_all(void);
+DIAVAR void diagram_redraw_all(void);
 
 void diagram_object_modified(Diagram *dia, DiaObject *object);
 

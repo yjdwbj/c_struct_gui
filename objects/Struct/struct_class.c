@@ -2806,14 +2806,13 @@ void factory_read_object_comobox_value_from_file(AttributeNode attr_node,
 {
     aid->pre_quark = empty_quark;
     aid->value = g_strdup("-1");
+    aid->line = NULL;
+    aid->conn_ptr = NULL;
 
     xmlChar *key  =  xmlGetProp(attr_node,(xmlChar *)"idname");
     if(key)
     {
-//        aid->pre_name = g_strdup((gchar*)key);
         aid->pre_quark = g_quark_from_string((gchar*)key);
-//        aid->conn_ptr =  g_hash_table_lookup(curLayer->defnames,
-//                                             (gchar*)key);
         xmlFree(key);
     }
 
@@ -2960,6 +2959,7 @@ SaveStruct *factory_get_action_savestruct(SaveStruct *sss,FactoryStructItem *fst
             aid->value = g_strdup("-1");
             aid->title_name = g_strdup_printf(name,n);
             aid->conn_ptr = NULL;
+            aid->line = NULL;
             nid->actlist = g_list_append(nid->actlist,aid);
         }
         g_free(name);
@@ -3603,6 +3603,8 @@ structclass_copy(STRUCTClass *structclass)
     newstructclass->EnumsAndStructs = factoryContainer;
 //    newstructclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
     newstructclass->widgetSave = NULL;
+    newstructclass->pps = g_new0(PublicSection,1);
+    newstructclass->pps->hasfinished = structclass->pps->hasfinished;
 
 
     GList *plist = structclass->widgetSave;
@@ -4245,6 +4247,8 @@ void factory_actionid_copy(const ActionID *onid,
         nnid->conn_ptr = NULL;
     }
 
+    nnid->line = NULL;
+
 }
 
 static gboolean
@@ -4270,6 +4274,7 @@ SaveStruct *factory_savestruct_copy(const SaveStruct *old)
     newsst->isPointer = old->isPointer;
     newsst->templ_pos = old->templ_pos;
     newsst->templ_quark = old->templ_quark;
+
 //    int t = offsetof(SaveStruct,value);
 //    memcpy(((char*)newsst)+t,((char*)old)+t,
 //           sizeof(_value));
