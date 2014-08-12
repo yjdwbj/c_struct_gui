@@ -68,6 +68,10 @@
 
 #define OBJECT_MAX 65535
 
+#define INMIN "aIndex_Number_Min"
+#define INMAX "aIndex_Number_Max"
+#define INSEL "aIndex_Number_Sel"
+
 
 
 Layer *curLayer;
@@ -191,6 +195,13 @@ struct _SaveKV
     gchar *value;
     gchar *vname;
     int radindex; /* radio index */
+};
+
+typedef struct _SaveSel SaveSel;
+struct _SaveSel
+{
+    GQuark ntable; /* 表名 */
+    gint offset_val;
 };
 
 typedef struct _ListBtnArr ListBtnArr;
@@ -545,6 +556,29 @@ struct _STRUCTClass
     PublicSection *pps;
 };
 
+
+
+typedef struct
+{
+    GtkWidget *left;
+    GtkWidget *right;
+} twoWidget;
+
+
+typedef struct{
+    GQuark full_quark;
+    GQuark base_quark;
+}file_quark;
+
+typedef struct
+{
+    GQuark nquark; /* 子表名*/
+    GList *sub_list;
+    gint  cursel; /* 表内偏移 */
+} subTable;
+
+
+
 void factory_class_ocombox_foreach(STRUCTClass *fclass,
                            gpointer user_data,OCOMBO_OPT oopt);
 
@@ -696,6 +730,8 @@ void factory_systeminfo_callback(GtkWidget *parent);
 GList* factory_get_download_name_list(const gchar *path);
 
 //void factoryReadDataFromFile(STRUCTClass *structclass);
+
+subTable *factory_mfile_idlist_find_subtable(GList *srclist,GQuark nquark);
 void factory_mfile_save_to_xml(ObjectNode obj_node,const gchar *filename);
 void factory_reset_object_color_to_default();
 void factory_set_fill_color();
@@ -737,24 +773,6 @@ gboolean factory_idlist_delete_item_update_foreach(GtkTreeModel *model,
 
 gchar *factory_get_subtable_name(GList *glist,gint n);
 
-typedef struct
-{
-    GtkWidget *left;
-    GtkWidget *right;
-} twoWidget;
-
-
-typedef struct{
-    GQuark full_quark;
-    GQuark base_quark;
-}file_quark;
-
-typedef struct
-{
-    GQuark nquark; /* 子表名*/
-    GList *sub_list;
-    gint  cursel; /* 表内偏移 */
-} subTable;
 
 enum{
     IS_STRING,

@@ -48,6 +48,8 @@
 #include "diagramdata.h"
 #include "connpoint_line.h"
 
+
+
 extern GQuark item_wactid;
 
 /* hide this functionality before rewrite;) */
@@ -4221,16 +4223,44 @@ FIRST:
             lda->isArray = FALSE;
             lda->odw_func = NULL;
             lda->type = factory_get_last_section(sss->name,".");
-            lda->user_data = &sss->value.vnumber; /* 这里是二级指针*/
+            lda->user_data = sss; /* 这里是二级指针*/
             if(factory_music_fm_item_is_index(item->Name))
             {
-                subTable *stable = g_list_nth_data(smd->midlists,
-                                                   g_strtod(sss->value.vnumber,NULL));
-                if(stable)
-                    gtk_button_set_label(GTK_BUTTON(columTwo),
-                                         g_quark_to_string(stable->nquark));
+                if(factory_music_fm_get_position_type(item->Name) != -1)
+                {
+                    SaveSel *ssel = sss->value.vnumber;
+                    if(ssel->ntable != empty_quark)
+                    {
+
+                       if(factory_mfile_idlist_find_subtable(smd->midlists,
+                                                           ssel->ntable))
+                       {
+                           gtk_button_set_label(GTK_BUTTON(columTwo),
+                                             g_quark_to_string(ssel->ntable));
+                       }
+                       else
+                       {
+                            ssel->ntable = empty_quark;
+                            ssel->offset_val = -1;
+                            gtk_button_set_label(GTK_BUTTON(columTwo),"-1");
+                       }
+                    }
+                    else
+                    {
+                        gtk_button_set_label(GTK_BUTTON(columTwo),"-1");
+                    }
+                }
                 else
-                    gtk_button_set_label(GTK_BUTTON(columTwo), sss->value.vnumber );
+                {
+                    subTable *stable = g_list_nth_data(smd->midlists,
+                                                       g_strtod(sss->value.vnumber,NULL));
+                    if(stable)
+                        gtk_button_set_label(GTK_BUTTON(columTwo),
+                                             g_quark_to_string(stable->nquark));
+                    else
+                        gtk_button_set_label(GTK_BUTTON(columTwo),
+                                             sss->value.vnumber );
+                }
             }
             else
                 gtk_button_set_label(GTK_BUTTON(columTwo), sss->value.vnumber );
@@ -4254,14 +4284,16 @@ FIRST:
     return columTwo;
 }
 
+
+
 gint factory_music_fm_get_position_type(const gchar* name)
 {
     gchar *skey = factory_get_last_section(name,".");
-    if(!g_ascii_strcasecmp(skey,"aIndex_Number_Min"))
+    if(!g_ascii_strncasecmp(skey,INMIN,strlen(INMIN)))
         return OFFSET_FST;
-    else if(!g_ascii_strcasecmp(skey,"aIndex_Number_Max"))
+    else if(!g_ascii_strncasecmp(skey,INMAX,strlen(INMAX)))
         return OFFSET_END;
-    else if(!g_ascii_strcasecmp(skey,"aIndex_Number_Sel"))
+    else if(!g_ascii_strncasecmp(skey,INSEL,strlen(INSEL)))
         return OFFSET_SEL;
     else
         return -1;

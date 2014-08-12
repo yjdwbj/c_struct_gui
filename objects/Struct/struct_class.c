@@ -2435,12 +2435,12 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
         else
             sss->value.vnumber = g_strdup((gchar*)key);
         xmlFree(key);
-        key = xmlGetProp(attr_node,(xmlChar*)"org_val");
-        if(key)
-        {
-            sss->value.vnumber = g_strdup((gchar*)key);
-            xmlFree(key);
-        }
+//        key = xmlGetProp(attr_node,(xmlChar*)"org_val");
+//        if(key)
+//        {
+//            sss->value.vnumber = g_strdup((gchar*)key);
+//            xmlFree(key);
+//        }
 //        skv->value = g_strdup((gchar*)key);
 
 //        key = xmlGetProp(attr_node,(xmlChar*)"index");
@@ -3167,12 +3167,33 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
             }
             else
             {
-                /* sss->value.vnumber  原定义为一个gchar 指针，在这里当做gpointer 用了*/
-                sss->value.vnumber = g_strdup(fst->Value);
+                if(factory_music_fm_item_is_index(fst->Name))
+                {
+//                    if(factory_music_fm_get_position_type(item->Name) == OFFSET_SEL )
+//                    {
+                        gint val = g_strtod(sss->value.vnumber,NULL);
+                        g_free(sss->value.vnumber);
+                        sss->value.vnumber = g_new0(SaveSel,1);
+                        SaveSel *ssel = sss->value.vnumber;
+                        ssel->ntable = empty_quark;
+                        ssel->offset_val = val;
+//                    }
+//                    else
+//                    {
+//
+//                    }
+                }
+                else
+                {
+                    /* sss->value.vnumber  原定义为一个gchar 指针，在这里当做gpointer 用了*/
+                    sss->value.vnumber = g_strdup(fst->Value);
 //                smd->vnumber = sss->value.vnumber;
-                smd->btnname = g_strdup(fst->Cname);
+                    smd->btnname = g_strdup(fst->Cname);
+
+                    // sss->close_func = factory_music_file_manager_apply;
+                }
                 sss->newdlg_func = factory_create_file_manager_dialog;
-                // sss->close_func = factory_music_file_manager_apply;
+
             }
 
         }
@@ -3603,8 +3624,11 @@ structclass_copy(STRUCTClass *structclass)
     newstructclass->EnumsAndStructs = factoryContainer;
 //    newstructclass->widgetmap = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
     newstructclass->widgetSave = NULL;
-    newstructclass->pps = g_new0(PublicSection,1);
-    newstructclass->pps->hasfinished = structclass->pps->hasfinished;
+    if(structclass->pps)
+    {
+        newstructclass->pps = g_new0(PublicSection,1);
+        newstructclass->pps->hasfinished = structclass->pps->hasfinished;
+    }
 
 
     GList *plist = structclass->widgetSave;
@@ -3740,8 +3764,8 @@ static void factory_write_object_comobox(ActionID *aid,ObjectNode ccc ,const gch
     xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)type);
     xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)"OCOMBO");
     if(aid->conn_ptr)
-    aid->value =
-    g_strdup_printf("%d",((DiaObject*)aid->conn_ptr)->oindex);
+        aid->value =
+            g_strdup_printf("%d",((DiaObject*)aid->conn_ptr)->oindex);
     xmlSetProp(ccc, (const xmlChar *)"value", (xmlChar *)aid->value );
 
 //    xmlSetProp(ccc, (const xmlChar *)"index", (xmlChar *)g_strdup_printf(_("%d"),aid->index));
@@ -3832,7 +3856,7 @@ static void factory_base_struct_save_to_file(SaveStruct *sss,ObjectNode obj_node
         if(!g_strcasecmp(laststr,TYPE_FILELST))
         {
 //            factory_mfile_idlist_save_xml(sss,obj_node);
-            factory_mfile_save_item_to_xml(sss,obj_node);
+            factory_mfile_save_item_to_xml1(sss,obj_node);
         }
         else if(!g_strcasecmp(laststr,TYPE_IDLST))
         {
@@ -4455,7 +4479,6 @@ gboolean factory_comobox_compre_foreach(GtkTreeModel *model,
         gtk_combo_box_set_active_iter(GTK_COMBO_BOX(cc->combox),iter);
         return TRUE;
     }
-
     return FALSE;
 }
 

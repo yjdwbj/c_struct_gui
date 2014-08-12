@@ -19,7 +19,7 @@
 /** This files handles which text elements are currently eligible to get
  * the input focus, and moving back and forth between them.  Objects can
  * add their texts to the list with request_focus (more than one can be
- * added), which doesn't give them focus outright, but makes them part of 
+ * added), which doesn't give them focus outright, but makes them part of
  * the focus chain.  Actual handling of when focus goes where is handled
  * in app/disp_callbacks.c
  */
@@ -153,7 +153,7 @@ focus_previous_on_diagram(DiagramData *dia)
   if (text_foci != NULL && get_active_focus(dia) != NULL) {
     GList *listelem = g_list_find(text_foci, get_active_focus(dia));
     listelem = g_list_previous(listelem);
-    if (listelem == NULL) 
+    if (listelem == NULL)
       listelem = g_list_last(text_foci);
     return (Focus *)listelem->data;
   }
@@ -183,6 +183,7 @@ reset_foci_on_diagram(DiagramData *dia)
 gboolean
 remove_focus_object(DiaObject *obj)
 {
+  if(!obj->parent_layer) return FALSE;
   DiagramData *dia = obj->parent_layer->parent_diagram;
   GList *tmplist = get_text_foci(dia);
   gboolean active = FALSE;

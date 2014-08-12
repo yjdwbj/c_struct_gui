@@ -13,14 +13,13 @@ enum
     NUM_OF_MCOLUMN
 };
 
-
-
 static void factory_mfile_manager_changed_dname(GtkCellRendererText *cell,
         const gchar         *path_string,
         const gchar         *new_text,
         gpointer             data);
 
-
+static inline gboolean factory_mfile_mlist_append_item(GtkListStore *store,
+        SaveMusicFile *smf);
 
 static void factory_cleanall_mfile_modal(GtkWidget *widget,gpointer user_data);
 static void factory_delete_mfile_item_modal(GtkWidget *widget,gpointer user_data);

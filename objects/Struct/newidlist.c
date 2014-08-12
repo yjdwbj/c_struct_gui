@@ -746,28 +746,10 @@ static GtkWidget* factory_sublist_insert_dialog(GtkMenuItem *item,
     GtkTreeIter iter;
     SaveIdDialog *sid = curLayer->sid;
     GtkWidget *subdlg = factory_sublist_create_dialog(item,ptreeview);
-
-
     return NULL;
 }
 
-
-
 /***           下面是idlist的函数                ****/
-
-
-//static void factory_idlist_after_delete_update(const gchar *name)
-//{
-//    SaveIdDialog *sid = curLayer->sid;
-//    GList *glist = sid->idlists;
-//    for(; glist ; glist = glist->next)
-//    {
-//        subTable *stable = glist->data;
-//        GList *sublist = stable->table_list;
-////        for(;sublist;)
-//    }
-//}
-
 
 void factory_set_idlist_columns (GtkTreeView *treeview,GtkTreeModel *cbmodel)
 {
