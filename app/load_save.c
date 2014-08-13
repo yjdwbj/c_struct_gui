@@ -875,7 +875,8 @@ diagram_data_load(const char *filename, DiagramData *data, void* user_data)
 
         list = read_objects(layer_node, objects_hash, filename, NULL, unknown_objects_hash);
         layer_add_objects (layer, list);
-        read_connections( list, layer_node, objects_hash);
+        /* 不需要读取线条了 */
+//        read_connections( list, layer_node, objects_hash);
 
         data_add_layer(data, layer);
 
@@ -937,7 +938,12 @@ write_objects(GList *objects, xmlNodePtr objects_node,
     while (list != NULL)
     {
         DiaObject *obj = (DiaObject *) list->data;
-
+        if(obj->type == object_get_type(CLASS_LINE))
+        {
+            /* 2014-08-13 不需要保存线条 */
+            list = g_list_next(list);
+            continue;
+        }
         if (g_hash_table_lookup(objects_hash, obj))
         {
             list = g_list_next(list);
@@ -974,6 +980,8 @@ write_objects(GList *objects, xmlNodePtr objects_node,
             }
             else
                 xmlSetProp(obj_node,(const xmlChar *)"templ",(xmlChar*)"0");
+
+
 
             (*obj->type->ops->save)(obj, obj_node, filename);
 
@@ -1226,8 +1234,9 @@ diagram_data_write_doc(DiagramData *data, const char *filename)
 
         write_objects(layer->objects, layer_node,
                       objects_hash, &obj_nr, filename);
-
-        res = write_connections(layer->objects, layer_node, objects_hash);
+        /* 不需要保存线条,读取时重画,重新邦定 */
+        res = TRUE;
+//        res = write_connections(layer->objects, layer_node, objects_hash);
         /* Why do we bail out like this?  It leaks! */
         if (!res)
             return NULL;
@@ -1262,7 +1271,7 @@ diagram_data_raw_save(DiagramData *data, const char *filename)
 
 int factory_project_raw_save(DiagramData *data)
 {
-     xmlDocPtr doc;
+    xmlDocPtr doc;
     gchar *datadir = dia_get_data_directory("data");
     int ret;
     /* 这里最终要保存生成bin文件的 */
@@ -1274,7 +1283,7 @@ int factory_project_raw_save(DiagramData *data)
 
         layer = (Layer *) g_ptr_array_index(data->layers, i);
         GList *olist = layer->objects;
-        for(;olist ; olist = olist->next)
+        for(; olist ; olist = olist->next)
         {
             DiaObject *diaobj = olist->data;
             if(diaobj->isTemplate)
@@ -1408,18 +1417,18 @@ diagram_data_save(DiagramData *data, const char *user_filename)
     idobj->name = g_strdup(fsil2->sname);
     sysinfoobj->name = g_strdup(fsil3->sname);
 
-    *curlist  = g_list_append(*curlist ,fileobj);
-    *curlist  = g_list_append(*curlist ,idobj);
-    *curlist  = g_list_append(*curlist ,sysinfoobj);
+    *curlist  = g_list_prepend(*curlist ,fileobj);
+    *curlist  = g_list_prepend(*curlist ,idobj);
+    *curlist  = g_list_prepend(*curlist ,sysinfoobj);
 
 
     ret = diagram_data_raw_save(data, tmpname);
 
 //    ret = factory_project_raw_save(data);
-
+    *curlist  = g_list_remove(*curlist ,sysinfoobj);
     *curlist  = g_list_remove(*curlist ,fileobj);
     *curlist  = g_list_remove(*curlist ,idobj);
-    *curlist  = g_list_remove(*curlist ,sysinfoobj);
+
 
     /* 上面是删掉一些不需要要界面上以控件形式显示的控件.这就是特殊控件 */
 
@@ -1568,7 +1577,7 @@ void factory_load_all_templates(void)
         /* take only .sheet files */
         if(g_str_has_suffix(filename,LCY))
         {
-             factory_template_open_template_filename(filename);
+            factory_template_open_template_filename(filename);
         }
 
         g_free(filename);

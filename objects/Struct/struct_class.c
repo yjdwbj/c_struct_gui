@@ -2422,42 +2422,94 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
     {
         /* 这里是id列表与音乐文件列表的数据读取 */
         sss->celltype = UBTN;
-//        key = xmlGetProp(attr_node,(xmlChar *)"wtype");
-//        sss->type = g_strdup((gchar*)key);
-//        xmlFree(key);
-        key = xmlGetProp(attr_node,(xmlChar *)"value");
-
-//        SaveKV *skv = g_new0(SaveKV,1);
+        key = xmlGetProp(attr_node,(xmlChar*)"name");
         if(!key)
         {
-            sss->value.vnumber = g_strdup("-1");
+            gchar *msg = g_strdup_printf(factory_utf8("节点不存在!\n"
+                                         "对像名:%s\n成员名:%s\n行数:%d\n"),
+                                         fclass->name,sss->name,attr_node->line);
+            factory_critical_error_exit(msg);
         }
-        else
-            sss->value.vnumber = g_strdup((gchar*)key);
+        gchar *last_sec = factory_get_last_section((gchar*)key,".");
+        if(g_ascii_strcasecmp(fst->Name,last_sec))
+        {
+            gchar *msg = g_strdup_printf(factory_utf8("工程文件的名称与源文件名不符!\n"
+                                         "对像名:%s\n成员名:%s\n读取名:%s\n行数:%d\n"),
+                                         fclass->name,sss->name,last_sec,attr_node->line);
+            factory_critical_error_exit(msg);
+        }
         xmlFree(key);
-//        key = xmlGetProp(attr_node,(xmlChar*)"org_val");
-//        if(key)
-//        {
-//            sss->value.vnumber = g_strdup((gchar*)key);
-//            xmlFree(key);
-//        }
-//        skv->value = g_strdup((gchar*)key);
+        if(factory_music_fm_item_is_index(last_sec))
+        {
+            if(factory_music_fm_get_position_type(last_sec) == -1)
+            {
+                gchar *msg = g_strdup_printf(factory_utf8("无法识别关键字名:%!\n"
+                                             "对像名:%s\n成员名:%s\n行数:%d\n"),
+                                             last_sec,fclass->name,sss->name,attr_node->line);
+                factory_critical_error_exit(msg);
 
-//        key = xmlGetProp(attr_node,(xmlChar*)"index");
-//        if(!key)
-//        {
-//            skv->radindex = 0;
-//        }
-//        skv->radindex = g_strtod((gchar*)key,NULL);
-//        sss->value.vnumber = skv;
-//        xmlFree(key);
-//        key = xmlGetProp(attr_node,(xmlChar*)"idname");
-//        if(!key)
-//        {
-//            skv->vname = g_strdup("");
-//        }
-//        skv->vname = g_strdup((gchar*)key);
-//        xmlFree(key);
+            }
+            SaveMusicDialog *smd = curLayer->smd;
+            SaveSel *ssel = g_new0(SaveSel,1);
+            sss->value.vnumber = ssel;
+            key = xmlGetProp(attr_node,(xmlChar *)"value");
+            gint val = -1;
+            if(key)
+            {
+                val = g_strtod(key,NULL);
+                xmlFree(key);
+            }
+
+            key = xmlGetProp(attr_node,(xmlChar*)"idname");
+            if(key && smd->midlists)
+            {
+                GQuark nquark = g_quark_from_string((gchar*)key);
+                subTable *stable = factory_mfile_idlist_find_subtable(smd->midlists,nquark);
+                if(stable)
+                {
+                    ssel->ntable = &stable->nquark;
+                    switch(factory_music_fm_get_position_type(sss->name))
+                    {
+                        case OFFSET_FST:
+                            ssel->offset_val = 0;
+                            break;
+                        case OFFSET_SEL:
+                        {
+                            GList *tlist = smd->midlists;
+                            for(; tlist; tlist = tlist->next)
+                            {
+                                subTable *st = tlist->data;
+                                gint len = g_list_length(st->sub_list);
+                                if(val >= len )
+                                    val -= len;
+                                else
+                                    break;
+                            }
+                            ssel->offset_val = val;
+                        }
+                        break;
+                        case OFFSET_END:
+                            ssel->offset_val = g_list_length(stable->sub_list)-1;
+                            break;
+                        default:
+                            break;
+                    }
+
+                }
+                xmlFree(key);
+            }
+        }
+        else /* PHY and SEQUENCE IDLST*/
+        {
+            key = xmlGetProp(attr_node,(xmlChar*)"value");
+            if(!key)
+            {
+                sss->value.vnumber = g_strdup("-1");
+            }
+            else
+                sss->value.vnumber = g_strdup((gchar*)key);
+            xmlFree(key);
+        }
         return;
     }
 
@@ -2508,6 +2560,7 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
     {
         sss->celltype = OCOMBO;
         ActionID *acid = &sss->value.actid;
+        acid->line = NULL;
         factory_read_object_comobox_value_from_file(attr_node,acid);
     }
     else if(!g_ascii_strncasecmp((gchar*)key,"OBTN",4))
@@ -2534,6 +2587,7 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
                 if(key)
                 {
                     ActionID *aid = g_new0(ActionID,1);
+                    aid->line = NULL;
                     factory_read_object_comobox_value_from_file(obtn_node,aid);
                     nid->actlist = g_list_append(nid->actlist,aid);
                 }
@@ -2819,6 +2873,7 @@ void factory_read_object_comobox_value_from_file(AttributeNode attr_node,
     key  =  xmlGetProp(attr_node,(xmlChar *)"name");
     if(key)
     {
+        g_free(aid->title_name);
         aid->title_name = g_strdup((gchar*)key);
         xmlFree(key);
     }
@@ -3085,10 +3140,11 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
         }
         else
         {
+            SaveEnum *senum = &sss->value.senum;
             sss->celltype = ECOMBO;
-            sss->value.senum.enumList = fst->datalist;
+            senum->enumList = fst->datalist;
 //                sss->value.senum.width = g_strdup(fst->Max);
-            GList *t = sss->value.senum.enumList;
+            GList *t = senum->enumList;
             GQuark vquark = g_quark_from_string(fst->Value);
             for(; t != NULL ; t = t->next)
             {
@@ -3096,19 +3152,23 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
                 GQuark kquark = g_quark_from_string(kvmap->key);
                 if(kquark == vquark)
                 {
-                    sss->value.senum.index = g_list_index(fst->datalist,kvmap);
-                    sss->value.senum.width = g_strdup(fst->Max);
-                    sss->value.senum.evalue = g_strdup(kvmap->value);
+                    senum->index = g_list_index(fst->datalist,kvmap);
+                    senum->width = g_strdup(fst->Max);
+                    senum->evalue = g_strdup(kvmap->value);
                     break;
                 }
 
             }
-            if(!t && !sss->value.senum.width ) /*源文件有错误，这里用默认值*/
+            if(!t && !senum->width ) /*源文件有错误，这里用默认值*/
             {
-                sss->value.senum.index = 0;
-                sss->value.senum.width = g_strdup(fst->Max);
-                FactoryStructEnum *kvmap = sss->value.senum.enumList->data;
-                sss->value.senum.evalue = g_strdup(kvmap->value);
+                gchar *msg =
+                    g_strdup_printf(factory_utf8("对像名:%s\n成员名:%s\n找不到枚举对像的默认值,%s\n请检查源文件."),
+                                    sss->sclass->name,sss->name,fst->Value);
+                factory_critical_error_exit(msg);
+//                sss->value.senum.index = 0;
+//                sss->value.senum.width = g_strdup(fst->Max);
+//                FactoryStructEnum *kvmap = sss->value.senum.enumList->data;
+//                sss->value.senum.evalue = g_strdup(kvmap->value);
             }
 
         }
@@ -3171,12 +3231,12 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
                 {
 //                    if(factory_music_fm_get_position_type(item->Name) == OFFSET_SEL )
 //                    {
-                        gint val = g_strtod(sss->value.vnumber,NULL);
-                        g_free(sss->value.vnumber);
-                        sss->value.vnumber = g_new0(SaveSel,1);
-                        SaveSel *ssel = sss->value.vnumber;
-                        ssel->ntable = empty_quark;
-                        ssel->offset_val = val;
+                    gint val = g_strtod(sss->value.vnumber,NULL);
+                    g_free(sss->value.vnumber);
+                    sss->value.vnumber = g_new0(SaveSel,1);
+                    SaveSel *ssel = sss->value.vnumber;
+                    ssel->ntable = NULL;
+                    ssel->offset_val = val;
 //                    }
 //                    else
 //                    {
@@ -3232,9 +3292,17 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
         suptr->comobox = NULL;
         suptr->structlist = fst->datalist;
         /* nextobj 就是当前下拉框所显示的 */
-        FactoryStructItem *nextobj = factory_get_factorystructitem(suptr->structlist,fst->Value);
+        FactoryStructItem *nextobj =
+            factory_get_factorystructitem(suptr->structlist,fst->Value);
         if(!nextobj)
+        {
+            gchar *msg =
+                g_strdup_printf(factory_utf8("对像名:%s\n成员名:%s\n找不到联合体的默认值,%s\n请检查源文件.\n"),
+                                sss->sclass->name,sss->name,fst->Value);
+            factory_critical_error_exit(msg);
             break;
+        }
+
         suptr->uindex = g_list_index(suptr->structlist,nextobj);
         GList *p = suptr->structlist;
 //        suptr->curtext = g_strdup(nextobj->Name);
@@ -4347,6 +4415,14 @@ SaveStruct *factory_savestruct_copy(const SaveStruct *old)
         /* 这个类型有可能是文件列表,或者ID列表 */
         if(factory_is_special_object(old->type))
         {
+            if(factory_music_fm_item_is_index(old->name))
+            {
+                SaveSel *ossl = old->value.vnumber;
+                SaveSel *nssl = g_new0(SaveSel,1);
+                newsst->value.vnumber = nssl;
+                nssl->ntable = ossl->ntable;
+                nssl->offset_val = ossl->offset_val;
+            }
             newsst->value.vnumber = g_strdup(old->value.vnumber);
             break;
         }

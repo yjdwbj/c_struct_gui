@@ -200,7 +200,7 @@ struct _SaveKV
 typedef struct _SaveSel SaveSel;
 struct _SaveSel
 {
-    GQuark ntable; /* 表名 */
+    GQuark *ntable; /* 表名 */
     gint offset_val;
 };
 
@@ -605,7 +605,7 @@ attributes_list_selection_changed_callback(GtkWidget *gtklist,
         STRUCTClass *structclass);
 static DiaObject* factory_connection_two_object(STRUCTClass *fclass, /* start pointer*/
         STRUCTClass *objclass /* end pointer */);
-static DiaObject* factory_connection_two_object1(STRUCTClass *startc,
+static void factory_connection_two_object1(STRUCTClass *startc,
         ActionID *aid);
 
 

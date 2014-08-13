@@ -3127,16 +3127,6 @@ static void factory_ocombox_name_to_poniter(ActionID *aid,
     }
 }
 
-//static void factory_ocombox_name_to_pointer_hash(ActionID *aid)
-//{
-//    STRUCTClass *exist = g_hash_table_lookup(curLayer->defnames,
-//                                       g_quark_to_string(aid->pre_quark));
-//    if(exist)
-//    {
-//        aid->conn_ptr = exist;
-//        aid->pre_quark  = empty_quark;
-//    }
-//}
 
 static void factory_ocombox_pointer_to_name(ActionID *aid)
 {
@@ -3174,6 +3164,11 @@ static void factory_switch_operator(SaveStruct *sst,ActionID *aid ,
         factory_ocombox_name_to_poniter(aid,g_hash_table_lookup,
                                         curLayer->defnames,
                                         oopt);
+        if(aid->conn_ptr && oopt == FIND_PTR_LOAD)
+        {
+            /* 加载回来重新连线,绑定 */
+           factory_connection_two_object1(sst->sclass,aid);
+        }
     }
     break;
     case FIND_NAME:
@@ -3353,19 +3348,19 @@ gboolean factory_search_connected_link(STRUCTClass *fclass,gint depth)
     return TRUE;
 }
 
-static DiaObject* factory_connection_two_object1(STRUCTClass *startc,
+static void factory_connection_two_object1(STRUCTClass *startc,
         ActionID *aid)
 {
-    if(!aid) return NULL;
+    g_return_if_fail(aid);
     STRUCTClass *endc = aid->conn_ptr;
-    if(!endc) return NULL;
+    g_return_if_fail(endc);
     DDisplay *ddisp = ddisplay_active();
     ConnectionPoint *cpstart = &startc->connections[8];
     ConnectionPoint *cpend = &endc->connections[8];
     int f1 = g_list_find(cpstart->connected,aid->line);
     int f2 = g_list_find(cpend->connected,aid->line);
     if(f1 < 0 && f2 < 0)
-        return aid->line;
+        return;
 
     int x =0,y=0;
     x = startc->connections[8].pos.x;
@@ -3383,7 +3378,7 @@ static DiaObject* factory_connection_two_object1(STRUCTClass *startc,
     diagram_remove_all_selected(ddisp->diagram,TRUE);
     diagram_select(ddisp->diagram,(DiaObject*)startc);
     diagram_flush(ddisp->diagram);
-    return obj;
+    aid->line = obj;
 
 }
 
@@ -3427,8 +3422,7 @@ static void factory_actionid_line_update1(STRUCTClass *sclass,
     {
         if(aid->conn_ptr)
         {
-            aid->line = factory_connection_two_object1(sclass,
-                        aid);
+            factory_connection_two_object1(sclass,aid);
         }
 
     }
@@ -3438,16 +3432,26 @@ static void factory_actionid_line_update1(STRUCTClass *sclass,
         {
             if(aid->line)
             {
-                gpointer conn_ptr =
-                    g_hash_table_lookup(curLayer->defnames,
-                                        g_quark_to_string(aid->pre_quark));
+                /* 确定指向与选择是一致的 */
+                STRUCTClass *cto = aid->line->handles[1]->connected_to->object;
+//                if(cto != aid->conn_ptr)
+//                {
+//                    factory_connectionto_object(ddisp,aid->line,aid->conn_ptr,1);
+//                }
+//                gpointer conn_ptr =
+//                    g_hash_table_lookup(curLayer->defnames,
+//                                        g_quark_to_string(aid->pre_quark));
                 STRUCTClass *endc = aid->conn_ptr;
                 ConnectionPoint *cpstart = &sclass->connections[8];
                 ConnectionPoint *cpend = &endc->connections[8];
                 int f1 = g_list_find(cpstart->connected,aid->line);
                 int f2 = g_list_find(cpend->connected,aid->line);
                 int f3 = g_list_find(curLayer->objects,aid->line);
-                if(f1 > -1 && f2 > -1 && f3 > -1 && conn_ptr == aid->conn_ptr)
+                if(f3 < 0)
+                {
+                   factory_connection_two_object1(sclass,aid);
+                }
+                else if(f1 > -1 && f2 > -1 && f3 > -1 && cto == aid->conn_ptr)
                 {
                     goto DO_PRE;
                 }
@@ -3467,8 +3471,7 @@ static void factory_actionid_line_update1(STRUCTClass *sclass,
             }
             else
             {
-                aid->line = factory_connection_two_object1(sclass,
-                            aid);
+               factory_connection_two_object1(sclass,aid);
             }
 
         }
@@ -3632,43 +3635,40 @@ static void factory_read_props_from_widget(gpointer key,
         SaveUnion *suptr = &sss->value.sunion;
         g_return_if_fail(suptr);
         gint cpid = gtk_combo_box_get_active(GTK_COMBO_BOX(suptr->comobox));
-        if(cpid == suptr->uindex)
-        {
-            suptr->pre_quark = g_quark_from_string(suptr->curkey);
-            break;
-        }
+        if(cpid == suptr->uindex) break; /* 没有改变 */
         /* 清理上一个选项中,含有连接的成员 */
         GtkTreeModel *model = gtk_combo_box_get_model(suptr->comobox);
         GtkTreeIter iter;
-        gtk_tree_model_get_iter_from_string(model,&iter,g_strdup_printf("%d",suptr->uindex));
+        gtk_tree_model_get_iter_from_string(model,&iter,
+                                            g_strdup_printf("%d",suptr->uindex));
         gchar *pre_text ;
         gtk_tree_model_get(model,&iter,0,&pre_text,-1);
 
 
         SaveStruct *pre_sst = g_tree_lookup(suptr->ubtreeVal,pre_text);
-//        if(pre_sst)
-//            factory_union_update_link_line(pre_sst,
-//                                           factory_union_del_link_line); /*删除上一次的连线*/
+        if(pre_sst)
+            factory_union_update_link_line(pre_sst,
+                                           factory_delete_line_between_two_objects1); /*删除上一次的连线*/
         g_free(pre_text);
         suptr->uindex =  cpid;
         g_free(suptr->curkey);
         suptr->curkey =  g_strdup(gtk_combo_box_get_active_text(suptr->comobox));
 
         suptr->pre_quark = g_quark_from_string(suptr->curkey);
-//        if(!sss->isPointer)
-//        {
-//            SaveStruct *tsst = g_tree_lookup(suptr->ubtreeVal,
-//                                             suptr->curkey);
-//            if(tsst)
-//            {
-//                factory_save_value_from_widget(tsst);
+        if(!sss->isPointer)
+        {
+            SaveStruct *tsst = g_tree_lookup(suptr->ubtreeVal,
+                                             suptr->curkey);
+            if(tsst)
+            {
+                factory_save_value_from_widget(tsst);
 //                factory_union_update_link_line(tsst,
 //                                               factory_actionid_line_update1);
-////                /*再检测一次连线是否正确*/
-////                factory_union_update_link_line(tsst,
-////                                               (FactoryUnionItemUpdate)factory_connection_two_object);
-//            }
-//        }
+//                /*再检测一次连线是否正确*/
+//                factory_union_update_link_line(tsst,
+//                                               (FactoryUnionItemUpdate)factory_connection_two_object);
+            }
+        }
     }
 //    break;
 //    case OBTN: /* 这里要加一个处理,这是一组联线的控件 */
@@ -3731,6 +3731,7 @@ void factory_delete_line_between_two_objects1(STRUCTClass *startc,
     cpend->connected = g_list_remove(cpend->connected,line);
     line->connections[0]->connected = NULL;
     line->connections[0]->object = NULL;
+    aid->line = NULL;
     layer_remove_object(curLayer,line); // 在当前的画布里面删除连线对像.
     diagram_flush(ddisp->diagram);
     diagram_unselect_object(ddisp->diagram,(DiaObject*)endc);
@@ -4229,18 +4230,18 @@ FIRST:
                 if(factory_music_fm_get_position_type(item->Name) != -1)
                 {
                     SaveSel *ssel = sss->value.vnumber;
-                    if(ssel->ntable != empty_quark)
+                    if(ssel->ntable)
                     {
 
                        if(factory_mfile_idlist_find_subtable(smd->midlists,
-                                                           ssel->ntable))
+                                                           *ssel->ntable))
                        {
                            gtk_button_set_label(GTK_BUTTON(columTwo),
-                                             g_quark_to_string(ssel->ntable));
+                                             g_quark_to_string(*ssel->ntable));
                        }
                        else
                        {
-                            ssel->ntable = empty_quark;
+                            ssel->ntable = NULL;
                             ssel->offset_val = -1;
                             gtk_button_set_label(GTK_BUTTON(columTwo),"-1");
                        }

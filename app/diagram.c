@@ -226,7 +226,7 @@ diagram_init(Diagram *dia, const char *filename)
     /* Make sure the filename is absolute */
     if (!g_path_is_absolute(filename))
     {
-        gchar *pwd = g_get_current_dir();
+        gchar *homedir = g_get_home_dir ();
         if(dia->isTemplate)
         {
 //            dia->data->isProject = FALSE;
@@ -236,10 +236,9 @@ diagram_init(Diagram *dia, const char *filename)
         }
         else
         {
-            newfilename = g_build_filename(pwd, filename, NULL);
+            newfilename = g_build_filename(homedir, filename, NULL);
         }
 
-        g_free(pwd);
         filename = newfilename;
     }
     /* All Diagram functions assumes filename in filesystem encoding */
