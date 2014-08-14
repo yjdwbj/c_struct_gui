@@ -682,13 +682,14 @@ DIAVAR gint factory_str_compare(const gchar *str1,const gchar *str2);
 DIAVAR gboolean factory_test_file_exist(const gchar *fname);
 DIAVAR gchar *factory_locale(gchar *str);
 DIAVAR gboolean factory_is_special_object(const gchar *name);
+DIAVAR inline gchar* factory_get_format_date_and_time(void);
 DIAVAR gchar *factory_get_last_section(const gchar *src,const gchar *delimiter);
 DIAVAR gboolean factory_is_struct_type(gpointer data);
 DIAVAR GtkWidget* factory_create_new_dialog_with_buttons(gchar *title,GtkWidget *parent);
 DIAVAR void factory_critical_error_exit(const gchar *msg_err);
 DIAVAR void factory_debug_to_log(const gchar *msg_dbg);
 DIAVAR void factory_waring_to_log(const gchar *msg_war);
-DIAVAR gchar *factory_get_current_timestamp();
+//DIAVAR gchar *factory_get_current_timestamp();
 DIAVAR void factory_init_list(GtkWidget *list);
 DIAVAR void factory_add_to_list(GtkWidget *list,const gchar *str);
 

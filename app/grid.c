@@ -51,7 +51,7 @@ calculate_dynamic_grid(DDisplay *ddisp, real *width_x, real *width_y)
 }
 
 static void
-grid_draw_horizontal_lines(DDisplay *ddisp, Rectangle *update, real length) 
+grid_draw_horizontal_lines(DDisplay *ddisp, Rectangle *update, real length)
 {
   int x, y;
   real pos;
@@ -99,7 +99,7 @@ grid_draw_horizontal_lines(DDisplay *ddisp, Rectangle *update, real length)
 }
 
 static void
-grid_draw_vertical_lines(DDisplay *ddisp, Rectangle *update, real length) 
+grid_draw_vertical_lines(DDisplay *ddisp, Rectangle *update, real length)
 {
   int x = 0, y = 0;
   real pos;
@@ -152,13 +152,13 @@ grid_draw_hex(DDisplay *ddisp, Rectangle *update, real length)
     while (horiz_pos <= update->right) {
       ddisplay_transform_coords(ddisp, horiz_pos, vert_pos, &x, &y);
       ddisplay_transform_coords(ddisp, horiz_pos + length, vert_pos, &to_x, &y);
-	  
+
       irenderer->draw_pixel_line(renderer,
 				 x, y, to_x, y,
 				 &ddisp->diagram->grid.colour);
       horiz_pos += 3 * length;
     }
-	
+
     vert_pos += sqrt(3) * length;
   }
 
@@ -169,13 +169,13 @@ grid_draw_hex(DDisplay *ddisp, Rectangle *update, real length)
     while (horiz_pos <= update->right) {
       ddisplay_transform_coords(ddisp, horiz_pos, vert_pos, &x, &y);
       ddisplay_transform_coords(ddisp, horiz_pos+length, vert_pos, &to_x, &y);
-	  
+
       irenderer->draw_pixel_line(renderer,
 				 x, y, to_x, y,
 				 &ddisp->diagram->grid.colour);
       horiz_pos += 3 * length;
     }
-	
+
     vert_pos += sqrt(3) * length;
   }
 
@@ -186,20 +186,20 @@ grid_draw_hex(DDisplay *ddisp, Rectangle *update, real length)
     while (horiz_pos <= update->right) {
       ddisplay_transform_coords(ddisp, horiz_pos + length, vert_pos, &x, &y);
       ddisplay_transform_coords(ddisp, horiz_pos + 1.5 * length, vert_pos + length * sqrt(3) * 0.5, &to_x, &to_y);
-	  
+
       irenderer->draw_pixel_line(renderer,
 				 x, y, to_x, to_y,
 				 &ddisp->diagram->grid.colour);
 
       ddisplay_transform_coords(ddisp, horiz_pos, vert_pos, &x, &y);
       ddisplay_transform_coords(ddisp, horiz_pos - 0.5 * length, vert_pos + length * sqrt(3) * 0.5, &to_x, &to_y);
-	  
+
       irenderer->draw_pixel_line(renderer,
 				 x, y, to_x, to_y,
 				 &ddisp->diagram->grid.colour);
       horiz_pos += 3 * length;
     }
-	
+
     vert_pos += sqrt(3) * length;
   }
 
@@ -210,20 +210,20 @@ grid_draw_hex(DDisplay *ddisp, Rectangle *update, real length)
     while (horiz_pos <= update->right) {
       ddisplay_transform_coords(ddisp, horiz_pos, vert_pos, &x, &y);
       ddisplay_transform_coords(ddisp, horiz_pos - 0.5 * length, vert_pos + 0.5 * sqrt(3) * length, &to_x, &to_y);
-	  
+
       irenderer->draw_pixel_line(renderer,
 				 x, y, to_x, to_y,
 				 &ddisp->diagram->grid.colour);
 
       ddisplay_transform_coords(ddisp, horiz_pos + length, vert_pos, &x, &y);
       ddisplay_transform_coords(ddisp, horiz_pos + 1.5 * length, vert_pos + 0.5 * sqrt(3) * length, &to_x, &to_y);
-	  
+
       irenderer->draw_pixel_line(renderer,
 				 x, y, to_x, to_y,
 				 &ddisp->diagram->grid.colour);
       horiz_pos += 3 * length;
     }
-	
+
     vert_pos += sqrt(3) * length;
   }
 
@@ -252,7 +252,7 @@ grid_draw(DDisplay *ddisp, Rectangle *update)
     DIA_RENDERER_GET_CLASS(renderer)->set_linewidth(renderer, 0.0);
     DIA_RENDERER_GET_CLASS(renderer)->set_dashlength(renderer,
 						     ddisplay_untransform_length(ddisp, 31));
-    
+
     if (ddisp->diagram->grid.hex) {
       grid_draw_hex(ddisp, update, width_w);
     } else {
@@ -275,7 +275,7 @@ pagebreak_draw(DDisplay *ddisp, Rectangle *update)
 
   int width = dia_renderer_get_width_pixels(ddisp->renderer);
   int height = dia_renderer_get_height_pixels(ddisp->renderer);
-  
+
   irenderer = DIA_GET_INTERACTIVE_RENDERER_INTERFACE (renderer);
   if (prefs.pagebreak.visible) {
     Diagram *dia = ddisp->diagram;
@@ -321,6 +321,7 @@ pagebreak_draw(DDisplay *ddisp, Rectangle *update)
 void
 snap_to_grid(DDisplay *ddisp, coord *x, coord *y)
 {
+    g_return_if_fail(ddisp);
   if (ddisp->grid.snap) {
     if (ddisp->diagram->grid.hex) {
       real width_x = ddisp->diagram->grid.width_w;

@@ -4423,6 +4423,7 @@ SaveStruct *factory_savestruct_copy(const SaveStruct *old)
                 nssl->ntable = ossl->ntable;
                 nssl->offset_val = ossl->offset_val;
             }
+            else
             newsst->value.vnumber = g_strdup(old->value.vnumber);
             break;
         }

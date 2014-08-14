@@ -5311,16 +5311,18 @@ void factory_append_public_info(GtkWidget *dialog,STRUCTClass *fclass)
     GtkWidget *sep = gtk_hseparator_new();
     gtk_container_add(GTK_CONTAINER(dialog),sep);
     PublicSection *pps = NULL;
-    if(NULL == fclass->pps)
+    if(!fclass->pps)
     {
-        pps = g_new0(PublicSection,1);
-        fclass->pps = pps;
+        fclass->pps = g_new0(PublicSection,1);
+        pps = fclass->pps;
         pps->hasfinished = FALSE;
         pps->name = g_strdup(fclass->name);
     }
     else
     {
         pps = fclass->pps;
+        if(!pps->name)
+            pps->name = g_strdup(fclass->name);
     }
     pps->wid_hasfinished  =  chbox	;
     GtkWidget *hbox = gtk_hbox_new(FALSE,0);

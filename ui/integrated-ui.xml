@@ -41,21 +41,21 @@
 			<menuitem name="FileQuit" action="FileQuit" />
 		</menu>
 		<menu name="Edit" action="Edit">
-			<menuitem name="EditUndo" action="EditUndo" />
+<!--			<menuitem name="EditUndo" action="EditUndo" />
 			<menuitem name="EditRedo" action="EditRedo" />
-			<separator name="EditSep1" />
+			<separator name="EditSep1" />-->
 			<menuitem name="EditCopy" action="EditCopy" />
-			<menuitem name="EditCut" action="EditCut" />
+<!--			<menuitem name="EditCut" action="EditCut" />-->
 			<menuitem name="EditPaste" action="EditPaste" />
 			<menuitem name="EditDuplicate" action="EditDuplicate" />
 			<menuitem name="EditDelete" action="EditDelete" />
-			<separator name="EditSep2" />
+<!--			<separator name="EditSep2" />
 			<menuitem name="EditFind" action="EditFind" />
-			<menuitem name="EditReplace" action="EditReplace" />
-			<separator name="EditSep3" />
+			<menuitem name="EditReplace" action="EditReplace" />-->
+	<!--		<separator name="EditSep3" />
 			<menuitem name="EditCopytext" action="EditCopytext" />
 			<menuitem name="EditCuttext" action="EditCuttext" />
-			<menuitem name="EditPastetext" action="EditPastetext" />
+			<menuitem name="EditPastetext" action="EditPastetext" />-->
 		</menu>
 <!--		<menu name="View" action="View">
 			<menuitem name="ViewZoomin" action="ViewZoomin" />

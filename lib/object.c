@@ -1140,7 +1140,7 @@ gboolean factory_test_file_exist(const gchar *fname)
     if(!g_file_test(fname,G_FILE_TEST_EXISTS))
     {
         gchar *msg_utf8 = factory_utf8(g_strdup_printf(_("找不到　%s,不能下载."),fname));
-        gchar *fmsg = g_strconcat(factory_get_current_timestamp(),msg_utf8,NULL);
+        gchar *fmsg = g_strconcat(factory_get_format_date_and_time(),msg_utf8,NULL);
         fwrite(fmsg,1,strlen(fmsg),logfd);
         message_error(msg_utf8);
         g_free(msg_utf8);
@@ -1178,7 +1178,15 @@ gchar *factory_get_last_section(const gchar *src,const gchar *delimiter)
     return ret;
 }
 
-
+inline gchar* factory_get_format_date_and_time()
+{
+    GTimeZone *chtzone = g_time_zone_new("+08:00"); /* 中国在GMT+08:00 */
+    GDateTime *curdtime = g_date_time_new_now(chtzone);
+    gchar *outformat = g_date_time_format(curdtime,"%F-%H-%M-%S");
+    g_time_zone_unref(chtzone);
+    g_date_time_unref(curdtime);
+    return outformat;
+}
 
 gboolean factory_is_special_object(const gchar *name)
 {
@@ -1226,25 +1234,30 @@ factory_critical_error_response(GtkWidget *widget,
 
 }
 
-gchar *factory_get_current_timestamp()
-{
-    GDate *cdate =  g_date_new();
-    g_date_set_time(cdate,time(NULL));
-    GDateTime *gdt =  g_date_time_new_now_utc();
-    gchar *datatime = NULL;
-    datatime = g_strconcat(g_strdup_printf("%d-",cdate->year),g_strdup_printf("%d-",cdate->month),
-                                           g_strdup_printf("%d ",cdate->day),
-                                           g_strdup_printf("%d:",g_date_time_get_hour(gdt)+8), /* 加8是中国GMT+8区*/
-                                           g_strdup_printf("%d:",g_date_time_get_minute(gdt)),
-                                           g_strdup_printf("%d:",g_date_time_get_second(gdt)),
-                                           g_strdup_printf("%d ",g_date_time_get_microsecond(gdt)),NULL);
-    return datatime;
-}
+//gchar *factory_get_current_timestamp()
+//{
+//      GTimeZone *chtzone = g_time_zone_new("+08:00"); /* 中国在GMT+08:00 */
+//    GDateTime *curdtime = g_date_time_new_now(chtzone);
+//    gchar *outformat = g_date_time_format(curdtime,"%F:%H:%M:%S:");
+//    g_time_zone_unref(chtzone);
+//    g_date_time_unref(curdtime);
+//    GDate *cdate =  g_date_new();
+//    g_date_set_time(cdate,time(NULL));
+//    GDateTime *gdt =  g_date_time_new_now_utc();
+//    gchar *datatime = NULL;
+//    datatime = g_strconcat(g_strdup_printf("%d-",cdate->year),g_strdup_printf("%d-",cdate->month),
+//                                           g_strdup_printf("%d ",cdate->day),
+//                                           g_strdup_printf("%d:",g_date_time_get_hour(gdt)+8), /* 加8是中国GMT+8区*/
+//                                           g_strdup_printf("%d:",g_date_time_get_minute(gdt)),
+//                                           g_strdup_printf("%d:",g_date_time_get_second(gdt)),
+//                                           g_strdup_printf("%d ",g_date_time_get_microsecond(gdt)),NULL);
+//    return datatime;
+//}
 
 void factory_debug_to_log(const gchar *msg_dbg)
 {
 #ifdef DEBUG
-        gchar *fmsg = g_strconcat(factory_get_current_timestamp(),msg_dbg,NULL);
+        gchar *fmsg = g_strconcat(factory_get_format_date_and_time(),msg_dbg,NULL);
         if(logfd)
         {
              fwrite(fmsg,1,strlen(fmsg),logfd);
@@ -1256,7 +1269,7 @@ void factory_debug_to_log(const gchar *msg_dbg)
 
 void factory_waring_to_log(const gchar *msg_war)
 {
-        gchar *fmsg = g_strconcat(factory_get_current_timestamp(),msg_war,NULL);
+        gchar *fmsg = g_strconcat(factory_get_format_date_and_time(),msg_war,NULL);
         if(logfd)
         {
             fwrite(fmsg,1,strlen(fmsg),logfd);

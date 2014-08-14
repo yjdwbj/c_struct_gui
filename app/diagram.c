@@ -624,13 +624,13 @@ diagram_update_menu_sensitivity (Diagram *dia)
 
     /* Edit menu */
     if ((action = menus_get_action ("EditUndo")) != NULL)
-        gtk_action_set_sensitive (action, dia ? undo_available(dia->undo, TRUE) : FALSE);
+        gtk_action_set_sensitive (action, /*dia ? undo_available(dia->undo, TRUE) :*/ FALSE);
     if ((action = menus_get_action ("EditRedo")) != NULL)
-        gtk_action_set_sensitive (action, dia ? undo_available(dia->undo, FALSE) : FALSE);
+        gtk_action_set_sensitive (action, /*dia ? undo_available(dia->undo, FALSE) : */FALSE);
     if ((action = menus_get_action ("EditCopy")) != NULL)
         gtk_action_set_sensitive (action, textedit_active || selected_count > 0);
     if ((action = menus_get_action ("EditCut")) != NULL)
-        gtk_action_set_sensitive (action, textedit_mode(ddisp) || selected_count > 0);
+        gtk_action_set_sensitive (action, /*textedit_mode(ddisp) || selected_count > 0*/FALSE);
     if ((action = menus_get_action ("EditPaste")) != NULL)
         gtk_action_set_sensitive (action, textedit_active || cnp_exist_stored_objects());
     if ((action = menus_get_action ("EditDelete")) != NULL)
@@ -639,11 +639,11 @@ diagram_update_menu_sensitivity (Diagram *dia)
         gtk_action_set_sensitive (action, !textedit_active && selected_count > 0);
 
     if ((action = menus_get_action ("EditCopytext")) != NULL)
-        gtk_action_set_sensitive (action, focus_active);
+        gtk_action_set_sensitive (action, FALSE);
     if ((action = menus_get_action ("EditCuttext")) != NULL)
-        gtk_action_set_sensitive (action, focus_active);
+        gtk_action_set_sensitive (action, FALSE);
     if ((action = menus_get_action ("EditPastetext")) != NULL)
-        gtk_action_set_sensitive (action, focus_active);
+        gtk_action_set_sensitive (action, FALSE);
 
     /* Objects menu */
 //  if ((action = menus_get_action ("ObjectsSendtoback")) != NULL)

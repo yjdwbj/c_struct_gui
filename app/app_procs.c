@@ -749,15 +749,7 @@ static void factory_delete_two_days_ago_log(gchar *filename)
     }
 }
 
-static gchar* factory_get_format_date_and_time()
-{
-    GTimeZone *chtzone = g_time_zone_new("+08:00"); /* ÖÐ¹úÔÚGMT+08:00 */
-    GDateTime *curdtime = g_date_time_new_now(chtzone);
-    gchar *outformat = g_date_time_format(curdtime,"%F-%H-%M-%S");
-    g_time_zone_unref(chtzone);
-    g_date_time_unref(curdtime);
-    return outformat;
-}
+
 void  app_init (int argc, char **argv)
 {
     static gboolean nosplash = FALSE;

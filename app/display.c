@@ -321,6 +321,8 @@ new_display(Diagram *dia)
   ddisp->visible = visible;
 
   initialize_display_widgets(ddisp);
+  if(!ddisplay_active())
+    display_set_active(ddisp);
   return ddisp;  /*  set the user data  */
 }
 
@@ -370,6 +372,7 @@ ddisplay_transform_length(DDisplay *ddisp, real len)
 real
 ddisplay_untransform_length(DDisplay *ddisp, real len)
 {
+
   return len / ddisp->zoom_factor;
 }
 
@@ -379,6 +382,7 @@ ddisplay_untransform_coords(DDisplay *ddisp,
 			    int xi, int yi,
 			    coord *x, coord *y)
 {
+  g_return_if_fail(ddisp);
   Rectangle *visible = &ddisp->visible;
   int width = dia_renderer_get_width_pixels (ddisp->renderer);
   int height = dia_renderer_get_height_pixels (ddisp->renderer);

@@ -244,7 +244,7 @@ file_open_response_callback(GtkWidget *fs,
 {
     char *filename;
     Diagram *diagram = NULL;
-
+    GtkWidget *parent_window =  g_object_get_data(G_OBJECT(opendlg),"parent_window");
     if (response == GTK_RESPONSE_ACCEPT)
     {
         gint index = gtk_combo_box_get_active (GTK_COMBO_BOX(user_data));
@@ -252,9 +252,7 @@ file_open_response_callback(GtkWidget *fs,
         if (index >= 0) /* remember it */
             persistence_set_integer ("import-filter", index);
         filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(fs));
-
         diagram = diagram_load(filename, ifilter_by_index (index - 1, filename));
-
         g_free (filename);
 
         if (diagram != NULL)
@@ -276,27 +274,30 @@ file_open_response_callback(GtkWidget *fs,
                       } else {
                 */
                 new_display(diagram);
+
+            }
+        }
+        if(diagram && diagram->displays)
+        {
+
+            GList *list = g_hash_table_get_values(diagram->data->active_layer->defnames);
+            if(list)
+            {
+                DiaObject *obj = list->data;
+                obj->ops->reset_objectsfillcolor(obj);
+                diagram_redraw_all();
+            }
+            /* 把连线的信息读取回来 */
+            GList *tlist = list;
+            for(; tlist ; tlist = tlist->next)
+            {
+                DiaObject *obj = tlist->data;
+                obj->ops->rec_find_ocbox(obj,NULL,FIND_PTR_LOAD);
             }
         }
 
-
-        GList *list = g_hash_table_get_values(diagram->data->active_layer->defnames);
-        if(list)
-        {
-            DiaObject *obj = list->data;
-            obj->ops->reset_objectsfillcolor(obj);
-            diagram_redraw_all();
-        }
-        /* 把连线的信息读取回来 */
-        GList *tlist = list;
-        for(;tlist ; tlist = tlist->next)
-        {
-            DiaObject *obj = tlist->data;
-            obj->ops->rec_find_ocbox(obj,NULL,FIND_PTR_LOAD);
-        }
     }
-
-    gtk_widget_destroy(opendlg);
+    gtk_widget_destroy(fs);
 }
 
 void factory_template_open_callback(gpointer data,guint action,GtkWidget *widget)
@@ -330,6 +331,7 @@ void factory_template_open_callback(gpointer data,guint action,GtkWidget *widget
                   GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
                   GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
                   NULL);
+        g_object_set_data(G_OBJECT(opendlg),"parent_window",parent_window);
         gtk_dialog_set_default_response(GTK_DIALOG(opendlg), GTK_RESPONSE_ACCEPT);
         gtk_window_set_role(GTK_WINDOW(opendlg), "open_diagram");
         if (dia && dia->filename)
@@ -406,6 +408,7 @@ file_open_callback(gpointer data, guint action, GtkWidget *widget)
                   GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
                   GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
                   NULL);
+        g_object_set_data(G_OBJECT(opendlg),"parent_window",parent_window);
         gtk_dialog_set_default_response(GTK_DIALOG(opendlg), GTK_RESPONSE_ACCEPT);
         gtk_window_set_role(GTK_WINDOW(opendlg), "open_diagram");
         if (dia && dia->filename)

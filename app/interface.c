@@ -732,6 +732,7 @@ use_integrated_ui_for_display_shell(DDisplay *ddisp, char *title)
     ddisplay_set_renderer(ddisp, ddisp->aa_renderer);
 
     /*  set the focus to the canvas area  */
+
     gtk_widget_grab_focus (ddisp->canvas);
 }
 

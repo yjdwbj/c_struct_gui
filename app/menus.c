@@ -173,24 +173,24 @@ static const GtkActionEntry display_entries[] =
 
     { "Edit", NULL, N_("_Edit"), NULL, NULL, NULL },
     /* lcy 关闭撤消与重*/
-    { "EditUndo", GTK_STOCK_UNDO, NULL, "<control>Z", NULL, NULL },
+//    { "EditUndo", GTK_STOCK_UNDO, NULL, "<control>Z", NULL, NULL },
     /* { "EditUndo", GTK_STOCK_UNDO, NULL, "<control>Z", NULL, G_CALLBACK (edit_undo_callback) },*/
-    { "EditRedo", GTK_STOCK_REDO, NULL, "<control><shift>Z", NULL, NULL },
+//    { "EditRedo", GTK_STOCK_REDO, NULL, "<control><shift>Z", NULL, NULL },
 
     { "EditCopy", GTK_STOCK_COPY, NULL, "<control>C", NULL, G_CALLBACK (edit_copy_callback) },
-    { "EditCut", GTK_STOCK_CUT, NULL, "<control>X", NULL, G_CALLBACK (edit_cut_callback) },
+//    { "EditCut", GTK_STOCK_CUT, NULL, "<control>X", NULL, G_CALLBACK (edit_cut_callback) },
     { "EditPaste", GTK_STOCK_PASTE, NULL, "<control>V", NULL, G_CALLBACK (edit_paste_callback) },
     { "EditDuplicate", NULL, N_("_Duplicate"), "<control>D", NULL, G_CALLBACK (edit_duplicate_callback) },
     { "EditDelete", GTK_STOCK_DELETE, NULL, "Delete", NULL, G_CALLBACK (edit_delete_callback) },
 
-    { "EditFind", GTK_STOCK_FIND, NULL, "<control>F", NULL, G_CALLBACK (edit_find_callback) },
-    { "EditReplace", GTK_STOCK_FIND_AND_REPLACE, NULL, "<control>H", NULL, G_CALLBACK (edit_replace_callback) },
+//    { "EditFind", GTK_STOCK_FIND, NULL, "<control>F", NULL, G_CALLBACK (edit_find_callback) },
+//    { "EditReplace", GTK_STOCK_FIND_AND_REPLACE, NULL, "<control>H", NULL, G_CALLBACK (edit_replace_callback) },
 
     /* the following used to bind to <control><shift>C which collides with Unicode input.
      * <control>>alt> doesn't work either */
-    { "EditCopytext", NULL, N_("Copy Text"), NULL, NULL, G_CALLBACK (edit_copy_text_callback) },
-    { "EditCuttext", NULL, N_("Cut Text"), "<control><shift>X", NULL, G_CALLBACK (edit_cut_text_callback) },
-    { "EditPastetext", NULL, N_("Paste _Text"), "<control><shift>V", NULL, G_CALLBACK (edit_paste_text_callback) },
+//    { "EditCopytext", NULL, N_("Copy Text"), NULL, NULL, G_CALLBACK (edit_copy_text_callback) },
+//    { "EditCuttext", NULL, N_("Cut Text"), "<control><shift>X", NULL, G_CALLBACK (edit_cut_text_callback) },
+//    { "EditPastetext", NULL, N_("Paste _Text"), "<control><shift>V", NULL, G_CALLBACK (edit_paste_text_callback) },
 
 //  { "Layers", NULL, N_("_Layers"), NULL, NULL, NULL },
 //    { "LayerAdd", DIA_STOCK_LAYER_ADD, N_("Add Layer..."), NULL, NULL, G_CALLBACK (layers_add_layer_callback) },
@@ -930,17 +930,17 @@ create_integrated_ui_toolbar (void)
                        w);
     integrated_ui_toolbar_add_custom_item (toolbar, w);
 
-    /* Object Snapping */
-    w = dia_toggle_button_new_with_icons (dia_mainpoints_on_icon,
-                                          dia_mainpoints_off_icon);
-    g_signal_connect (G_OBJECT (w), "toggled",
-                      G_CALLBACK (integrated_ui_toolbar_object_snap_toggle), toolbar);
-    gtk_tooltips_set_tip (tool_tips, w,
-                          _("Toggles object snapping."), NULL);
-    g_object_set_data (G_OBJECT (toolbar),
-                       DIA_INTEGRATED_TOOLBAR_OBJECT_SNAP,
-                       w);
-    integrated_ui_toolbar_add_custom_item (toolbar, w);
+//    /* Object Snapping */
+//    w = dia_toggle_button_new_with_icons (dia_mainpoints_on_icon,
+//                                          dia_mainpoints_off_icon);
+//    g_signal_connect (G_OBJECT (w), "toggled",
+//                      G_CALLBACK (integrated_ui_toolbar_object_snap_toggle), toolbar);
+//    gtk_tooltips_set_tip (tool_tips, w,
+//                          _("Toggles object snapping."), NULL);
+//    g_object_set_data (G_OBJECT (toolbar),
+//                       DIA_INTEGRATED_TOOLBAR_OBJECT_SNAP,
+//                       w);
+//    integrated_ui_toolbar_add_custom_item (toolbar, w);
 
     sep = gtk_separator_tool_item_new ();
     gtk_toolbar_insert (toolbar, sep, -1);

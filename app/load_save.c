@@ -1416,10 +1416,10 @@ diagram_data_save(DiagramData *data, const char *user_filename)
     fileobj->name = g_strdup(fsil->sname);
     idobj->name = g_strdup(fsil2->sname);
     sysinfoobj->name = g_strdup(fsil3->sname);
-
+    *curlist  = g_list_prepend(*curlist ,sysinfoobj);
     *curlist  = g_list_prepend(*curlist ,fileobj);
     *curlist  = g_list_prepend(*curlist ,idobj);
-    *curlist  = g_list_prepend(*curlist ,sysinfoobj);
+
 
 
     ret = diagram_data_raw_save(data, tmpname);
