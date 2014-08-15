@@ -309,7 +309,7 @@ static void factory_add_sublist_columns (GtkTreeView *treeview,GtkTreeModel *cbm
              renderer,
              "text",
              COLUMN_ITEM_SEQUENCE,
-            "fixed-width",
+             "fixed-width",
              5,
              NULL);
 
@@ -321,7 +321,7 @@ static void factory_add_sublist_columns (GtkTreeView *treeview,GtkTreeModel *cbm
              renderer,
              "text",
              COLUMN_ITEM_ADDR,
-            "fixed-width",
+             "fixed-width",
              5,
              NULL);
 
@@ -351,7 +351,7 @@ static gboolean factory_sublist_saveitem_foreach(GtkTreeModel *model,
     gchar *txt;
     gtk_tree_model_get(model,iter,COLUMN_ITEM_IDNAME,&txt,-1);
     stable->sub_list = g_list_append(stable->sub_list,
-                                       (gpointer)g_quark_from_string(txt));
+                                     (gpointer)g_quark_from_string(txt));
     g_free(txt);
     return FALSE;
 }
@@ -389,7 +389,7 @@ static void factory_sublist_dialog_response(GtkWidget *widget,
             GList *lplist = sid->idlists;
             subTable *curtable = g_object_get_data(G_OBJECT(item),
                                                    "defstable");
-            for(;lplist;lplist = lplist->next)
+            for(; lplist; lplist = lplist->next)
             {
                 subTable *st = lplist->data;
                 if(st == curtable) continue;
@@ -466,7 +466,7 @@ HIDE:
 /* 编辑一个存在的id 项 */
 
 void factory_sublist_setback_values(GtkWidget *subdlg,
-        subTable *stable,Factory_Hash_Table_Lookup func,GHashTable *table)
+                                    subTable *stable,Factory_Hash_Table_Lookup func,GHashTable *table)
 {
     GtkWidget *entry = g_object_get_data(G_OBJECT(subdlg),"table_name");
     gtk_entry_set_text(GTK_ENTRY(entry),g_quark_to_string(stable->nquark));
@@ -497,7 +497,7 @@ void factory_sublist_setback_values(GtkWidget *subdlg,
 
 gboolean
 factory_subtreeview_onButtonPressed(GtkWidget *treeview, GdkEventButton *event,
-                                   gpointer user_data)
+                                    gpointer user_data)
 {
     /* single click with the right mouse button? */
     if (event->type == GDK_BUTTON_RELEASE  &&  event->button == 1)
@@ -525,10 +525,11 @@ gchar *factory_get_subtable_name(GList *glist,gint n)
 {
     int c = n;
     gchar *txt = g_strdup_printf(factory_utf8("子表_%d"),c);
-    do{
+    do
+    {
         GList *p  = glist;
         GQuark quark = g_quark_from_string(txt);
-        for(;p ; p = p->next)
+        for(; p ; p = p->next)
         {
             subTable *stable = p->data;
             if(quark == stable->nquark)
@@ -543,7 +544,8 @@ gchar *factory_get_subtable_name(GList *glist,gint n)
             free(txt);
             txt = g_strdup_printf(factory_utf8("子表_%d"),++c);
         }
-    }while(1);
+    }
+    while(1);
     return txt;
 }
 
@@ -623,7 +625,7 @@ static GtkWidget* factory_sublist_create_dialog(GtkMenuItem *item,
         if(emptlist)
         {
             gchar *msg = g_strdup_printf(factory_utf8("下列对像已经删除,现在清空相应的表项!\n%s"),
-                                      factory_concat_list_to_string(emptlist,IS_STRING));
+                                         factory_concat_list_to_string(emptlist,IS_STRING));
             factory_message_dialoag(subdig,msg);
             g_free(msg);
             g_list_free(emptlist);
@@ -653,7 +655,7 @@ static GtkWidget* factory_sublist_create_dialog(GtkMenuItem *item,
 
     gtk_box_pack_start(GTK_BOX(mainBox),midhbox,TRUE,TRUE,0);
 
-     g_signal_connect(sub_treeview,"button_release_event",
+    g_signal_connect(sub_treeview,"button_release_event",
                      G_CALLBACK(factory_subtreeview_onButtonPressed),opt_box);
 
     /* 绑定一个组快捷键,保存当前的子表 */
@@ -675,7 +677,7 @@ static GtkWidget* factory_sublist_create_dialog(GtkMenuItem *item,
 }
 
 static gpointer factory_sublist_hash_lookup(GHashTable *table,
-                                            GQuark key)
+        GQuark key)
 {
     return g_hash_table_lookup(table,g_quark_to_string(key));
 }
@@ -764,7 +766,7 @@ void factory_set_idlist_columns (GtkTreeView *treeview,GtkTreeModel *cbmodel)
              renderer,
              "text",
              COLUMN_IDSEQ,
-            "fixed-width",
+             "fixed-width",
              5,
              NULL);
 
@@ -783,8 +785,8 @@ void factory_set_idlist_columns (GtkTreeView *treeview,GtkTreeModel *cbmodel)
 
 /* 右键菜单操作 */
 static gboolean factory_mfile_idlist_popumenu(GtkTreeView *treeview,
-                                 GdkEventButton *event,
-                                 gpointer user_data)
+        GdkEventButton *event,
+        gpointer user_data)
 {
     GtkWidget *menuitem,*menu;
     menu = gtk_menu_new();
@@ -888,43 +890,43 @@ void factory_idlist_read_xml(ObjectNode obj_node)
     if(lstnode)
     {
         ObjectNode cnode = lstnode->xmlChildrenNode;
-         while(cnode = data_next(cnode))
-         {
-             key = xmlGetProp(cnode,"idname");
-             if(key)
+        while(cnode = data_next(cnode))
+        {
+            key = xmlGetProp(cnode,"idname");
+            if(key)
                 glist = g_list_append(glist,(char*)key);
-         }
+        }
     }
 
     ObjectNode idxnode = factory_find_custom_node(obj_node,IDINDEX_NODE);
     if(idxnode)
     {
-         GList *cglist = glist;
-         ObjectNode cnode = idxnode->xmlChildrenNode;
-         while(cnode = data_next(cnode))
-         {
-             subTable *stable = g_new0(subTable,1);
-             key = xmlGetProp(cnode,"name");
-             if(key)
-             {
-                 stable->nquark = g_quark_from_string((gchar*)key);
-                 xmlFree(key);
-             }
-             key = xmlGetProp(cnode,"rows");
-             if(key)
-             {
-                 gint len = g_strtod(key,NULL);
-                 int n = 0;
-                 for( ;n < len; n++,cglist = cglist->next)
-                 {
-                     stable->sub_list =
-                     g_list_append(stable->sub_list,
-                                   g_quark_from_string(cglist->data));
-                 }
-                 xmlFree(key);
-             }
-             sid->idlists = g_list_append(sid->idlists ,stable);
-         }
+        GList *cglist = glist;
+        ObjectNode cnode = idxnode->xmlChildrenNode;
+        while(cnode = data_next(cnode))
+        {
+            subTable *stable = g_new0(subTable,1);
+            key = xmlGetProp(cnode,"name");
+            if(key)
+            {
+                stable->nquark = g_quark_from_string((gchar*)key);
+                xmlFree(key);
+            }
+            key = xmlGetProp(cnode,"rows");
+            if(key)
+            {
+                gint len = g_strtod(key,NULL);
+                int n = 0;
+                for( ; n < len; n++,cglist = cglist->next)
+                {
+                    stable->sub_list =
+                        g_list_append(stable->sub_list,
+                                      g_quark_from_string(cglist->data));
+                }
+                xmlFree(key);
+            }
+            sid->idlists = g_list_append(sid->idlists ,stable);
+        }
 
     }
 
@@ -942,7 +944,7 @@ void factory_idlist_save_to_old_xml(ObjectNode ccc,GList *glist)
     {
         gchar  *txt  = g_quark_to_string(idlist->data);
         ObjectNode idnode = xmlNewChild(ccc, NULL,
-                                         (const xmlChar *)JL_NODE, NULL);
+                                        (const xmlChar *)JL_NODE, NULL);
         xmlSetProp(idnode, (const xmlChar *)"name", (xmlChar *)g_strdup_printf("%d",pos));
         xmlSetProp(idnode, (const xmlChar *)"type", (xmlChar *)"u16");
         gchar *val = g_strdup("-1");
@@ -1006,27 +1008,42 @@ void factory_idlist_item_save_to_xml(SaveStruct *sss,ObjectNode obj_node)
     gchar *idname = g_strdup("");
     SaveIdDialog *sid = curLayer->sid;
     if(sid->idlists)
-    {       /*重新映射到全局位置*/
-            GArray *garray = g_array_new(FALSE,FALSE,sizeof(gint));
-            GList *looplist = sid->idlists;
-            int sum = 0;
-            for(; looplist ; looplist = looplist->next)
-            {
-                subTable *stable = looplist->data;
-                int len = g_list_length(stable->sub_list);
-                g_array_append_val(garray,sum);
-                sum += len;
-            }
-             subTable *stable  = factory_idlist_find_subtable(sid->idlists,
-                                                              *ssel->ntable);
-            int pos = -1;
-            pos = g_list_index(sid->idlists,stable);
+    {
+        /*重新映射到全局位置*/
+        GArray *garray = g_array_new(FALSE,FALSE,sizeof(gint));
+        GList *looplist = sid->idlists;
+        int sum = 0;
+        for(; looplist ; looplist = looplist->next)
+        {
+            subTable *stable = looplist->data;
+            int len = g_list_length(stable->sub_list);
+            g_array_append_val(garray,sum);
+            sum += len;
+        }
+        int pos = -1;
+        if(ssel->ntable )
+        {
+            subTable *stable  = factory_idlist_find_subtable(sid->idlists,
+                                *ssel->ntable);
             if(stable)
             {
+                pos = g_list_index(sid->idlists,stable);
                 idname = g_strdup(g_quark_to_string(stable->nquark));
+//                if(stable->sub_list)
+//                {
+//                    GQuark nquark = stable->sub_list->data;
+//                    if(nquark != empty_quark)
+//                    {
+//
+//                    }
+//                    gchar *objname = g_hash_table_lookup(curLayer->defnames,
+//                                                         g_quark_to_string(nquark));
+//                }
+                gnum = g_array_index(garray,gint,pos);
             }
-            gnum = g_array_index(garray,gint,pos);
-            g_array_free(garray,TRUE);
+        }
+
+        g_array_free(garray,TRUE);
     }
     xmlSetProp(ccc, (const xmlChar *)"value",
                (xmlChar *)g_strdup_printf("%d",gnum));
@@ -1127,9 +1144,21 @@ void factory_idlist_create_dialog(GtkWidget *button,SaveStruct *sst)
                                             g_quark_to_string(s1->nquark));
     }
     /* 先中上一次的结果  */
-    GtkTreePath *path = gtk_tree_path_new_from_string(sst->value.vnumber);
-    gtk_tree_selection_select_path(gtk_tree_view_get_selection(idtreeview),path);
-    gtk_tree_path_free(path);
+    SaveSel *ssel = sst->value.vnumber;
+    if(ssel->ntable && sid->idlists)
+    {
+        subTable *stable = factory_idlist_find_subtable(sid->idlists,*ssel->ntable);
+        if(stable)
+        {
+            int pos = g_list_index(sid->idlists,stable);
+            GtkTreePath *path = gtk_tree_path_new_from_indices(pos,-1);
+            gtk_tree_selection_select_path(gtk_tree_view_get_selection(idtreeview),path);
+            gtk_tree_path_free(path);
+        }
+
+    }
+
+
 
     g_object_set_data(G_OBJECT(subdig),"idtreeview",idtreeview);
     g_object_set_data(G_OBJECT(wid_idlist),"idtreeview",idtreeview);
