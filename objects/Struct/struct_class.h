@@ -677,7 +677,7 @@ factory_apple_props_from_dialog(STRUCTClass *structclass, GtkWidget *widget);
 void factory_create_toolbar_button(const gint8 *icon,gchar *tips,GtkToolbar  *toolbar,
                                    gpointer *callback);
 
-
+ActionID *factory_find_ocombox_item_otp(SaveStruct *sst,gpointer compre);
 
 void factory_create_file_manager_dialog(GtkWidget *btn,ListDlgArg *lda);
 void factory_mfile_manager_dialog(GtkWidget *btn,SaveStruct *sst);
@@ -731,7 +731,7 @@ GList* factory_get_download_name_list(const gchar *path);
 
 //void factoryReadDataFromFile(STRUCTClass *structclass);
 
-subTable *factory_mfile_idlist_find_subtable(GList *srclist,GQuark nquark);
+subTable *factory_idlist_find_subtable(GList *srclist,GQuark nquark);
 void factory_mfile_save_to_xml(ObjectNode obj_node,const gchar *filename);
 void factory_reset_object_color_to_default();
 void factory_set_fill_color();

@@ -2412,6 +2412,97 @@ void factory_read_union_button_from_file(STRUCTClass *fclass,
     }
 
 }
+
+static void factory_read_type_index_item(SaveStruct *sss,ObjectNode attr_node)
+{
+
+    SaveMusicDialog *smd = curLayer->smd;
+    SaveSel *ssel = NULL;
+    if(!sss->value.vnumber)
+    {
+        ssel = g_new0(SaveSel,1);
+        ssel->ntable = NULL;
+        ssel->offset_val = 0;
+        sss->value.vnumber = ssel;
+    }
+    else
+        ssel = sss->value.vnumber;
+
+    xmlChar *key = xmlGetProp(attr_node,(xmlChar *)"value");
+    gint val = -1;
+    if(key)
+    {
+        val = g_strtod(key,NULL);
+        xmlFree(key);
+    }
+
+    key = xmlGetProp(attr_node,(xmlChar*)"idname");
+    if(key && smd->midlists)
+    {
+        GQuark nquark = g_quark_from_string((gchar*)key);
+        subTable *stable = factory_idlist_find_subtable(smd->midlists,nquark);
+        if(stable)
+        {
+            ssel->ntable = &stable->nquark;
+            switch(factory_music_fm_get_position_type(sss->name))
+            {
+            case OFFSET_FST:
+                ssel->offset_val = 0;
+                break;
+            case OFFSET_SEL:
+            {
+                GList *tlist = smd->midlists;
+                for(; tlist; tlist = tlist->next)
+                {
+                    subTable *st = tlist->data;
+                    gint len = g_list_length(st->sub_list);
+                    if(val >= len )
+                        val -= len;
+                    else
+                        break;
+                }
+                ssel->offset_val = val;
+            }
+            break;
+            case OFFSET_END:
+                ssel->offset_val = g_list_length(stable->sub_list)-1;
+                break;
+            default:
+                break;
+            }
+
+        }
+        xmlFree(key);
+    }
+}
+
+
+static void factory_read_type_idlist_item(SaveStruct *sss,ObjectNode attr_node)
+{
+    SaveSel *ssel = NULL;
+    if(!sss->value.vnumber)
+    {
+        ssel = g_new0(SaveSel,1);
+        ssel->ntable = NULL;
+        ssel->offset_val = 0;
+        sss->value.vnumber = ssel;
+    }
+    else
+        ssel = sss->value.vnumber;
+    SaveIdDialog *sid = curLayer->sid;
+    xmlChar *key = xmlGetProp(attr_node,(xmlChar*)"idname");
+    if(key && sid->idlists )
+    {
+        GQuark nquark  = g_quark_from_string((gchar*)key);
+        subTable *stable =
+            factory_idlist_find_subtable(sid->idlists,nquark);
+        if(stable)
+        {
+            ssel->ntable = &stable->nquark;
+        }
+    }
+}
+
 void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst,ObjectNode attr_node)
 {
 
@@ -2439,6 +2530,7 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
             factory_critical_error_exit(msg);
         }
         xmlFree(key);
+
         if(factory_music_fm_item_is_index(last_sec))
         {
             if(factory_music_fm_get_position_type(last_sec) == -1)
@@ -2449,66 +2541,27 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
                 factory_critical_error_exit(msg);
 
             }
-            SaveMusicDialog *smd = curLayer->smd;
-            SaveSel *ssel = g_new0(SaveSel,1);
-            sss->value.vnumber = ssel;
-            key = xmlGetProp(attr_node,(xmlChar *)"value");
-            gint val = -1;
-            if(key)
-            {
-                val = g_strtod(key,NULL);
-                xmlFree(key);
-            }
-
-            key = xmlGetProp(attr_node,(xmlChar*)"idname");
-            if(key && smd->midlists)
-            {
-                GQuark nquark = g_quark_from_string((gchar*)key);
-                subTable *stable = factory_mfile_idlist_find_subtable(smd->midlists,nquark);
-                if(stable)
-                {
-                    ssel->ntable = &stable->nquark;
-                    switch(factory_music_fm_get_position_type(sss->name))
-                    {
-                        case OFFSET_FST:
-                            ssel->offset_val = 0;
-                            break;
-                        case OFFSET_SEL:
-                        {
-                            GList *tlist = smd->midlists;
-                            for(; tlist; tlist = tlist->next)
-                            {
-                                subTable *st = tlist->data;
-                                gint len = g_list_length(st->sub_list);
-                                if(val >= len )
-                                    val -= len;
-                                else
-                                    break;
-                            }
-                            ssel->offset_val = val;
-                        }
-                        break;
-                        case OFFSET_END:
-                            ssel->offset_val = g_list_length(stable->sub_list)-1;
-                            break;
-                        default:
-                            break;
-                    }
-
-                }
-                xmlFree(key);
-            }
+            factory_read_type_index_item(sss,attr_node); /* file index */
         }
         else /* PHY and SEQUENCE IDLST*/
         {
-            key = xmlGetProp(attr_node,(xmlChar*)"value");
-            if(!key)
+            if(!g_strcasecmp(fst->SType,TYPE_IDLST))
             {
-                sss->value.vnumber = g_strdup("-1");
+                factory_read_type_idlist_item(sss,attr_node);
             }
             else
-                sss->value.vnumber = g_strdup((gchar*)key);
-            xmlFree(key);
+            {
+                key = xmlGetProp(attr_node,(xmlChar*)"value");
+                if(!key)
+                {
+                    sss->value.vnumber = g_strdup("-1");
+                }
+                else
+                    sss->value.vnumber = g_strdup((gchar*)key);
+                xmlFree(key);
+
+            }
+
         }
         return;
     }
@@ -2888,6 +2941,30 @@ void factory_read_object_comobox_value_from_file(AttributeNode attr_node,
 
 
 
+/* 删除一条线,只要找到一个就退出 */
+static void factory_actionid_line_removed(STRUCTClass *tclass,
+        DiaObject *line)
+{
+    GList *applist = NULL;
+
+    GList *dlist  = tclass->widgetSave;
+    for(; dlist; dlist = dlist->next)
+    {
+        SaveStruct *sst = (SaveStruct*)dlist->data;
+
+        ActionID *aid = factory_find_ocombox_item_otp(sst,line);
+        if(aid)
+        {
+            aid->line = NULL;
+            aid->conn_ptr = NULL;
+            aid->pre_quark = empty_quark;
+            break;
+        }
+
+    }
+}
+
+
 void factory_update_view_names(STRUCTClass *fclass)
 {
     g_hash_table_remove(curLayer->defnames,fclass->name);
@@ -2906,8 +2983,9 @@ void factory_update_view_names(STRUCTClass *fclass)
             tclass = start_cp->object;
             if(tclass != fclass)
             {
-                tclass->connections[8].connected =g_list_remove(tclass->connections[8].connected,connection);
-//                factory_update_ActionId_for_structclass(tclass);
+                tclass->connections[8].connected =
+                    g_list_remove(tclass->connections[8].connected,connection);
+                factory_actionid_line_removed(tclass,connection);
             }
 
         }
@@ -2916,8 +2994,8 @@ void factory_update_view_names(STRUCTClass *fclass)
             tclass = end_cp->object;
             if(tclass != fclass)
             {
-                tclass->connections[8].connected =g_list_remove(tclass->connections[8].connected,connection);
-//                factory_update_ActionId_for_structclass(tclass);
+                tclass->connections[8].connected =
+                    g_list_remove(tclass->connections[8].connected,connection);
             }
 
         }
@@ -3265,7 +3343,12 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
 
             sid =(SaveIdDialog*)(curLayer->sid);
 
-            sss->value.vnumber = g_strdup(fst->Value);
+            sss->value.vnumber = g_new0(SaveSel,1);
+            SaveSel *ssel = sss->value.vnumber;
+            ssel->ntable = NULL;
+            ssel->offset_val = 0; /* 定在开头 */
+
+//            sss->value.vnumber = g_strdup(fst->Value);
 //            sss->newdlg_func = factory_new_idlist_dialog;
             sss->newdlg_func = factory_idlist_create_dialog;
 //            sss->close_func = factory_save_idlist_dialog;
@@ -4415,7 +4498,8 @@ SaveStruct *factory_savestruct_copy(const SaveStruct *old)
         /* 这个类型有可能是文件列表,或者ID列表 */
         if(factory_is_special_object(old->type))
         {
-            if(factory_music_fm_item_is_index(old->name))
+            if(factory_music_fm_item_is_index(old->name) ||
+                    !g_ascii_strcasecmp(old->org->SType,TYPE_IDLST))
             {
                 SaveSel *ossl = old->value.vnumber;
                 SaveSel *nssl = g_new0(SaveSel,1);
@@ -4424,7 +4508,7 @@ SaveStruct *factory_savestruct_copy(const SaveStruct *old)
                 nssl->offset_val = ossl->offset_val;
             }
             else
-            newsst->value.vnumber = g_strdup(old->value.vnumber);
+                newsst->value.vnumber = g_strdup(old->value.vnumber);
             break;
         }
 

@@ -1622,7 +1622,7 @@ void factory_read_mfile_filelist_from_xml(ObjectNode obj_node,
 }
 
 
-subTable *factory_mfile_idlist_find_subtable(GList *srclist,GQuark nquark)
+subTable *factory_idlist_find_subtable(GList *srclist,GQuark nquark)
 {
     GList *tlist = srclist;
     for(; tlist ; tlist = tlist->next)
@@ -1666,7 +1666,7 @@ void factory_mfile_save_item_to_xml1(SaveStruct *sss,ObjectNode obj_node)
             }
 
             subTable *stable =
-                factory_mfile_idlist_find_subtable(smd->midlists,*ssel->ntable);
+                factory_idlist_find_subtable(smd->midlists,*ssel->ntable);
             int newpos = 0;
 
             if(stable) /* 表是存在的 */

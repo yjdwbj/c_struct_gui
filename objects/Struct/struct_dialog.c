@@ -3181,6 +3181,69 @@ static void factory_switch_operator(SaveStruct *sst,ActionID *aid ,
     }
 }
 
+ActionID *factory_find_ocombox_item_otp(SaveStruct *sst,
+                                               gpointer compre)
+{
+    if(factory_is_special_object(sst->type))
+        return NULL;
+    if(!sst->org->isSensitive)
+        return NULL;
+    switch(sst->celltype)
+    {
+    case OCOMBO:
+        {
+              ActionID *aid = &sst->value.actid;
+            if(aid->line == compre)
+                return aid;
+        }
+        break;
+    case OBTN:
+    {
+          ActIDArr *aidarr = &sst->value.nextid;
+        GList *olist = aidarr->actlist;
+        for(; olist; olist = olist->next)
+        {
+            ActionID *aid = olist->data;
+            if(aid->line == compre)
+                return aid;
+//            factory_handle_single_ocombo(aid,tree);
+        }
+    }
+    break;
+    case UCOMBO:
+    {
+        SaveUnion *suptr = &sst->value.sunion;
+        SaveStruct *tsst = g_tree_lookup(suptr->ubtreeVal,suptr->curkey);
+        if(tsst)
+        {
+            tsst->sclass = sst->sclass;
+            return  factory_find_ocombox_item_otp(tsst,compre);
+//            factory_find_item_in_tree(tsst,tree);
+        }
+    }
+    break;
+    case UBTN:
+    {
+
+        if(factory_is_special_object(sst->type))
+            return;
+        SaveUbtn *sbtn = &sst->value.ssubtn;
+        GList *sslist = sbtn->savelist;
+        for(; sslist; sslist = sslist->next)
+        {
+            SaveStruct *subsst = sslist->data;
+            subsst->sclass = sst->sclass;
+            return factory_find_ocombox_item_otp(subsst,compre);
+//            factory_find_item_in_tree(sslist->data,tree);
+        }
+    }
+    break;
+    default:
+        break;
+    }
+    return NULL;
+}
+
 static void factory_find_ocombox_in_savestruct(SaveStruct *sst,
         gpointer user_data,
         OCOMBO_OPT type)
@@ -4233,7 +4296,7 @@ FIRST:
                     if(ssel->ntable)
                     {
 
-                       if(factory_mfile_idlist_find_subtable(smd->midlists,
+                       if(factory_idlist_find_subtable(smd->midlists,
                                                            *ssel->ntable))
                        {
                            gtk_button_set_label(GTK_BUTTON(columTwo),
@@ -4269,7 +4332,17 @@ FIRST:
         }
         else if(!g_ascii_strcasecmp(item->SType,TYPE_IDLST))
         {
-            gtk_button_set_label(GTK_BUTTON(columTwo), sss->value.vnumber );
+            SaveSel *ssel = sss->value.vnumber;
+            if(ssel->ntable)
+            {
+                   gtk_button_set_label(GTK_BUTTON(columTwo),
+                                 g_quark_to_string(*ssel->ntable ));
+            }
+            else
+            {
+                   gtk_button_set_label(GTK_BUTTON(columTwo),"-1");
+            }
+
             g_signal_connect (G_OBJECT (columTwo), "clicked",G_CALLBACK (sss->newdlg_func),sss);
         }
         else

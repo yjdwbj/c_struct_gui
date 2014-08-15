@@ -1000,7 +1000,9 @@ void factory_idlist_item_save_to_xml(SaveStruct *sss,ObjectNode obj_node)
     xmlSetProp(ccc, (const xmlChar *)"name", (xmlChar *)sss->name);
     xmlSetProp(ccc, (const xmlChar *)"type", (xmlChar *)"u16");
     xmlSetProp(ccc, (const xmlChar *)"wtype", (xmlChar *)sss->type);
-    gint vnumber = g_strtod(sss->value.vnumber,NULL);
+//    gint vnumber = g_strtod(sss->value.vnumber,NULL);
+    gint gnum = -1;
+    SaveSel *ssel = sss->value.vnumber;
     gchar *idname = g_strdup("");
     SaveIdDialog *sid = curLayer->sid;
     if(sid->idlists)
@@ -1015,20 +1017,22 @@ void factory_idlist_item_save_to_xml(SaveStruct *sss,ObjectNode obj_node)
                 g_array_append_val(garray,sum);
                 sum += len;
             }
-             subTable *stable  = g_list_nth_data(sid->idlists,vnumber);
+             subTable *stable  = factory_idlist_find_subtable(sid->idlists,
+                                                              *ssel->ntable);
+            int pos = -1;
+            pos = g_list_index(sid->idlists,stable);
             if(stable)
             {
                 idname = g_strdup(g_quark_to_string(stable->nquark));
             }
-            int np = g_array_index(garray,gint,vnumber);
-            vnumber = np;
+            gnum = g_array_index(garray,gint,pos);
             g_array_free(garray,TRUE);
     }
     xmlSetProp(ccc, (const xmlChar *)"value",
-               (xmlChar *)g_strdup_printf("%d",vnumber));
+               (xmlChar *)g_strdup_printf("%d",gnum));
 
     xmlSetProp(ccc, (const xmlChar *)"idname", (xmlChar *)idname);
-    xmlSetProp(ccc, (const xmlChar *)"org_val", (xmlChar *)sss->value.vnumber);
+//    xmlSetProp(ccc, (const xmlChar *)"org_val", (xmlChar *)sss->value.vnumber);
     g_free(idname);
 }
 
@@ -1045,19 +1049,27 @@ static void factory_idlist_dialog_response(GtkWidget *widget,int response_id,
         GtkTreeModel *idmodel = gtk_tree_view_get_model(idtreeview);
         GtkTreeSelection *idsel = gtk_tree_view_get_selection(idtreeview);
         GtkTreeIter iter;
-        g_free(sst->value.vnumber);
+//        g_free(sst->value.vnumber);
+        SaveSel *ssel = sst->value.vnumber;
+        gchar *txt = g_strdup("-1");
         if(gtk_tree_selection_get_selected(idsel,NULL,&iter))
         {
             GtkTreePath *path;
+
+            gtk_tree_model_get(idmodel,&iter,COLUMN_IDNAME,&txt,-1);
             path = gtk_tree_model_get_path(idmodel,&iter);
             gint pos = gtk_tree_path_get_indices(path)[0];
-            sst->value.vnumber = g_strdup_printf("%d",pos);
+            gtk_tree_path_free(path);
+            subTable *stable = g_list_nth_data(sid->idlists,pos);
+            ssel->ntable = &stable->nquark;
+//            sst->value.vnumber = g_strdup_printf("%d",pos);
         }
         else
         {
-            sst->value.vnumber = g_strdup("-1");
+//            sst->value.vnumber = g_strdup("-1");
+            ssel->ntable = NULL;
         }
-        gtk_button_set_label(GTK_BUTTON(sst->widget2),sst->value.vnumber);
+        gtk_button_set_label(GTK_BUTTON(sst->widget2),txt);
     }
     gtk_widget_destroy(widget);
 }

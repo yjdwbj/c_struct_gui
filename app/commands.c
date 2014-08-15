@@ -843,7 +843,7 @@ activate_url (GtkAboutDialog *about,
 void
 help_about_callback (GtkAction *action)
 {
-  gchar *build_time = g_strdup_printf("\n build time %s ",factory_get_format_date_and_time());
+//  gchar *build_time = g_strdup_printf("\n build time %s ",factory_get_format_date_and_time());
   const gchar *translators = _("translator_credits-PLEASE_ADD_YOURSELF_HERE");
   const gchar *license = _(
 	"This program is free software; you can redistribute it and/or modify\n"
@@ -868,7 +868,7 @@ help_about_callback (GtkAction *action)
   gtk_show_about_dialog (NULL,
 	"logo", logo,
         "name", "Dia",
-	"version",g_strconcat(VERSION,build_time,NULL),
+	"version",g_strconcat(VERSION,"\n",__DATE__ ," ",__TIME__,NULL),
 	"comments", _("A program for drawing structured diagrams."),
 	"copyright", "(C) 1998-2009 The Free Software Foundation and the authors",
 //	"website", "http://live.gnome.org/Dia",
