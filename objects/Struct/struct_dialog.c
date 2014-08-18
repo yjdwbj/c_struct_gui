@@ -3585,11 +3585,7 @@ static void factory_actionid_line_update(STRUCTClass *sclass,
         aid->pre_quark = empty_quark;
 }
 
-static void factory_union_del_link_line(STRUCTClass *sclass,
-                                        ActionID *aid)
-{
-    factory_delete_line_between_two_objects1(sclass,aid);
-}
+
 
 static void factory_union_update_link_line(SaveStruct *sst,
         FactoryUnionItemUpdate fuiu)
@@ -3846,6 +3842,54 @@ DELINE:
     diagram_unselect_object(ddisp->diagram,(DiaObject*)objclass);
 //    diagram_unselect_objects(ddisp->diagram,ddisp->diagram->data->selected);
     diagram_select(ddisp->diagram,startc);
+}
+
+
+static void factory_actionid_name_changed(STRUCTClass *tclass,
+        DiaObject *line)
+{
+    GList *applist = NULL;
+
+    GList *dlist  = tclass->widgetSave;
+
+    for(; dlist; dlist = dlist->next)
+    {
+        SaveStruct *sst = (SaveStruct*)dlist->data;
+
+        ActionID *aid = factory_find_ocombox_item_otp(sst,line);
+        if(aid)
+        {
+            STRUCTClass *nclass = aid->conn_ptr;
+            aid->pre_quark = g_quark_from_string(nclass->name);
+            break;
+        }
+
+    }
+}
+
+/* 更新名字了,要通知连接到它上的控件改名 */
+static void factory_notice_the_opposite_name_changed(STRUCTClass *fclass)
+{
+
+    GList *connlist = fclass->connections[8].connected; /* 本对像连接多少条线 */
+    for(; connlist; connlist = connlist->next)
+    {
+        Connection *connection  = (Connection *)connlist->data;
+        g_return_if_fail(connection);
+        ConnectionPoint *start_cp, *end_cp;
+        start_cp = connection->endpoint_handles[0].connected_to;
+//        end_cp = connection->endpoint_handles[1].connected_to;
+        STRUCTClass *tclass = NULL;
+        if(start_cp)
+        {
+            tclass = start_cp->object;
+            if(tclass != fclass)
+            {
+                factory_actionid_name_changed(tclass,connection);
+            }
+        }
+
+    }
 
 }
 
@@ -3895,6 +3939,7 @@ void factory_change_view_name(STRUCTClass *fclass)
 
             fclass->name = g_strdup(pps->name);
             g_hash_table_insert(curLayer->defnames,fclass->name,fclass);
+            factory_notice_the_opposite_name_changed(fclass);
         }
 
         structclass_calculate_data(fclass);

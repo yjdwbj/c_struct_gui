@@ -2202,6 +2202,7 @@ void factory_rename_structclass(STRUCTClass *structclass)
         return ;
     }
 
+
     int n = 0;
     gchar *key = NULL;
     for(; n < 2048; n++)
@@ -2225,7 +2226,8 @@ void factory_rename_structclass(STRUCTClass *structclass)
 
     g_free(structclass->name);
     structclass->name = g_strdup(key);
-    g_hash_table_insert(curLayer->defnames,structclass->name,structclass);
+    g_hash_table_insert(curLayer->defnames,
+                        structclass->name,structclass);
     g_free(key);
 
 }
@@ -4180,10 +4182,6 @@ factory_struct_items_load(ObjectNode obj_node,int version,
             curLayer->smd = g_new0(SaveMusicDialog,1);
             SaveMusicDialog *smd = curLayer->smd;
             smd->title = factory_utf8("文件管理");
-//            smd->smfm = NULL;
-//             smd->lastDir = g_strdup("");
-//            smd->mfmos = &mfmo_opts;
-//            smd->smfm = g_new0(SaveMusicFileMan,1);
             /* 根据文件个数算偏移数 */
             gchar **split = g_strsplit(factoryContainer->system_files,",",-1);
             smd->offset = g_strv_length(split);

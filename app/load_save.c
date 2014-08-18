@@ -1493,17 +1493,15 @@ CLEANUP:
 
 void factory_call_isd_download()
 {
-
     gchar *filename = g_strdup(ddisplay_active_diagram()->filename);
 //    factory_debug_to_log(g_strdup_printf(factory_utf8("下载文件到小机,文件名:%s.\n"),filename));
     g_return_if_fail(filename);
-    gchar *path = strrchr((char *)filename,G_DIR_SEPARATOR);
-    if(path)
-        *(path+1) = 0;
+
+   gchar *fdir = g_path_get_dirname(filename);
 //    gchar *filename = g_get_current_dir();
     g_return_if_fail(factoryContainer);
 
-    GList *dlist = factoryContainer->fgdn_func(filename); /* 取得最新的download 文件列表*/
+    GList *dlist = factoryContainer->fgdn_func(fdir); /* 取得最新的download 文件列表*/
 //    g_return_if_fail(dlist);
     int len = 0;
     if(dlist)
@@ -1531,10 +1529,11 @@ void factory_call_isd_download()
         argv[n+1] = g_strdup(tlist->data);
     }
     argv[n+1] = 0;
-
-    g_spawn_sync(filename,
+    gchar *dir  = g_build_path(G_DIR_SEPARATOR_S, fdir, NULL);
+    g_spawn_sync(dir,
                  argv,NULL,
-                 G_SPAWN_SEARCH_PATH,
+//                 G_SPAWN_FILE_AND_ARGV_ZERO,
+                G_SPAWN_SEARCH_PATH,
                  NULL,NULL,
                  NULL,NULL,NULL,NULL);
 //    GPid pid;
@@ -1545,6 +1544,8 @@ void factory_call_isd_download()
 //        GFile *dst = g_file_new_for_path(g_strconcat(filename,dlist->data,NULL));
 //        g_file_delete(dst,NULL,NULL);
 //    }
+    g_free(dir);
+    g_free(fdir);
     g_free(isdownload_gui);
     g_free(isdownload);
     g_free(filename);
