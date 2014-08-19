@@ -5631,7 +5631,8 @@ GList* factory_get_download_name_list(const gchar *path)
     {
         SaveMusicFile *smf  = smflist->data;
         gchar *srcstr = g_quark_to_string(smf->full_quark);
-        gchar *npc = g_strconcat(path,smf->down_name,NULL);
+        gchar *npc = g_build_filename(path,smf->down_name,NULL);
+//        gchar *npc = g_strconcat(path,smf->down_name,NULL);
 //        gtk_label_set_text(countlab,
 //                           g_strdup_printf("%d - %d",g_list_index(smd->mflist,smf),ct));
 //        gtk_label_set_text(srclab,

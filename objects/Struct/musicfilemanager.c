@@ -1431,6 +1431,9 @@ APPEND:
                     smf->full_quark = g_quark_from_string((gchar *)flists->data);
 
                     smf->base_name =g_path_get_basename(flists->data);
+                    smf->file_ext  = strrchr(smf->base_name, '.');
+                    if (!smf->file_ext)
+                        smf->file_ext = "";
                     gpointer hval = g_tree_lookup(smd->mbtree,smf->base_name );
                     if(!hval)
                     {
@@ -1494,17 +1497,18 @@ void factory_read_mfile_filelist_from_xml(ObjectNode obj_node,
 {
     SaveMusicDialog *smd = curLayer->smd;
     GList *nexists = NULL; /* 不存在的文件 */
-    gchar *dirname = g_strdup(filename);
-    gchar *pth = strrchr((char *)dirname,G_DIR_SEPARATOR);
-    if (pth)
-    {
-        *(pth+1) = 0;
-    }
-    else
-    {
-        g_free(dirname);
-    }
-    gchar *mpath = g_strconcat(dirname,"music",G_DIR_SEPARATOR_S,NULL);
+    gchar *dirname = g_path_get_dirname(filename);
+//    gchar *dirname = g_strdup(filename);
+//    gchar *pth = strrchr((char *)dirname,G_DIR_SEPARATOR);
+//    if (pth)
+//    {
+//        *(pth+1) = 0;
+//    }
+//    else
+//    {
+//        g_free(dirname);
+//    }
+    gchar *mpath = g_strconcat(dirname,G_DIR_SEPARATOR_S,"music",G_DIR_SEPARATOR_S,NULL);
     if(!g_file_test(mpath,G_FILE_TEST_IS_DIR))
     {
         gchar *msg  = factory_utf8(g_strdup_printf("资源文件夹不存在!\n文件名:%s",mpath));
@@ -1900,7 +1904,7 @@ static void factory_mfile_save_files_to_xml(xmlNodePtr obj_node,const gchar*mpat
     {
         SaveMusicFile *smf = flist->data;
         /* 是否要把资源文件复制到工具目录下?*/
-        gchar *npc = g_strconcat(mpath,
+        gchar *npc = g_strconcat(mpath,G_DIR_SEPARATOR_S,
                                  g_strdup(smf->base_name),
                                  NULL);
         GQuark npc_quark = g_quark_from_string(npc);
@@ -1930,17 +1934,18 @@ void factory_mfile_save_to_xml(xmlNodePtr obj_node,const gchar*filename)
 
     SaveMusicDialog *smd = curLayer->smd;
     xmlNodePtr node;
-    gchar *dirname = g_strdup(filename);
-    gchar *pth = strrchr((char *)dirname,G_DIR_SEPARATOR);
-    if (pth)
-    {
-        *(pth+1) = 0;
-    }
-    else
-    {
-        g_free(dirname);
-    }
-    gchar *mpath = g_strconcat(dirname,"music",G_DIR_SEPARATOR_S,NULL);
+    gchar *dirname = g_path_get_dirname(filename);
+//    gchar *pth = strrchr((char *)dirname,G_DIR_SEPARATOR);
+//    if (pth)
+//    {
+//        *(pth+1) = 0;
+//    }
+//    else
+//    {
+//        g_free(dirname);
+//    }
+    gchar *mpath  = g_build_path(G_DIR_SEPARATOR_S, dirname, "music", NULL);
+//    gchar *mpath = g_strconcat(dirname,"music",G_DIR_SEPARATOR_S,NULL);
     if(!g_file_test(mpath,G_FILE_TEST_IS_DIR))
     {
         g_mkdir(mpath);

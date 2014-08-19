@@ -14,7 +14,7 @@
 	"widgets.h"
 	"intl.h"
 
-1408347383 o:\tool\dvs50\config.h
+1408434442 o:\tool\dvs50\config.h
 
 1394617928 o:\tool\dvs50\lib\message.h
 	<stdarg.h>
@@ -2392,7 +2392,7 @@
 
 1398410525 source:o:\tool\dvs50\dia.rc
 
-1408073593 source:o:\tool\dvs50\objects\struct\musicfilemanager.c
+1408434041 source:o:\tool\dvs50\objects\struct\musicfilemanager.c
 	"musicfilemanager.h"
 
 1407824808 o:\tool\dvs50\objects\struct\musicfilemanager.h
@@ -2432,7 +2432,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1408347266 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1408410844 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
