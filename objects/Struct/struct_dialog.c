@@ -3167,7 +3167,7 @@ static void factory_switch_operator(SaveStruct *sst,ActionID *aid ,
         if(aid->conn_ptr && oopt == FIND_PTR_LOAD)
         {
             /* 加载回来重新连线,绑定 */
-           factory_connection_two_object1(sst->sclass,aid);
+            factory_connection_two_object1(sst->sclass,aid);
         }
     }
     break;
@@ -3182,7 +3182,7 @@ static void factory_switch_operator(SaveStruct *sst,ActionID *aid ,
 }
 
 ActionID *factory_find_ocombox_item_otp(SaveStruct *sst,
-                                               gpointer compre)
+                                        gpointer compre)
 {
     if(factory_is_special_object(sst->type))
         return NULL;
@@ -3191,15 +3191,15 @@ ActionID *factory_find_ocombox_item_otp(SaveStruct *sst,
     switch(sst->celltype)
     {
     case OCOMBO:
-        {
-              ActionID *aid = &sst->value.actid;
-            if(aid->line == compre)
-                return aid;
-        }
-        break;
+    {
+        ActionID *aid = &sst->value.actid;
+        if(aid->line == compre)
+            return aid;
+    }
+    break;
     case OBTN:
     {
-          ActIDArr *aidarr = &sst->value.nextid;
+        ActIDArr *aidarr = &sst->value.nextid;
         GList *olist = aidarr->actlist;
         for(; olist; olist = olist->next)
         {
@@ -3213,10 +3213,11 @@ ActionID *factory_find_ocombox_item_otp(SaveStruct *sst,
     case UCOMBO:
     {
         SaveUnion *suptr = &sst->value.sunion;
-        SaveStruct *tsst = g_tree_lookup(suptr->ubtreeVal,suptr->curkey);
+        SaveStruct *tsst = g_tree_lookup(suptr->ubtreeVal,
+                                         suptr->curkey);
         if(tsst)
         {
-            tsst->sclass = sst->sclass;
+//            tsst->sclass = sst->sclass;
             return  factory_find_ocombox_item_otp(tsst,compre);
 //            factory_find_item_in_tree(tsst,tree);
         }
@@ -3233,7 +3234,8 @@ ActionID *factory_find_ocombox_item_otp(SaveStruct *sst,
         {
             SaveStruct *subsst = sslist->data;
             subsst->sclass = sst->sclass;
-            return factory_find_ocombox_item_otp(subsst,compre);
+            ActionID *aid = factory_find_ocombox_item_otp(subsst,compre);
+            if(aid) return aid;
 //            factory_find_item_in_tree(sslist->data,tree);
         }
     }
@@ -3512,7 +3514,7 @@ static void factory_actionid_line_update1(STRUCTClass *sclass,
                 int f3 = g_list_find(curLayer->objects,aid->line);
                 if(f3 < 0)
                 {
-                   factory_connection_two_object1(sclass,aid);
+                    factory_connection_two_object1(sclass,aid);
                 }
                 else if(f1 > -1 && f2 > -1 && f3 > -1 && cto == aid->conn_ptr)
                 {
@@ -3534,7 +3536,7 @@ static void factory_actionid_line_update1(STRUCTClass *sclass,
             }
             else
             {
-               factory_connection_two_object1(sclass,aid);
+                factory_connection_two_object1(sclass,aid);
             }
 
         }
@@ -3721,11 +3723,6 @@ static void factory_read_props_from_widget(gpointer key,
             if(tsst)
             {
                 factory_save_value_from_widget(tsst);
-//                factory_union_update_link_line(tsst,
-//                                               factory_actionid_line_update1);
-//                /*再检测一次连线是否正确*/
-//                factory_union_update_link_line(tsst,
-//                                               (FactoryUnionItemUpdate)factory_connection_two_object);
             }
         }
     }
@@ -4138,7 +4135,7 @@ GtkWidget *factory_create_text_widget(gchar *str,gint maxlength)
 GtkWidget *factory_create_spbinbox_widget(gint value,gint minvalue,gint maxvalue)
 {
     GtkWidget *widget;
-    widget = GTK_SPIN_BUTTON(gtk_spin_button_new_with_range(minvalue,maxvalue,1));
+    widget = GTK_SPIN_BUTTON(gtk_spin_button_new_with_range( value == -1 ? value : minvalue,maxvalue,1));
 
     gtk_spin_button_set_numeric( GTK_SPIN_BUTTON( widget), TRUE);
     gtk_spin_button_set_snap_to_ticks( GTK_SPIN_BUTTON(widget), TRUE);
@@ -4245,7 +4242,7 @@ static GtkWidget *factory_create_variant_object(SaveStruct *sss)
 FIRST:
             tsst = factory_get_savestruct(nextobj);
             tsst->sclass = sss->sclass;
-            factory_strjoin(&tsst->name,sss->name,".");
+//            factory_strjoin(&tsst->name,suptr->curkey,".");
             /* 把当前选择的成员初始化保存到哈希表 */
             g_tree_insert(suptr->ubtreeVal,g_strdup(suptr->curkey),tsst);
         }
@@ -4273,7 +4270,7 @@ FIRST:
                     FactoryStructItem *o = slist->data;
                     SaveStruct *s  =  factory_get_savestruct(o);
                     s->sclass = sss->sclass;
-                    factory_strjoin(&s->name,sss->name,".");
+//                    factory_strjoin(&tsst->name,suptr->curkey,".");
                     sbtn->savelist = g_list_append(sbtn->savelist,s);
                 }
             }
@@ -4341,18 +4338,18 @@ FIRST:
                     if(ssel->ntable)
                     {
 
-                       if(factory_idlist_find_subtable(smd->midlists,
-                                                           *ssel->ntable))
-                       {
-                           gtk_button_set_label(GTK_BUTTON(columTwo),
-                                             g_quark_to_string(*ssel->ntable));
-                       }
-                       else
-                       {
+                        if(factory_idlist_find_subtable(smd->midlists,
+                                                        *ssel->ntable))
+                        {
+                            gtk_button_set_label(GTK_BUTTON(columTwo),
+                                                 g_quark_to_string(*ssel->ntable));
+                        }
+                        else
+                        {
                             ssel->ntable = NULL;
                             ssel->offset_val = -1;
                             gtk_button_set_label(GTK_BUTTON(columTwo),"-1");
-                       }
+                        }
                     }
                     else
                     {
@@ -4380,12 +4377,12 @@ FIRST:
             SaveSel *ssel = sss->value.vnumber;
             if(ssel->ntable)
             {
-                   gtk_button_set_label(GTK_BUTTON(columTwo),
-                                 g_quark_to_string(*ssel->ntable ));
+                gtk_button_set_label(GTK_BUTTON(columTwo),
+                                     g_quark_to_string(*ssel->ntable ));
             }
             else
             {
-                   gtk_button_set_label(GTK_BUTTON(columTwo),"-1");
+                gtk_button_set_label(GTK_BUTTON(columTwo),"-1");
             }
 
             g_signal_connect (G_OBJECT (columTwo), "clicked",G_CALLBACK (sss->newdlg_func),sss);
@@ -4651,11 +4648,38 @@ void factory_save_value_from_widget(SaveStruct *sss)
             case SPINBOX:
             case ENTRY:
             case ECOMBO:
+                factory_strjoin(&p->name,ssu->curkey,".");
                 factory_save_value_from_widget(p);
             }
         }
 
     }
+    break;
+    case UBTN:
+    {
+        SaveUbtn *sbtn = &sss->value.ssubtn;
+        if(!g_list_length(sbtn->savelist) && sbtn->structlist)
+        {
+            GList *slist = sbtn->structlist;
+            for(; slist; slist = slist->next)
+            {
+                FactoryStructItem *o = slist->data;
+                SaveStruct *s  = factory_get_savestruct(o);
+                s->sclass = sss->sclass;
+                factory_strjoin(&s->name,sss->name,".");
+                sbtn->savelist = g_list_append(sbtn->savelist,s);
+            }
+        }
+
+    }
+    break;
+    case OCOMBO:
+    {
+        ActionID *aid = &sss->value.actid;
+        g_free(aid->title_name);
+        aid->title_name = g_strdup(sss->name);
+    }
+
     break;
     default:
         break;
@@ -5231,7 +5255,7 @@ void factory_create_unionbutton_dialog(GtkWidget *button,SaveStruct *sst)
                 FactoryStructItem *o = slist->data;
                 SaveStruct *s  = factory_get_savestruct(o);
                 s->sclass = sst->sclass;
-                factory_strjoin(&s->name,sst->name,".");
+//                factory_strjoin(&s->name,sst->name,".");
                 sbtn->savelist = g_list_append(sbtn->savelist,s);
             }
             subitem = sbtn->savelist;
@@ -5488,34 +5512,16 @@ void factory_update_ActionId_object(GtkWidget *comobox,
         STRUCTClass *pclass = aid->conn_ptr;
         GQuark tq = g_quark_from_string(pclass->name);
         if(tq != aid->pre_quark)
-//        if(g_ascii_strcasecmp(pclass->name,aid->pre_name))
         {
-//            g_free(aid->pre_name);
-//            aid->pre_name = g_strdup(pclass->name);
             aid->pre_quark = tq;
         }
     }
     else
     {
-//        g_free(aid->pre_name);
-//        aid->pre_name = g_strdup("");
-//        aid->index = 0;
         aid->pre_quark = empty_quark;
         aid->conn_ptr = NULL;
-//        gtk_combo_box_set_active(GTK_COMBO_BOX(comobox),aid->index);
-//        return;
     }
 
-//    GList *vlist = g_hash_table_get_values(curLayer->defnames);
-
-
-//    int pos  = g_list_index(clist,aid->pre_name);
-//    g_free(aid->pre_name);
-//    STRUCTClass *fclass = aid->conn_ptr;
-//    aid->pre_name = g_strdup(fclass->name);
-//    aid->index =factory_get_ocombox_index(clist,aid->pre_name);
-//    gtk_combo_box_set_active(GTK_COMBO_BOX(comobox),aid->index);
-//    ptrquark = aid->pre_quark;
     ComboxCmp cc = {.combox = comobox,
                     .qindex = aid->pre_quark
                    };

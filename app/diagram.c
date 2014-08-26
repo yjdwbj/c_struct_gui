@@ -407,6 +407,20 @@ diagram_load(const char *filename, DiaImportFilter *ifilter)
 Diagram *
 new_diagram(const char *filename)  /* Note: filename is copied */
 {
+    if(open_diagrams)
+    {
+         GtkWidget * msg_dialog = gtk_message_dialog_new (ddisplay_active()->shell,
+                             GTK_DIALOG_MODAL,
+                             GTK_MESSAGE_WARNING,
+                             GTK_BUTTONS_CLOSE,
+                             factory_utf8("只能打开一个工程"));
+        gtk_dialog_run (GTK_DIALOG (msg_dialog));
+        gtk_widget_destroy (msg_dialog);
+
+        return NULL;
+    }
+
+
     Diagram *dia = g_object_new(DIA_TYPE_DIAGRAM, NULL);
     dia->isTemplate = g_str_has_suffix(filename,LCY);
     dia->loadOnly = FALSE;

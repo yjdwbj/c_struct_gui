@@ -154,6 +154,8 @@ file_new_callback (GtkAction *action)
   name = g_strdup_printf(_("Diagram%d.dia"), untitled_nr++);
   filename = g_filename_from_utf8(name, -1, NULL, NULL, NULL);
   dia = new_diagram(filename);
+  if(!dia)
+    return ;
 
   ddisp = new_display(dia);
   diagram_tree_add(diagram_tree(), dia);

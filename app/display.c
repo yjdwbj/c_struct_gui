@@ -278,6 +278,7 @@ copy_display(DDisplay *orig_ddisp)
 DDisplay *
 new_display(Diagram *dia)
 {
+
   DDisplay *ddisp;
   Rectangle visible;
 

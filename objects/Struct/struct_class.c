@@ -2712,7 +2712,7 @@ void  factory_read_object_value_from_file(SaveStruct *sss,FactoryStructItem *fst
 
         nsitm->sclass = sss->sclass;
         SaveUbtn *sbtn = &nsitm->value.ssubtn;
-        factory_strjoin(&nsitm->name,g_strdup(sss->name),".");
+        factory_strjoin(&nsitm->name,suptr->curkey,".");
         /* 把当前选择的成员初始化保存到哈希表 */
         sbtn->structlist = g_list_copy(nextobj->datalist);
         sbtn->savelist = NULL;
@@ -3396,14 +3396,14 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
         if(!tsst)
             break;
         tsst->sclass = sss->sclass;
-        factory_strjoin(&tsst->name,sss->name,".");
+        factory_strjoin(&tsst->name,suptr->curkey,".");
         /* 把当前选择的成员初始化保存到哈希表 */
         g_tree_insert(suptr->ubtreeVal,g_strdup(suptr->curkey),tsst);
 //        g_hash_table_insert(suptr->saveVal,suptr->curkey,tsst);
         if(tsst->isPointer )
         {
             SaveUbtn *sbtn = &tsst->value.ssubtn;
-            if(/*!g_hash_table_size(sbtn->htoflist)*/ !g_list_length(sbtn->savelist) && sbtn->structlist)
+            if(!g_list_length(sbtn->savelist) && sbtn->structlist)
             {
 
 //                sbtn->htoflist = g_hash_table_new_full(g_str_hash,g_str_equal,g_free,g_free);
@@ -3413,7 +3413,7 @@ SaveStruct * factory_get_savestruct(FactoryStructItem *fst)
                     FactoryStructItem *o = slist->data;
                     SaveStruct *s  = factory_get_savestruct(o);
                     s->sclass = sss->sclass;
-                    factory_strjoin(&s->name,sss->name,".");
+                    factory_strjoin(&s->name,suptr->curkey,".");
                     sbtn->savelist = g_list_append(sbtn->savelist,s);
                 }
             }

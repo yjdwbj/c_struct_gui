@@ -14,7 +14,7 @@
 	"widgets.h"
 	"intl.h"
 
-1408434442 o:\tool\dvs50\config.h
+1409047018 o:\tool\dvs50\config.h
 
 1394617928 o:\tool\dvs50\lib\message.h
 	<stdarg.h>
@@ -1324,7 +1324,7 @@
 	"attributes.h"
 	"persistence.h"
 
-1408064832 source:o:\tool\dvs50\app\commands.c
+1409044745 source:o:\tool\dvs50\app\commands.c
 	<config.h>
 	<unistd.h>
 	<stdlib.h>
@@ -1514,7 +1514,7 @@
 	<gdk/gdk.h>
 	<gtk/gtkcontainer.h>
 
-1408006609 source:o:\tool\dvs50\app\diagram.c
+1409044816 source:o:\tool\dvs50\app\diagram.c
 	<config.h>
 	<assert.h>
 	<string.h>
@@ -1657,7 +1657,7 @@
 	"geometry.h"
 	"tool.h"
 
-1408000300 source:o:\tool\dvs50\app\display.c
+1409044609 source:o:\tool\dvs50\app\display.c
 	<config.h>
 	<string.h>
 	<stdio.h>
@@ -1790,7 +1790,7 @@
 	"object_ops.h"
 	"group.h"
 
-1407998774 source:o:\tool\dvs50\app\interface.c
+1409046959 source:o:\tool\dvs50\app\interface.c
 	<config.h>
 	<gnome.h>
 	<gtk/gtk.h>
@@ -2413,7 +2413,7 @@
 	"plug-ins.h"
 	"sheets.h"
 
-1408345534 source:o:\tool\dvs50\objects\struct\struct_class.c
+1408500293 source:o:\tool\dvs50\objects\struct\struct_class.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
@@ -2432,7 +2432,7 @@
 
 1394698664 o:\tool\dvs50\objects\struct\pixmaps\structclass.xpm
 
-1408410844 source:o:\tool\dvs50\objects\struct\struct_dialog.c
+1409046822 source:o:\tool\dvs50\objects\struct\struct_dialog.c
 	<config.h>
 	<assert.h>
 	<gtk/gtk.h>
