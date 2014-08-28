@@ -1132,14 +1132,14 @@ gint factory_str_compare(const gchar *str1,const gchar *str2)
 
 gchar *factory_utf8(gchar *str)
 {
-    return g_locale_to_utf8(_(str),-1,NULL,NULL,NULL);
+    return g_locale_to_utf8(str,-1,NULL,NULL,NULL);
 }
 
 gboolean factory_test_file_exist(const gchar *fname)
 {
     if(!g_file_test(fname,G_FILE_TEST_EXISTS))
     {
-        gchar *msg_utf8 = factory_utf8(g_strdup_printf(_("找不到　%s,不能下载."),fname));
+        gchar *msg_utf8 = factory_utf8(g_strdup_printf("找不到　%s,不能下载.",fname));
         gchar *fmsg = g_strconcat(factory_get_format_date_and_time(),msg_utf8,NULL);
         fwrite(fmsg,1,strlen(fmsg),logfd);
         message_error(msg_utf8);
@@ -1155,7 +1155,7 @@ gboolean factory_test_file_exist(const gchar *fname)
 
 gchar *factory_locale(gchar *str)
 {
-    return g_locale_from_utf8(_(str),-1,NULL,NULL,NULL);
+    return g_locale_from_utf8(str,-1,NULL,NULL,NULL);
 }
 
 gboolean factory_is_struct_type(gpointer data)

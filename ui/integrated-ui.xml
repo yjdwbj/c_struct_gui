@@ -47,7 +47,7 @@
 			<menuitem name="EditCopy" action="EditCopy" />
 <!--			<menuitem name="EditCut" action="EditCut" />-->
 			<menuitem name="EditPaste" action="EditPaste" />
-			<menuitem name="EditDuplicate" action="EditDuplicate" />
+<!--			<menuitem name="EditDuplicate" action="EditDuplicate" />-->
 			<menuitem name="EditDelete" action="EditDelete" />
 <!--			<separator name="EditSep2" />
 			<menuitem name="EditFind" action="EditFind" />

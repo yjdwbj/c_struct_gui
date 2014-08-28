@@ -957,14 +957,21 @@ void  app_init (int argc, char **argv)
     }
 
     /* 检查一下依赖程序是否存在 */
-    gchar *isdownload_gui = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "isdownload_gui.exe",NULL);
-    gchar *isdownload = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "isd_download.exe",NULL);
-    gchar *makebin = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "makebin.exe",NULL);
-    gchar *music_convert = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S "music_convert.exe",NULL);
+    gchar *binpth = dia_get_lib_directory("bin");
+    gchar *isdownload_gui = g_strconcat(binpth,G_DIR_SEPARATOR_S "isdownload_gui.exe",NULL);
+    gchar *isdownload = g_strconcat(binpth,G_DIR_SEPARATOR_S "isd_download.exe",NULL);
+    gchar *makebin = g_strconcat(binpth,G_DIR_SEPARATOR_S "makebin.exe",NULL);
+    gchar *music_convert = g_strconcat(binpth,G_DIR_SEPARATOR_S "music_convert.exe",NULL);
     factory_test_file_exist(makebin);
     factory_test_file_exist(isdownload_gui);
     factory_test_file_exist(isdownload);
     factory_test_file_exist(music_convert);
+
+    g_free(binpth);
+    g_free(makebin);
+    g_free(isdownload_gui);
+    g_free(isdownload);
+    g_free(music_convert);
 
 
     if (argv && dia_is_interactive && !version)
@@ -1242,7 +1249,7 @@ app_exit(void)
                     diagram  = items->array[i].data;
                     filename = g_filename_from_utf8 (diagram->filename, -1, NULL, NULL, NULL);
                     diagram_update_extents (diagram);
-                    if (!diagram_save (diagram, filename))
+                    if (!diagram_save (diagram, g_strdup(filename)))
                     {
                         exit_dialog_free_items (items);
                         return FALSE;

@@ -24,7 +24,7 @@
 int diagram_save(Diagram *dia, const char *filename);
 void diagram_autosave(Diagram *dia);
 void diagram_cleanup_autosave(Diagram *dia);
-void factory_call_isd_download();
+void factory_call_isd_download(const gchar *filename);
 GList* factory_template_load_only(const char *filename);
 
 void factory_load_all_templates(void);

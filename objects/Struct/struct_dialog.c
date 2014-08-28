@@ -36,6 +36,7 @@
 #include <assert.h>
 #undef GTK_DISABLE_DEPRECATED /* GtkList, GtkOprionMenu, ... */
 #include <gtk/gtk.h>
+#include <glib/gstdio.h>
 #include <math.h>
 #include <string.h>
 
@@ -48,6 +49,9 @@
 #include "diagramdata.h"
 #include "connpoint_line.h"
 
+#ifndef W_OK
+#define W_OK 2
+#endif
 
 
 extern GQuark item_wactid;
@@ -5628,36 +5632,29 @@ GList* factory_get_download_name_list(const gchar *path)
     g_return_val_if_fail(curLayer->smd != NULL,NULL);
     SaveMusicDialog *smd = curLayer->smd;
     GList *smflist = smd->mflist;
-//    GtkWidget *cpdialog = factory_copy_dialog();
-//     GtkWidget *countlab = g_object_get_data(G_OBJECT(cpdialog),"countlab");
-//    GtkWidget *srclab = g_object_get_data(G_OBJECT(cpdialog),"srclab");
-//    GtkWidget *dstlab =g_object_get_data(G_OBJECT(cpdialog),"dstlab");
+
     int ct = g_list_length(smflist);
     for(; smflist; smflist = smflist->next)
     {
         SaveMusicFile *smf  = smflist->data;
         gchar *srcstr = g_quark_to_string(smf->full_quark);
         gchar *npc = g_build_filename(path,smf->down_name,NULL);
-//        gchar *npc = g_strconcat(path,smf->down_name,NULL);
-//        gtk_label_set_text(countlab,
-//                           g_strdup_printf("%d - %d",g_list_index(smd->mflist,smf),ct));
-//        gtk_label_set_text(srclab,
-//                           g_strdup_printf("src: %s",srcstr));
-//         gtk_label_set_text(dstlab,
-//                           g_strdup_printf("dst: %s",npc));
-//        GDK_THREADS_ENTER();
-//        gtk_widget_queue_draw(cpdialog);
-//        gdk_window_process_all_updates();
-//        GDK_THREADS_LEAVE();
         GFile *src = g_file_new_for_path(srcstr);
         GFile *dst = g_file_new_for_path(npc);
         g_file_copy(src,dst,G_FILE_COPY_OVERWRITE,NULL,NULL,NULL,NULL);
+
+        if (   g_file_test(npc, G_FILE_TEST_EXISTS)
+                && g_access(npc, W_OK) != 0)
+        {
+            gchar *msg = g_strdup_printf(factory_utf8("¸´ÖÆÎÄ¼þ´íÎó: %s"),dst);
+           factory_message_dialoag(ddisplay_active()->shell,
+                               msg);
+            g_free(msg);
+            continue;
+        }
         g_free(npc);
         list = g_list_append(list,smf->down_name);
     }
-//    gtk_widget_destroy(cpdialog);
-//    gtk_widget_queue_draw(cpdialog);
-//    gdk_window_process_all_updates();
     return  list ;
 }
 

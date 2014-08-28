@@ -1225,7 +1225,8 @@ are_you_sure_close_dialog_respond(GtkWidget *widget, /* the dialog */
 //    file_save_as_callback(NULL,NULL,NULL); /* 关闭画布时，提示保存文件 */
     if(ddisp->diagram->isTemplate)
     {
-        if (!diagram_save(ddisp->diagram, ddisp->diagram->filename))
+        if (!diagram_save(ddisp->diagram,
+                          g_strdup(ddisp->diagram->filename)))
             close_ddisp = FALSE;
     }
     else

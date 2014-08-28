@@ -1316,7 +1316,7 @@ diagram_data_save(DiagramData *data, const char *user_filename)
 {
     FILE *file;
     char *bakname=NULL,*tmpname=NULL,*dirname=NULL,*pth;
-    char *filename = (char *)user_filename;
+    char *filename = g_strdup(user_filename);
     int mode,_umask;
     int fildes;
     int ret = 0;
@@ -1483,6 +1483,7 @@ CLEANUP:
 //    g_spawn_async_with_pipes(dia_get_lib_directory("bin"),
 //                             argv,NULL,G_SPAWN_SEARCH_PATH,NULL,NULL,&pid,NULL,NULL,NULL,NULL);
 
+    g_free(fullpath);
     g_free(outfile);
     g_free(newfile);
     g_free(input);
@@ -1491,14 +1492,13 @@ CLEANUP:
     return (ret?FALSE:TRUE);
 }
 
-void factory_call_isd_download()
+void factory_call_isd_download(const gchar* filename)
 {
-    gchar *filename = g_strdup(ddisplay_active_diagram()->filename);
+//    gchar *filename = g_strdup(ddisplay_active_diagram()->filename);
 //    factory_debug_to_log(g_strdup_printf(factory_utf8("下载文件到小机,文件名:%s.\n"),filename));
     g_return_if_fail(filename);
 
-   gchar *fdir = g_path_get_dirname(filename);
-//    gchar *filename = g_get_current_dir();
+    gchar *fdir = g_path_get_dirname(filename);
     g_return_if_fail(factoryContainer);
 
     GList *dlist = factoryContainer->fgdn_func(fdir); /* 取得最新的download 文件列表*/
@@ -1506,15 +1506,18 @@ void factory_call_isd_download()
     int len = 0;
     if(dlist)
         len = g_list_length(dlist);
-    gchar *isdownload_gui = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S, "isdownload_gui.exe",NULL);
-    gchar *isdownload = g_strconcat(dia_get_lib_directory("bin"),G_DIR_SEPARATOR_S ,"isd_download.exe",NULL);
+    gchar *binpth = dia_get_lib_directory("bin");
+    gchar *isdownload_gui = g_strconcat(binpth,G_DIR_SEPARATOR_S, "isdownload_gui.exe",NULL);
+    gchar *isdownload = g_strconcat(binpth,G_DIR_SEPARATOR_S ,"isd_download.exe",NULL);
     gchar *datapath = dia_get_lib_directory("data"); /* 系统文件所在目录 */
     g_return_if_fail(factory_test_file_exist(isdownload));
     g_return_if_fail(factory_test_file_exist(isdownload_gui));
-    gchar **system_files = g_strsplit(factoryContainer->system_files,",",-1);
+    gchar *sysfile = g_strdup(factoryContainer->system_files);
+    gchar **system_files = g_strsplit(sysfile,",",-1);
+    g_free(sysfile);
     int slen = g_strv_length(system_files);
     len +=slen;
-    gchar **argv = g_new(gchar*, len+1);
+    gchar **argv = g_new(gchar*, len+3);
 
     int n = 0;
     argv[n] =g_strdup(factory_locale(isdownload_gui));
@@ -1524,33 +1527,41 @@ void factory_call_isd_download()
     }
     g_strfreev(system_files);
     GList *tlist = dlist;
+    int mpos =n+1;
     for(; tlist; tlist=tlist->next,n++)
     {
         argv[n+1] = g_strdup(tlist->data);
     }
-    argv[n+1] = 0;
+    int mlen = g_list_length(dlist);
+    argv[n+1] = g_strdup_printf("%d#%d",mpos,mlen);
+    argv[n+2] = 0;
     gchar *dir  = g_build_path(G_DIR_SEPARATOR_S, fdir, NULL);
-    g_spawn_sync(dir,
-                 argv,NULL,
-//                 G_SPAWN_FILE_AND_ARGV_ZERO,
-                G_SPAWN_SEARCH_PATH,
-                 NULL,NULL,
-                 NULL,NULL,NULL,NULL);
-//    GPid pid;
-//    g_spawn_async_with_pipes(filename,
-//                             argv,NULL,G_SPAWN_SEARCH_PATH,NULL,NULL,&pid,NULL,NULL,NULL,NULL);
-//    for(; dlist; dlist = dlist->next)
-//    {
-//        GFile *dst = g_file_new_for_path(g_strconcat(filename,dlist->data,NULL));
-//        g_file_delete(dst,NULL,NULL);
-//    }
+//    g_spawn_sync(dir,
+//                 argv,NULL,
+//                 G_SPAWN_SEARCH_PATH,
+//                 NULL,NULL,
+//                 NULL,NULL,NULL,NULL);
+//    g_usleep(100);
+
+
+    GPid pid;
+    g_spawn_async_with_pipes(dir,
+                             argv,NULL,G_SPAWN_SEARCH_PATH,NULL,NULL,&pid,NULL,NULL,NULL,NULL);
+
+//    g_spawn_async(dir,
+//                 argv,NULL,
+//                 G_SPAWN_SEARCH_PATH,
+//                 NULL,NULL,NULL,NULL);
     g_free(dir);
     g_free(fdir);
     g_free(isdownload_gui);
     g_free(isdownload);
-    g_free(filename);
     g_free(datapath);
-//    g_strfreev(argv);
+    g_free(binpth);
+    int num = g_strv_length(argv);
+    n = 0 ;
+    for(; n < num;n++)
+        g_free(argv[n]);
 }
 
 
@@ -1600,11 +1611,11 @@ diagram_save(Diagram *dia, const char *filename)
     }
     else
     {
-        res = diagram_data_save(dia->data, filename);
+        res = diagram_data_save(dia->data, g_strdup(filename));
         if(dia->data->readytodownload) /* 这里是下载到小机器的标志 */
         {
             dia->data->readytodownload = FALSE;
-            factory_call_isd_download();
+            factory_call_isd_download(filename);
         }
     }
 

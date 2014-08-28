@@ -180,7 +180,7 @@ static const GtkActionEntry display_entries[] =
     { "EditCopy", GTK_STOCK_COPY, NULL, "<control>C", NULL, G_CALLBACK (edit_copy_callback) },
 //    { "EditCut", GTK_STOCK_CUT, NULL, "<control>X", NULL, G_CALLBACK (edit_cut_callback) },
     { "EditPaste", GTK_STOCK_PASTE, NULL, "<control>V", NULL, G_CALLBACK (edit_paste_callback) },
-    { "EditDuplicate", NULL, N_("_Duplicate"), "<control>D", NULL, G_CALLBACK (edit_duplicate_callback) },
+//    { "EditDuplicate", NULL, N_("_Duplicate"), "<control>D", NULL, G_CALLBACK (edit_duplicate_callback) },
     { "EditDelete", GTK_STOCK_DELETE, NULL, "Delete", NULL, G_CALLBACK (edit_delete_callback) },
 
 //    { "EditFind", GTK_STOCK_FIND, NULL, "<control>F", NULL, G_CALLBACK (edit_find_callback) },
@@ -617,7 +617,8 @@ void factory_callback_muisc_convert(GtkWidget *btn,gpointer user_data)
 
 }
 
-void factory_callback_download_to_device(GtkWidget *btn,gpointer user_data)
+void factory_callback_download_to_device(GtkWidget *btn,
+                                         gpointer user_data)
 {
     Diagram *diagram = ddisplay_active_diagram();
     if(!diagram) return;
@@ -628,7 +629,7 @@ void factory_callback_download_to_device(GtkWidget *btn,gpointer user_data)
     }
     else
     {
-        factory_call_isd_download();
+        factory_call_isd_download(diagram->filename);
     }
 
 }

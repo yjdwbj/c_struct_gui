@@ -244,6 +244,17 @@
 			<Add directory="." />
 			<Add directory="lib" />
 			<Add directory="app" />
+			<Add directory="E:/gtk+-bundle_2.24.10-20120208_win32/include" />
+			<Add directory="E:/gtk+-bundle_2.24.10-20120208_win32/include/atk-1.0" />
+			<Add directory="E:/gtk+-bundle_2.24.10-20120208_win32/include/gdk-pixbuf-2.0" />
+			<Add directory="E:/gtk+-bundle_2.24.10-20120208_win32/include/gtk-2.0" />
+			<Add directory="E:/gtk+-bundle_2.24.10-20120208_win32/include/glib-2.0" />
+			<Add directory="E:/gtk+-bundle_2.24.10-20120208_win32/include/libxml2" />
+			<Add directory="E:/gtk+-bundle_2.24.10-20120208_win32/lib/glib-2.0/include" />
+			<Add directory="E:/gtk+-bundle_2.24.10-20120208_win32/include/cairo" />
+			<Add directory="E:/gtk+-bundle_2.24.10-20120208_win32/include/pango-1.0" />
+			<Add directory="E:/gtk+-bundle_2.24.10-20120208_win32/lib/gtk-2.0/include" />
+			<Add directory="E:/gtk+-bundle_2.24.10-20120208_win32/include/freetype2" />
 		</Compiler>
 		<Linker>
 			<Add option="-lgtk-win32-2.0" />
@@ -269,6 +280,7 @@
 			<Add option="-lws2_32" />
 			<Add option="-liconv" />
 			<Add directory="bin" />
+			<Add directory="E:/gtk+-bundle_2.24.10-20120208_win32/lib" />
 		</Linker>
 		<Unit filename="app/app_procs.c">
 			<Option compilerVar="CC" />

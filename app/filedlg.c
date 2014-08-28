@@ -244,7 +244,7 @@ file_open_response_callback(GtkWidget *fs,
 {
     char *filename;
     Diagram *diagram = NULL;
-    GtkWidget *parent_window =  g_object_get_data(G_OBJECT(opendlg),"parent_window");
+//    GtkWidget *parent_window =  g_object_get_data(G_OBJECT(opendlg),"parent_window");
     if (response == GTK_RESPONSE_ACCEPT)
     {
         gint index = gtk_combo_box_get_active (GTK_COMBO_BOX(user_data));
@@ -379,8 +379,9 @@ void factory_template_open_callback(gpointer data,guint action,GtkWidget *widget
 void
 file_open_callback(gpointer data, guint action, GtkWidget *widget)
 {
-    if (!opendlg)
-    {
+//    if (!opendlg)
+//    {
+        GtkWidget *odlg = NULL;
         DDisplay *ddisp;
         Diagram *dia = NULL;
         GtkWindow *parent_window;
@@ -402,35 +403,35 @@ file_open_callback(gpointer data, guint action, GtkWidget *widget)
             parent_window = GTK_WINDOW(interface_get_toolbox_shell());
         }
         persistence_register_integer ("import-filter", 0);
-        opendlg = gtk_file_chooser_dialog_new_with_backend(_("Open Diagram"), parent_window,
+        odlg = gtk_file_chooser_dialog_new_with_backend(_("Open Diagram"), parent_window,
                   GTK_FILE_CHOOSER_ACTION_OPEN,
                   "default", /* default, not gnome-vfs */
                   GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
                   GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
                   NULL);
-        g_object_set_data(G_OBJECT(opendlg),"parent_window",parent_window);
-        gtk_dialog_set_default_response(GTK_DIALOG(opendlg), GTK_RESPONSE_ACCEPT);
-        gtk_window_set_role(GTK_WINDOW(opendlg), "open_diagram");
+        g_object_set_data(G_OBJECT(odlg),"parent_window",parent_window);
+        gtk_dialog_set_default_response(GTK_DIALOG(odlg), GTK_RESPONSE_ACCEPT);
+        gtk_window_set_role(GTK_WINDOW(odlg), "open_diagram");
         if (dia && dia->filename)
             filename = g_filename_from_utf8(dia->filename, -1, NULL, NULL, NULL);
         if (filename != NULL)
         {
             char* fnabs = dia_get_absolute_filename (filename);
             if (fnabs)
-                gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(opendlg), fnabs);
+                gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(odlg), fnabs);
             g_free(fnabs);
             g_free(filename);
         }
-        g_signal_connect(GTK_OBJECT(opendlg), "destroy",
-                         G_CALLBACK(gtk_widget_destroyed), &opendlg);
-    }
-    else
-    {
-        gtk_widget_set_sensitive(opendlg, TRUE);
-        if (GTK_WIDGET_VISIBLE(opendlg))
-            return;
-    }
-    if (!gtk_file_chooser_get_extra_widget(GTK_FILE_CHOOSER(opendlg)))
+        g_signal_connect(GTK_OBJECT(odlg), "destroy",
+                         G_CALLBACK(gtk_widget_destroyed), &odlg);
+//    }
+//    else
+//    {
+//        gtk_widget_set_sensitive(opendlg, TRUE);
+//        if (GTK_WIDGET_VISIBLE(opendlg))
+//            return;
+//    }
+    if (!gtk_file_chooser_get_extra_widget(GTK_FILE_CHOOSER(odlg)))
     {
         GtkWidget *hbox, *label, *omenu, *options;
         GtkFileFilter* filter;
@@ -451,31 +452,31 @@ file_open_callback(gpointer data, guint action, GtkWidget *widget)
         gtk_box_pack_start(GTK_BOX(hbox), omenu, TRUE, TRUE, 0);
         gtk_widget_show(omenu);
 
-        gtk_file_chooser_set_extra_widget(GTK_FILE_CHOOSER(opendlg),
+        gtk_file_chooser_set_extra_widget(GTK_FILE_CHOOSER(odlg),
                                           options);
 
         gtk_widget_show(options);
-        g_signal_connect(GTK_OBJECT(opendlg), "response",
+        g_signal_connect(GTK_OBJECT(odlg), "response",
                          G_CALLBACK(file_open_response_callback), omenu);
 
         /* set up the gtk file (name) filters */
         /* 0 = by extension */
-        gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (opendlg),
+        gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (odlg),
                                      build_gtk_file_filter_from_index (0));
         filter = gtk_file_filter_new ();
         gtk_file_filter_set_name (filter, _("All Files"));
         gtk_file_filter_add_pattern (filter, "*");
-        gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (opendlg), filter);
+        gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (odlg), filter);
 
-        filter = gtk_file_filter_new ();
-        gtk_file_filter_set_name (filter, factory_utf8("模版文件"));
-        gtk_file_filter_add_pattern (filter, "*.lcy");
-        gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (opendlg), filter);
+//        filter = gtk_file_filter_new ();
+//        gtk_file_filter_set_name (filter, factory_utf8("模版文件"));
+//        gtk_file_filter_add_pattern (filter, "*.lcy");
+//        gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (odlg), filter);
 
         gtk_combo_box_set_active (GTK_COMBO_BOX (omenu), persistence_get_integer ("import-filter"));
     }
 
-    gtk_widget_show(opendlg);
+    gtk_widget_show(odlg);
 }
 
 /**
@@ -541,7 +542,7 @@ file_save_as_response_callback(GtkWidget *fs,
         diagram_update_extents(dia);
 
         diagram_set_filename(dia, filename);
-        if (diagram_save(dia, filename))
+        if (diagram_save(dia, g_strdup(filename)))
             recent_file_history_add(filename);
 
         g_free (filename);
@@ -695,15 +696,17 @@ file_save_callback(gpointer data, guint action, GtkWidget *widget)
                 !titem->modellist ||
                 !titem->fsil->sname)
         {
+            gchar *msg = factory_utf8("你没有编辑任何东西,保存之前请先运行过编辑对话框!");
             GtkWidget * msg_dialog = gtk_message_dialog_new (GTK_WINDOW (ddisplay_active()->shell),
                                      GTK_DIALOG_MODAL,
                                      GTK_MESSAGE_WARNING,
                                      GTK_BUTTONS_CLOSE,
-                                     factory_utf8("你没有编辑任何东西,保存之前请先运行过编辑对话框!"));
+                                     msg);
 
             gint yes_or_no = gtk_dialog_run (GTK_DIALOG (msg_dialog));
             gtk_widget_destroy (msg_dialog);
             titem->templ_ops->templ_edit(titem->fsil);
+            g_free(msg);
             return;
         }
 
@@ -717,7 +720,7 @@ file_save_callback(gpointer data, guint action, GtkWidget *widget)
     {
         gchar *filename = g_filename_from_utf8(diagram->filename, -1, NULL, NULL, NULL);
         diagram_update_extents(diagram);
-        if (diagram_save(diagram, filename))
+        if (diagram_save(diagram, g_strdup(filename)))
             recent_file_history_add(filename);
         g_free (filename);
     }
